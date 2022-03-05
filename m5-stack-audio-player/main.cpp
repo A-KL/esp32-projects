@@ -30,7 +30,9 @@ int main()
 	// Title
 	TTF_Init();
 
-	UILabel label({ 0, 0, 320, 25 }, "S/PDIF", "C:/Windows/Fonts/Carlito-Regular.ttf", 20);
+	auto font = "C:/Windows/Fonts/Carlito-Regular.ttf";
+
+	UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 20);
 
 	// Main
 
@@ -38,6 +40,9 @@ int main()
 	UISoundAnalyzer<30> analyzer(rect3);
 
 	// Levels
+
+	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
+	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
 
 	UVProgress<Uint8> level_left({ 24, 181, 244, 13 }, 0, 255, 200, 110);
 	UVProgress<Uint8> level_right({ 24, 181 + 13 + 3, 244, 13 }, 0, 255, 200, 50);
@@ -52,6 +57,8 @@ int main()
 	panel.Add(analyzer);
 	panel.Add(level_left);
 	panel.Add(level_right);
+	panel.Add(level_left_label);
+	panel.Add(level_right_label);
 	panel.Add(footer);
 
 	panel.Draw(sdl);

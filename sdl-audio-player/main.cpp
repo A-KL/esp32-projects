@@ -9,6 +9,7 @@
 int main()
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	TTF_Init();
 	SDL_Event event;
 
 	SDL_Window* window = SDL_CreateWindow(
@@ -28,7 +29,6 @@ int main()
 	UIContainer panel({ 0, 0, 320, 240 });
 
 	// Title
-	TTF_Init();
 
 	auto font = "C:/Windows/Fonts/Carlito-Regular.ttf";
 

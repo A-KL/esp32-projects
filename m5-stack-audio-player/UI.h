@@ -8,19 +8,14 @@ struct UIRect
 	int w, h;
 };
 
-struct Color
-{
-	Uint8 r = 0, g = 0, b = 0, a = 0;
-};
-
 class UIElement
 {
 public:
 	UIElement(const UIRect& rect, const UIElement* parent = NULL) :
-		_rect(rect), _parent(parent), Background({0, 0, 0, 0})
+		_rect(rect), _parent(parent), Background(0, 0, 0)
 	{}
 
-	virtual void Draw(SDL_Renderer* canvas) const = 0;
+	virtual void Draw(Canvas<Color>& canvas) const = 0;
 
 	inline void SetParent(const UIElement* parent)
 	{
@@ -28,6 +23,11 @@ public:
 	}
 
 	Color Background;
+
+	virtual void Clear(Canvas<Color>& canvas) const
+	{
+		canvas.DrawFilledRect(_rect.x, _rect.y, _rect.w, _rect.h, Background);
+	}
 
 protected:
 	const UIRect _rect;
@@ -66,11 +66,9 @@ public:
 		_children.push_back(&element);
 	}
 
-	void Draw(SDL_Renderer* canvas) const
+	void Draw(Canvas<Color>& canvas) const
 	{
-		SDL_SetRenderDrawColor(canvas, Background.r, Background.g, Background.b, Background.a);
-
-		SDL_RenderFillRect(canvas, (SDL_Rect*)&_rect);
+		Clear(canvas); // TODO remove?
 
 		for (const UIElement* element : _children)
 		{
@@ -86,37 +84,27 @@ class UILabel : public UIElement
 {
 public:
 	UILabel(const UIRect& rect, const char* text, const char* fontName, int size = 24)
-		: UIElement(rect), _text(text), _font(TTF_OpenFont(fontName,size))
+		: UIElement(rect), _text(text), _colorWhite(255,255,255)
 	{ }
 
-	inline bool SetText(const char* text)
+	inline void SetText(const char* text)
 	{
 		_text = text;
 	}
 
-	void Draw(SDL_Renderer* canvas) const
+	void Draw(Canvas<Color>& canvas) const
 	{
-		SDL_SetRenderDrawColor(canvas, Background.r, Background.g, Background.b, Background.a);
-
-		SDL_RenderFillRect(canvas, (SDL_Rect*)&_rect);
-
-		SDL_Surface* surfaceMessage =
-			TTF_RenderText_Solid(_font, _text, *(SDL_Color*)&_colorWhite);
-
-		SDL_Texture* Message = 
-			SDL_CreateTextureFromSurface(canvas, surfaceMessage);
+		Clear(canvas);
 
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
 		AbsolutePosition(origin_x, origin_y);
 		 
-		auto center_x = origin_x + (_rect.w - surfaceMessage->w) / 2;
-		auto center_y = origin_y + (_rect.h - surfaceMessage->h) / 2;
+		// auto center_x = origin_x + (_rect.w - surfaceMessage->w) / 2;
+		// auto center_y = origin_y + (_rect.h - surfaceMessage->h) / 2;
 
-		SDL_Rect text_rect { center_x, center_y, surfaceMessage->w, surfaceMessage->h };
-
-		SDL_RenderCopy(canvas, Message, NULL, &text_rect);
+		// canvas.DrawText(_text, center_x, center_y, 16, _colorWhite)
 	}
 
 	virtual ~UILabel()
@@ -127,9 +115,7 @@ public:
 	}
 
 private:
-	TTF_Font* _font;
-	const Color _colorWhite{ 255, 255, 255 };
-	const Color _colorBlack{ 0, 0, 0 };
+	const Color _colorWhite;
 	const char* _text;
 };
 
@@ -141,7 +127,7 @@ public:
 		: UIElement(rect), _channels{}
 	{ }
 
-	bool Update(int channel, Uint8 value)
+	bool Update(int channel, unsigned char value)
 	{
 		if (channel > TChannels)
 		{
@@ -152,11 +138,9 @@ public:
 		return true;
 	}
 
-	void Draw(SDL_Renderer* canvas) const
+	void Draw(Canvas<Color>& canvas) const
 	{
-		SDL_SetRenderDrawColor(canvas, _colorBlack.r, _colorBlack.g, _colorBlack.b, 0);
-
-		SDL_RenderFillRect(canvas, (SDL_Rect*)&_rect);
+		Clear(canvas);
 
 		auto vertical_elements_count = 10 * 6;
 		auto element_padding_x = 3;
@@ -175,20 +159,13 @@ public:
 		{
 			auto x = origin_x;
 
-			if (i % 10 == 0 || i == vertical_elements_count - 1)
-			{
-				SDL_SetRenderDrawColor(canvas, _colorDarkYellow.r, _colorDarkYellow.g, _colorDarkYellow.b, 0);
-			}
-			else
-			{
-				SDL_SetRenderDrawColor(canvas, _colorDarkGreen.r, _colorDarkGreen.g, _colorDarkGreen.b, 0);
-			}
+			auto color = (i % 10 == 0 || i == vertical_elements_count - 1) ? _colorDarkYellow : _colorDarkGreen;
 
 			for (int j = 0; j < TChannels; j++)
 			{
 				x += element_padding_x;
 
-				SDL_RenderDrawLine(canvas, x, y, x + element_width, y);
+				canvas.DrawLine(x, y, x + element_width, y, color);
 
 				x += element_width;
 			}
@@ -206,7 +183,7 @@ private:
 
 	const Color _colorBlack{ 0, 0, 0 };
 
-	const Uint8 _channels[TChannels];
+	const uint8_t _channels[TChannels];
 };
 
 template <typename TValue>
@@ -214,7 +191,7 @@ class UVProgress : public UIElement
 {
 public:
 	UVProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
-		UIElement(rect), _min(min), _max(max), _threshold(threshold), _value(value)
+		UIElement(rect), _minValue(min), _maxValue(max), _threshold(threshold), _value(value)
 	{ }
 
 	inline TValue Get()
@@ -227,32 +204,23 @@ public:
 		_value = value;
 	}
 
-	void Draw(SDL_Renderer* canvas) const
+	void Draw(Canvas<Color>& canvas) const
 	{
-		SDL_SetRenderDrawColor(canvas, 24, 24, 24, 0);
-
-		SDL_RenderFillRect(canvas, (SDL_Rect*)&_rect);
+		Clear(canvas);
 
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
 		AbsolutePosition(origin_x, origin_y);
 
-		auto origin_threshold = map(_threshold, _min, _max, origin_x, origin_x + _rect.w);
-		auto origin_max = map(_value, _min, _max, origin_x, origin_x + _rect.w);
+		auto origin_threshold = map(_threshold, _minValue, _maxValue, origin_x, origin_x + _rect.w);
+		auto origin_max = map(_value, _minValue, _maxValue, origin_x, origin_x + _rect.w);
 
 		for (int i = origin_x; i < origin_max; i += 3)
 		{
-			if (i > origin_threshold)
-			{
-				SDL_SetRenderDrawColor(canvas, 255, 0, 0, 0);
-			}
-			else
-			{
-				SDL_SetRenderDrawColor(canvas, 15, 185, 79, 0);
-			}
+			auto color = (i > origin_threshold) ? Color(255, 0, 0) : Color(15, 185, 79) ;
 
-			SDL_RenderDrawLine(canvas, i, origin_y, i, origin_y + _rect.h - 1);
+			canvas.DrawLine(i, origin_y, i, origin_y + _rect.h - 1, color);
 		}
 	}
 
@@ -265,8 +233,8 @@ public:
 
 private:
 	TValue _value;
-	TValue _max;
-	TValue _min;
+	TValue _maxValue;
+	TValue _minValue;
 
 	TValue _threshold;
 };

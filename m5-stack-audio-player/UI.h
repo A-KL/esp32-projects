@@ -142,7 +142,7 @@ public:
 		auto center_x = origin_x + (_rect.w - sizeof(_text)*16) / 2;
 		auto center_y = origin_y + (_rect.h - 16) / 2;
 
-		canvas.DrawText(0, 0, _text, 16, _colorWhite);
+		canvas.DrawText(center_x, center_y, _text, 16, _colorWhite);
 
 		_valid = true;
 	}
@@ -237,7 +237,7 @@ public:
 	UVProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
 		UIElement(rect), _minValue(min), _maxValue(max), _threshold(threshold), _value(value)
 	{ 
-		 Background = Color(40, 40, 40);
+		 Background = Color(30, 30, 30);
 	}
 
 	inline TValue Get()

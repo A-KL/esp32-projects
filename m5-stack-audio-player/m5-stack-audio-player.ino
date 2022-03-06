@@ -90,44 +90,47 @@ void setup(void)
 	panel.Add(footer);
 
 	uint16_t l_value = 0;
+	uint16_t r_level = 0;
 
 	while (true)
 	{
-		// for (int i = 0; i < SAMPLES; i++) 
-		// {
-		// 	newTime = micros()-oldTime;
-		// 	oldTime = newTime;
+		for (int i = 0; i < SAMPLES; i++) 
+		{
+			newTime = micros()-oldTime;
+			oldTime = newTime;
 
-		// 	l_value = analogRead(ADC_PIN); // A conversion takes about 1uS on an ESP32
-		// 	vReal[i] = l_value;
-		// 	vImag[i] = 0;
+			r_level = analogRead(ADC1); // A conversion takes about 1uS on an ESP32
 
-		// 	while (micros() < (newTime + sampling_period_us));
-		// }
+			vReal[i] = r_level;
+			vImag[i] = 0;
 
-		// fft.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-		// fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
-		// fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
+			while (micros() < (newTime + sampling_period_us));
+		}
 
-		// for (int i = 2; i < (SAMPLES/2); i++) { 
-		// 	// Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
+		r_level = analogRead(ADC2);
 
-		// 	if (vReal[i] > 2000) { // Add a crude noise filter, 10 x amplitude or more
-		// 	if (i<=2 )             displayBand(0,(int)vReal[i]/amplitude); // 125Hz
-		// 	if (i >3   && i<=5 )   displayBand(1,(int)vReal[i]/amplitude); // 250Hz
-		// 	if (i >5   && i<=7 )   displayBand(2,(int)vReal[i]/amplitude); // 500Hz
-		// 	if (i >7   && i<=15 )  displayBand(3,(int)vReal[i]/amplitude); // 1000Hz
-		// 	if (i >15  && i<=30 )  displayBand(4,(int)vReal[i]/amplitude); // 2000Hz
-		// 	if (i >30  && i<=53 )  displayBand(5,(int)vReal[i]/amplitude); // 4000Hz
-		// 	if (i >53  && i<=200 ) displayBand(6,(int)vReal[i]/amplitude); // 8000Hz
-		// 	if (i >200           ) displayBand(7,(int)vReal[i]/amplitude); // 16000Hz
-		// 	//Serial.println(i);
-		// 	}
-		// }
+		fft.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+		fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
+		fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
 
-		//level_left.Set(l_value);
-		level_left.Set(analogRead(ADC1));
-		level_right.Set(analogRead(ADC2));
+		for (int i = 2; i < (SAMPLES/2); i++) { 
+			// Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
+
+			if (vReal[i] > 2000) { // Add a crude noise filter, 10 x amplitude or more
+			if (i<=2 )             displayBand(0,(int)vReal[i]/amplitude); // 125Hz
+			if (i >3   && i<=5 )   displayBand(1,(int)vReal[i]/amplitude); // 250Hz
+			if (i >5   && i<=7 )   displayBand(2,(int)vReal[i]/amplitude); // 500Hz
+			if (i >7   && i<=15 )  displayBand(3,(int)vReal[i]/amplitude); // 1000Hz
+			if (i >15  && i<=30 )  displayBand(4,(int)vReal[i]/amplitude); // 2000Hz
+			if (i >30  && i<=53 )  displayBand(5,(int)vReal[i]/amplitude); // 4000Hz
+			if (i >53  && i<=200 ) displayBand(6,(int)vReal[i]/amplitude); // 8000Hz
+			if (i >200           ) displayBand(7,(int)vReal[i]/amplitude); // 16000Hz
+			//Serial.println(i);
+			}
+		}
+
+		level_left.Set(r_level);
+		level_right.Set(r_level);
 
 		panel.Draw(canvas);
 		delay(10);

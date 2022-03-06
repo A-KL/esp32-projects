@@ -12,10 +12,15 @@ class UIElement
 {
 public:
 	UIElement(const UIRect& rect, const UIElement* parent = NULL) :
-		_rect(rect), _parent(parent), Background(0, 0, 0)
+		_rect(rect), _parent(parent), _valid(false), Background(0, 0, 0)
 	{}
 
-	virtual void Draw(Canvas<Color>& canvas) const = 0;
+	virtual void Draw(Canvas<Color>& canvas) = 0;
+
+	virtual bool IsValid() const
+	{
+		return _valid;
+	}
 
 	inline void SetParent(const UIElement* parent)
 	{
@@ -31,6 +36,12 @@ public:
 
 protected:
 	const UIRect _rect;
+	bool _valid;
+
+	inline virtual void Invalidate()
+	{
+		_valid = false;
+	}
 
 	void AbsolutePosition(int& x, int& y) const
 	{
@@ -57,27 +68,49 @@ class UIContainer : public UIElement
 public:
 	UIContainer(const UIRect& rect) :
 		UIElement(rect)
-	{}
+	{
+		
+	}
 
-	inline void Add(UIElement &element)
+	void Add(UIElement &element)
 	{
 		element.SetParent(this);
 
 		_children.push_back(&element);
 	}
 
-	void Draw(Canvas<Color>& canvas) const
+	bool IsValid()
 	{
-		Clear(canvas); // TODO remove?
+		if (!_valid) {
+			return false;
+		}
 
-		for (const UIElement* element : _children)
-		{
+		for (UIElement* element : _children) {
+			if(!element->IsValid()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	void Draw(Canvas<Color>& canvas)
+	{
+		// if (IsValid()) {
+		// 	return;
+		// }
+
+		// Clear(canvas);
+
+		for (UIElement* element : _children) {
 			element->Draw(canvas);
 		}
+
+		//_valid = true;
 	}
 
 private:
-	std::list<const UIElement*> _children;
+	std::list<UIElement*> _children;
 };
 
 class UILabel : public UIElement
@@ -92,19 +125,26 @@ public:
 		_text = text;
 	}
 
-	void Draw(Canvas<Color>& canvas) const
+	void Draw(Canvas<Color>& canvas)
 	{
+		if (IsValid()) {
+			return;
+		}
+
 		Clear(canvas);
 
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
 		AbsolutePosition(origin_x, origin_y);
-		 
 		// auto center_x = origin_x + (_rect.w - surfaceMessage->w) / 2;
 		// auto center_y = origin_y + (_rect.h - surfaceMessage->h) / 2;
+		auto center_x = origin_x + (_rect.w - sizeof(_text)*16) / 2;
+		auto center_y = origin_y + (_rect.h - 16) / 2;
 
-		// canvas.DrawText(_text, center_x, center_y, 16, _colorWhite)
+		canvas.DrawText(0, 0, _text, 16, _colorWhite);
+
+		_valid = true;
 	}
 
 	virtual ~UILabel()
@@ -138,9 +178,11 @@ public:
 		return true;
 	}
 
-	void Draw(Canvas<Color>& canvas) const
+	void Draw(Canvas<Color>& canvas)
 	{
-		Clear(canvas);
+		if (IsValid()) {
+			return;
+		}
 
 		auto vertical_elements_count = 10 * 6;
 		auto element_padding_x = 3;
@@ -172,14 +214,16 @@ public:
 
 			y += 1 + element_padding_y;
 		}
+
+		_valid = true;
 	}
 
 private:
-	const Color _colorDarkYellow{ 99, 97, 48 };
+	const Color _colorDarkYellow{35, 35, 15 }; //99, 97, 48 
 	const Color _colorYellow{ 243, 232, 53 };
 
 	const Color _colorGreen{ 100, 199, 73 };
-	const Color _colorDarkGreen{ 44, 91, 45 };
+	const Color _colorDarkGreen{ 9, 14, 7 }; //44, 91, 45
 
 	const Color _colorBlack{ 0, 0, 0 };
 
@@ -192,7 +236,9 @@ class UVProgress : public UIElement
 public:
 	UVProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
 		UIElement(rect), _minValue(min), _maxValue(max), _threshold(threshold), _value(value)
-	{ }
+	{ 
+		 Background = Color(40, 40, 40);
+	}
 
 	inline TValue Get()
 	{
@@ -202,10 +248,15 @@ public:
 	inline void Set(TValue value)
 	{
 		_value = value;
+		Invalidate();
 	}
 
-	void Draw(Canvas<Color>& canvas) const
+	void Draw(Canvas<Color>& canvas)
 	{
+		if (IsValid()) {
+			return;
+		}
+
 		Clear(canvas);
 
 		auto origin_x = _rect.x;
@@ -222,6 +273,8 @@ public:
 
 			canvas.DrawLine(i, origin_y, i, origin_y + _rect.h - 1, color);
 		}
+
+		_valid = true;
 	}
 
 	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)

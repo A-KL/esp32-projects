@@ -30,13 +30,14 @@ void M5StackCanvas::DrawLine(int x0, int y0, int x1, int y1, const Color& color)
 
 void M5StackCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 {
-	_display->drawRect(x0, y0, w, h, (unsigned short)color);
+	_display->fillRect(x0, y0, w, h, (unsigned short)color);
 }
 
 void M5StackCanvas::DrawText(int x0, int y0, const char* text, int size, const Color& color)
 {
-  _display->setTextColor((unsigned short)color, TFT_WHITE);
-  _display->setFont(&fonts::Font4);
+  _display->setTextColor((unsigned short)color, TFT_BLACK);
+  _display->setFont(&fonts::Font2);
+  //display.setFont(&fonts::Font2);
   // display.setTextPadding(display.textWidth("100"));
 	_display->drawString(text, x0, y0);
 }

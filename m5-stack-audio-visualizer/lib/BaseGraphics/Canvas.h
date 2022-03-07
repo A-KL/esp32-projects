@@ -10,13 +10,11 @@ public:
 
 	virtual void DrawFilledRect(int x0, int y0, int w, int h, const TColor& color) = 0;
 
-	virtual void DrawText(int x0, int y0, const char* text, int size, const Color& color) = 0;
+	virtual void DrawText(int x0, int y0, const char* text, int size, const TColor& color) = 0;
 
 	virtual int Height() const = 0;
 
 	virtual int Witdth() const = 0;
-
-	virtual unsigned int Bpp() const = 0;
 
 	virtual void Clear(const TColor& color) = 0;
 

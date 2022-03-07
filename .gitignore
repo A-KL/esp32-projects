@@ -7,3 +7,6 @@ m5-stack-audio-player/x64/
 sdl-audio-player/.vs/
 sdl-audio-player/Debug/
 sdl-audio-player/x64/
+m5-stack-audio-visualizer/.vs/
+m5-stack-audio-visualizer/src-sdl/x64/
+m5-stack-audio-visualizer/x64/

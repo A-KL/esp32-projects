@@ -1,16 +1,12 @@
 #pragma once
 
-#include "../Canvas/Canvas.h"
+#include "../BaseGraphics/Canvas.h"
 
-class M5StackCanvas :
+class SDLCanvas :
 	public Canvas<Color>
 {
 public:
-	M5StackCanvas(M5GFX& display) :
-		_display(&display), _background(0, 0, 0)
-	{}
-
-	void Init(const Color& color);
+	SDLCanvas(SDL_Window*);
 
 	void DrawPoint(int x, int y, const Color& color);
 
@@ -22,17 +18,12 @@ public:
 
 	inline int Height() const
 	{
-		return _display->height();
+		return _h;
 	}
 
 	inline int Witdth() const
 	{
-		return _display->width();
-	}
-
-	inline unsigned int Bpp() const
-	{
-		return 24;
+		return _w;
 	}
 
 	void Clear(const Color& color);
@@ -41,10 +32,12 @@ public:
 
 	void Update();
 
-	virtual ~M5StackCanvas();
+	virtual ~SDLCanvas();
 
 private:
-	M5GFX* _display;
+	int _w, _h;
+
+	SDL_Renderer* _sdl;
 
 	const Color _background;
 };

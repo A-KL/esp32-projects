@@ -38,7 +38,7 @@ void SDLCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 
 void SDLCanvas::DrawText(int x0, int y0, const char* text, int size, const Color& color)
 {
-	auto fontName = "C:/Windows/Fonts/Carlito-Regular.ttf";
+	auto fontName = "C:/Windows/Fonts/Calibril.ttf";
 
 	auto font = TTF_OpenFont(fontName, size);
 

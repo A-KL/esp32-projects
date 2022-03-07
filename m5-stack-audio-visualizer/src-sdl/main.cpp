@@ -14,6 +14,7 @@ int main()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
+
 	SDL_Event event;
 
 	SDL_Window* window = SDL_CreateWindow(
@@ -97,8 +98,9 @@ int main()
 				break;
 			}
 
+			sdl.Update();
+
 			SDL_PollEvent(&event);
-			//SDL_RenderPresent(sdl);
 			SDL_Delay(5);
 		}
 

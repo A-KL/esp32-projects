@@ -1,5 +1,0 @@
-{
-    "board": "m5stack:esp32:m5stack-fire",
-    "port": "COM3",
-    "sketch": "m5-stack-audio-player.ino"
-}

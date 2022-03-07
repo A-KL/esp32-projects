@@ -30,11 +30,6 @@ public:
 		return _display->width();
 	}
 
-	inline unsigned int Bpp() const
-	{
-		return 24;
-	}
-
 	void Clear(const Color& color);
 
 	void Clear();

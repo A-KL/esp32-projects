@@ -1,6 +1,8 @@
 #pragma once
 
 #include <list>
+#include <iterator>
+#include <iostream>
 
 struct UIRect
 {
@@ -114,8 +116,8 @@ private:
 class UILabel : public UIElement
 {
 public:
-	UILabel(const UIRect& rect, const char* text, const char* fontName, int size = 24)
-		: UIElement(rect), _colorWhite(255,255,255), _text(text)
+	UILabel(const UIRect& rect, const char* text, const char* fontName, int size)
+		: UIElement(rect), _colorWhite(255,255,255), _text(text), _fontSize(size)
 	{ }
 
 	inline void SetText(const char* text)
@@ -135,12 +137,15 @@ public:
 		auto origin_y = _rect.y;
 
 		AbsolutePosition(origin_x, origin_y);
-		// auto center_x = origin_x + (_rect.w - surfaceMessage->w) / 2;
-		// auto center_y = origin_y + (_rect.h - surfaceMessage->h) / 2;
-		auto center_x = origin_x + (_rect.w - sizeof(_text)*16) / 2;
-		auto center_y = origin_y + (_rect.h - 16) / 2;
 
-		canvas.DrawText(center_x, center_y, _text, 16, _colorWhite);
+		std::string str(_text);
+		auto textSize = str.length();
+		auto textWidth = textSize * _fontSize;
+
+		auto center_x = origin_x + (_rect.w - textWidth) / 2;
+		auto center_y = origin_y + (_rect.h - _fontSize) / 2;
+
+		canvas.DrawText(center_x, center_y, _text, _fontSize, _colorWhite);
 
 		_valid = true;
 	}
@@ -155,6 +160,7 @@ public:
 private:
 	const Color _colorWhite;
 	const char* _text;
+	const int _fontSize;
 };
 
 template <int TChannels>

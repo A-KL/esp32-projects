@@ -33,7 +33,7 @@ int main()
 
 	auto font = "C:/Windows/Fonts/Carlito-Regular.ttf";
 
-	UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 20);
+	UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
 
 	// Main
 

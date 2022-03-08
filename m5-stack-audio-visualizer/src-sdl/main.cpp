@@ -37,8 +37,16 @@ int main()
 
 	// Main
 
-	UIRect rect3{ 30, 25, 270, 120 };
-	UISoundAnalyzer<30> analyzer(rect3);
+	auto start = 20;
+	UILabel label_0({ 14, start, 24, 13 }, "0", font, 16);
+	UILabel label_10({ 17, start += 19, 24, 13 }, "-10", font, 16);
+	UILabel label_20({ 17, start += 20, 24, 13 }, "-20", font, 16);
+	UILabel label_30({ 17, start += 19, 24, 13 }, "-30", font, 16);
+	UILabel label_40({ 17, start += 20, 24, 13 }, "-40", font, 16);
+	UILabel label_50({ 17, start += 19, 24, 13 }, "-50", font, 16);
+	UILabel label_60({ 17, start += 20, 24, 13 }, "-60", font, 16);
+
+	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
 
 	// Levels
 
@@ -55,6 +63,13 @@ int main()
 
 	// Render
 	panel.Add(label);
+	panel.Add(label_0);
+	panel.Add(label_10);
+	panel.Add(label_20);
+	panel.Add(label_30);
+	panel.Add(label_40);
+	panel.Add(label_50);
+	panel.Add(label_60);
 	panel.Add(analyzer);
 	panel.Add(level_left);
 	panel.Add(level_right);

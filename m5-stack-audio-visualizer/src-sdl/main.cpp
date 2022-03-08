@@ -48,6 +48,11 @@ int main()
 
 	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
 
+	analyzer.Update(0, 50);
+	analyzer.Update(1, 30);
+	analyzer.Update(2, 0);
+	analyzer.Update(3, 10);
+
 	// Levels
 
 	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);

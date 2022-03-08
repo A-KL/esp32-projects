@@ -206,12 +206,23 @@ public:
 			auto x = origin_x;
 
 			auto color = (i % 10 == 0 || i == vertical_elements_count - 1) ? _colorDarkYellow : _colorDarkGreen;
+			auto active_color = (i % 10 == 0 || i == vertical_elements_count - 1) ? _colorYellow : _colorGreen;
+			auto main_color = color;
 
 			for (int j = 0; j < TChannels; j++)
 			{
+				if ((vertical_elements_count - _channels[j]) < i)
+				{
+					main_color = active_color;
+				}
+				else
+				{
+					main_color = color;
+				}
+
 				x += element_padding_x;
 
-				canvas.DrawLine(x, y, x + element_width, y, color);
+				canvas.DrawLine(x, y, x + element_width, y, main_color);
 
 				x += element_width;
 			}
@@ -231,7 +242,7 @@ private:
 
 	const Color _colorBlack{ 0, 0, 0 };
 
-	const uint8_t _channels[TChannels];
+	uint8_t _channels[TChannels];
 };
 
 template <typename TValue>

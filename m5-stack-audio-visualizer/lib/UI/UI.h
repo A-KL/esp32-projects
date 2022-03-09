@@ -140,7 +140,7 @@ public:
 
 		std::string str(_text);
 		auto textSize = str.length();
-		auto textWidth = textSize * _fontSize;
+		auto textWidth = textSize * 6;
 
 		auto center_x = origin_x + (_rect.w - textWidth) / 2;
 		auto center_y = origin_y + (_rect.h - _fontSize) / 2;
@@ -163,17 +163,22 @@ private:
 	const int _fontSize;
 };
 
-template <int TChannels>
+template <size_t TChannels>
 class UISoundAnalyzer : public UIElement
 {
 public:
 	UISoundAnalyzer(const UIRect& rect)
-		: UIElement(rect), _channels{}
-	{ }
+		: UIElement(rect)
+	{ 
+		for (int j = 0; j < TChannels; j++)
+		{
+			_channels[j] = 0;
+		}
+	}
 
 	bool Update(int channel, unsigned char value)
 	{
-		if (channel > TChannels)
+		if (channel >= TChannels)
 		{
 			return false;
 		}
@@ -187,6 +192,8 @@ public:
 		if (IsValid()) {
 			return;
 		}
+
+		Clear(canvas);
 
 		auto vertical_elements_count = 10 * 6;
 		auto element_padding_x = 3;
@@ -205,8 +212,8 @@ public:
 		{
 			auto x = origin_x;
 
-			auto color = (i % 10 == 0 || i == vertical_elements_count - 1) ? _colorDarkYellow : _colorDarkGreen;
-			auto active_color = (i % 10 == 0 || i == vertical_elements_count - 1) ? _colorYellow : _colorGreen;
+			auto color = (i % 10 == 0 || i == (vertical_elements_count - 1)) ? _colorDarkYellow : _colorDarkGreen;
+			auto active_color = (i % 10 == 0 || i == (vertical_elements_count - 1)) ? _colorYellow : _colorGreen;
 			auto main_color = color;
 
 			for (int j = 0; j < TChannels; j++)

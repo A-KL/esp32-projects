@@ -118,29 +118,28 @@ void setup() {
   arduinoFFT fft;
 	sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
 
-  canvas.Init(Color(0, 0, 0));
+  canvas.Init(Color(255, 0, 0));
 
   display.waitDisplay();
-
+  
   // UI
   UIContainer panel({ 0, 0, 320, 240 });
 
   // Title
   const char* font = NULL;
-
-  UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 20);
+  UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
 
   // Main
 	auto start = 20;
-	UILabel label_0({ 14, start, 24, 13 }, "0", font, 16);
-	UILabel label_10({ 17, start += 19, 24, 13 }, "-10", font, 16);
-	UILabel label_20({ 17, start += 20, 24, 13 }, "-20", font, 16);
-	UILabel label_30({ 17, start += 19, 24, 13 }, "-30", font, 16);
-	UILabel label_40({ 17, start += 20, 24, 13 }, "-40", font, 16);
-	UILabel label_50({ 17, start += 19, 24, 13 }, "-50", font, 16);
-	UILabel label_60({ 17, start += 20, 24, 13 }, "-60", font, 16);
+	UILabel label_0({ 5, start, 20, 16 }, "0", font, 16);
+	UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
+	UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
+	UILabel label_30({ 5, start += 19, 20, 16 }, "-30", font, 16);
+	UILabel label_40({ 5, start += 20, 20, 16 }, "-40", font, 16);
+	UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
+	UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
 
-	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
+	UISoundAnalyzer<8> analyzer({ 30, 25, 270, 120 });
 
 	analyzer.Update(0, 50);
 	analyzer.Update(1, 30);
@@ -148,8 +147,8 @@ void setup() {
 	analyzer.Update(3, 10);
 
   // Levels
-  UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
-  UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
+  UILabel level_left_label({ 0, 181, 20, 16 }, "L", font, 16);
+  UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", font, 16);
 
   UVProgress<uint16_t> level_left({ 24, 181, 244, 13 }, 0, 4095, 4095 * 0.9, 0);
   UVProgress<uint16_t> level_right({ 24, 181 + 13 + 3, 244, 13 }, 2000, 4095, 4095 * 0.9, 0);
@@ -168,7 +167,7 @@ void setup() {
 	panel.Add(label_40);
 	panel.Add(label_50);
 	panel.Add(label_60);
-  panel.Add(analyzer);
+ // panel.Add(analyzer);
   panel.Add(level_left);
   panel.Add(level_right);
   panel.Add(level_left_label);
@@ -180,14 +179,16 @@ void setup() {
 
   while (true)
 	{
+    uint64_t sum = 0;
+
 		for (int i = 0; i < SAMPLES; i++) 
 		{
 			newTime = micros()-oldTime;
 			oldTime = newTime;
 
-			l_value = analogRead(ADC1); // A conversion takes about 1uS on an ESP32
+			vReal[i] = analogRead(ADC_PIN); // A conversion takes about 1uS on an ESP32
 
-			vReal[i] = l_value;
+      sum += vReal[i];
 			vImag[i] = 0;
 
 			while (micros() < (newTime + sampling_period_us));
@@ -197,44 +198,49 @@ void setup() {
 		fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
 		fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
 
-    for (int i = 2; i < (SAMPLES/2); i++){ 
-      // Don't use sample 0 and only first SAMPLES/2 are usable. 
-      // Each array eleement represents a frequency and its value the amplitude.
-      if (vReal[i] > 1500) { // Add a crude noise filter, 10 x amplitude or more
-        byte bandNum = getBand(i);
-        if(bandNum!=8) {
-          displayBand(analyzer, bandNum, (int)vReal[i]/audiospectrum[bandNum].amplitude);
-        }
-      }
-    }
+    // for (int i = 2; i < (SAMPLES/2); i++){ 
+    //   // Don't use sample 0 and only first SAMPLES/2 are usable. 
+    //   // Each array eleement represents a frequency and its value the amplitude.
+    //   if (vReal[i] > 1500) { // Add a crude noise filter, 10 x amplitude or more
+    //     byte bandNum = getBand(i);
+    //     if(bandNum!=8) {
+    //       displayBand(analyzer, bandNum, (int)vReal[i]/audiospectrum[bandNum].amplitude);
+    //     }
+    //   }
+    // }
 
-    long vnow = millis();
-    for (byte band = 0; band <= 7; band++) {
-      // auto decay every 50ms on low activity bands
-      if(vnow - audiospectrum[band].lastmeasured > 50) {
-        displayBand(analyzer, band, audiospectrum[band].lastval>4 ? audiospectrum[band].lastval-4 : 0);
-      }
+    // long vnow = millis();
+    // for (byte band = 0; band <= 7; band++) {
+    //   // auto decay every 50ms on low activity bands
+    //   if(vnow - audiospectrum[band].lastmeasured > 50) {
+    //     displayBand(analyzer, band, audiospectrum[band].lastval>4 ? audiospectrum[band].lastval-4 : 0);
+    //   }
 
-      // if (audiospectrum[band].peak > 0) {
-      //   audiospectrum[band].peak -= 2;
-      //   if(audiospectrum[band].peak<=0) {
-      //     audiospectrum[band].peak = 0;
-      //   }
-      // }
-      // only draw if peak changed
-      // if(audiospectrum[band].lastpeak != audiospectrum[band].peak) {
-      //   // delete last peak
-      // //M5.Lcd.drawFastHLine(bands_width*band,tft_height-audiospectrum[band].lastpeak,bands_pad,BLACK);
-      // audiospectrum[band].lastpeak = audiospectrum[band].peak;
-      // //  M5.Lcd.drawFastHLine(bands_width*band, tft_height-audiospectrum[band].peak,
-      // //                        bands_pad, colormap[tft_height-audiospectrum[band].peak]);
-      // }
-    } 
+    //   // if (audiospectrum[band].peak > 0) {
+    //   //   audiospectrum[band].peak -= 2;
+    //   //   if(audiospectrum[band].peak<=0) {
+    //   //     audiospectrum[band].peak = 0;
+    //   //   }
+    //   // }
+    //   // only draw if peak changed
+    //   // if(audiospectrum[band].lastpeak != audiospectrum[band].peak) {
+    //   //   // delete last peak
+    //   // //M5.Lcd.drawFastHLine(bands_width*band,tft_height-audiospectrum[band].lastpeak,bands_pad,BLACK);
+    //   // audiospectrum[band].lastpeak = audiospectrum[band].peak;
+    //   // //  M5.Lcd.drawFastHLine(bands_width*band, tft_height-audiospectrum[band].peak,
+    //   // //                        bands_pad, colormap[tft_height-audiospectrum[band].peak]);
+    //   // }
+    // } 
+
+    l_value = sum / SAMPLES;
 
 		level_left.Set(l_value);
 		level_right.Set(r_level);
 
-		panel.Draw(canvas);
+    panel.Draw(canvas);
+
+    canvas.Update();
+
 		delay(10);
 	}
 }
@@ -243,4 +249,5 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  delay(10);
 }

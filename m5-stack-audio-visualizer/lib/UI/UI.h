@@ -17,19 +17,19 @@ public:
 		Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent)
 	{}
 
-	virtual void Draw(Canvas<Color>& canvas) = 0;
-
-	virtual bool IsValid() const
-	{
-		return _valid;
-	}
-
 	inline void SetParent(const UIElement* parent)
 	{
 		_parent = parent;
 	}
 
 	Color Background;
+
+	virtual void Draw(Canvas<Color>& canvas) = 0;
+
+	virtual bool IsValid() const
+	{
+		return _valid;
+	}
 
 	virtual void Clear(Canvas<Color>& canvas) const
 	{
@@ -112,7 +112,7 @@ public:
 private:
 	std::list<UIElement*> _children;
 };
-
+ 
 class UILabel : public UIElement
 {
 public:
@@ -257,20 +257,37 @@ class UVProgress : public UIElement
 {
 public:
 	UVProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
-		UIElement(rect), _minValue(min), _maxValue(max), _threshold(threshold), _value(value)
+		UIElement(rect), 
+		_minValue(min), 
+		_maxValue(max), 
+		_threshold(threshold), 
+		_oldValue(value), 
+		_newValue(value), 
+		_backgroundColor(30, 30, 30),
+		_activeColor(15, 185, 79)
 	{ 
 		 Background = Color(30, 30, 30);
 	}
 
-	inline TValue Get()
+	inline TValue GetActual() const
 	{
-		return _value;
+		return _oldValue;
 	}
 
-	inline void Set(TValue value)
+	inline TValue GetFinal() const
 	{
-		_value = value;
-		Invalidate();
+		return _newValue;
+	}
+
+	inline void SetFinal(TValue value)
+	{
+		_deltaValue = value > _oldValue ? 1 : -1;
+		_newValue = value;
+	}
+
+	bool IsValid() const
+	{
+		return _newValue == _oldValue;
 	}
 
 	void Draw(Canvas<Color>& canvas)
@@ -279,24 +296,38 @@ public:
 			return;
 		}
 
-		Clear(canvas);
-
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
 		AbsolutePosition(origin_x, origin_y);
 
-		auto origin_threshold = map(_threshold, _minValue, _maxValue, origin_x, origin_x + _rect.w);
-		auto origin_max = map(_value, _minValue, _maxValue, origin_x, origin_x + _rect.w);
+		auto color = (_deltaValue > 0) ? _activeColor : _backgroundColor;
 
-		for (int i = origin_x; i < origin_max; i += 3)
+		auto item_w = 3;
+
+		auto current_w = map(_oldValue, _minValue, _maxValue, 0, _rect.w);
+		auto new_w = map(_newValue, _minValue, _maxValue, 0, _rect.w);
+
+		auto items = abs(new_w - current_w) / item_w;
+		auto count = (current_w / item_w);
+
+		if (items > 0)
 		{
-			auto color = (i > origin_threshold) ? Color(255, 0, 0) : Color(15, 185, 79) ;
-
-			canvas.DrawLine(i, origin_y, i, origin_y + _rect.h - 1, color);
+			if (_deltaValue > 0)
+			{
+				canvas.DrawFilledRect(origin_x + count * item_w, origin_y, item_w - 1, _rect.h, color);
+			}
+			else if (_deltaValue < 0)
+			{
+				canvas.DrawFilledRect(origin_x + (count - 1) * item_w, origin_y, item_w, _rect.h, color);
+			}
+			else
+			{
+				return;
+			}
 		}
 
-		_valid = true;
+		_oldValue += _deltaValue;
 	}
 
 	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
@@ -307,8 +338,13 @@ public:
 	//virtual ~UVProgress() = 0;
 
 private:
-	TValue _minValue;
-	TValue _maxValue;
-	TValue _threshold;
-	TValue _value;
+	const TValue _minValue;
+	const TValue _maxValue;
+	const TValue _threshold;
+	TValue _oldValue;
+	TValue _newValue;
+	int _deltaValue;
+
+	const Color _backgroundColor;
+	const Color _activeColor;
 };

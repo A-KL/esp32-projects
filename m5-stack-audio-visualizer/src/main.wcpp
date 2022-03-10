@@ -2,15 +2,10 @@
 #include <Arduino.h>
 #include <arduinoFFT.h>
 #include <M5GFX.h>
-
-#include "Color.h"
-#include "Canvas.h"
-#include "M5StackCanvas.h"
-
-#include "UI.h"
+#include "simple_ui.h"
 
 // ---------------------------------------------------
-#define ADC_PIN 34
+#define ADC_PIN ADC2
 #define SAMPLES 512              // Must be a power of 2
 #define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 
@@ -79,7 +74,9 @@ byte getBand(int i) {
   return 8;
 }
 
-void displayBand(UISoundAnalyzer<30>& analyzer, int band, int dsize){
+
+
+void displayBand(int band, int dsize){
 
   uint16_t hpos = bands_width*band;
 
@@ -91,7 +88,7 @@ void displayBand(UISoundAnalyzer<30>& analyzer, int band, int dsize){
   
   if(dsize < audiospectrum[band].lastval) {
     // lower value, delete some lines
-    analyzer.Update(band, audiospectrum[band].lastval);
+   // analyzer.Update(band, audiospectrum[band].lastval);
 
     // M5.Lcd.fillRect(hpos, tft_height-audiospectrum[band].lastval,
     //                 bands_pad, audiospectrum[band].lastval - dsize, BLACK);
@@ -111,95 +108,87 @@ void displayBand(UISoundAnalyzer<30>& analyzer, int band, int dsize){
   audiospectrum[band].lastmeasured = millis();
 }
 
-  M5GFX display;
-  M5StackCanvas canvas(display);
+M5GFX display;
+arduinoFFT fft;
 
 void setup() {
- // M5.begin();
-  dacWrite(25, 0);
 
-  arduinoFFT fft;
+
+  
 	sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
-  Serial.begin(115200);
-  delay(2000);
 
-  canvas.Init(Color(255, 0, 0));
+  display.init();
+  display.startWrite();
+  display.fillScreen(TFT_RED);
+
+  if (display.isEPD())
+  {
+    display.setEpdMode(epd_mode_t::epd_fastest);
+  }
+  if (display.width() < display.height())
+  {
+    display.setRotation(display.getRotation() ^ 1);
+  }
 
   display.waitDisplay();
   
   // UI
-  UIContainer panel({ 0, 0, 320, 240 });
+  display.setTextColor(TFT_WHITE);
+  display.setFont(&fonts::Font2);
 
   // Title
-  const char* font = NULL;
-  UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
+  display.drawString("S/PDIF", 100, 0);
 
   // Main
-	auto start = 20;
-	UILabel label_0({ 5, start, 20, 16 }, "0", font, 16);
-	UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
-	UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
-	UILabel label_30({ 5, start += 19, 20, 16 }, "-30", font, 16);
-	UILabel label_40({ 5, start += 20, 20, 16 }, "-40", font, 16);
-	UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
-	UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
 
-	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
+	//UISoundAnalyzer<8> analyzer({ 30, 25, 270, 120 });
+  const uint8_t bands_count = 30;
+  uint8_t bands[bands_count];
+
+  for(auto i = 0; i<bands_count; i++)
+  {
+    bands[i] = 0;
+  }
+
+  render_analyzer_ui(display, 0, 25, 320, 120, bands_count, bands);
 
   // Levels
-  UILabel level_left_label({ 0, 181, 20, 16 }, "L", font, 16);
-  UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", font, 16);
+  // UILabel level_left_label({ 0, 181, 20, 16 }, "L", font, 16);
+  // UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", font, 16);
 
-  UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-  UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
-
-  level_left.Clear(canvas);
-  level_right.Clear(canvas);
+  // UVProgress<uint16_t> level_left({ 24, 181, 244, 13 }, 0, 4095, 4095 * 0.9, 0);
+  // UVProgress<uint16_t> level_right({ 24, 181 + 13 + 3, 244, 13 }, 2000, 4095, 4095 * 0.9, 0);
 
   // Footer
-  UIContainer footer({ 0, 240-23, 320, 23 });
-  footer.Background = { 56, 56, 56, 0 };
-  footer.Clear(canvas);
+  auto bgcolor = display.color888(56, 56, 56);
+  display.fillRect(0, 240-23,320, 23, bgcolor);
 
   // Build UI
-	panel.Add(label);
-	panel.Add(label_0);
-	panel.Add(label_10);
-	panel.Add(label_20);
-	panel.Add(label_30);
-	panel.Add(label_40);
-	panel.Add(label_50);
-	panel.Add(label_60);
-  panel.Add(analyzer);
-  panel.Add(level_left);
-  panel.Add(level_right);
-  panel.Add(level_left_label);
-  panel.Add(level_right_label);
-  panel.Add(footer);
-
-  uint8_t value_l = 0;
-  uint8_t value_r = 0;
+  display.endWrite();
+  display.display();
+  uint16_t l_value = 0;
+  uint16_t r_level = 0;
 
   while (true)
 	{
-    unsigned long sum_l = 0;
+    uint64_t sum = 0;
 
 		for (int i = 0; i < SAMPLES; i++) 
 		{
 			newTime = micros()-oldTime;
 			oldTime = newTime;
 
-			vReal[i] = analogRead(34); // A conversion takes about 1uS on an ESP32
+			vReal[i] = analogRead(ADC_PIN); // A conversion takes about 1uS on an ESP32
 
-      sum_l += vReal[i];
+      sum += vReal[i];
 			vImag[i] = 0;
 
 			while (micros() < (newTime + sampling_period_us));
 		}
 
-		// fft.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-		// fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
-		// fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
+		fft.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+		fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
+		fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
 
     // for (int i = 2; i < (SAMPLES/2); i++){ 
     //   // Don't use sample 0 and only first SAMPLES/2 are usable. 
@@ -235,24 +224,15 @@ void setup() {
     //   // }
     // } 
 
-    value_l = abs((sum_l / (float)SAMPLES) - 1980);
+   // l_value = sum / SAMPLES;
 
-    level_left.SetFinal(value_l);
+	//	level_left.Set(l_value);
+	//	level_right.Set(r_level);
 
-    while (!level_left.IsValid())
-    {
-      level_left.Draw(canvas);
-      delay(2);
-    }
+
     
 
-		//level_right.Set(r_level);
-
-    panel.Draw(canvas);
-
-    canvas.Update();
-
-		delay(10);
+		delay(100);
 	}
 }
 

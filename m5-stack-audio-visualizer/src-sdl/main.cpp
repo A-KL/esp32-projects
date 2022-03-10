@@ -2,6 +2,8 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include "SDL_audio.h"
+
 #include <iostream>
 
 #include "../lib/BaseGraphics/Color.h"
@@ -58,8 +60,11 @@ int main()
 	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
 	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
 
-	UVProgress<Uint8> level_left({ 24, 181, 244, 13 }, 0, 255, 200, 110);
-	UVProgress<Uint8> level_right({ 24, 181 + 13 + 3, 244, 13 }, 0, 255, 200, 50);
+	UVProgress<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
+	UVProgress<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
+
+	level_left.Clear(sdl);
+	level_right.Clear(sdl);
 
 	// Footer
 
@@ -89,43 +94,31 @@ int main()
 		auto value_l = rand() % 255;
 		auto value_r = rand() % 255;
 
-		auto animated_l = level_left.Get();
-		auto animated_r = level_right.Get();
+		level_left.SetFinal(value_l);
+		level_right.SetFinal(value_r);
 
-		auto d_l = (value_l - animated_l) / abs(value_l - animated_l);
-		auto d_r = (value_r - animated_r) / abs(value_r - animated_r);
-
-		while (true)
+		while (!level_left.IsValid())
 		{
-			if (animated_l != value_l)
-			{
-				level_left.Set(animated_l);
-				level_left.Draw(sdl);
-
-				animated_l += d_l;
-			}
-
-			if (animated_r != value_r)
-			{
-				level_right.Set(animated_r);
-				level_right.Draw(sdl);
-
-				animated_r += d_r;
-			}
-
-			if (animated_l == value_l && animated_r == value_r)
-			{
-				break;
-			}
+			level_left.Draw(sdl);
 
 			sdl.Update();
 
 			SDL_PollEvent(&event);
-			SDL_Delay(5);
+			SDL_Delay(2);
+		}
+
+		while (!level_right.IsValid())
+		{
+			level_right.Draw(sdl);
+
+			sdl.Update();
+
+			SDL_PollEvent(&event);
+			SDL_Delay(2);
 		}
 
 		SDL_PollEvent(&event);
-		SDL_Delay(50);
+		SDL_Delay(5);
 	} 
 	while (event.type != SDL_QUIT);
 

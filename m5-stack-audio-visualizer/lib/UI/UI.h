@@ -184,6 +184,8 @@ public:
 		}
 		_channels[channel] = value;
 
+		Invalidate();
+
 		return true;
 	}
 

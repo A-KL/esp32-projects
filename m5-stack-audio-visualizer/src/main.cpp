@@ -1,6 +1,8 @@
 #include <limits.h>
 #include <Arduino.h>
 #include <arduinoFFT.h>
+#include <Wire.h>
+#include <Adafruit_ADS1x15.h>
 #include <M5GFX.h>
 
 #include "Color.h"
@@ -10,122 +12,58 @@
 #include "UI.h"
 
 // ---------------------------------------------------
-#define ADC_PIN 34
+#define ADC_MIC          34
+#define ADC_CHANNEL_LEFT ADC_MIC
+#define ADC_CHANNEL_RIGHT 35
+
 #define SAMPLES 512              // Must be a power of 2
+#define BANDS_COUNT 30 
 #define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
+#define AMPLITUDE_MAX 255
 
-struct eqBand {
-  const char *freqname;
-  uint16_t amplitude;
-  int peak;
-  int lastpeak;
-  uint16_t lastval;
-  unsigned long lastmeasured;
-};
- 
-eqBand audiospectrum[9] = {
-  //Adjust the amplitude values to fit your microphone
-  { "125Hz", 500, 0, 0, 0, 0},
-  { "250Hz", 200, 0, 0, 0, 0},
-  { "500Hz", 200, 0, 0, 0, 0},
-  { "1KHz",  200, 0, 0, 0, 0},
-  { "2KHz",  200, 0, 0, 0, 0},
-  { "4KHz",  100, 0, 0, 0, 0},
-  { "6k3",   100, 0, 0, 0, 0},
-  { "10KHz", 100, 0, 0, 0, 0},
-  { "16KHz", 50,  0, 0, 0, 0}
-};
+unsigned int sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
+unsigned long newTime, oldTime, microseconds;
 
-unsigned int sampling_period_us;
-unsigned long microseconds;
-double vReal[SAMPLES];
-double vImag[SAMPLES];
-unsigned long newTime, oldTime;
-uint16_t tft_width  = 320; // ILI9341_TFTWIDTH;
-uint16_t tft_height = 240; // ILI9341_TFTHEIGHT;
-uint8_t bands = 8;
-uint8_t bands_width = floor( tft_width / bands );
-uint8_t bands_pad = bands_width - 10;
-uint16_t colormap[255]; // color palette for the band meter (pre-fill in setup)
+unsigned char peak[BANDS_COUNT];
+
+double vReal_l[SAMPLES];
+double vReal_r[SAMPLES];
+
+double vImag_l[SAMPLES];
+double vImag_r[SAMPLES];
+
+// ---------------------------------------------------
+arduinoFFT fft;
+M5GFX display;
+M5StackCanvas canvas(display);
+// ---------------------------------------------------
+
+void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
+{
+  if (amplitude > AMPLITUDE_MAX) 
+  {
+    amplitude = AMPLITUDE_MAX;
+  }
+
+  analyzer.Update(band, amplitude);
+
+  if (amplitude > peak[band]) 
+  {
+    peak[band] = amplitude;
+  }
+}
 
 // ---------------------------------------------------
 
-// void displayBand(int band, int dsize)
-// {
-//   int dmax = 50;
+void setup() 
+{
+  memset(peak, 0, sizeof(BANDS_COUNT));
 
-//   if (dsize > dmax) 
-//   	dsize = dmax;
-
-// //   if (band == 7) 
-// //   	display.drawHorizontalLine(18*6,0, 14);
-
-// //   for (int s = 0; s <= dsize; s=s+2)
-// //   	display.drawHorizontalLine(18*band,64-s, 14);
-
-//   // if (dsize > peak[band]) 
-//   // 	peak[band] = dsize;
-// }
-
-byte getBand(int i) {
-  if (i<=2 )             return 0;  // 125Hz
-  if (i >3   && i<=5 )   return 1;  // 250Hz
-  if (i >5   && i<=7 )   return 2;  // 500Hz
-  if (i >7   && i<=15 )  return 3;  // 1000Hz
-  if (i >15  && i<=30 )  return 4;  // 2000Hz
-  if (i >30  && i<=53 )  return 5;  // 4000Hz
-  if (i >53  && i<=200 ) return 6;  // 8000Hz
-  if (i >200           ) return 7;  // 16000Hz
-  return 8;
-}
-
-void displayBand(UISoundAnalyzer<30>& analyzer, int band, int dsize){
-
-  uint16_t hpos = bands_width*band;
-
-  int dmax = 60; // 200;
-
-  // if(dsize>tft_height-10) {
-  //   dsize = tft_height-10; // leave some hspace for text
-  // }
-  
-  if(dsize < audiospectrum[band].lastval) {
-    // lower value, delete some lines
-    analyzer.Update(band, audiospectrum[band].lastval);
-
-    // M5.Lcd.fillRect(hpos, tft_height-audiospectrum[band].lastval,
-    //                 bands_pad, audiospectrum[band].lastval - dsize, BLACK);
-  }
-
-  if (dsize > dmax) dsize = dmax;
-
-  for (int s = 0; s <= dsize; s=s+4){
-    //M5.Lcd.drawFastHLine(hpos, tft_height-s, bands_pad, colormap[tft_height-s]);
-  }
-
-  if (dsize > audiospectrum[band].peak) {
-    audiospectrum[band].peak = dsize;
-  }
-
-  audiospectrum[band].lastval = dsize;
-  audiospectrum[band].lastmeasured = millis();
-}
-
-  M5GFX display;
-  M5StackCanvas canvas(display);
-
-void setup() {
- // M5.begin();
   dacWrite(25, 0);
 
-  arduinoFFT fft;
-	sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
-  Serial.begin(115200);
-  delay(2000);
+  delay(500);
 
-  canvas.Init(Color(255, 0, 0));
-
-  display.waitDisplay();
+  canvas.Init(Color(0, 0, 0));
   
   // UI
   UIContainer panel({ 0, 0, 320, 240 });
@@ -135,8 +73,8 @@ void setup() {
   UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
 
   // Main
-	auto start = 20;
-	UILabel label_0({ 5, start, 20, 16 }, "0", font, 16);
+	auto start = 18;
+	UILabel label_0({ 8, start, 18, 16 }, "0", font, 16);
 	UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
 	UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
 	UILabel label_30({ 5, start += 19, 20, 16 }, "-30", font, 16);
@@ -144,14 +82,14 @@ void setup() {
 	UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
 	UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
 
-	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
+	UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
   // Levels
   UILabel level_left_label({ 0, 181, 20, 16 }, "L", font, 16);
   UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", font, 16);
 
-  UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-  UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
+  UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+  UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
 
   level_left.Clear(canvas);
   level_right.Clear(canvas);
@@ -177,88 +115,84 @@ void setup() {
   panel.Add(level_right_label);
   panel.Add(footer);
 
-  uint8_t value_l = 0;
-  uint8_t value_r = 0;
-
   while (true)
 	{
     unsigned long sum_l = 0;
+    unsigned long sum_r = 0;
 
-		for (int i = 0; i < SAMPLES; i++) 
-		{
-			newTime = micros()-oldTime;
-			oldTime = newTime;
+    for (int i = 0; i < SAMPLES; i++) {
 
-			vReal[i] = analogRead(34); // A conversion takes about 1uS on an ESP32
+      newTime = micros()-oldTime;
+      oldTime = newTime;
 
-      sum_l += vReal[i];
-			vImag[i] = 0;
+      vReal_l[i] = analogRead(ADC_CHANNEL_LEFT); // A conversion takes about 1uS on an ESP32
+      vReal_r[i] = analogRead(ADC_CHANNEL_RIGHT);
 
-			while (micros() < (newTime + sampling_period_us));
-		}
+      vImag_l[i] = 0;
+      vImag_r[i] = 0;
 
-		// fft.Windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-		// fft.Compute(vReal, vImag, SAMPLES, FFT_FORWARD);
-		// fft.ComplexToMagnitude(vReal, vImag, SAMPLES);
+      sum_l += vReal_l[i];
+      sum_r += vReal_r[i];
 
-    // for (int i = 2; i < (SAMPLES/2); i++){ 
-    //   // Don't use sample 0 and only first SAMPLES/2 are usable. 
-    //   // Each array eleement represents a frequency and its value the amplitude.
-    //   if (vReal[i] > 1500) { // Add a crude noise filter, 10 x amplitude or more
-    //     byte bandNum = getBand(i);
-    //     if(bandNum!=8) {
-    //       displayBand(analyzer, bandNum, (int)vReal[i]/audiospectrum[bandNum].amplitude);
-    //     }
+      while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
+    }
+
+    fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+    fft.Compute(vReal_l, vImag_l, SAMPLES, FFT_FORWARD);
+    fft.ComplexToMagnitude(vReal_l, vImag_l, SAMPLES);
+
+   // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
+
+    // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
+    for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
+    { 
+      if (vReal_l[i] < 200) { // Add a crude noise filter, 10 x amplitude or more
+        continue;
+      }
+
+      if (band_index>=30) {
+        break;
+      }
+
+      displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX); 
+
+        // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
+        // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
+        // if (i >5   && i<=7 )   displayBand(analyzer, 2, (int)vReal[i]/amplitude); // 500Hz
+        // if (i >7   && i<=15 )  displayBand(analyzer, 3, (int)vReal[i]/amplitude); // 1000Hz
+        // if (i >15  && i<=30 )  displayBand(analyzer, 4, (int)vReal[i]/amplitude); // 2000Hz
+        // if (i >30  && i<=53 )  displayBand(analyzer, 5, (int)vReal[i]/amplitude); // 4000Hz
+        // if (i >53  && i<=200 ) displayBand(analyzer, 6, (int)vReal[i]/amplitude); // 8000Hz
+        // if (i >200           ) displayBand(analyzer, 7, (int)vReal[i]/amplitude); // 16000Hz  
+
+      // for (byte band = 0; band <= 6; band++) 
+      //     display.drawHorizontalLine(18*band,64-peak[band],14);
+    }
+
+    // if (millis()%4 == 0) 
+    // {
+    //   for (byte band = 0; band <= 6; band++)
+    //   {
+    //   if (peak[band] > 0) 
+    //     peak[band] -= 1;
     //   }
-    // }
+    // } // Decay the peak
 
-    // long vnow = millis();
-    // for (byte band = 0; band <= 7; band++) {
-    //   // auto decay every 50ms on low activity bands
-    //   if(vnow - audiospectrum[band].lastmeasured > 50) {
-    //     displayBand(analyzer, band, audiospectrum[band].lastval>4 ? audiospectrum[band].lastval-4 : 0);
-    //   }
 
-    //   // if (audiospectrum[band].peak > 0) {
-    //   //   audiospectrum[band].peak -= 2;
-    //   //   if(audiospectrum[band].peak<=0) {
-    //   //     audiospectrum[band].peak = 0;
-    //   //   }
-    //   // }
-    //   // only draw if peak changed
-    //   // if(audiospectrum[band].lastpeak != audiospectrum[band].peak) {
-    //   //   // delete last peak
-    //   // //M5.Lcd.drawFastHLine(bands_width*band,tft_height-audiospectrum[band].lastpeak,bands_pad,BLACK);
-    //   // audiospectrum[band].lastpeak = audiospectrum[band].peak;
-    //   // //  M5.Lcd.drawFastHLine(bands_width*band, tft_height-audiospectrum[band].peak,
-    //   // //                        bands_pad, colormap[tft_height-audiospectrum[band].peak]);
-    //   // }
-    // } 
+    level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 1980));
+   // level_right.SetFinal(abs((sum_r / (float)SAMPLES) - 1980));
 
-    value_l = abs((sum_l / (float)SAMPLES) - 1980);
-
-    level_left.SetFinal(value_l);
-
-    while (!level_left.IsValid())
+    while (!level_left.IsValid() ) //|| !level_right.IsValid()
     {
       level_left.Draw(canvas);
+     // level_right.Draw(canvas);
       delay(2);
     }
-    
-
-		//level_right.Set(r_level);
 
     panel.Draw(canvas);
-
     canvas.Update();
-
-		delay(10);
 	}
 }
 
-
-
 void loop() {
-  // put your main code here, to run repeatedly:
-  delay(10);
 }

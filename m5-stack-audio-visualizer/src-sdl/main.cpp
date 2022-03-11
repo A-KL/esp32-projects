@@ -11,10 +11,17 @@
 #include "../lib/SDLGraphics/SDLCanvas.h"
 
 #include "../lib/UI/UI.h"
+using namespace std;
+
 
 int main()
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) 
+	{
+		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+		return 1;
+	}
+
 	TTF_Init();
 
 	SDL_Event event;
@@ -87,8 +94,6 @@ int main()
 	panel.Add(level_right_label);
 	panel.Add(footer);
 
-	panel.Draw(sdl);
-
 	do
 	{
 		auto value_l = rand() % 255;
@@ -117,11 +122,17 @@ int main()
 			SDL_Delay(2);
 		}
 
+		for (auto i = 0; i < 30; i++)
+		{
+			analyzer.Update(i, (rand() % 255));
+		}
+
+		analyzer.Draw(sdl);
+
 		SDL_PollEvent(&event);
 		SDL_Delay(5);
 	} 
 	while (event.type != SDL_QUIT);
-
 
 	SDL_DestroyWindow(window);
 

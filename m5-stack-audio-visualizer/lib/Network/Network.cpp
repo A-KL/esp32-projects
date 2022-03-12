@@ -14,9 +14,9 @@ bool StartWifi()
 
   int i = 0;
 
-  Serial.print("WiFi [Connecting");
+  Serial.print("WiFi [Connecting \'");
   Serial.print(SSID);
-  Serial.println("]");
+  Serial.println("\']");
 
   while (WiFi.status() != WL_CONNECTED) 
   {

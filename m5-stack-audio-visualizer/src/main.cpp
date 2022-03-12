@@ -108,7 +108,7 @@ void setup()
   StartWifi();
 
   radio.Init();
-  radio.StartPlaying(urls[2]);
+  radio.StartPlaying(urls[3]);
 
   // UI
   UIContainer panel({ 0, 0, 320, 240 });

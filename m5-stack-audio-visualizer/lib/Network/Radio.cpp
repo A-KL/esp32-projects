@@ -6,9 +6,10 @@ InternetRadio::InternetRadio()
 
 void InternetRadio::Init()
 {
-    _output = new AudioOutputI2S(0, 1); // Output to builtInDAC
-    _output->SetOutputModeMono(true);
-    _output->SetGain(_gain*0.05);
+    // _output = new AudioOutputI2S(0, 1); // Output to builtInDAC
+    // _output->SetOutputModeMono(true);
+    // _output->SetGain(_gain*0.05);
+    
 }
 
 void InternetRadio::Loop()
@@ -40,6 +41,7 @@ void InternetRadio::StartPlaying(const char* url)
     _output = new AudioOutputI2S(0, 1); // Output to builtInDAC
     _output->SetOutputModeMono(true);
     _output->SetGain(_gain*0.05);
+    _output->SetRate(22050);
 
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");

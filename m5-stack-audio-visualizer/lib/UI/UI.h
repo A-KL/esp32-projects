@@ -292,7 +292,7 @@ public:
 		return _newValue == _oldValue;
 	}
 
-	void Draw(Canvas<Color>& canvas)
+	virtual void Draw(Canvas<Color>& canvas)
 	{
 		if (IsValid()) {
 			return;
@@ -303,41 +303,35 @@ public:
 
 		AbsolutePosition(origin_x, origin_y);
 
-		auto color = (_deltaValue > 0) ? _activeColor : _backgroundColor;
-
-		auto item_w = 3;
+		//auto item_w = 3;
 
 		auto current_w = map(_oldValue, _minValue, _maxValue, 0, _rect.w);
 		auto new_w = map(_newValue, _minValue, _maxValue, 0, _rect.w);
 
-		auto items = abs(new_w - current_w) / item_w;
-		auto count = (current_w / item_w);
-
-		if (items > 0)
+		if (_deltaValue > 0)
 		{
-			if (_deltaValue > 0)
-			{
-				canvas.DrawFilledRect(origin_x + count * item_w, origin_y, item_w - 1, _rect.h, color);
-			}
-			else if (_deltaValue < 0)
-			{
-				canvas.DrawFilledRect(origin_x + (count - 1) * item_w, origin_y, item_w, _rect.h, color);
-			}
-			else
-			{
-				return;
-			}
+			// for (auto x = origin_x + current_w; x < origin_x + new_w; x +=3 )
+			// {
+			// 	canvas.DrawFilledRect(x, origin_y, item_w - 1, _rect.h, _activeColor);
+			// }
+
+			canvas.DrawFilledRect(origin_x + current_w, origin_y, new_w - current_w, _rect.h, _activeColor);
+		}
+		else
+		{
+			canvas.DrawFilledRect(origin_x + new_w, origin_y, current_w - new_w, _rect.h, _backgroundColor);
 		}
 
-		_oldValue += _deltaValue;
+		_oldValue = _newValue;
 	}
 
+	//virtual ~UVProgress() = 0;
+
+protected:
 	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
 	{
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
-
-	//virtual ~UVProgress() = 0;
 
 private:
 	const TValue _minValue;
@@ -350,3 +344,52 @@ private:
 	const Color _backgroundColor;
 	const Color _activeColor;
 };
+
+// template <typename TValue>
+// class UVAnimatedProgress : public UVProgress<TValue>
+// {
+// public:
+// 	UVAnimatedProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
+// 		UVProgress<TValue>(rect, min, max, threshold, value)
+// 	{ }
+
+// 	virtual void Draw(Canvas<Color>& canvas)
+// 	{
+// 		if (IsValid()) {
+// 			return;
+// 		}
+
+// 		auto origin_x = _rect.x;
+// 		auto origin_y = _rect.y;
+
+// 		AbsolutePosition(origin_x, origin_y);
+
+// 		auto color = (_deltaValue > 0) ? _activeColor : _backgroundColor;
+
+// 		auto item_w = 3;
+
+// 		auto current_w = map(_oldValue, _minValue, _maxValue, 0, _rect.w);
+// 		auto new_w = map(_newValue, _minValue, _maxValue, 0, _rect.w);
+
+// 		auto items = abs(new_w - current_w) / item_w;
+// 		auto count = (current_w / item_w);
+
+// 		if (items > 0)
+// 		{
+// 			if (_deltaValue > 0)
+// 			{
+// 				canvas.DrawFilledRect(origin_x + count * item_w, origin_y, item_w - 1, _rect.h, color);
+// 			}
+// 			else if (_deltaValue < 0)
+// 			{
+// 				canvas.DrawFilledRect(origin_x + (count - 1) * item_w, origin_y, item_w, _rect.h, color);
+// 			}
+// 			else
+// 			{
+// 				return;
+// 			}
+// 		}
+
+// 		_oldValue += _deltaValue;
+// 	}
+// };

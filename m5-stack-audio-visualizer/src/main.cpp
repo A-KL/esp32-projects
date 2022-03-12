@@ -72,13 +72,18 @@ const int stations_count = sizeof(urls)/sizeof(char *);
 // ---------------------------------------------------
 arduinoFFT fft;
 
-//M5StackCanvas canvas;
+#ifdef M5STACK
+  M5StackCanvas canvas;
+#endif
 
 #ifdef ESP_WROVER
   TFTCanvas canvas;
 #endif
 
 InternetRadio radio;
+
+UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
 
 // ---------------------------------------------------
 
@@ -97,6 +102,12 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
   }
 }
 
+void OnSampleCallback(int16_t left, int16_t right)
+{
+  level_left.SetFinal(map(left, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+  level_right.SetFinal(map(right, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+}
+
 void setup() 
 {
   Serial.begin(115200);
@@ -106,8 +117,6 @@ void setup()
   memset(peak, 0, BANDS_COUNT);
 
   StartWifi();
-
-  radio.StartPlaying(urls[3]);
 
   // UI
   UIContainer panel({ 0, 0, 320, 240 });
@@ -129,11 +138,8 @@ void setup()
 	UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
   // Levels
-  UILabel level_left_label({ 0, 181, 20, 16 }, "L", font, 16);
-  UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", font, 16);
-
-  UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
-  UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+  UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
+  UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
   level_left.Clear(canvas);
   level_right.Clear(canvas);
@@ -159,46 +165,40 @@ void setup()
   panel.Add(level_right_label);
   panel.Add(footer);
 
+  radio.StartPlaying(urls[3]);
+  radio.OnSampleCallback(OnSampleCallback);
+
   while (true)
 	{
-    unsigned long sum_l = 0;
-    unsigned long sum_r = 0;
+    // unsigned long sum_l = 0;
+    // unsigned long sum_r = 0;
 
-    for (int i = 0; i < SAMPLES; i++) {
+    // for (int i = 0; i < SAMPLES; i++) {
 
-      newTime = micros()-oldTime;
-      oldTime = newTime;
+    //   newTime = micros()-oldTime;
+    //   oldTime = newTime;
 
-      vReal_l[i] = 1110; //analogRead(ADC_CHANNEL_LEFT); // A conversion takes about 1uS on an ESP32
-      vReal_r[i] = 1230;// analogRead(ADC_CHANNEL_RIGHT);
+    //   vReal_l[i] = 1110; //analogRead(ADC_CHANNEL_LEFT); // A conversion takes about 1uS on an ESP32
+    //   vReal_r[i] = 1230;// analogRead(ADC_CHANNEL_RIGHT);
 
-      vImag_l[i] = 0;
-      vImag_r[i] = 0;
+    //   vImag_l[i] = 0;
+    //   vImag_r[i] = 0;
 
-      sum_l += vReal_l[i];
-      sum_r += vReal_r[i];
+    //   sum_l += vReal_l[i];
+    //   sum_r += vReal_r[i];
 
-      while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
-    }
+    //   while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
+    // }
 
-    fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-    fft.Compute(vReal_l, vImag_l, SAMPLES, FFT_FORWARD);
-    fft.ComplexToMagnitude(vReal_l, vImag_l, SAMPLES);
+    // fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+    // fft.Compute(vReal_l, vImag_l, SAMPLES, FFT_FORWARD);
+    // fft.ComplexToMagnitude(vReal_l, vImag_l, SAMPLES);
 
    // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
     // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-
-    for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
-    {
-      if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
-        continue;
-      }
-        displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
-    }
-
-    // for (int band_index = 17, bin = 100; band_index < BANDS_COUNT; band_index++, bin+=2)
-    // {      
+    // for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
+    // {
     //   if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
     //     continue;
     //   }
@@ -240,17 +240,14 @@ void setup()
     // } // Decay the peak
 
 
-    level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 2000));
+    //level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 2000));
    // level_right.SetFinal(abs((sum_r / (float)SAMPLES) - 1980));
 
-    while (!level_left.IsValid() ) //|| !level_right.IsValid()
-    {
-      level_left.Draw(canvas);
-      level_right.Draw(canvas);
-      delay(2);
-    }
+    level_left.Draw(canvas);
+    level_right.Draw(canvas);
 
-    panel.Draw(canvas);
+    //panel.Draw(canvas);
+
     radio.Loop();
 	}
 }

@@ -107,7 +107,6 @@ void setup()
 
   StartWifi();
 
-  radio.Init();
   radio.StartPlaying(urls[3]);
 
   // UI

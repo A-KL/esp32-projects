@@ -1,3 +1,5 @@
+#pragma once
+
 #include <AudioFileSource.h>
 #include <AudioFileSourceBuffer.h>
 #include <AudioFileSourceICYStream.h>
@@ -5,6 +7,7 @@
 #include <AudioGeneratorMP3.h>
 #include <AudioOutputI2S.h>
 #include <AudioOutputI2SNoDAC.h>
+#include "CustomAudioOutputI2S.h"
 
 class InternetRadio
 {
@@ -16,13 +19,14 @@ public:
         _url = url;
     }
 
-    void Init();
-
     void Loop();
 
     void StartPlaying(const char* url);
 
     void StopPlaying();
+
+    typedef void (*sampleCBFn)(int16_t left, int16_t right);
+    void OnSampleCallback(sampleCBFn f);
 
 private:
     const char *_url;
@@ -33,7 +37,7 @@ private:
     AudioGeneratorMP3* _mp3;
     AudioFileSourceICYStream* _stream;
     AudioFileSourceBuffer* _buffer;
-    AudioOutputI2S* _output;
+    CustomAudioOutputI2S* _output;
 
     static void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string);
 

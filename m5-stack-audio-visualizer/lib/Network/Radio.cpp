@@ -4,14 +4,6 @@ InternetRadio::InternetRadio()
         : _talkie(NULL), _mp3(NULL), _stream(NULL), _buffer(NULL), _output(NULL)
 { }
 
-void InternetRadio::Init()
-{
-    // _output = new AudioOutputI2S(0, 1); // Output to builtInDAC
-    // _output->SetOutputModeMono(true);
-    // _output->SetGain(_gain*0.05);
-    
-}
-
 void InternetRadio::Loop()
 {
     if (_mp3 == NULL)
@@ -38,10 +30,10 @@ void InternetRadio::StartPlaying(const char* url)
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
     _buffer->RegisterStatusCB(StatusCallback, (void*)"buffer");
 
-    _output = new AudioOutputI2S(0, 1); // Output to builtInDAC
+    _output = new CustomAudioOutputI2S(0, 1); // Output to builtInDAC
     _output->SetOutputModeMono(true);
+    _output->SetBitsPerSample(8);
     _output->SetGain(_gain*0.05);
-    _output->SetRate(22050);
 
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");
@@ -66,6 +58,14 @@ void InternetRadio::StopPlaying()
         _stream->close();
         delete _stream;
         _stream = NULL;
+    }
+}
+
+void InternetRadio::OnSampleCallback(sampleCBFn f)
+{
+    if (_output!=NULL)
+    {
+        _output->OnSampleCallback(f);
     }
 }
 

@@ -1,13 +1,19 @@
 #include <limits.h>
 #include <Arduino.h>
 #include <arduinoFFT.h>
-#include <Wire.h>
-#include <Adafruit_ADS1x15.h>
-#include <M5GFX.h>
+
+#include "Network.h"
 
 #include "Color.h"
 #include "Canvas.h"
-#include "M5StackCanvas.h"
+
+#ifdef M5STACK
+  #include "M5StackCanvas.h"
+#endif
+
+#ifdef ESP_WROVER
+  #include "TFTCanvas.h"
+#endif
 
 #include "UI.h"
 
@@ -34,8 +40,13 @@ double vImag_r[SAMPLES];
 
 // ---------------------------------------------------
 arduinoFFT fft;
-M5GFX display;
-M5StackCanvas canvas(display);
+
+//M5StackCanvas canvas;
+
+#ifdef ESP_WROVER
+  TFTCanvas canvas;
+#endif
+
 // ---------------------------------------------------
 
 void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
@@ -53,18 +64,17 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
   }
 }
 
-// ---------------------------------------------------
-
 void setup() 
 {
-  memset(peak, 0, sizeof(BANDS_COUNT));
-
-  dacWrite(25, 0);
-
-  delay(500);
+  Serial.begin(115200);
 
   canvas.Init(Color(0, 0, 0));
-  
+
+  memset(peak, 0, BANDS_COUNT);
+
+  StartWifi();
+
+
   // UI
   UIContainer panel({ 0, 0, 320, 240 });
 
@@ -125,8 +135,8 @@ void setup()
       newTime = micros()-oldTime;
       oldTime = newTime;
 
-      vReal_l[i] = analogRead(ADC_CHANNEL_LEFT); // A conversion takes about 1uS on an ESP32
-      vReal_r[i] = analogRead(ADC_CHANNEL_RIGHT);
+      vReal_l[i] = 1110; //analogRead(ADC_CHANNEL_LEFT); // A conversion takes about 1uS on an ESP32
+      vReal_r[i] = 1230;// analogRead(ADC_CHANNEL_RIGHT);
 
       vImag_l[i] = 0;
       vImag_r[i] = 0;
@@ -144,30 +154,47 @@ void setup()
    // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
     // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-    for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
-    { 
-      if (vReal_l[i] < 200) { // Add a crude noise filter, 10 x amplitude or more
+
+    for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
+    {
+      if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
         continue;
       }
-
-      if (band_index>=30) {
-        break;
-      }
-
-      displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX); 
-
-        // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
-        // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
-        // if (i >5   && i<=7 )   displayBand(analyzer, 2, (int)vReal[i]/amplitude); // 500Hz
-        // if (i >7   && i<=15 )  displayBand(analyzer, 3, (int)vReal[i]/amplitude); // 1000Hz
-        // if (i >15  && i<=30 )  displayBand(analyzer, 4, (int)vReal[i]/amplitude); // 2000Hz
-        // if (i >30  && i<=53 )  displayBand(analyzer, 5, (int)vReal[i]/amplitude); // 4000Hz
-        // if (i >53  && i<=200 ) displayBand(analyzer, 6, (int)vReal[i]/amplitude); // 8000Hz
-        // if (i >200           ) displayBand(analyzer, 7, (int)vReal[i]/amplitude); // 16000Hz  
-
-      // for (byte band = 0; band <= 6; band++) 
-      //     display.drawHorizontalLine(18*band,64-peak[band],14);
+        displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
     }
+
+    // for (int band_index = 17, bin = 100; band_index < BANDS_COUNT; band_index++, bin+=2)
+    // {      
+    //   if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
+    //     continue;
+    //   }
+    //     displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
+    // }
+
+    // for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
+    // { 
+    //   if (vReal_l[i] < 400) { // Add a crude noise filter, 10 x amplitude or more
+    //     continue;
+    //   }
+
+    //   if (band_index>=30) {
+    //     break;
+    //   }
+
+    //   displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX); 
+
+    //     // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
+    //     // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
+    //     // if (i >5   && i<=7 )   displayBand(analyzer, 2, (int)vReal[i]/amplitude); // 500Hz
+    //     // if (i >7   && i<=15 )  displayBand(analyzer, 3, (int)vReal[i]/amplitude); // 1000Hz
+    //     // if (i >15  && i<=30 )  displayBand(analyzer, 4, (int)vReal[i]/amplitude); // 2000Hz
+    //     // if (i >30  && i<=53 )  displayBand(analyzer, 5, (int)vReal[i]/amplitude); // 4000Hz
+    //     // if (i >53  && i<=200 ) displayBand(analyzer, 6, (int)vReal[i]/amplitude); // 8000Hz
+    //     // if (i >200           ) displayBand(analyzer, 7, (int)vReal[i]/amplitude); // 16000Hz  
+
+    //   // for (byte band = 0; band <= 6; band++) 
+    //   //     display.drawHorizontalLine(18*band,64-peak[band],14);
+    // }
 
     // if (millis()%4 == 0) 
     // {
@@ -179,18 +206,17 @@ void setup()
     // } // Decay the peak
 
 
-    level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 1980));
+    level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 2000));
    // level_right.SetFinal(abs((sum_r / (float)SAMPLES) - 1980));
 
     while (!level_left.IsValid() ) //|| !level_right.IsValid()
     {
       level_left.Draw(canvas);
-     // level_right.Draw(canvas);
+      level_right.Draw(canvas);
       delay(2);
     }
 
     panel.Draw(canvas);
-    canvas.Update();
 	}
 }
 

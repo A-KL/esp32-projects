@@ -1,15 +1,24 @@
 #pragma once
 
-#include <M5GFX.h>
 
+#include "SPI.h"
+#include "Adafruit_GFX.h"
+#include "Adafruit_ILI9341.h"
 #include "../BaseGraphics/Canvas.h"
 
-class M5StackCanvas :
+#define TFT_SCK    18
+#define TFT_MOSI   23
+#define TFT_MISO   19
+#define TFT_CS     22
+#define TFT_DC     21
+#define TFT_RESET  17
+
+class TFTCanvas :
 	public Canvas<Color>
 {
 public:
-	M5StackCanvas() :
-		_display(), _background(0, 0, 0)
+	TFTCanvas() :
+		 _display(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCK, TFT_RESET, TFT_MISO), _background(0, 0, 0)
 	{}
 
 	void Init(const Color& color);
@@ -38,10 +47,10 @@ public:
 
 	void Update();
 
-	virtual ~M5StackCanvas();
+	virtual ~TFTCanvas();
 
 private:
-	M5GFX _display;
+	Adafruit_ILI9341 _display;
 
 	const Color _background;
 };

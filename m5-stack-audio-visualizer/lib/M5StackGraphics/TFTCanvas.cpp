@@ -34,6 +34,9 @@ void TFTCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 void TFTCanvas::DrawText(int x0, int y0, const char* text, int size, const Color& color)
 {
   _display.setTextColor((unsigned short)color);
+
+  //   tft.setSwapBytes(true);
+  //  tft.setFreeFont(&Orbitron_Medium_20);
   _display.setTextSize(1.9f);
   _display.setCursor(x0, y0);
 	_display.println(text);

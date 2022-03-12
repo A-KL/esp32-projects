@@ -32,4 +32,5 @@ bool StartWifi()
   }
 
   Serial.println("WiFi [OK]");
+  Serial.println(WiFi.localIP());
 }

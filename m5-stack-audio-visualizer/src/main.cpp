@@ -8,6 +8,8 @@
 #include "Color.h"
 #include "Canvas.h"
 
+#define BANDS_COUNT 30 
+
 #ifdef M5STACK
   #include "M5StackCanvas.h"
 #endif
@@ -17,6 +19,7 @@
 #endif
 
 #include "UI.h"
+#include "main_ui.h"
 
 // ---------------------------------------------------
 #define ADC_MIC          34
@@ -24,7 +27,7 @@
 #define ADC_CHANNEL_RIGHT 35
 
 #define SAMPLES 512              // Must be a power of 2
-#define BANDS_COUNT 30 
+
 #define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AMPLITUDE_MAX 255
 
@@ -81,9 +84,16 @@ arduinoFFT fft;
 #endif
 
 InternetRadio radio;
+TaskHandle_t ui_task;
+TaskHandle_t player_task;
 
-UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
-UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+typedef struct __attribute__((packed)) {
+    int16_t left;
+    int16_t right;
+} my_data_t;
+
+static xQueueHandle _queue = xQueueCreate(10, sizeof(my_data_t));
+
 
 // ---------------------------------------------------
 
@@ -104,8 +114,19 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
 
 void OnSampleCallback(int16_t left, int16_t right)
 {
-  level_left.SetFinal(map(left, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
-  level_right.SetFinal(map(right, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+  // level_left.SetFinal(map(left, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+  // level_right.SetFinal(map(right, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+}
+
+void run_player( void * pvParameters )
+{
+  radio.StartPlaying(urls[3]);
+  //radio.OnSampleCallback(OnSampleCallback);
+
+  while (true)
+  {
+    radio.Loop();
+  }
 }
 
 void setup() 
@@ -118,58 +139,30 @@ void setup()
 
   StartWifi();
 
-  // UI
-  UIContainer panel({ 0, 0, 320, 240 });
+  // xTaskCreatePinnedToCore(
+  //                   run_ui,         /* Task function. */
+  //                   "UI",           /* name of task. */
+  //                   10000,          /* Stack size of task */
+  //                   (void*)&canvas,/* parameter of the task */
+  //                   1,              /* priority of the task */
+  //                   &ui_task,       /* Task handle to keep track of created task */
+  //                   0);             /* pin task to core 0 */                  
+  // delay(500);
 
-  // Title
-  const char* font = NULL;
-  UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
+  // xTaskCreatePinnedToCore(
+  //                   run_player,    /* Task function. */
+  //                   "Player",        /* name of task. */
+  //                   16000,           /* Stack size of task */
+  //                   NULL,            /* parameter of the task */
+  //                   1,               /* priority of the task */
+  //                   &player_task,    /* Task handle to keep track of created task */
+  //                   1);              /* pin task to core 0 */                  
+  delay(500);
 
-  // Main
-	auto start = 18;
-	UILabel label_0({ 8, start, 18, 16 }, "0", font, 16);
-	UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
-	UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
-	UILabel label_30({ 5, start += 19, 20, 16 }, "-30", font, 16);
-	UILabel label_40({ 5, start += 20, 20, 16 }, "-40", font, 16);
-	UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
-	UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
+  run_player(NULL);
 
-	UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
-
-  // Levels
-  UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
-  UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
-
-  level_left.Clear(canvas);
-  level_right.Clear(canvas);
-
-  // Footer
-  UIContainer footer({ 0, 240-23, 320, 23 });
-  footer.Background = { 56, 56, 56, 0 };
-  footer.Clear(canvas);
-
-  // Build UI
-	panel.Add(label);
-	panel.Add(label_0);
-	panel.Add(label_10);
-	panel.Add(label_20);
-	panel.Add(label_30);
-	panel.Add(label_40);
-	panel.Add(label_50);
-	panel.Add(label_60);
-  panel.Add(analyzer);
-  panel.Add(level_left);
-  panel.Add(level_right);
-  panel.Add(level_left_label);
-  panel.Add(level_right_label);
-  panel.Add(footer);
-
-  radio.StartPlaying(urls[3]);
-  radio.OnSampleCallback(OnSampleCallback);
-
-  while (true)
-	{
+  // while (true)
+	// {
     // unsigned long sum_l = 0;
     // unsigned long sum_r = 0;
 
@@ -243,14 +236,10 @@ void setup()
     //level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 2000));
    // level_right.SetFinal(abs((sum_r / (float)SAMPLES) - 1980));
 
-    level_left.Draw(canvas);
-    level_right.Draw(canvas);
-
     //panel.Draw(canvas);
-
-    radio.Loop();
-	}
+	//}
 }
 
 void loop() {
+
 }

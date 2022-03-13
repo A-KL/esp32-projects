@@ -1,3 +1,3 @@
 #pragma once
 
-bool StartWifi();
+void StartWifi();

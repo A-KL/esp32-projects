@@ -32,7 +32,7 @@ typedef struct __attribute__((packed)) {
 
 static arduinoFFT fft;
 static TaskHandle_t ui_task;
-static xQueueHandle audioFrameQueue = xQueueCreate(5, sizeof(AudioFrame));
+static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
 // ---------------------------------------------------
 void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
@@ -49,7 +49,6 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
     peak[band] = amplitude;
   }
 }
-
 
 void RunUI(void * args)
 {
@@ -215,5 +214,5 @@ void OnAudioFrameCallback(int16_t left, int16_t right)
 {
   AudioFrame frame { left, right};
 
-  xQueueSend(audioFrameQueue, &frame, portMAX_DELAY);
+  xQueueSend(audioFrameQueue, &frame, 0);
 }

@@ -4,3 +4,4 @@ m5-stack-audio-visualizer/x64/
 sdl-audio-player/x64/
 sdl-audio-player/Debug/
 sdl-audio-player/.vs/m5-stack-audio-player/v16/ipch/AutoPCH/4fc7ff988241f688/MAIN.ipch
+m5-stack-audio-visualizer/src-sdl/obj/

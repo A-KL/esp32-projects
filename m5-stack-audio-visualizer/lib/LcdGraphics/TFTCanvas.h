@@ -9,8 +9,8 @@
 #define TFT_SCK    18
 #define TFT_MOSI   23
 #define TFT_MISO   19
-#define TFT_CS     22
-#define TFT_DC     21
+#define TFT_CS     05
+#define TFT_DC     16
 #define TFT_RESET  17
 
 class TFTCanvas :

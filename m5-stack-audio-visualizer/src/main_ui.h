@@ -91,14 +91,14 @@ void RunUI(void * args)
     footer.Clear(canvas);
 
     // Build UI
-	panel.Add(label);
-	panel.Add(label_0);
-	panel.Add(label_10);
-	panel.Add(label_20);
-	panel.Add(label_30);
-	panel.Add(label_40);
-	panel.Add(label_50);
-	panel.Add(label_60);
+    panel.Add(label);
+    panel.Add(label_0);
+    panel.Add(label_10);
+    panel.Add(label_20);
+    panel.Add(label_30);
+    panel.Add(label_40);
+    panel.Add(label_50);
+    panel.Add(label_60);
     panel.Add(analyzer);
     panel.Add(level_left);
     panel.Add(level_right);

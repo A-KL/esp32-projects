@@ -1,10 +1,5 @@
 #pragma once
 
-typedef struct __attribute__((packed)) {
-    const char* Name;
-    const char* Url;
-} RadioStation;
-
 RadioStation Stations[] { 
   {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
 
@@ -41,14 +36,14 @@ void updateRadio(void * args)
 {
     auto canvas = *(TFTCanvas*)args;
 
-    UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
+    // UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
 
-    for(auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
-    {
-        stations.Add(Stations[0]);
-    }
+    // for(auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
+    // {
+    //     stations.Add(Stations[0]);
+    // }
 
-    panel.Add(stations);
+    // panel.Add(stations);
 }
 
 void loopRadio()

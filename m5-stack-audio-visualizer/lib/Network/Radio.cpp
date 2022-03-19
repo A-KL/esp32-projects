@@ -100,3 +100,9 @@ void InternetRadio::StatusCallback(void *cbData, int code, const char *string)
     Serial.printf("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
     Serial.flush();
 }
+
+std::ostream& operator<<(std::ostream& os, const RadioStation& station)
+{
+    os << station.Name;
+    return os;
+}

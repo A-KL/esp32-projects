@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <AudioFileSource.h>
 #include <AudioFileSourceBuffer.h>
 #include <AudioFileSourceICYStream.h>
@@ -8,6 +10,14 @@
 #include <AudioOutputI2S.h>
 #include <AudioOutputI2SNoDAC.h>
 #include "CustomAudioOutputI2S.h"
+
+struct RadioStation 
+{
+    const char* Name;
+    const char* Url;
+
+    friend std::ostream& operator<<(std::ostream& os, const RadioStation& station);
+};
 
 class InternetRadio
 {

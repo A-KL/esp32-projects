@@ -3,7 +3,6 @@
 #include <list>
 #include <iterator>
 #include <iostream>
-#include <algorithm>
 
 struct UIRect
 {
@@ -175,84 +174,88 @@ private:
 	const int _fontSize;
 };
 
-// template <typename TItem>
-// class UIList : public UIContainer
-// {
-// public: 
-// 	UIList(const UIRect& rect, const std::list<TItem>& list, int fontSize) : 
-// 		UIContainer(rect), 
-// 		_selected(-1), 
-// 		_selectedNew(-1), 
-// 		_focused(0), 
-// 		_focusedNew(0), 
-// 		_visibleItems(rect.h / fontSize),
-// 		_textColor(255, 255, 255),
-// 		_items(&list)
-// 	{}
+template <typename TItem>
+class UIList : public UIContainer
+{
+public: 
+	UIList(const UIRect& rect, int fontSize = 16) : 
+		UIContainer(rect), 
+		_selected(-1), 
+		_selectedNew(-1), 
+		_focused(0), 
+		_focusedNew(0), 
+		_visibleItems(rect.h / fontSize),
+		_textColor(255, 255, 255)
+	{}
 
-// 	inline bool IsValid() const
-// 	{
-// 		return _selected == _selectedNew && _focused == _focusedNew;
-// 	}
+	inline bool IsValid() const
+	{
+		return _selected == _selectedNew && _focused == _focusedNew;
+	}
 
-// 	inline void SetFocused(unsigned short focused)
-// 	{
-// 		_focusedNew = focused;
-// 	}
+	inline void SetFocused(unsigned short focused)
+	{
+		_focusedNew = focused;
+	}
 
-// 	inline void SetSelected(unsigned short selected)
-// 	{
-// 		_selectedNew = selected;
-// 	}
+	inline void SetSelected(unsigned short selected)
+	{
+		_selectedNew = selected;
+	}
 
-// 	inline TItem Selected() const
-// 	{
-// 		auto it = _items->begin();
+	inline TItem Selected() const
+	{
+		auto it = _items.begin();
 
-// 		std::advance(it, _selected);
+		std::advance(it, _selected);
 
-// 		return *it;
-// 	}
+		return *it;
+	}
 
-// 	void Draw(Canvas<Color>& canvas)
-// 	{		
-// 		if (IsValid()) {
-// 			return;
-// 		}
+	inline void Add(const TItem& item)
+	{
+		_items.push_back(item);
+	}
 
-// 		auto origin_x = _rect.x;
-// 		auto origin_y = _rect.y;
+	void Draw(Canvas<Color>& canvas)
+	{		
+		if (IsValid()) {
+			return;
+		}
 
-// 		AbsolutePosition(origin_x, origin_y);
+		auto origin_x = _rect.x;
+		auto origin_y = _rect.y;
+
+		AbsolutePosition(origin_x, origin_y);
 
 
 
-// 		_focused = _focusedNew;
-// 		_selected = _selectedNew;
-// 	}
+		_focused = _focusedNew;
+		_selected = _selectedNew;
+	}
 	
-//     typedef void (*ItemSelectionChangedCallback)(const UIElement& object, const TItem& item);
-//     void OnItemSelectionChanged(ItemSelectionChangedCallback event);
+    typedef void (*ItemSelectionChangedCallback)(const UIElement& object, const TItem& item);
+    void OnItemSelectionChanged(ItemSelectionChangedCallback event);
 
-// protected:
-// 	void RaiseOnItemSelectionChanged()
-// 	{
-// 		OnItemSelectionChanged(this, &Selected());
-// 	}
+protected:
+	void RaiseOnItemSelectionChanged()
+	{
+		OnItemSelectionChanged(this, &Selected());
+	}
 
-// private:
-// 	unsigned short _selected;
-// 	unsigned short _selectedNew;
+private:
+	short _selected;
+	short _selectedNew;
 
-// 	unsigned short _focused;
-// 	unsigned short _focusedNew;
+	short _focused;
+	short _focusedNew;
 
-// 	unsigned short _visibleItems;
+	unsigned short _visibleItems;
 
-// 	const Color _textColor;
+	const Color _textColor;
 
-// 	std::list<TItem>* _items;
-// };
+	std::list<TItem> _items;
+};
 
 template <size_t TChannels>
 class UISoundAnalyzer : public UIElement

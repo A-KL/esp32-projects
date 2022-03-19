@@ -34,6 +34,8 @@ static arduinoFFT fft;
 static TaskHandle_t ui_task;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
+UIContainer panel({ 0, 0, 320, 240});
+
 // ---------------------------------------------------
 void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
 {
@@ -57,7 +59,7 @@ void RunUI(void * args)
     auto canvas = *(TFTCanvas*)args; //Canvas<Color>
 
     // UI
-    UIContainer panel({ 0, 0, 320, 240 });
+    UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
     // Title
     const char* font = NULL;
@@ -91,19 +93,21 @@ void RunUI(void * args)
     footer.Clear(canvas);
 
     // Build UI
-    panel.Add(label);
-    panel.Add(label_0);
-    panel.Add(label_10);
-    panel.Add(label_20);
-    panel.Add(label_30);
-    panel.Add(label_40);
-    panel.Add(label_50);
-    panel.Add(label_60);
-    panel.Add(analyzer);
-    panel.Add(level_left);
-    panel.Add(level_right);
-    panel.Add(level_left_label);
-    panel.Add(level_right_label);
+    analyzer_panel.Add(label);
+    analyzer_panel.Add(label_0);
+    analyzer_panel.Add(label_10);
+    analyzer_panel.Add(label_20);
+    analyzer_panel.Add(label_30);
+    analyzer_panel.Add(label_40);
+    analyzer_panel.Add(label_50);
+    analyzer_panel.Add(label_60);
+    analyzer_panel.Add(analyzer);
+    analyzer_panel.Add(level_left);
+    analyzer_panel.Add(level_right);
+    analyzer_panel.Add(level_left_label);
+    analyzer_panel.Add(level_right_label);
+
+    panel.Add(analyzer_panel);
     panel.Add(footer);
 
     AudioFrame frame;

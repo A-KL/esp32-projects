@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ESP32Encoder.h>
-
 typedef struct __attribute__((packed)) {
     const char* Name;
     const char* Url;
@@ -22,7 +20,7 @@ RadioStation Stations[] {
 
 static IRAM_ATTR void enc_cb(void* arg) {
   ESP32Encoder* enc = (ESP32Encoder*) arg;
-  Serial.printf("enc cb: count: %ld\n", enc->getCount());
+  Serial.printf("enc cb: count: %d\n", enc->getCount());
 }
 
 ESP32Encoder encoder(true, enc_cb);
@@ -43,7 +41,14 @@ void updateRadio(void * args)
 {
     auto canvas = *(TFTCanvas*)args;
 
-     // UIList<RadioStation> stations({ 0, 0, 320, 220 });
+    UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
+
+    for(auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
+    {
+        stations.Add(Stations[0]);
+    }
+
+    panel.Add(stations);
 }
 
 void loopRadio()

@@ -73,14 +73,14 @@ void RunUI(void * args)
     UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
     UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
 
-	UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
+	  UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
     // Levels
     UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
     UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
-    UVProgress<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
-    UVProgress<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+    UVProgressTyped<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+    UVProgressTyped<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
 
     level_left.Clear(canvas);
     level_right.Clear(canvas);
@@ -142,13 +142,13 @@ void RunUI(void * args)
         // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
         // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-        // for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
-        // {
-        //   if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
-        //     continue;
-        //   }
-        //     displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
-        // }
+        for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
+        {
+          if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
+            continue;
+          }
+           // displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
+        }
 
         // for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
         // { 
@@ -184,14 +184,12 @@ void RunUI(void * args)
         //   }
         // } // Decay the peak
 
-        level_left.SetFinal(abs((sum_l / (float)SAMPLES) - 2000));
-        level_right.SetFinal(abs((sum_r / (float)SAMPLES) - 1980));
-        // level_left.SetFinal(map(left, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
-        // level_right.SetFinal(map(right, SHRT_MIN, SHRT_MAX, 0, UCHAR_MAX));
+        level_left.SetValueT(abs((sum_l / (float)SAMPLES))-1950);
+        level_right.SetValueT(abs((sum_l / (float)SAMPLES)-1950));
 
         panel.Draw(canvas);
 
-        vTaskDelay(10);
+        vTaskDelay(100);
     }
 
     vTaskDelete(NULL);

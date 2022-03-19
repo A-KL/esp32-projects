@@ -2,7 +2,6 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
-#include "SDL_audio.h"
 
 #include <iostream>
 
@@ -11,12 +10,12 @@
 #include "../lib/SDLGraphics/SDLCanvas.h"
 
 #include "../lib/UI/UI.h"
-using namespace std;
 
+using namespace std;
 
 int main()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) 
+	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
 	{
 		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
 		return 1;
@@ -67,8 +66,8 @@ int main()
 	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
 	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
 
-	UVProgress<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
-	UVProgress<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
+	UVProgressTyped<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
+	UVProgressTyped<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
 
 	level_left.Clear(sdl);
 	level_right.Clear(sdl);
@@ -99,8 +98,8 @@ int main()
 		auto value_l = rand() % 255;
 		auto value_r = rand() % 255;
 
-		level_left.SetFinal(value_l);
-		level_right.SetFinal(value_r);
+		level_left.SetValueT(value_l);
+		level_right.SetValueT(value_r);
 
 		while (!level_left.IsValid())
 		{
@@ -128,6 +127,8 @@ int main()
 		}
 
 		analyzer.Draw(sdl);
+
+		panel.Draw(sdl);
 
 		SDL_PollEvent(&event);
 		SDL_Delay(5);

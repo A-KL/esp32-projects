@@ -5,7 +5,7 @@
 const char *SSID = "xxxxxx";
 const char *PASSWORD = "xxxxxx";
 
-void StartWifi()
+void setupWiFi()
 {
   WiFi.disconnect();
   WiFi.softAPdisconnect(true);

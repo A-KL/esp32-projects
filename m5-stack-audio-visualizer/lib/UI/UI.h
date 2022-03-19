@@ -3,6 +3,7 @@
 #include <list>
 #include <iterator>
 #include <iostream>
+#include <algorithm>
 
 struct UIRect
 {
@@ -14,12 +15,22 @@ class UIElement
 {
 public:
 	UIElement(const UIRect& rect, const UIElement* parent = NULL) :
-		Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent)
+		Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent), _visible(true)
 	{}
 
 	inline void SetParent(const UIElement* parent)
 	{
 		_parent = parent;
+	}
+
+	inline bool IsVisisble()
+	{
+		return _visible;
+	}
+
+	inline void SetVisisble(bool visible)
+	{
+		_visible = visible;
 	}
 
 	Color Background;
@@ -63,6 +74,7 @@ protected:
 
 private:
 	const UIElement* _parent;
+	bool _visible;
 };
 
 class UIContainer : public UIElement
@@ -162,6 +174,85 @@ private:
 	const char* _text;
 	const int _fontSize;
 };
+
+// template <typename TItem>
+// class UIList : public UIContainer
+// {
+// public: 
+// 	UIList(const UIRect& rect, const std::list<TItem>& list, int fontSize) : 
+// 		UIContainer(rect), 
+// 		_selected(-1), 
+// 		_selectedNew(-1), 
+// 		_focused(0), 
+// 		_focusedNew(0), 
+// 		_visibleItems(rect.h / fontSize),
+// 		_textColor(255, 255, 255),
+// 		_items(&list)
+// 	{}
+
+// 	inline bool IsValid() const
+// 	{
+// 		return _selected == _selectedNew && _focused == _focusedNew;
+// 	}
+
+// 	inline void SetFocused(unsigned short focused)
+// 	{
+// 		_focusedNew = focused;
+// 	}
+
+// 	inline void SetSelected(unsigned short selected)
+// 	{
+// 		_selectedNew = selected;
+// 	}
+
+// 	inline TItem Selected() const
+// 	{
+// 		auto it = _items->begin();
+
+// 		std::advance(it, _selected);
+
+// 		return *it;
+// 	}
+
+// 	void Draw(Canvas<Color>& canvas)
+// 	{		
+// 		if (IsValid()) {
+// 			return;
+// 		}
+
+// 		auto origin_x = _rect.x;
+// 		auto origin_y = _rect.y;
+
+// 		AbsolutePosition(origin_x, origin_y);
+
+
+
+// 		_focused = _focusedNew;
+// 		_selected = _selectedNew;
+// 	}
+	
+//     typedef void (*ItemSelectionChangedCallback)(const UIElement& object, const TItem& item);
+//     void OnItemSelectionChanged(ItemSelectionChangedCallback event);
+
+// protected:
+// 	void RaiseOnItemSelectionChanged()
+// 	{
+// 		OnItemSelectionChanged(this, &Selected());
+// 	}
+
+// private:
+// 	unsigned short _selected;
+// 	unsigned short _selectedNew;
+
+// 	unsigned short _focused;
+// 	unsigned short _focusedNew;
+
+// 	unsigned short _visibleItems;
+
+// 	const Color _textColor;
+
+// 	std::list<TItem>* _items;
+// };
 
 template <size_t TChannels>
 class UISoundAnalyzer : public UIElement

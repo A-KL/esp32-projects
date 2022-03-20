@@ -13,6 +13,64 @@
 #define BANDS_COUNT 30 
 
 // ---------------------------------------------------
+
+typedef struct __attribute__((packed)) {
+    int16_t left;
+    int16_t right;
+} AudioFrame;
+
+static arduinoFFT fft;
+static TaskHandle_t analyzerHandle;
+static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+
+// ---------------------------------------------------
+
+RadioStation Stations[] { 
+  {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
+
+  {"WayUp Radio", "http://188.165.212.154:8478/stream"},
+  {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
+  {"KPop Radio", "http://streamer.radio.co/s06b196587/listen"},
+
+  {"Classic FM", "http://media-ice.musicradio.com:80/ClassicFMMP3"},
+  {"Lite Favorites", "http://naxos.cdnstream.com:80/1255_128"},
+  {"MAXXED Out", "http://149.56.195.94:8015/steam"},
+  {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"}
+};
+
+static IRAM_ATTR void enc_cb(void* arg) {
+  ESP32Encoder* enc = (ESP32Encoder*) arg;
+  Serial.printf("enc cb: count: %d\n", enc->getCount());
+}
+
+ESP32Encoder encoder(true, enc_cb);
+InternetRadio radio;
+
+void OnAudioFrameCallback(int16_t left, int16_t right)
+{
+  AudioFrame frame { left, right };
+
+  xQueueSend(audioFrameQueue, &frame, 0);
+}
+
+void setupRadio()
+{
+  ESP32Encoder::useInternalWeakPullResistors=UP;
+  encoder.attachSingleEdge(4, 5);
+  encoder.clearCount();
+  encoder.setFilter(1023);
+
+  radio.Play(Stations[3].Url);
+  radio.OnSampleCallback(OnAudioFrameCallback);
+}
+
+void loopRadio()
+{
+    radio.Loop();
+}
+
+// ---------------------------------------------------
+
 unsigned int sampling_period_us = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
 unsigned long newTime, oldTime, microseconds;
 
@@ -25,18 +83,7 @@ double vImag_l[SAMPLES];
 double vImag_r[SAMPLES];
 
 // ---------------------------------------------------
-typedef struct __attribute__((packed)) {
-    int16_t left;
-    int16_t right;
-} AudioFrame;
 
-static arduinoFFT fft;
-static TaskHandle_t ui_task;
-static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-
-UIContainer panel({ 0, 0, 320, 240});
-
-// ---------------------------------------------------
 void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
 {
   if (amplitude > AMPLITUDE_MAX) 
@@ -52,20 +99,23 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
   }
 }
 
-void RunUI(void * args)
+// ---------------------------------------------------
+
+void main_analyzer(void * args)
 {
     memset(peak, 0, BANDS_COUNT);
 
-    auto canvas = *(TFTCanvas*)args; //Canvas<Color>
+    auto canvas = *(TFTCanvas*)args;
 
-    // UI
+    // Root
+    UIContainer panel({ 0, 0, 320, 240});
+
+    // Analyzer
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
-    // Title
     const char* font = NULL;
     UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
 
-    // Main
     auto start = 18;
     UILabel label_0({ 8, start, 18, 16 }, "0", font, 16);
     UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
@@ -77,7 +127,6 @@ void RunUI(void * args)
 
 	  UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
-    // Levels
     UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
     UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
@@ -87,12 +136,6 @@ void RunUI(void * args)
     level_left.Clear(canvas);
     level_right.Clear(canvas);
 
-    // Footer
-    UIContainer footer({ 0, 240-23, 320, 23 });
-    footer.Background = { 56, 56, 56, 0 };
-    footer.Clear(canvas);
-
-    // Build UI
     analyzer_panel.Add(label);
     analyzer_panel.Add(label_0);
     analyzer_panel.Add(label_10);
@@ -106,6 +149,23 @@ void RunUI(void * args)
     analyzer_panel.Add(level_right);
     analyzer_panel.Add(level_left_label);
     analyzer_panel.Add(level_right_label);
+
+    // Radio UI
+
+    UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
+
+    for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
+    {
+        stations.Add(Stations[0]);
+    }
+
+    panel.Add(stations);
+
+    // Footer
+
+    UIContainer footer({ 0, 240-23, 320, 23 });
+    footer.Background = { 56, 56, 56, 0 };
+    footer.Clear(canvas);
 
     panel.Add(analyzer_panel);
     panel.Add(footer);
@@ -199,22 +259,15 @@ void RunUI(void * args)
     vTaskDelete(NULL);
 }
 
-void StartAudioUI(void * args)
+void startAnalyzer(void * args)
 {
   xTaskCreatePinnedToCore(
-                    RunUI,         /* Task function. */
+                    main_analyzer,  /* Task function. */
                     "UI",           /* name of task. */
                     10000,          /* Stack size of task */
                     args,           /* parameter of the task */
                     1,              /* priority of the task */
-                    &ui_task,       /* Task handle to keep track of created task */
+                    &analyzerHandle,/* Task handle to keep track of created task */
                     0);             /* pin task to core 0 */                  
   delay(500);
-}
-
-void OnAudioFrameCallback(int16_t left, int16_t right)
-{
-  AudioFrame frame { left, right};
-
-  xQueueSend(audioFrameQueue, &frame, 0);
 }

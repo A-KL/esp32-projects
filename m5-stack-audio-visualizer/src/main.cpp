@@ -22,7 +22,6 @@
 
 #include "UI.h"
 #include "main_ui.h"
-#include "radio_gui.h"
 
 void setup() {
   Serial.begin(115200);
@@ -30,7 +29,7 @@ void setup() {
   canvas.Init(Color(0, 0, 0));
 
   setupWiFi();
-  StartAudioUI((void*)&canvas);
+  startAnalyzer((void*)&canvas);
 
   setupRadio();
 }

@@ -14,7 +14,7 @@ class UIElement
 {
 public:
 	UIElement(const UIRect& rect, const UIElement* parent = NULL) :
-		Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent), _visible(true)
+		IsVisisble(true), Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent) 
 	{}
 
 	inline void SetParent(const UIElement* parent)
@@ -22,15 +22,7 @@ public:
 		_parent = parent;
 	}
 
-	inline bool IsVisisble()
-	{
-		return _visible;
-	}
-
-	inline void SetVisisble(bool visible)
-	{
-		_visible = visible;
-	}
+	bool IsVisisble;
 
 	Color Background;
 

@@ -22,7 +22,7 @@ void InternetRadio::Loop()
     } 
 }
 
-void InternetRadio::StartPlaying(const char* url) 
+void InternetRadio::Play(const char* url) 
 {
     _stream = new AudioFileSourceICYStream(url);
     _stream->RegisterMetadataCB(MDCallback, (void*)"ICY");
@@ -40,7 +40,7 @@ void InternetRadio::StartPlaying(const char* url)
     _mp3->begin(_buffer, _output);
 }
 
-void InternetRadio::StopPlaying() 
+void InternetRadio::Stop() 
 {
     if (_mp3) {
         _mp3->stop();
@@ -63,7 +63,7 @@ void InternetRadio::StopPlaying()
 
 void InternetRadio::OnSampleCallback(sampleCBFn f)
 {
-    if (_output!=NULL)
+    if (_output != NULL)
     {
         _output->OnSampleCallback(f);
     }

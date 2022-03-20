@@ -24,6 +24,20 @@ class InternetRadio
 public:
     InternetRadio();
 
+    inline float Gain() const
+    {
+        return _gain;
+    }
+
+    inline void SetGain(float gain)
+    {
+        _gain = gain;
+
+        if (_output != NULL) {
+            _output->SetGain(_gain*0.05);
+        }
+    }    
+
     inline void SetUrl(const char* url)
     {
         _url = url;
@@ -31,9 +45,9 @@ public:
 
     void Loop();
 
-    void StartPlaying(const char* url);
+    void Play(const char* url);
 
-    void StopPlaying();
+    void Stop();
 
     typedef void (*sampleCBFn)(int16_t left, int16_t right);
     void OnSampleCallback(sampleCBFn f);

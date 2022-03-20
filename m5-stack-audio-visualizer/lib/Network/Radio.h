@@ -19,6 +19,8 @@ struct RadioStation
     friend std::ostream& operator<<(std::ostream& os, const RadioStation& station);
 };
 
+typedef void (*StreamDelegate)(const char *type, const char *value);
+
 class InternetRadio
 {
 public:
@@ -49,8 +51,10 @@ public:
 
     void Stop();
 
-    typedef void (*sampleCBFn)(int16_t left, int16_t right);
-    void OnSampleCallback(sampleCBFn f);
+
+    void SampleCallback(SampleDelegate delegate);
+   
+    static StreamDelegate StreamChanged;
 
 private:
     const char *_url;

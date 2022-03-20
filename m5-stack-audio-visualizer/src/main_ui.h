@@ -1,6 +1,10 @@
 #pragma once
 
 // ---------------------------------------------------
+
+#define DEBOUNCE_TIME 50
+
+// ---------------------------------------------------
 #define ADC_MIC           34
 #define ADC_CHANNEL_LEFT  ADC_MIC
 #define ADC_CHANNEL_RIGHT 35
@@ -10,20 +14,11 @@
 #define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AMPLITUDE_MAX 255
 
-#define BANDS_COUNT 30 
+#define BANDS_COUNT 30
 
-// ---------------------------------------------------
-
-typedef struct __attribute__((packed)) {
-    int16_t left;
-    int16_t right;
-} AudioFrame;
-
-static arduinoFFT fft;
-static TaskHandle_t analyzerHandle;
-static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-
-// ---------------------------------------------------
+#define VOLUME_PIN_A  34
+#define VOLUME_PIN_B  35
+#define VOLUME_BUTTON 32
 
 RadioStation Stations[] { 
   {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
@@ -38,30 +33,56 @@ RadioStation Stations[] {
   {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"}
 };
 
-static IRAM_ATTR void enc_cb(void* arg) {
-  ESP32Encoder* enc = (ESP32Encoder*) arg;
-  Serial.printf("enc cb: count: %d\n", enc->getCount());
+ void OnEncoderChanged(void* arg) {
+  auto encoder = (ESP32Encoder*) arg;
+  //reinterpret_cast<const char *>(cbData);
+  //encoder->getCount();
+ Serial.printf("enc cb: count: %d\n", 123);
 }
 
-ESP32Encoder encoder(true, enc_cb);
-InternetRadio radio;
+// ---------------------------------------------------
 
-void OnAudioFrameCallback(int16_t left, int16_t right)
+static ESP32Encoder encoder(true, OnEncoderChanged);
+static InternetRadio radio;
+static arduinoFFT fft;
+static TaskHandle_t analyzerHandle;
+static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+
+// ---------------------------------------------------
+
+static void onButtonUp()
 {
-  AudioFrame frame { left, right };
+  Serial.println("OnButtonUp");
+}
 
+// ---------------------------------------------------
+
+void onAudioFrameCallback(const AudioFrame& frame)
+{
   xQueueSend(audioFrameQueue, &frame, 0);
+}
+
+void onStreamChanged(const char *type, const char *value)
+{
+  if (strcmp(type, "StreamTitle") == 0)
+  {
+    Serial.println(value);
+  }
 }
 
 void setupRadio()
 {
+  pinMode(VOLUME_BUTTON, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onButtonUp, RISING );
+
   ESP32Encoder::useInternalWeakPullResistors=UP;
-  encoder.attachSingleEdge(4, 5);
+  encoder.attachSingleEdge(VOLUME_PIN_A, VOLUME_PIN_B);
   encoder.clearCount();
   encoder.setFilter(1023);
 
   radio.Play(Stations[3].Url);
-  radio.OnSampleCallback(OnAudioFrameCallback);
+  radio.SampleCallback(onAudioFrameCallback);
+  radio.StreamChanged = onStreamChanged;
 }
 
 void loopRadio()
@@ -130,8 +151,8 @@ void main_analyzer(void * args)
     UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
     UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
-    UVProgressTyped<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
-    UVProgressTyped<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, (uint8_t)0);
+    UVProgressTyped<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVProgressTyped<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
 
     level_left.Clear(canvas);
     level_right.Clear(canvas);
@@ -151,7 +172,6 @@ void main_analyzer(void * args)
     analyzer_panel.Add(level_right_label);
 
     // Radio UI
-
     UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
 
     for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
@@ -162,14 +182,22 @@ void main_analyzer(void * args)
     panel.Add(stations);
 
     // Footer
+    UILabel label_vol({ 0, 240-20, 40, 23 }, "VOL:", font, 16);
+    label_vol.Background = { 56, 56, 56, 0 };
+
+    UILabel label_track({ 0, 240-20, 40, 23 }, NULL, font, 16);
+    label_track.Background = { 56, 56, 56, 0 };
 
     UIContainer footer({ 0, 240-23, 320, 23 });
     footer.Background = { 56, 56, 56, 0 };
+
     footer.Clear(canvas);
 
-    panel.Add(analyzer_panel);
+    panel.Add(label_vol);
     panel.Add(footer);
 
+    panel.Add(analyzer_panel);
+  
     AudioFrame frame;
 
     while (true)

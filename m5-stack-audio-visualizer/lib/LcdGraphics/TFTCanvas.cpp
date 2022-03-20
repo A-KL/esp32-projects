@@ -10,7 +10,7 @@ void TFTCanvas::Init(const Color& color)
   
   if (_display.width() < _display.height())
   {
-    _display.setRotation(3); //_display.getRotation() ^ 1
+    _display.setRotation(_display.getRotation() ^ 1);
   }
 
   _display.fillScreen((unsigned short)color);

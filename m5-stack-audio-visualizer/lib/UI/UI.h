@@ -126,6 +126,7 @@ public:
 	inline void SetText(const char* text)
 	{
 		_text = text;
+		_valid = false;
 	}
 
 	void Draw(Canvas<Color>& canvas)
@@ -134,7 +135,13 @@ public:
 			return;
 		}
 
+		_valid = true;
+
 		Clear(canvas);
+
+		if (_text == NULL) {
+			return;
+		}
 
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
@@ -149,8 +156,6 @@ public:
 		auto center_y = origin_y + (_rect.h - _fontSize) / 2;
 
 		canvas.DrawText(center_x, center_y, _text, _fontSize, _colorWhite);
-
-		_valid = true;
 	}
 
 	virtual ~UILabel()

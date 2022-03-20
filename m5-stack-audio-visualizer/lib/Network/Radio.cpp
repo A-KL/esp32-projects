@@ -1,5 +1,7 @@
 #include "Radio.h"
 
+StreamDelegate InternetRadio::StreamChanged;
+
 InternetRadio::InternetRadio()
         : _talkie(NULL), _mp3(NULL), _stream(NULL), _buffer(NULL), _output(NULL)
 { }
@@ -22,9 +24,9 @@ void InternetRadio::Loop()
     } 
 }
 
-void InternetRadio::Play(const char* url) 
+void InternetRadio::Play(const char* url = NULL) 
 {
-    _stream = new AudioFileSourceICYStream(url);
+    _stream = new AudioFileSourceICYStream(url == NULL ? _url : url);
     _stream->RegisterMetadataCB(MDCallback, (void*)"ICY");
 
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
@@ -61,11 +63,11 @@ void InternetRadio::Stop()
     }
 }
 
-void InternetRadio::OnSampleCallback(sampleCBFn f)
+void InternetRadio::SampleCallback(SampleDelegate delegate)
 {
     if (_output != NULL)
     {
-        _output->OnSampleCallback(f);
+        _output->SampleCallback(delegate);
     }
 }
 
@@ -86,6 +88,10 @@ void InternetRadio::MDCallback(void *cbData, const char *type, bool isUnicode, c
 
     Serial.printf("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);                                                                        
     Serial.flush();
+
+    if (StreamChanged) {
+        StreamChanged(s1, s2);
+    }
 }
 
 void InternetRadio::StatusCallback(void *cbData, int code, const char *string) 

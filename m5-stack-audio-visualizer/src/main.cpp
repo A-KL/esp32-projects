@@ -20,7 +20,12 @@
   TFTCanvas canvas;
 #endif
 
-#include "UI.h"
+#include "UIElement.h"
+#include "UVProgress.h"
+#include "UISoundAnalyzer.h"
+#include "UILabel.h"
+#include "UIContainer.h"
+#include "UIList.h"
 #include "main_ui.h"
 
 void setup() {

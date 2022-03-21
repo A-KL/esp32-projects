@@ -47,7 +47,7 @@ static InternetRadio radio;
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-
+UILabel label_track({ 30, 240-20, 200, 23 }, "Test", NULL, 16);
 // ---------------------------------------------------
 
 static void onButtonUp()
@@ -64,8 +64,8 @@ void onAudioFrameCallback(const AudioFrame& frame)
 
 void onStreamChanged(const char *type, const char *value)
 {
-  if (strcmp(type, "StreamTitle") == 0)
-  {
+  if (strcmp(type, "StreamTitle") == 0) { 
+    label_track.SetText(value);
     Serial.println(value);
   }
 }
@@ -185,7 +185,7 @@ void main_analyzer(void * args)
     UILabel label_vol({ 0, 240-20, 40, 23 }, "VOL:", font, 16);
     label_vol.Background = { 56, 56, 56, 0 };
 
-    UILabel label_track({ 0, 240-20, 40, 23 }, NULL, font, 16);
+    
     label_track.Background = { 56, 56, 56, 0 };
 
     UIContainer footer({ 0, 240-23, 320, 23 });
@@ -193,7 +193,8 @@ void main_analyzer(void * args)
 
     footer.Clear(canvas);
 
-    panel.Add(label_vol);
+   // panel.Add(label_vol);
+    panel.Add(label_track);
     panel.Add(footer);
 
     panel.Add(analyzer_panel);

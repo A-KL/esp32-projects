@@ -105,9 +105,10 @@ int main()
 		level_left.SetAnimatedValueOf(value_l);
 		level_right.SetAnimatedValueOf(value_r);
 
-		while (!level_left.IsValid())
+		while (!level_left.IsValid() || !level_right.IsValid())
 		{
 			level_left.Draw(sdl);
+			level_right.Draw(sdl);
 
 			sdl.Update();
 
@@ -115,14 +116,18 @@ int main()
 			SDL_Delay(2);
 		}
 
-		while (!level_right.IsValid())
+		level_left.SetAnimatedValueOf(0);
+		level_right.SetAnimatedValueOf(0);
+
+		while (!level_left.IsValid() || !level_right.IsValid())
 		{
+			level_left.Draw(sdl);
 			level_right.Draw(sdl);
 
 			sdl.Update();
 
 			SDL_PollEvent(&event);
-			SDL_Delay(2);
+			SDL_Delay(7);
 		}
 
 		for (auto i = 0; i < 30; i++)

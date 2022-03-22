@@ -1,9 +1,7 @@
 #pragma once
 
-
-#include "SPI.h"
-#include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
+
 #include "../BaseGraphics/Canvas.h"
 
 #define TFT_SCK    18
@@ -18,7 +16,7 @@ class TFTCanvas :
 {
 public:
 	TFTCanvas() :
-		 _display(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCK, TFT_RESET, TFT_MISO), _background(0, 0, 0)
+		 _display(TFT_CS, TFT_DC, TFT_RESET), _background(0, 0, 0)
 	{}
 
 	void Init(const Color& color);
@@ -29,7 +27,9 @@ public:
 
 	void DrawFilledRect(int x0, int y0, int w, int h, const Color& color);
 
-	void DrawText(int x0, int y0, const char* text, int size, const Color& color);
+	void DrawText(int x0, int y0, const char* text, const Color& color);
+
+	void SetFont(const char* fontName, unsigned char size);
 
 	inline int Height() const
 	{

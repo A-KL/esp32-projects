@@ -151,8 +151,8 @@ void main_analyzer(void * args)
     UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
     UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
-    UVProgressTyped<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-    UVProgressTyped<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVAnimatedProgressOf<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVAnimatedProgressOf<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
 
     level_left.Clear(canvas);
     level_right.Clear(canvas);
@@ -277,8 +277,8 @@ void main_analyzer(void * args)
         //   }
         // } // Decay the peak
 
-        level_left.SetValueT(abs((sum_l / (float)SAMPLES))-1950);
-        level_right.SetValueT(abs((sum_l / (float)SAMPLES)-1950));
+        level_left.SetValueOf(abs((sum_l / (float)SAMPLES))-1950);
+        level_right.SetValueOf(abs((sum_l / (float)SAMPLES)-1950));
 
         panel.Draw(canvas);
 

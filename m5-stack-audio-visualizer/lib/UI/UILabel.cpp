@@ -39,7 +39,7 @@ void UILabel::Draw(Canvas<Color>& canvas)
     auto center_x = origin_x + (_rect.w - textWidth) / 2;
     auto center_y = origin_y + (_rect.h - _fontSize) / 2;
 
-    canvas.DrawText(center_x, center_y, _text, _fontSize, _colorWhite);
+    canvas.DrawText(center_x, center_y, _text, _colorWhite);
 }
 
 UILabel::~UILabel()

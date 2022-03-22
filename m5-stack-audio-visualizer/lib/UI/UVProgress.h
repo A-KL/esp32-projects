@@ -11,9 +11,11 @@ public:
 		_backgroundColor(30, 30, 30),
 		_activeColor(15, 185, 79),
 		_activeThresholdColor(255, 0, 0),
+		_activeWarningColor(185, 186, 48),
 		_minValue(0), 
-		_maxValue(rect.w /_item_w), 
-		_threshold(_maxValue * 0.9)
+		_maxValue(rect.w /_item_w),
+		_warning(_maxValue * 0.85),
+		_threshold(_maxValue * 0.95)
 	{ 
 		 Background = Color(30, 30, 30);
 	}
@@ -48,7 +50,7 @@ public:
 		{
 			for (auto index = _currentValue; index < _newValue; index++)
 			{
-				auto color = index >= _threshold ? _activeThresholdColor : _activeColor;
+				auto color = index >= _threshold ? _activeThresholdColor : index >= _warning ? _activeWarningColor : _activeColor;
 				canvas.DrawFilledRect(origin_x + index * _item_w, origin_y, _item_fill_w, _rect.h, color);
 			}
 		}
@@ -60,8 +62,6 @@ public:
 		_currentValue = _newValue;
 	}
 
-	//virtual ~UVProgress() = 0;
-
 private:
 	const unsigned short _item_w = 3;
 	const unsigned short _item_fill_w = _item_w - 1;
@@ -72,10 +72,12 @@ private:
 	const Color _backgroundColor;
 	const Color _activeColor;
 	const Color _activeThresholdColor;
+	const Color _activeWarningColor;
 
 protected:
 	const unsigned short _minValue;
 	const unsigned short _maxValue;
+	const unsigned short _warning;
 	const unsigned short _threshold;
 };
 

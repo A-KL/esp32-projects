@@ -18,17 +18,17 @@ public:
 		 Background = Color(30, 30, 30);
 	}
 
-	inline unsigned short Value() const
+	virtual unsigned short Value() const
 	{
 		return _currentValue;
 	}
 
-	inline bool IsValid() const
+	virtual bool IsValid() const
 	{
 		return _newValue == _currentValue;
 	}
 
-	inline void SetValue(unsigned short new_value)
+	virtual void SetValue(unsigned short new_value)
 	{
 		_newValue = new_value > _maxValue ? _maxValue : new_value;
 	}
@@ -79,20 +79,92 @@ protected:
 	const unsigned short _threshold;
 };
 
+class UVAnimatedProgress : public UVProgress
+{
+public:
+	UVAnimatedProgress(const UIRect& rect, const unsigned short value = 0) : 
+		UVProgress(rect, value), _animatedValue(0)
+	{}
+
+	inline void SetAnimatedValue(unsigned short new_value)
+	{
+		_animatedValue = new_value > _maxValue ? _maxValue : new_value;
+	}
+
+	void SetValue(unsigned short new_value)
+	{
+		_animatedValue = new_value > _maxValue ? _maxValue : new_value;
+		UVProgress::SetValue(UVProgress::Value());
+	}
+
+	bool IsValid() const
+	{
+		return UVProgress::IsValid() && (Value() == _animatedValue);
+	}
+
+	void Draw(Canvas<Color>& canvas)
+	{
+		if (!IsValid())
+		{
+			if (Value()<_animatedValue)
+				UVProgress::SetValue(UVProgress::Value()+1);
+			else
+				UVProgress::SetValue(UVProgress::Value()-1);
+		}
+
+		UVProgress::Draw(canvas);
+	}
+private:
+	unsigned short _animatedValue;
+};
+
 template <typename TValue>
-class UVProgressTyped : public UVProgress
+class UVAnimatedProgressOf : public UVAnimatedProgress
+{
+public:
+	UVAnimatedProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
+		UVAnimatedProgress(rect, value), _minValueT(min), _maxValueT(max)
+	{}
+
+	inline TValue ValueOf() const
+	{
+		return map(Value(), _minValue, _maxValue, _minValueT, _maxValueT);
+	}
+
+	inline void SetValueOf(TValue new_value)
+	{
+		SetValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
+	}
+
+	inline void SetAnimatedValueOf(TValue new_value)
+	{
+		SetAnimatedValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
+	}
+
+private:
+	const TValue _minValueT;
+	const TValue _maxValueT;
+
+	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
+	{
+		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	}
+};
+
+template <typename TValue>
+class UVProgressOf : public UVProgress
 {
 	public:
-		UVProgressTyped(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) : 
+		UVProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
 			UVProgress(rect, value), _minValueT(min), _maxValueT(max)
 	{}
 
-	inline TValue ValueT() const
+	inline TValue ValueOf() const
 	{
 		return map(Value(), _minValue, _maxValue,  _minValueT, _maxValueT);
 	}
 
-	inline void SetValueT(TValue new_value)
+	inline void SetValueOf(TValue new_value)
 	{
 		SetValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
 	}
@@ -106,52 +178,3 @@ private:
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
 };
-
-// template <typename TValue>
-// class UVAnimatedProgress : public UVProgress<TValue>
-// {
-// public:
-// 	UVAnimatedProgress(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
-// 		UVProgress<TValue>(rect, min, max, threshold, value)
-// 	{ }
-
-// 	virtual void Draw(Canvas<Color>& canvas)
-// 	{
-// 		if (IsValid()) {
-// 			return;
-// 		}
-
-// 		auto origin_x = _rect.x;
-// 		auto origin_y = _rect.y;
-
-// 		AbsolutePosition(origin_x, origin_y);
-
-// 		auto color = (_deltaValue > 0) ? _activeColor : _backgroundColor;
-
-// 		auto item_w = 3;
-
-// 		auto current_w = map(_oldValue, _minValue, _maxValue, 0, _rect.w);
-// 		auto new_w = map(_newValue, _minValue, _maxValue, 0, _rect.w);
-
-// 		auto items = abs(new_w - current_w) / item_w;
-// 		auto count = (current_w / item_w);
-
-// 		if (items > 0)
-// 		{
-// 			if (_deltaValue > 0)
-// 			{
-// 				canvas.DrawFilledRect(origin_x + count * item_w, origin_y, item_w - 1, _rect.h, color);
-// 			}
-// 			else if (_deltaValue < 0)
-// 			{
-// 				canvas.DrawFilledRect(origin_x + (count - 1) * item_w, origin_y, item_w, _rect.h, color);
-// 			}
-// 			else
-// 			{
-// 				return;
-// 			}
-// 		}
-
-// 		_oldValue += _deltaValue;
-// 	}
-// };

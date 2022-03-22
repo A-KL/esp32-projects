@@ -146,13 +146,20 @@
   <ItemGroup>
     <ClCompile Include="..\lib\BaseGraphics\Color.cpp" />
     <ClCompile Include="..\lib\SDLGraphics\SDLCanvas.cpp" />
+    <ClCompile Include="..\lib\UI\UIElement.cpp" />
+    <ClCompile Include="..\lib\UI\UILabel.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\BaseGraphics\Canvas.h" />
     <ClInclude Include="..\lib\BaseGraphics\Color.h" />
     <ClInclude Include="..\lib\SDLGraphics\SDLCanvas.h" />
-    <ClInclude Include="..\lib\UI\UI.h" />
+    <ClInclude Include="..\lib\UI\UIContainer.h" />
+    <ClInclude Include="..\lib\UI\UIElement.h" />
+    <ClInclude Include="..\lib\UI\UILabel.h" />
+    <ClInclude Include="..\lib\UI\UIList.h" />
+    <ClInclude Include="..\lib\UI\UISoundAnalyzer.h" />
+    <ClInclude Include="..\lib\UI\UVProgress.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,7 +9,11 @@
 #include "../lib/BaseGraphics/Canvas.h"
 #include "../lib/SDLGraphics/SDLCanvas.h"
 
-#include "../lib/UI/UI.h"
+#include "../lib/UI/UIElement.h"
+#include "../lib/UI/UILabel.h"
+#include "../lib/UI/UIContainer.h"
+#include "../lib/UI/UISoundAnalyzer.h"
+#include "../lib/UI/UVProgress.h"
 
 using namespace std;
 
@@ -66,8 +70,8 @@ int main()
 	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
 	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
 
-	UVProgressTyped<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
-	UVProgressTyped<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
+	UVAnimatedProgressOf<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
+	UVAnimatedProgressOf<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
 
 	level_left.Clear(sdl);
 	level_right.Clear(sdl);
@@ -98,8 +102,8 @@ int main()
 		auto value_l = rand() % 255;
 		auto value_r = rand() % 255;
 
-		level_left.SetValueT(value_l);
-		level_right.SetValueT(value_r);
+		level_left.SetAnimatedValueOf(value_l);
+		level_right.SetAnimatedValueOf(value_r);
 
 		while (!level_left.IsValid())
 		{

@@ -22,6 +22,12 @@
     <ClCompile Include="..\lib\BaseGraphics\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\lib\UI\UIElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\UI\UILabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\BaseGraphics\Canvas.h">
@@ -33,7 +39,22 @@
     <ClInclude Include="..\lib\SDLGraphics\SDLCanvas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\lib\UI\UI.h">
+    <ClInclude Include="..\lib\UI\UIContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\UI\UIElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\UI\UILabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\UI\UIList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\UI\UISoundAnalyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\UI\UVProgress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

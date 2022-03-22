@@ -32,10 +32,9 @@ void InternetRadio::Play(const char* url = NULL)
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
     _buffer->RegisterStatusCB(StatusCallback, (void*)"buffer");
 
-    _output = new CustomAudioOutputI2S(0, 1); // Output to builtInDAC
-    _output->SetOutputModeMono(true);
-    _output->SetBitsPerSample(8);
-    _output->SetGain(_gain*0.05);
+    _output = new CustomAudioOutputI2S(0, 0);
+    _output->SetPinout(26, 25, 33);
+    _output->SetGain(_gain*0.1);
 
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");

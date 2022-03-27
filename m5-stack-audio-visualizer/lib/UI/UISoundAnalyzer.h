@@ -34,14 +34,6 @@ public:
 			return;
 		}
 
-		Clear(canvas);
-
-		auto vertical_elements_count = 10 * 6;
-		auto element_padding_x = 3;
-		auto element_padding_y = 1;
-
-		auto element_width = (_rect.w / TChannels) - element_padding_x;
-
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
@@ -49,17 +41,17 @@ public:
 
 		auto y = origin_y;
 
-		for (int i = 0; i < vertical_elements_count; i++)
+		for (auto i = 0; i < _vertical_elements_count; i++)
 		{
 			auto x = origin_x;
 
-			auto color = (i % 10 == 0 || i == (vertical_elements_count - 1)) ? _colorDarkYellow : _colorDarkGreen;
-			auto active_color = (i % 10 == 0 || i == (vertical_elements_count - 1)) ? _colorYellow : _colorGreen;
+			auto color = (i % 10 == 0 || i == (_vertical_elements_count - 1)) ? _colorDarkYellow : _colorDarkGreen;
+			auto active_color = (i % 10 == 0 || i == (_vertical_elements_count - 1)) ? _colorYellow : _colorGreen;
 			auto main_color = color;
 
 			for (int j = 0; j < TChannels; j++)
 			{
-				if ((vertical_elements_count - _channels[j]) < i)
+				if ((_vertical_elements_count - _channels[j]) < i)
 				{
 					main_color = active_color;
 				}
@@ -68,14 +60,14 @@ public:
 					main_color = color;
 				}
 
-				x += element_padding_x;
+				x += _element_padding_x;
 
 				canvas.DrawLine(x, y, x + element_width, y, main_color);
 
 				x += element_width;
 			}
 
-			y += 1 + element_padding_y;
+			y += 1 + _element_padding_y;
 		}
 
 		_valid = true;
@@ -91,4 +83,8 @@ private:
 	const Color _colorBlack{ 0, 0, 0 };
 
 	uint8_t _channels[TChannels];
+	uint8_t _vertical_elements_count = 10 * 6;
+	uint8_t _element_padding_x = 3;
+	uint8_t _element_padding_y = 1;
+	uint8_t element_width = (_rect.w / TChannels) - _element_padding_x;
 };

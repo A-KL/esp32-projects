@@ -14,7 +14,7 @@ public:
 
 	void DrawFilledRect(int x0, int y0, int w, int h, const Color& color);
 
-	void DrawText(int x0, int y0, const char* text, int size, const Color& color);
+	void DrawText(int x0, int y0, const char* text, const Color& color);
 
 	inline int Height() const
 	{

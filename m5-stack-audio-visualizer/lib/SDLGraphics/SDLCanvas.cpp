@@ -36,11 +36,11 @@ void SDLCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 	SDL_RenderFillRect(_sdl, &rect);
 }
 
-void SDLCanvas::DrawText(int x0, int y0, const char* text, int size, const Color& color)
+void SDLCanvas::DrawText(int x0, int y0, const char* text, const Color& color)
 {
 	auto fontName = "C:/Windows/Fonts/Calibril.ttf";
 
-	auto font = TTF_OpenFont(fontName, size);
+	auto font = TTF_OpenFont(fontName, 16);
 
 	SDL_Surface* surfaceMessage =
 		TTF_RenderText_Solid(font, text, *(SDL_Color*)&color);

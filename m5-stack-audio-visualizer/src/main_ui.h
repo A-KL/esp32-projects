@@ -213,7 +213,7 @@ void main_analyzer(void * args)
 
             while (xQueueReceive(audioFrameQueue, &frame, portMAX_DELAY) == pdFALSE)
             {
-                vTaskDelay(10);
+                vTaskDelay(5);
             }
             
             vReal_l[i] = frame.left;
@@ -240,7 +240,7 @@ void main_analyzer(void * args)
           if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
             continue;
           }
-           // displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
+           displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
         }
 
         // for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
@@ -277,14 +277,38 @@ void main_analyzer(void * args)
         //   }
         // } // Decay the peak
 
-        level_left.SetValueOf(abs((sum_l / (float)SAMPLES))-1950);
-        level_right.SetValueOf(abs((sum_l / (float)SAMPLES)-1950));
+      // auto avg_l = sum_l / (float)SAMPLES;
+      // auto avg_r = sum_r / (float)SAMPLES;
 
-        panel.Draw(canvas);
+      unsigned short l = frame.left + USHRT_MAX / 2.0;
+      unsigned short r = frame.right + USHRT_MAX / 2.0;
 
-        vTaskDelay(100);
+      // Serial.print(abs(frame.left));
+      // Serial.print(" ");
+      // Serial.println(abs(frame.right));
+
+      vTaskDelay(3);
+
+      level_left.SetValueOf(l);
+      level_right.SetValueOf(r);
+
+
+      // if (300 < (millis() - time))
+      // {
+      //   level_left.SetAnimatedValueOf(abs((sum_l / (float)SAMPLES))-1950);
+      //   level_right.SetAnimatedValueOf(abs((sum_r / (float)SAMPLES)-1950));
+      //   time = millis();
+      // }
+
+      // while(!level_left.IsValid() || !level_right.IsValid())
+      // {
+      //   level_left.Draw(canvas);
+      //   level_right.Draw(canvas);
+      //   vTaskDelay(3);
+      // }
+
+      panel.Draw(canvas);
     }
-
     vTaskDelete(NULL);
 }
 

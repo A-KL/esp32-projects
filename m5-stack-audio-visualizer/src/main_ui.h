@@ -20,6 +20,10 @@
 #define VOLUME_PIN_B  35
 #define VOLUME_BUTTON 32
 
+#define MENU_PIN_A  00
+#define MENU_PIN_B  02
+#define MENU_BUTTON 15
+
 RadioStation Stations[] { 
   {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
 
@@ -33,27 +37,61 @@ RadioStation Stations[] {
   {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"}
 };
 
- void OnEncoderChanged(void* arg) {
-  auto encoder = (ESP32Encoder*) arg;
-  //reinterpret_cast<const char *>(cbData);
-  //encoder->getCount();
- Serial.printf("enc cb: count: %d\n", 123);
+// ---------------------------------------------------
+
+static void onLeftEncoderChanged(void* arg);
+static void onRightEncoderChanged(void* arg);
+
+static ESP32Encoder encoder_left(true, onLeftEncoderChanged);
+static ESP32Encoder encoder_right(true, onRightEncoderChanged);
+
+static void onLeftEncoderChanged(void* arg) {
+  auto count = encoder_left.getCount();
+  Serial.printf("Left enc: %d\n", count);
+}
+
+static void onRightEncoderChanged(void* arg) {
+  auto count = encoder_right.getCount();
+  Serial.printf("Right enc: %d\n", count);
+}
+
+static void onLeftEncoderButtonUp()
+{
+  Serial.println("onLeftEncoderButtonUp");
+}
+
+static void onRightEncoderButtonUp()
+{
+  Serial.println("onRightEncoderButtonUp");
+}
+
+void setupEncoder()
+{
+  pinMode(VOLUME_BUTTON, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onLeftEncoderButtonUp, RISING );
+
+  pinMode(MENU_BUTTON, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(MENU_BUTTON), onRightEncoderButtonUp, RISING );
+
+  ESP32Encoder::useInternalWeakPullResistors=UP;
+
+  encoder_left.attachSingleEdge(VOLUME_PIN_A, VOLUME_PIN_B);
+  encoder_left.clearCount();
+  encoder_left.setFilter(1023);
+
+  encoder_right.attachSingleEdge(MENU_PIN_A, MENU_PIN_B);
+  encoder_right.clearCount();
+  encoder_right.setFilter(1023);
 }
 
 // ---------------------------------------------------
 
-static ESP32Encoder encoder(true, OnEncoderChanged);
 static InternetRadio radio;
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-UILabel label_track({ 30, 240-20, 200, 23 }, "Test", NULL, 16);
-// ---------------------------------------------------
 
-static void onButtonUp()
-{
-  Serial.println("OnButtonUp");
-}
+UILabel label_track({ 30, 240-20, 200, 23 }, "Test", NULL, 16);
 
 // ---------------------------------------------------
 
@@ -72,13 +110,7 @@ void onStreamChanged(const char *type, const char *value)
 
 void setupRadio()
 {
-  pinMode(VOLUME_BUTTON, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onButtonUp, RISING );
-
-  ESP32Encoder::useInternalWeakPullResistors=UP;
-  encoder.attachSingleEdge(VOLUME_PIN_A, VOLUME_PIN_B);
-  encoder.clearCount();
-  encoder.setFilter(1023);
+  setupEncoder();
 
   radio.Play(Stations[3].Url);
   radio.SampleCallback(onAudioFrameCallback);

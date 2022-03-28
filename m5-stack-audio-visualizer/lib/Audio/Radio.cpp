@@ -32,9 +32,17 @@ void InternetRadio::Play(const char* url = NULL)
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
     _buffer->RegisterStatusCB(StatusCallback, (void*)"buffer");
 
-    _output = new CustomAudioOutputI2S(0, 0);
-    _output->SetPinout(26, 25, 33);
-    _output->SetGain(_gain*0.1);
+    //_output= new CustomAudioOutputI2S(0, 0);
+    _output = new AudioOutputSPDIFWithCallback();
+    // _output->SetPinout(26, 25, 33);
+    // _output->SetGain(_gain*0.1);
+
+    // _output = new AudioOutputWithCallback(audio);
+    // _output->SetPinout(26, 25, 33);
+    // _output->SetGain(_gain*0.1);
+
+    //_i2s = new AudioOutputSPDIF();
+    //_output = new AudioOutputWithCallback(_i2s, NULL);
 
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");
@@ -60,6 +68,12 @@ void InternetRadio::Stop()
         delete _stream;
         _stream = NULL;
     }
+
+    if (_output) {
+        _output->stop();
+        delete _output;
+        _output = NULL;
+    }    
 }
 
 void InternetRadio::SampleCallback(SampleDelegate delegate)

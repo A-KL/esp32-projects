@@ -36,7 +36,7 @@ public:
         _gain = gain;
 
         if (_output != NULL) {
-            _output->SetGain(_gain*0.05);
+            //_output->SetGain(_gain*0.05);
         }
     }    
 
@@ -65,7 +65,7 @@ private:
     AudioGeneratorMP3* _mp3;
     AudioFileSourceICYStream* _stream;
     AudioFileSourceBuffer* _buffer;
-    CustomAudioOutputI2S* _output;
+    AudioOutputSPDIFWithCallback* _output;
 
     static void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string);
 

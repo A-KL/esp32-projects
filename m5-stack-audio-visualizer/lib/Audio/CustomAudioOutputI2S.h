@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AudioOutputI2S.h"
+#include "AudioOutputSPDIF.h"
 
 typedef struct __attribute__((packed)) {
     int16_t left;
@@ -8,6 +9,41 @@ typedef struct __attribute__((packed)) {
 } AudioFrame;
 
 typedef void (*SampleDelegate)(const AudioFrame& frame);
+
+class AudioOutputWithCallback : public AudioOutput
+{
+public:
+    AudioOutputWithCallback(AudioOutput* innerAudioOutput)
+        : _audioOutput(innerAudioOutput)
+    {}
+
+    virtual bool ConsumeSample(int16_t sample[2]) override;
+
+    void SampleCallback(SampleDelegate delegate);
+
+    virtual ~AudioOutputWithCallback() 
+    {
+        delete _audioOutput;
+    };
+
+private:
+    AudioOutput* _audioOutput;
+    SampleDelegate _onSampleDelegate;
+};
+
+class AudioOutputSPDIFWithCallback : public AudioOutputSPDIF
+{
+public:
+    AudioOutputSPDIFWithCallback()
+    {}
+
+    virtual bool ConsumeSample(int16_t sample[2]) override;
+
+    void SampleCallback(SampleDelegate delegate);
+
+private:
+    SampleDelegate _sampleDelegate;
+};
 
 class CustomAudioOutputI2S : public AudioOutputI2S
 {

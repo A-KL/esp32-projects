@@ -201,6 +201,8 @@ void main_analyzer(void * args)
   
     AudioFrame frame;
 
+    auto time = millis();
+
     while (true)
     {
         unsigned long sum_l = 0;
@@ -280,25 +282,37 @@ void main_analyzer(void * args)
       // auto avg_l = sum_l / (float)SAMPLES;
       // auto avg_r = sum_r / (float)SAMPLES;
 
-      unsigned short l = frame.left + USHRT_MAX / 2.0;
-      unsigned short r = frame.right + USHRT_MAX / 2.0;
+      // unsigned short l = frame.left + USHRT_MAX / 2.0;
+      // unsigned short r = frame.right + USHRT_MAX / 2.0;
 
       // Serial.print(abs(frame.left));
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      vTaskDelay(3);
+      // level_left.SetValueOf(l);
+      // level_right.SetValueOf(r);
 
-      level_left.SetValueOf(l);
-      level_right.SetValueOf(r);
+      // level_left.SetAnimatedValueOf(l);
+      // level_right.SetAnimatedValueOf(r);
 
-
-      // if (300 < (millis() - time))
+      // while (!level_left.IsValid() || !level_right.IsValid())
       // {
-      //   level_left.SetAnimatedValueOf(abs((sum_l / (float)SAMPLES))-1950);
-      //   level_right.SetAnimatedValueOf(abs((sum_r / (float)SAMPLES)-1950));
-      //   time = millis();
+      //   panel.Draw(canvas);
+      //   //vTaskDelay(1);
       // }
+      
+      if (200 < (millis() - time))
+      {
+        unsigned short l = frame.left + USHRT_MAX / 2.0;
+        unsigned short r = frame.right + USHRT_MAX / 2.0;
+
+        level_left.SetAnimatedValueOf(l);
+        level_right.SetAnimatedValueOf(r);
+
+        time = millis();
+
+        vTaskDelay(2);
+      }
 
       // while(!level_left.IsValid() || !level_right.IsValid())
       // {

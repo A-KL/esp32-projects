@@ -120,8 +120,3 @@ void InternetRadio::StatusCallback(void *cbData, int code, const char *string)
     Serial.flush();
 }
 
-std::ostream& operator<<(std::ostream& os, const RadioStation& station)
-{
-    os << station.Name;
-    return os;
-}

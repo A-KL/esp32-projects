@@ -11,14 +11,6 @@
 #include <AudioOutputI2SNoDAC.h>
 #include "CustomAudioOutputI2S.h"
 
-struct RadioStation 
-{
-    const char* Name;
-    const char* Url;
-
-    friend std::ostream& operator<<(std::ostream& os, const RadioStation& station);
-};
-
 typedef void (*StreamDelegate)(const char *type, const char *value);
 
 class InternetRadio

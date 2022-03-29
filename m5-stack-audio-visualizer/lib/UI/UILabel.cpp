@@ -19,8 +19,6 @@ void UILabel::Draw(Canvas<Color>& canvas)
         return;
     }
 
-    _valid = true;
-
     Clear(canvas);
 
     if (_text == NULL) {
@@ -40,6 +38,8 @@ void UILabel::Draw(Canvas<Color>& canvas)
     auto center_y = origin_y + (_rect.h - _fontSize) / 2;
 
     canvas.DrawText(center_x, center_y, _text, _colorWhite);
+
+    _valid = true;
 }
 
 UILabel::~UILabel()

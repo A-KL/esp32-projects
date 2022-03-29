@@ -9,7 +9,7 @@ struct UIRect
 class UIElement
 {
 public:
-	UIElement(const UIRect& rect, const UIElement* parent = NULL);
+	UIElement(const UIRect& rect, const Color& background = {0, 0, 0, 0}, const UIElement* parent = NULL);
 
 	inline void SetParent(const UIElement* parent)
 	{

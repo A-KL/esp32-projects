@@ -11,6 +11,10 @@ public:
 		UIElement(rect)
 	{ }
 
+	UIContainer(const UIRect& rect, const Color& color) :
+		UIElement(rect, color)
+	{ }
+
 	void Add(UIElement &element)
 	{
 		element.SetParent(this);

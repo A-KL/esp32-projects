@@ -5,8 +5,8 @@
 
 #include "UIElement.h"
 
-UIElement::UIElement(const UIRect& rect, const UIElement* parent) :
-    IsVisisble(true), Background(0, 0, 0), _rect(rect), _valid(false), _parent(parent) 
+UIElement::UIElement(const UIRect& rect, const Color& background, const UIElement* parent) :
+    IsVisisble(true), Background(background), _rect(rect), _valid(false), _parent(parent) 
 {}
 
 bool UIElement::IsValid() const

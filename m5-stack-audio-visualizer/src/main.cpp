@@ -26,6 +26,7 @@
 #include "UILabel.h"
 #include "UIContainer.h"
 #include "UIList.h"
+#include "MainForm.h"
 #include "main_ui.h"
 
 void setup() {

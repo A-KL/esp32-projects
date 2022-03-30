@@ -16,9 +16,7 @@ public:
 		_maxValue(rect.w /_item_w),
 		_warning(_maxValue * 0.85),
 		_threshold(_maxValue * 0.95)
-	{ 
-		 Background = Color(30, 30, 30);
-	}
+	{ }
 
 	virtual unsigned short Value() const
 	{
@@ -27,20 +25,17 @@ public:
 
 	virtual bool IsValid() const
 	{
-		return _newValue == _currentValue;
+		return _newValue == _currentValue || UIElement::IsValid();
 	}
 
 	virtual void SetValue(unsigned short new_value)
 	{
 		_newValue = new_value > _maxValue ? _maxValue : new_value;
 	}
-
+	
+protected:
 	void Draw(Canvas<Color>& canvas)
 	{
-		if (IsValid()) {
-			return;
-		}
-
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 

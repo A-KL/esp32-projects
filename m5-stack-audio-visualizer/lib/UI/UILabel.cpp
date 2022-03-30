@@ -10,15 +10,11 @@
 #include "UILabel.h"
 
 UILabel::UILabel(const UIRect& rect, const char* text, const char* fontName, int size)
-		: UIElement(rect), _colorWhite(255,255,255), _text(text), _fontSize(size)
+		: UIElement(rect), _forecolor(255,255,255), _text(text), _fontSize(size)
 { }
 
 void UILabel::Draw(Canvas<Color>& canvas)
 {
-    if (IsValid()) {
-        return;
-    }
-
     Clear(canvas);
 
     if (_text == NULL) {
@@ -37,14 +33,5 @@ void UILabel::Draw(Canvas<Color>& canvas)
     auto center_x = origin_x + (_rect.w - textWidth) / 2;
     auto center_y = origin_y + (_rect.h - _fontSize) / 2;
 
-    canvas.DrawText(center_x, center_y, _text, _colorWhite);
-
-    _valid = true;
-}
-
-UILabel::~UILabel()
-{
-    // Don't forget to free your surface and texture
-    //SDL_FreeSurface(surfaceMessage);
-    //SDL_DestroyTexture(Message);
+    canvas.DrawText(center_x, center_y, _text, _forecolor);
 }

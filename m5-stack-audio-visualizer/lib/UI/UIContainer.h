@@ -24,7 +24,7 @@ public:
 
 	bool IsValid()
 	{
-		if (!_valid) {
+		if (!UIElement::IsValid()) {
 			return false;
 		}
 
@@ -37,16 +37,17 @@ public:
 		return true;
 	}
 
+protected:
 	void Draw(Canvas<Color>& canvas)
 	{
-		// if (IsValid()) {
-		// 	return;
-		// }
+		if (IsValid()) {
+			return;
+		}
 
 		// Clear(canvas);
 
 		for (UIElement* element : _children) {
-			element->Draw(canvas);
+			element->Update(canvas);
 		}
 
 		//_valid = true;

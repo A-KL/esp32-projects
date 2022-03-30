@@ -6,12 +6,23 @@
 #include "UIElement.h"
 
 UIElement::UIElement(const UIRect& rect, const Color& background, const Color& border, int borderSize, const UIElement* parent) :
-    IsVisisble(true), Background(background), _rect(rect), _valid(false), _parent(parent), _borderColor(border), _borderSize(borderSize)
+    visible(true), _rect(rect), _valid(false), _parent(parent), _borderColor(border), _backgroundColor(background), _borderSize(borderSize)
 {}
 
 bool UIElement::IsValid() const
 {
-    return _valid;
+    return _valid || !visible;
+}
+
+void UIElement::Update(Canvas<Color>& canvas)
+{
+    if (IsValid()) {
+        return;
+    }
+
+    Draw(canvas);
+
+    _valid = true;
 }
 
 void UIElement::Clear(Canvas<Color>& canvas) const
@@ -21,7 +32,7 @@ void UIElement::Clear(Canvas<Color>& canvas) const
 
     AbsolutePosition(x, y);
     
-    canvas.DrawFilledRect(x, y, _rect.w, _rect.h, Background);
+    canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _backgroundColor);
 
     if (_borderSize > 0) {
         canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _borderColor);

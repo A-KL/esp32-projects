@@ -103,7 +103,7 @@ void onAudioFrameCallback(const AudioFrame& frame)
 void onStreamChanged(const char *type, const char *value)
 {
   if (strcmp(type, "StreamTitle") == 0) { 
-    label_track.SetText(value);
+    label_track.setText(value);
     Serial.println(value);
   }
 }
@@ -144,7 +144,7 @@ void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude
     amplitude = AMPLITUDE_MAX;
   }
 
-  analyzer.Update(band, amplitude);
+  analyzer.setBand(band, amplitude);
 
   if (amplitude > peak[band]) 
   {
@@ -215,13 +215,13 @@ void main_analyzer(void * args)
 
     // Footer
     UILabel label_vol({ 0, 240-20, 40, 23 }, "VOL:", font, 16);
-    label_vol.Background = { 56, 56, 56, 0 };
+    label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
     
-    label_track.Background = { 56, 56, 56, 0 };
+    label_track.setBackgroundColor({ 56, 56, 56, 0 });
 
     UIContainer footer({ 0, 240-23, 320, 23 });
-    footer.Background = { 56, 56, 56, 0 };
+    footer.setBackgroundColor({ 56, 56, 56, 0 });
 
     footer.Clear(canvas);
 
@@ -353,7 +353,7 @@ void main_analyzer(void * args)
       //   vTaskDelay(3);
       // }
 
-      panel.Draw(canvas);
+      panel.Update(canvas);
     }
     vTaskDelete(NULL);
 }

@@ -15,7 +15,7 @@ public:
 		}
 	}
 
-	bool Update(int channel, unsigned char value)
+	bool setBand(int channel, unsigned char value)
 	{
 		if (channel >= TChannels)
 		{
@@ -28,12 +28,9 @@ public:
 		return true;
 	}
 
+protected:
 	void Draw(Canvas<Color>& canvas)
 	{
-		if (IsValid()) {
-			return;
-		}
-
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
@@ -69,8 +66,6 @@ public:
 
 			y += 1 + _element_padding_y;
 		}
-
-		_valid = true;
 	}
 
 private:

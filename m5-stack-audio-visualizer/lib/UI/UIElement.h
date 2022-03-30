@@ -9,36 +9,62 @@ struct UIRect
 class UIElement
 {
 public:
-	UIElement(const UIRect& rect, const Color& background = {0, 0, 0, 0}, const Color& border = {0, 0, 0, 0}, int borderSize = 0, const UIElement* parent = NULL);
+	UIElement(
+		const UIRect& rect, 
+		const Color& background = {0, 0, 0, 0}, 
+		const Color& border = {0, 0, 0, 0}, 
+		int borderSize = 0, 
+		const UIElement* parent = NULL);
 
 	inline void SetParent(const UIElement* parent)
 	{
 		_parent = parent;
 	}
 
-	bool IsVisisble;
+	inline void setBorderColor(const Color& color)
+	{
+		_borderColor = color;
+		Invalidate();
+	}
 
-	Color Background;
+	inline void setBackgroundColor(const Color& color)
+	{
+		_backgroundColor = color;
+		Invalidate();
+	}
 
-	virtual void Draw(Canvas<Color>& canvas) = 0;
+	inline void setBorderSize(int size)
+	{
+		_borderSize = size;
+		Invalidate();
+	}
+
+	bool visible;
 
 	virtual bool IsValid() const;
+
+	void Update(Canvas<Color>& canvas);	
 
 	virtual void Clear(Canvas<Color>& canvas) const;
 
 protected:
 	const UIRect _rect;
-	bool _valid;
-
+	
 	inline virtual void Invalidate()
 	{
 		_valid = false;
 	}
 
+	virtual void Draw(Canvas<Color>& canvas) = 0;
+
 	void AbsolutePosition(int& x, int& y) const;
 
 private:
+	bool _valid;
 	const UIElement* _parent;
+
 	Color _borderColor;
+	Color _backgroundColor;
+
 	int _borderSize;
 };

@@ -7,18 +7,22 @@ class UILabel : public UIElement
 public:
 	UILabel(const UIRect& rect, const char* text, const char* fontName, int size);
 
-	inline void SetText(const char* text)
+	inline void setText(const char* text)
 	{
 		_text = text;
-		_valid = false;
+		Invalidate();
+	}
+
+	inline void setForecolor(const Color& color)
+	{
+		_forecolor = color;
+		Invalidate();
 	}
 
 	void Draw(Canvas<Color>& canvas);
 
-	virtual ~UILabel();
-
 private:
-	const Color _colorWhite;
+	Color _forecolor;
 	const char* _text;
 	const int _fontSize;
 };

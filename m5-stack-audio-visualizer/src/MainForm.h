@@ -13,9 +13,15 @@ public:
     _header(UIRect({ 0, 0, 320, 23 })),
     _footer(UIRect({ 0, 240-23, 320, 23 }), Color({ 56, 56, 56, 0 })),
     _input({ 0, 0, 320, 25 }, _inputSources[0], NULL, 16),
-    _volume({ 0, 240-20, 40, 23 }, "VOL:0", NULL, 16)
+    _volume({ 0, 240-20, 40, 23 }, "VOL:0", NULL, 16),
+    _wifi({ 0, 240-20, 40, 23 }, "WiFi", NULL, 16),
+    _disabled(56, 56, 56, 0),
+    _failed(255, 0, 0, 0),
+    _waiting(255, 255, 0, 0),
+    _success(0, 255, 0, 0)
   { 
     _header.Add(_input); 
+    _header.Add(_wifi);
     _footer.Add(_volume);
     
     Add(_header);
@@ -25,19 +31,25 @@ public:
   void setVolume(int value)
   {
     if (value == 0){
-      _volume.SetText("MUTE");
+      _volume.setText("MUTE");
     }
     else
     {
       char buffer[5];
       snprintf(buffer, sizeof(buffer), "VOL:%d", value);
-      _volume.SetText(buffer);
+      _volume.setText(buffer);
     }
   }
 
   void setInput(int value = 0)
   {   
-    _input.SetText(_inputSources[value]);
+    _input.setText(_inputSources[value]);
+  }
+
+  void setLed(UILabel& label)
+  {
+    label.setBorderColor(_disabled);
+    label.setForecolor(_disabled);
   }
 
 private:
@@ -45,6 +57,12 @@ private:
     UIContainer _footer;
     UILabel _input;
     UILabel _volume;
+    UILabel _wifi;
+
+    const Color _disabled;
+    const Color _failed;
+    const Color _waiting;
+    const Color _success;
 
     const char* _inputSources[4] =
     {
@@ -71,7 +89,7 @@ public:
       amplitude = AMPLITUDE_MAX;
     }
 
-    _analyzer.Update(band, amplitude);
+    _analyzer.setBand(band, amplitude);
 
     if (amplitude > peak[band]) 
     {

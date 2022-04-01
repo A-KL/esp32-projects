@@ -31,6 +31,8 @@ public:
 	virtual void SetValue(unsigned short new_value)
 	{
 		_newValue = new_value > _maxValue ? _maxValue : new_value;
+
+		Invalidate();
 	}
 	
 protected:

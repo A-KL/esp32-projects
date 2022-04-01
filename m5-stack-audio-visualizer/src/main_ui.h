@@ -91,7 +91,7 @@ static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
-UILabel label_track({ 30, 240-20, 200, 23 }, "Test", NULL, 16);
+UILabel label_track({ 30, 0, 200, 23 }, "Test", NULL, 16);
 
 // ---------------------------------------------------
 
@@ -211,25 +211,21 @@ void main_analyzer(void * args)
         stations.Add(Stations[0]);
     }
 
-    panel.Add(stations);
+    //panel.Add(stations);
 
     // Footer
-    UILabel label_vol({ 0, 240-20, 40, 23 }, "VOL:", font, 16);
+    UILabel label_vol({ 0, 0, 30, 23 }, "VOL:", font, 16);
     label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
-    
     label_track.setBackgroundColor({ 56, 56, 56, 0 });
 
-    UIContainer footer({ 0, 240-23, 320, 23 });
-    footer.setBackgroundColor({ 56, 56, 56, 0 });
+    UIContainer footer({ 0, 240-23, 320, 23 }, { 56, 56, 56, 0 });
 
-    footer.Clear(canvas);
-
-   // panel.Add(label_vol);
-    panel.Add(label_track);
-    panel.Add(footer);
+    footer.Add(label_vol);
+    footer.Add(label_track); 
 
     panel.Add(analyzer_panel);
+    panel.Add(footer);
   
     AudioFrame frame;
 
@@ -333,7 +329,7 @@ void main_analyzer(void * args)
       //   //vTaskDelay(1);
       // }
       
-      if (200 < (millis() - time))
+      if (50 < (millis() - time))
       {
         unsigned short l = frame.left + USHRT_MAX / 2.0;
         unsigned short r = frame.right + USHRT_MAX / 2.0;

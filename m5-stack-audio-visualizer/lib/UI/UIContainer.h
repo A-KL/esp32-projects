@@ -17,42 +17,47 @@ public:
 
 	void Add(UIElement &element)
 	{
-		element.SetParent(this);
+		element.setParent(this);
 
 		_children.push_back(&element);
+
+		Invalidate();
 	}
 
-	bool IsValid()
+	void Remove(UIElement &element)
 	{
-		if (!UIElement::IsValid()) {
-			return false;
-		}
+		element.setParent(NULL);
 
-		for (UIElement* element : _children) {
-			if(!element->IsValid()) {
-				return false;
-			}
-		}
+		_children.remove(&element);
 
-		return true;
+		Invalidate();
 	}
+
+	 bool IsValid() const
+	 {
+	 	// for (UIElement* element : _children) {
+	 	// 	if(!element->IsValid()) {
+	 	// 		return false;
+	 	// 	}
+	 	// }
+
+	 	return false;
+	 }
 
 protected:
 	void Draw(Canvas<Color>& canvas)
-	{
-		if (IsValid()) {
-			return;
+	{		
+		if (_redraw) {
+			Clear(canvas);
+			_redraw = false;
 		}
-
-		// Clear(canvas);
 
 		for (UIElement* element : _children) {
 			element->Update(canvas);
 		}
-
-		//_valid = true;
 	}
 
 private:
 	std::list<UIElement*> _children;
+	bool _redraw = true;
 };

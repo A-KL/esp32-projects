@@ -16,7 +16,7 @@ public:
 		int borderSize = 0, 
 		const UIElement* parent = NULL);
 
-	inline void SetParent(const UIElement* parent)
+	inline void setParent(const UIElement* parent)
 	{
 		_parent = parent;
 	}

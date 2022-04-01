@@ -60,10 +60,10 @@ int main()
 
 	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
 
-	analyzer.Update(0, 50);
-	analyzer.Update(1, 30);
-	analyzer.Update(2, 0);
-	analyzer.Update(3, 10);
+	analyzer.setBand(0, 50);
+	analyzer.setBand(1, 30);
+	analyzer.setBand(2, 0);
+	analyzer.setBand(3, 10);
 
 	// Levels
 
@@ -78,8 +78,7 @@ int main()
 
 	// Footer
 
-	UIContainer footer({ 0, 240-23, 320, 23 });
-	footer.Background = { 56, 56, 56, 0 };
+	UIContainer footer({ 0, 240-23, 320, 23 }, { 56, 56, 56, 0 });
 
 	// Render
 	panel.Add(label);
@@ -107,8 +106,8 @@ int main()
 
 		while (!level_left.IsValid() || !level_right.IsValid())
 		{
-			level_left.Draw(sdl);
-			level_right.Draw(sdl);
+			level_left.Update(sdl);
+			level_right.Update(sdl);
 
 			sdl.Update();
 
@@ -121,8 +120,8 @@ int main()
 
 		while (!level_left.IsValid() || !level_right.IsValid())
 		{
-			level_left.Draw(sdl);
-			level_right.Draw(sdl);
+			level_left.Update(sdl);
+			level_right.Update(sdl);
 
 			sdl.Update();
 
@@ -132,12 +131,11 @@ int main()
 
 		for (auto i = 0; i < 30; i++)
 		{
-			analyzer.Update(i, (rand() % 255));
+			analyzer.setBand(i, (rand() % 255));
 		}
 
-		analyzer.Draw(sdl);
-
-		panel.Draw(sdl);
+		panel.Update(sdl);
+		sdl.Update();
 
 		SDL_PollEvent(&event);
 		SDL_Delay(5);

@@ -57,7 +57,7 @@ private:
     AudioGeneratorMP3* _mp3;
     AudioFileSourceICYStream* _stream;
     AudioFileSourceBuffer* _buffer;
-    AudioOutputSPDIFWithCallback* _output;
+    CustomAudioOutputI2S* _output;
 
     static void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string);
 

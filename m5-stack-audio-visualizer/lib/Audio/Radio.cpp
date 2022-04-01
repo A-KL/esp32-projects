@@ -32,11 +32,14 @@ void InternetRadio::Play(const char* url = NULL)
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
     _buffer->RegisterStatusCB(StatusCallback, (void*)"buffer");
 
-    //_output= new CustomAudioOutputI2S(0, 0);
-    _output = new AudioOutputSPDIFWithCallback();
-    // _output->SetPinout(26, 25, 33);
-    // _output->SetGain(_gain*0.1);
+   // _output = new AudioOutputSPDIFWithCallback();
 
+    _output= new CustomAudioOutputI2S(0, 0);
+    _output->SetPinout(26, 25, 33);
+    _output->SetGain(_gain*0.1);
+    
+    REG_WRITE(PIN_CTRL, 0xFF0);
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
     // _output = new AudioOutputWithCallback(audio);
     // _output->SetPinout(26, 25, 33);
     // _output->SetGain(_gain*0.1);

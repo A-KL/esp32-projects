@@ -5,7 +5,7 @@ class UVProgress : public UIElement
 {
 public:
 	UVProgress(const UIRect& rect, unsigned short value = 0) :
-		UIElement(rect),
+		UIElement(rect, {30, 30, 30}),
 		_newValue(value),
 		_currentValue(value),
 		_backgroundColor(30, 30, 30),

@@ -5,10 +5,11 @@
 #include <Fonts/FreeSans24pt7b.h>
 #include <Fonts/FreeSans9pt7b.h>
 
-#include <Fonts/FreeSansBold12pt7b.h>
-#include <Fonts/FreeSansBold18pt7b.h>
-#include <Fonts/FreeSansBold24pt7b.h>
-#include <Fonts/FreeSansBold9pt7b.h>
+#include "../Fonts/FreeSans7pt7b.h"
+#include "../Fonts/FreeSans8pt7b.h"
+#include "../Fonts/FreeSansBold7pt7b.h"
+#include "../Fonts/FreeSansBold8pt7b.h"
+
 
 #include "../BaseGraphics/Color.h"
 
@@ -48,7 +49,7 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 
 void TFTCanvas::SetFont(const char* fontName, unsigned char size)
 {
-  _display.setFont(&FreeSans9pt7b);
+  _display.setFont(&FreeSansBold7pt7b);
   _display.setTextSize(size);
 }
 

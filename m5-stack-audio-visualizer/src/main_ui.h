@@ -216,7 +216,7 @@ void main_analyzer(void * args)
     //panel.Add(stations);
 
     // Footer
-    UILabel label_vol({ 0, 16, 30, 23 }, "VOL:", font, 16);
+    UILabel label_vol({ 0, 11, 30, 23 }, "VOL:", font, 16);
     label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
     label_track.setBackgroundColor({ 56, 56, 56, 0 });

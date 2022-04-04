@@ -45,6 +45,7 @@ void setup() {
   canvas.Clear(Color(0, 0, 0));
 
   startAnalyzer((void*)&canvas);
+
 }
 
 void loop() {

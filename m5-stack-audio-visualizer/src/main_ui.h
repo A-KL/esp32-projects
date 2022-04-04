@@ -22,9 +22,6 @@
 // ---------------------------------------------------
 
 RadioStation Stations[] { 
-  {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
-
-  {"WayUp Radio", "http://188.165.212.154:8478/stream"},
   {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
   {"KPop Radio", "http://streamer.radio.co/s06b196587/listen"},
 
@@ -33,6 +30,9 @@ RadioStation Stations[] {
   {"MAXXED Out", "http://149.56.195.94:8015/steam"},
   {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"}
 };
+
+const int stationsCount = (sizeof(Stations)/sizeof(RadioStation) - 1);
+int stationIndex = 0;
 
 // ---------------------------------------------------
 
@@ -55,6 +55,20 @@ static void onRightEncoderChanged(void* arg) {
 static void onLeftEncoderButtonUp()
 {
   Serial.println("onLeftEncoderButtonUp");
+
+  // if (stationIndex >= stationsCount)
+  // {
+  //   stationIndex = 0;
+  // }
+  // else
+  // {
+  //   stationIndex++;
+  // }
+
+  // Serial.println(stationIndex);
+
+  // radio.Stop();
+  // radio.Play(Stations[stationIndex].Url);
 }
 
 static void onRightEncoderButtonUp()
@@ -82,11 +96,10 @@ void setupEncoder()
 }
 
 // ---------------------------------------------------
-
-static InternetRadio radio;
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+static InternetRadio radio;
 
 UILabel label_track({ 40, 0, 200, 23 }, "");
 
@@ -109,7 +122,7 @@ void setupRadio()
 {
   setupEncoder();
 
-  radio.Play(Stations[3].Url);
+  radio.Play(Stations[stationIndex].Url);
   radio.SampleCallback(onAudioFrameCallback);
   radio.StreamChanged = onStreamChanged;
 }
@@ -165,7 +178,7 @@ void main_analyzer(void * args)
     // Analyzer
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
-    UILabel label({ 0, 0, 320, 25 }, "Web"); //S/PDIF
+    UILabel label({ 0, 0, 320, 20 }, "Web");
 
     UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, 2);
 	  label_out_spdif.setForecolor(Color::Red);
@@ -333,8 +346,8 @@ void main_analyzer(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      level_left.SetValueOf(frame.left + USHRT_MAX / 2.0);
-      level_right.SetValueOf(frame.right + USHRT_MAX / 2.0);
+      level_left.SetValueOf(abs(frame.left));
+      level_right.SetValueOf(abs(frame.right));
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {

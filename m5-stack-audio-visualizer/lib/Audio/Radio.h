@@ -27,9 +27,9 @@ public:
     {
         _gain = gain;
 
-        if (_output != NULL) {
-            //_output->SetGain(_gain*0.05);
-        }
+        // if (_output != NULL) {
+        //     _output->SetGain(_gain*0.05);
+        // }
     }    
 
     inline void SetUrl(const char* url)
@@ -57,7 +57,9 @@ private:
     AudioGeneratorMP3* _mp3;
     AudioFileSourceICYStream* _stream;
     AudioFileSourceBuffer* _buffer;
-    CustomAudioOutputI2S* _output;
+
+    CustomAudioOutputI2S* _outputAnalog;
+    AudioOutputSPDIFWithCallback* _outputSPDIF;
 
     static void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string);
 

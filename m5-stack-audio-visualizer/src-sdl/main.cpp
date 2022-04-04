@@ -45,18 +45,21 @@ int main()
 
 	auto font = "C:/Windows/Fonts/Carlito-Regular.ttf";
 
-	UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
+	UILabel label({ 0, 0, 320, 25 }, "S/PDIF");
 
 	// Main
 
 	auto start = 20;
-	UILabel label_0({ 14, start, 24, 13 }, "0", font, 16);
-	UILabel label_10({ 17, start += 19, 24, 13 }, "-10", font, 16);
-	UILabel label_20({ 17, start += 20, 24, 13 }, "-20", font, 16);
-	UILabel label_30({ 17, start += 19, 24, 13 }, "-30", font, 16);
-	UILabel label_40({ 17, start += 20, 24, 13 }, "-40", font, 16);
-	UILabel label_50({ 17, start += 19, 24, 13 }, "-50", font, 16);
-	UILabel label_60({ 17, start += 20, 24, 13 }, "-60", font, 16);
+	UILabel label_0({ 14, start, 24, 13 }, "0");
+	UILabel label_10({ 17, start += 19, 24, 13 }, "-10");
+	UILabel label_20({ 17, start += 20, 24, 13 }, "-20");
+	UILabel label_30({ 17, start += 19, 24, 13 }, "-30");
+	UILabel label_40({ 17, start += 20, 24, 13 }, "-40");
+	UILabel label_50({ 17, start += 19, 24, 13 }, "-50");
+	UILabel label_60({ 17, start += 20, 24, 13 }, "-60");
+
+	UILabel label_out_spdif({ 30, 0, 40, 18 }, "COAX", { 255, 0, 0, 0 }, 2);
+	label_out_spdif.setForecolor({ 255, 0, 0, 0 });
 
 	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
 
@@ -67,8 +70,8 @@ int main()
 
 	// Levels
 
-	UILabel level_left_label({ 0, 181, 24, 13 }, "L", font, 16);
-	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R", font, 16);
+	UILabel level_left_label({ 0, 181, 24, 13 }, "L");
+	UILabel level_right_label({ 0, 181 + 13 + 3, 24, 13 }, "R");
 
 	UVAnimatedProgressOf<Uint8> level_left({ 24, 181, 246, 13 }, 0, 255, 200, 0);
 	UVAnimatedProgressOf<Uint8> level_right({ 24, 181 + 13 + 3, 246, 13 }, 0, 255, 200, 0);
@@ -81,7 +84,7 @@ int main()
 	UIContainer footer({ 0, 240-23, 320, 23 }, { 56, 56, 56, 0 });
 
 	// Render
-	panel.Add(label);
+	panel.Add(label_out_spdif);
 	panel.Add(label_0);
 	panel.Add(label_10);
 	panel.Add(label_20);
@@ -134,18 +137,9 @@ int main()
 			analyzer.setBand(i, (rand() % 255));
 		}
 
-		label_0.setText("new text");
-
-		panel.Update(sdl);
-
-		label_0.setText("qweqweqweqw");
-
 		panel.Update(sdl);
 
 		sdl.Update();
-
-
-		
 
 		SDL_PollEvent(&event);
 		SDL_Delay(5);

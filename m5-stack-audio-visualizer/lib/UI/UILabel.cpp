@@ -10,8 +10,14 @@
 #include "UIElement.h"
 #include "UILabel.h"
 
-UILabel::UILabel(const UIRect& rect, const char* text, const char* fontName, int size)
-		: UIElement(rect), _forecolor(255,255,255), _fontSize(size)
+UILabel::UILabel(const UIRect& rect, const char* text)
+		: UIElement(rect), _forecolor(255, 255, 255, 0)
+{
+    setText(text);
+}
+
+UILabel::UILabel(const UIRect& rect, const char* text, const Color& borderColor, int borderSize)
+		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(255, 255, 255, 0)
 {
     setText(text);
 }

@@ -61,19 +61,19 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
   int16_t  x1, y1;
   uint16_t w1, h1;
 
-  _display.getTextBounds(text, x, y, &x1, &y1, &w1, &h1);
+  _display.getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
 
   if (w > w1)
   {
     x += (w - w1) / 2.0;
   }
 
-  // if (h > h1)
-  // {
-  //   y += (h - h1) / 2.0;
-  // }
+  if (h > h1)
+  {
+    y += (h - h1) / 2.0;
+  }
 
-  _display.setCursor(x, y);
+  _display.setCursor(x, y + h1-1);
 
 	_display.println(text);
 }

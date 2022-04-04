@@ -1,14 +1,20 @@
 #include "Color.h"
 
-// const Color Color::Black {0, 0, 0, 0};
+const Color Color::Black {0, 0, 0, 0};
 
-// const Color Color::White {255, 255, 255, 0};
+const Color Color::White {255, 255, 255, 0};
 
-// const Color Color::Red {255, 0, 0, 0};
+const Color Color::Red {255, 0, 0, 0};
 
-// const Color Color::Green {0, 255, 0, 0}
+const Color Color::Green {0, 255, 0, 0};
 
-// const Color Color::Blue {0, 0, 255, 0}
+const Color Color::Blue {0, 0, 255, 0};
+
+const Color Color::Orange {255, 165, 0, 0};
+
+const Color Color::LightBlue {5, 117, 255, 0};
+
+const Color Color::Gray { 56, 56, 56, 0 };
 
 Color::operator unsigned int() const
 {

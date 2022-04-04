@@ -5,7 +5,9 @@
 class UILabel : public UIElement
 {
 public:
-	UILabel(const UIRect& rect, const char* text, const char* fontName, int size);
+	UILabel(const UIRect& rect, const char* text);
+
+	UILabel(const UIRect& rect, const char* text, const Color& borderColor, int borderSize);
 
 	inline void setText(const char* text)
 	{
@@ -24,6 +26,4 @@ public:
 private:
 	Color _forecolor;
 	std::string  _text;
-
-	int _fontSize;
 };

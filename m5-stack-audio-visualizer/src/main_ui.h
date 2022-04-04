@@ -2,13 +2,6 @@
 
 // ---------------------------------------------------
 
-#define DEBOUNCE_TIME 50
-
-// ---------------------------------------------------
-#define ADC_MIC           34
-#define ADC_CHANNEL_LEFT  ADC_MIC
-#define ADC_CHANNEL_RIGHT 35
-
 #define SAMPLES 512              // Must be a power of 2
 
 #define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
@@ -23,6 +16,10 @@
 #define MENU_PIN_A  00
 #define MENU_PIN_B  02
 #define MENU_BUTTON 15
+
+#define DEBOUNCE_TIME 50
+
+// ---------------------------------------------------
 
 RadioStation Stations[] { 
   {"Mega Shuffle", "http://jenny.torontocast.com:8134/stream"},
@@ -91,7 +88,7 @@ static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
-UILabel label_track({ 40, 15, 200, 23 }, "Test", NULL, 16);
+UILabel label_track({ 40, 0, 200, 23 }, "");
 
 // ---------------------------------------------------
 
@@ -168,30 +165,47 @@ void main_analyzer(void * args)
     // Analyzer
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
-    const char* font = NULL;
-    UILabel label({ 0, 16, 320, 25 }, "S/PDIF", font, 16);
+    UILabel label({ 0, 0, 320, 25 }, "Web"); //S/PDIF
 
-    auto start = 18 + 10;
-    UILabel label_0({ 10, start,        20, 16 }, "0", font, 16);
-    UILabel label_10({ 5, start += 20, 20, 16 }, "-10", font, 16);
-    UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
-    UILabel label_30({ 5, start += 20, 20, 16 }, "-30", font, 16);
-    UILabel label_40({ 5, start += 20, 20, 16 }, "-40", font, 16);
-    UILabel label_50({ 5, start += 20, 20, 16 }, "-50", font, 16);
-    UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
+    UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, 2);
+	  label_out_spdif.setForecolor(Color::Red);
+
+    UILabel label_out_aux({ 50 + 2, 0, 42, 18 }, "AUX", Color::Gray, 2);
+	  label_out_aux.setForecolor(Color::Gray);
+
+    UILabel label_input_web({ 50 + 2 + 42 + 2, 0, 42, 18 }, "Web", Color::Orange, 2);
+	  label_input_web.setForecolor(Color::Orange);
+
+    // UILabel label_input_aux({ 52, 0, 42, 18 }, "AUX", Color::Gray, 2);
+	  // label_input_aux.setForecolor(Color::Gray);
+
+    // UILabel label_input_aux({ 52, 0, 42, 18 }, "S/PDIF", Color::Gray, 2);
+	  // label_input_aux.setForecolor(Color::Gray);
+
+    auto start = 18;
+    UILabel label_0({ 10, start,       20, 16 }, "  0");
+    UILabel label_10({ 5, start += 20, 20, 16 }, "-10");
+    UILabel label_20({ 5, start += 20, 20, 16 }, "-20");
+    UILabel label_30({ 5, start += 20, 20, 16 }, "-30");
+    UILabel label_40({ 5, start += 20, 20, 16 }, "-40");
+    UILabel label_50({ 5, start += 20, 20, 16 }, "-50");
+    UILabel label_60({ 5, start += 20, 20, 16 }, "-60");
 
 	  UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
-    UILabel level_left_label({ 0, 191, 20, 16 }, "L", NULL, 16);
-    UILabel level_right_label({ 0, 191 + 13 + 3, 20, 16 }, "R", NULL, 16);
+    UILabel level_left_label({ 0, 181, 20, 16 }, "L");
+    UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R");
 
-    UVAnimatedProgressOf<uint16_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-    UVAnimatedProgressOf<uint16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVProgressOf<uint16_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVProgressOf<uint16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
 
     level_left.Clear(canvas);
     level_right.Clear(canvas);
 
     analyzer_panel.Add(label);
+    analyzer_panel.Add(label_out_spdif);
+    analyzer_panel.Add(label_out_aux);
+    analyzer_panel.Add(label_input_web);
     analyzer_panel.Add(label_0);
     analyzer_panel.Add(label_10);
     analyzer_panel.Add(label_20);
@@ -216,7 +230,7 @@ void main_analyzer(void * args)
     //panel.Add(stations);
 
     // Footer
-    UILabel label_vol({ 0, 11, 30, 23 }, "VOL:", font, 16);
+    UILabel label_vol({ 0, 0, 30, 23 }, "VOL:");
     label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
     label_track.setBackgroundColor({ 56, 56, 56, 0 });
@@ -229,9 +243,9 @@ void main_analyzer(void * args)
     panel.Add(analyzer_panel);
     panel.Add(footer);
   
-    AudioFrame frame;
+    AudioFrame frame = {0, 0};
 
-    auto time = millis();
+    //auto time = millis();
 
     while (true)
     {
@@ -257,7 +271,7 @@ void main_analyzer(void * args)
             sum_l += vReal_l[i];
             sum_r += vReal_r[i];
 
-            while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
+           // while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
         fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
@@ -267,7 +281,7 @@ void main_analyzer(void * args)
         // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
         // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-        for (int band_index = 0, bin = 2; band_index < BANDS_COUNT; band_index++, bin+=4)
+        for (int band_index = 0, bin = 4; band_index < BANDS_COUNT; band_index++, bin+=4)
         {
           if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
             continue;
@@ -319,14 +333,16 @@ void main_analyzer(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      level_left.SetValueOf(abs(frame.left));
-      level_right.SetValueOf(abs(frame.right));
+      level_left.SetValueOf(frame.left + USHRT_MAX / 2.0);
+      level_right.SetValueOf(frame.right + USHRT_MAX / 2.0);
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {
-      //   panel.Draw(canvas);
-      //   //vTaskDelay(1);
+      //   panel.Update(canvas);
+        
       // }
+
+      vTaskDelay(2);
       
       // if (50 < (millis() - time))
       // {
@@ -341,17 +357,9 @@ void main_analyzer(void * args)
       //   vTaskDelay(2);
       // }
 
-      vTaskDelay(2);
-
-      // while(!level_left.IsValid() || !level_right.IsValid())
-      // {
-      //   level_left.Draw(canvas);
-      //   level_right.Draw(canvas);
-      //   vTaskDelay(3);
-      // }
-
       panel.Update(canvas);
     }
+
     vTaskDelete(NULL);
 }
 

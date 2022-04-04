@@ -10,13 +10,19 @@ struct Color
 
 	operator unsigned short() const;
 
-	// const static Color Black;
+	const static Color Black;
 
-	// const static Color White;
+	const static Color White;
 
-	// const static Color Red;
+	const static Color Red;
 
-	// const static Color Green;
+	const static Color Green;
 
-	// const static Color Blue;
+	const static Color Blue;
+
+	const static Color Orange;
+
+	const static Color LightBlue;
+
+	const static Color Gray;
 };

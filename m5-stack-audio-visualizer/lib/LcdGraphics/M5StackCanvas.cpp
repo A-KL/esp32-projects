@@ -33,11 +33,16 @@ void M5StackCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& co
 	_display.fillRect(x0, y0, w, h, (unsigned short)color);
 }
 
-void M5StackCanvas::DrawText(int x0, int y0, const char* text, const Color& color)
+void M5StackCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)
 {
   _display.setTextColor((unsigned short)color, TFT_BLACK);
   _display.setFont(&fonts::Font2);
-	_display.drawString(text, x0, y0);
+	_display.drawString(text, x, y);
+}
+
+void M5StackCanvas::DrawImage(int x, int y, int w, int h, const unsigned short* data)
+{
+  _display.pushImage(x, y, w, h, data);
 }
 
 void M5StackCanvas::Clear(const Color& color)

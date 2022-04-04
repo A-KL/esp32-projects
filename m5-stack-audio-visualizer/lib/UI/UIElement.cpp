@@ -6,7 +6,7 @@
 #include "UIElement.h"
 
 UIElement::UIElement(const UIRect& rect, const Color& background, const Color& border, int borderSize, const UIElement* parent) :
-    visible(true), _rect(rect), _valid(false), _parent(parent), _borderColor(border), _backgroundColor(background), _borderSize(borderSize)
+    visible(true), _rect(rect), _backgroundColor(background), _valid(false), _parent(parent), _borderColor(border), _borderSize(borderSize)
 {}
 
 bool UIElement::IsValid() const
@@ -35,7 +35,9 @@ void UIElement::Clear(Canvas<Color>& canvas) const
     canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _backgroundColor);
 
     if (_borderSize > 0) {
-        canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _borderColor);
+        for (auto i = 0; i < _borderSize; i++) {
+            canvas.DrawFilledRect(x+i, y+i, _rect.w - (i*2), _rect.h - (i*2), _borderColor);
+        }
     }
 }
 

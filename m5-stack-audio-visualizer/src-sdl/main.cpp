@@ -101,8 +101,8 @@ int main()
 		auto value_l = rand() % 255;
 		auto value_r = rand() % 255;
 
-		level_left.SetAnimatedValueOf(value_l);
-		level_right.SetAnimatedValueOf(value_r);
+		level_left.SetValueOf(value_l);
+		level_right.SetValueOf(value_r);
 
 		while (!level_left.IsValid() || !level_right.IsValid())
 		{
@@ -115,8 +115,8 @@ int main()
 			SDL_Delay(2);
 		}
 
-		level_left.SetAnimatedValueOf(0);
-		level_right.SetAnimatedValueOf(0);
+		level_left.SetValueOf(0);
+		level_right.SetValueOf(0);
 
 		while (!level_left.IsValid() || !level_right.IsValid())
 		{
@@ -134,8 +134,18 @@ int main()
 			analyzer.setBand(i, (rand() % 255));
 		}
 
+		label_0.setText("new text");
+
 		panel.Update(sdl);
+
+		label_0.setText("qweqweqweqw");
+
+		panel.Update(sdl);
+
 		sdl.Update();
+
+
+		
 
 		SDL_PollEvent(&event);
 		SDL_Delay(5);

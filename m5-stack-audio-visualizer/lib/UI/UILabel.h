@@ -23,6 +23,7 @@ public:
 
 private:
 	Color _forecolor;
-	const char* _text;
-	const int _fontSize;
+	std::string  _text;
+
+	int _fontSize;
 };

@@ -2,6 +2,7 @@
 #include <list>
 #include <iterator>
 #include <iostream>
+#include <string>
 
 #include "../BaseGraphics/Color.h"
 #include "../BaseGraphics/Canvas.h"
@@ -10,14 +11,16 @@
 #include "UILabel.h"
 
 UILabel::UILabel(const UIRect& rect, const char* text, const char* fontName, int size)
-		: UIElement(rect), _forecolor(255,255,255), _text(text), _fontSize(size)
-{ }
+		: UIElement(rect), _forecolor(255,255,255), _fontSize(size)
+{
+    setText(text);
+}
 
 void UILabel::Draw(Canvas<Color>& canvas)
 {
     Clear(canvas);
 
-    if (_text == NULL) {
+    if (_text.c_str() == NULL) {
         return;
     }
 
@@ -26,12 +29,5 @@ void UILabel::Draw(Canvas<Color>& canvas)
 
     AbsolutePosition(origin_x, origin_y);
 
-    std::string str(_text);
-    auto textSize = str.length();
-    auto textWidth = textSize * 6;
-
-    auto center_x = origin_x + (_rect.w - textWidth) / 2;
-    auto center_y = origin_y + (_rect.h - _fontSize) / 2;
-
-    canvas.DrawText(center_x, center_y, _text, _forecolor);
+    canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _forecolor);
 }

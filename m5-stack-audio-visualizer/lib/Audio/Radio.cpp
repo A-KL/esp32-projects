@@ -1,4 +1,5 @@
 #include "Radio.h"
+#include "driver/i2s.h"
 
 StreamDelegate InternetRadio::StreamChanged;
 
@@ -34,12 +35,12 @@ void InternetRadio::Play(const char* url = NULL)
 
    // _output = new AudioOutputSPDIFWithCallback();
 
-    _output= new CustomAudioOutputI2S(0, 0);
+    _output= new CustomAudioOutputI2S(0, 0, 8, 1);
     _output->SetPinout(26, 25, 33);
     _output->SetGain(_gain*0.1);
     
-    REG_WRITE(PIN_CTRL, 0xFF0);
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
+    // PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
+    // WRITE_PERI_REG(PIN_CTRL, READ_PERI_REG(PIN_CTRL) & 0xFFFFFFF0);
     // _output = new AudioOutputWithCallback(audio);
     // _output->SetPinout(26, 25, 33);
     // _output->SetGain(_gain*0.1);
@@ -50,6 +51,9 @@ void InternetRadio::Play(const char* url = NULL)
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");
     _mp3->begin(_buffer, _output);
+
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
+    WRITE_PERI_REG(PIN_CTRL, 0xFFF0);
 }
 
 void InternetRadio::Stop() 

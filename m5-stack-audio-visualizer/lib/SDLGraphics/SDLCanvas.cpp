@@ -32,11 +32,19 @@ void SDLCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 {
 	SDL_SetRenderDrawColor(_sdl, color._r, color._g, color._b, color._a);
 
-	SDL_Rect rect{ x0, y0, w, h };
+	SDL_Rect rect { x0, y0, w, h };
 	SDL_RenderFillRect(_sdl, &rect);
 }
 
-void SDLCanvas::DrawText(int x0, int y0, const char* text, const Color& color)
+void SDLCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
+{
+	SDL_SetRenderDrawColor(_sdl, color._r, color._g, color._b, color._a);
+
+	SDL_Rect rect { x0, y0, w, h };
+	SDL_RenderDrawRect(_sdl, &rect);
+}
+
+void SDLCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)
 {
 	auto fontName = "C:/Windows/Fonts/Calibril.ttf";
 
@@ -48,7 +56,7 @@ void SDLCanvas::DrawText(int x0, int y0, const char* text, const Color& color)
 	SDL_Texture* Message =
 		SDL_CreateTextureFromSurface(_sdl, surfaceMessage);
 
-	SDL_Rect text_rect{ x0, y0, surfaceMessage->w, surfaceMessage->h };
+	SDL_Rect text_rect{ x, y, surfaceMessage->w, surfaceMessage->h };
 
 	SDL_RenderCopy(_sdl, Message, NULL, &text_rect);
 

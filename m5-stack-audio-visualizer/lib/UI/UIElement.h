@@ -59,12 +59,13 @@ protected:
 
 	void AbsolutePosition(int& x, int& y) const;
 
+	Color _backgroundColor;
+
 private:
 	bool _valid;
 	const UIElement* _parent;
 
 	Color _borderColor;
-	Color _backgroundColor;
 
 	int _borderSize;
 };

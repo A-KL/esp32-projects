@@ -8,7 +8,6 @@ public:
 		UIElement(rect, {30, 30, 30}),
 		_newValue(value),
 		_currentValue(value),
-		_backgroundColor(30, 30, 30),
 		_activeColor(15, 185, 79),
 		_activeThresholdColor(255, 0, 0),
 		_activeWarningColor(185, 186, 48),
@@ -66,7 +65,6 @@ private:
 	unsigned short _newValue;
 	unsigned short _currentValue;
 
-	const Color _backgroundColor;
 	const Color _activeColor;
 	const Color _activeThresholdColor;
 	const Color _activeWarningColor;
@@ -85,15 +83,11 @@ public:
 		UVProgress(rect, value), _animatedValue(0)
 	{}
 
-	inline void SetAnimatedValue(unsigned short new_value)
-	{
-		_animatedValue = new_value > _maxValue ? _maxValue : new_value;
-	}
-
 	void SetValue(unsigned short new_value)
 	{
 		_animatedValue = new_value > _maxValue ? _maxValue : new_value;
-		UVProgress::SetValue(UVProgress::Value());
+
+		Invalidate();
 	}
 
 	bool IsValid() const
@@ -135,16 +129,11 @@ public:
 		SetValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
 	}
 
-	inline void SetAnimatedValueOf(TValue new_value)
-	{
-		SetAnimatedValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
-	}
-
 private:
 	const TValue _minValueT;
 	const TValue _maxValueT;
 
-	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
+	inline static TValue map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
 	{
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
@@ -172,7 +161,7 @@ private:
 	const TValue _minValueT;
 	const TValue _maxValueT;
 
-	inline static int map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
+	inline static TValue map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
 	{
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}

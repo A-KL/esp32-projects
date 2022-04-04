@@ -20,6 +20,8 @@
   TFTCanvas canvas;
 #endif
 
+#include "espressif-logo-featured.h"
+
 #include "UIElement.h"
 #include "UVProgress.h"
 #include "UISoundAnalyzer.h"
@@ -32,12 +34,17 @@
 void setup() {
   Serial.begin(115200);
 
-  canvas.Init(Color(0, 0, 0));
+  canvas.Init(Color(255, 255, 255));
+
+  canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
 
   setupWiFi();
-  startAnalyzer((void*)&canvas);
 
   setupRadio();
+
+  canvas.Clear(Color(0, 0, 0));
+
+  startAnalyzer((void*)&canvas);
 }
 
 void loop() {

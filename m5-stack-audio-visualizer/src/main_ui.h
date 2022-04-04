@@ -91,7 +91,7 @@ static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
-UILabel label_track({ 30, 0, 200, 23 }, "Test", NULL, 16);
+UILabel label_track({ 40, 15, 200, 23 }, "Test", NULL, 16);
 
 // ---------------------------------------------------
 
@@ -160,6 +160,8 @@ void main_analyzer(void * args)
 
     auto canvas = *(TFTCanvas*)args;
 
+    canvas.SetFont(NULL, 1);
+
     // Root
     UIContainer panel({ 0, 0, 320, 240});
 
@@ -167,24 +169,24 @@ void main_analyzer(void * args)
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
     const char* font = NULL;
-    UILabel label({ 0, 0, 320, 25 }, "S/PDIF", font, 16);
+    UILabel label({ 0, 16, 320, 25 }, "S/PDIF", font, 16);
 
-    auto start = 18;
-    UILabel label_0({ 8, start, 18, 16 }, "0", font, 16);
-    UILabel label_10({ 5, start += 19, 20, 16 }, "-10", font, 16);
+    auto start = 18 + 10;
+    UILabel label_0({ 10, start,        20, 16 }, "0", font, 16);
+    UILabel label_10({ 5, start += 20, 20, 16 }, "-10", font, 16);
     UILabel label_20({ 5, start += 20, 20, 16 }, "-20", font, 16);
-    UILabel label_30({ 5, start += 19, 20, 16 }, "-30", font, 16);
+    UILabel label_30({ 5, start += 20, 20, 16 }, "-30", font, 16);
     UILabel label_40({ 5, start += 20, 20, 16 }, "-40", font, 16);
-    UILabel label_50({ 5, start += 19, 20, 16 }, "-50", font, 16);
+    UILabel label_50({ 5, start += 20, 20, 16 }, "-50", font, 16);
     UILabel label_60({ 5, start += 20, 20, 16 }, "-60", font, 16);
 
 	  UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
 
-    UILabel level_left_label({ 0, 181, 20, 16 }, "L", NULL, 16);
-    UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R", NULL, 16);
+    UILabel level_left_label({ 0, 191, 20, 16 }, "L", NULL, 16);
+    UILabel level_right_label({ 0, 191 + 13 + 3, 20, 16 }, "R", NULL, 16);
 
-    UVAnimatedProgressOf<uint8_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-    UVAnimatedProgressOf<uint8_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVAnimatedProgressOf<uint16_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVAnimatedProgressOf<uint16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
 
     level_left.Clear(canvas);
     level_right.Clear(canvas);
@@ -214,7 +216,7 @@ void main_analyzer(void * args)
     //panel.Add(stations);
 
     // Footer
-    UILabel label_vol({ 0, 0, 30, 23 }, "VOL:", font, 16);
+    UILabel label_vol({ 0, 16, 30, 23 }, "VOL:", font, 16);
     label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
     label_track.setBackgroundColor({ 56, 56, 56, 0 });
@@ -317,11 +319,8 @@ void main_analyzer(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      // level_left.SetValueOf(l);
-      // level_right.SetValueOf(r);
-
-      // level_left.SetAnimatedValueOf(l);
-      // level_right.SetAnimatedValueOf(r);
+      level_left.SetValueOf(abs(frame.left));
+      level_right.SetValueOf(abs(frame.right));
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {
@@ -329,18 +328,20 @@ void main_analyzer(void * args)
       //   //vTaskDelay(1);
       // }
       
-      if (50 < (millis() - time))
-      {
-        unsigned short l = frame.left + USHRT_MAX / 2.0;
-        unsigned short r = frame.right + USHRT_MAX / 2.0;
+      // if (50 < (millis() - time))
+      // {
+      //   unsigned short l = frame.left ;// + USHRT_MAX / 2.0;
+      //   unsigned short r = frame.right;// + USHRT_MAX / 2.0;
 
-        level_left.SetAnimatedValueOf(l);
-        level_right.SetAnimatedValueOf(r);
+      //   level_left.SetAnimatedValueOf(l);
+      //   level_right.SetAnimatedValueOf(r);
 
-        time = millis();
+      //   time = millis();
 
-        vTaskDelay(2);
-      }
+      //   vTaskDelay(2);
+      // }
+
+      vTaskDelay(2);
 
       // while(!level_left.IsValid() || !level_right.IsValid())
       // {

@@ -41,23 +41,45 @@ void TFTCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 	_display.fillRect(x0, y0, w, h, (unsigned short)color);
 }
 
+void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
+{
+  _display.drawRect(x0, y0, w, h, (unsigned short)color);
+}
+
 void TFTCanvas::SetFont(const char* fontName, unsigned char size)
 {
-  _display.setFont(&FreeSansBold12pt7b);
+  _display.setFont(&FreeSans9pt7b);
   _display.setTextSize(size);
 }
 
-void TFTCanvas::DrawText(int x0, int y0, const char* text, const Color& color)
+void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)
 {
   _display.setTextColor((unsigned short)color);
 
+  int16_t  x0=0, y0=0;
   int16_t  x1, y1;
-  uint16_t w, h;
-  _display.getTextBounds(text, x0, y0, &x1, &y1, &w, &h);
+  uint16_t w1, h1;
 
-  _display.setCursor(x0, y0);
+  _display.getTextBounds(text, x, y, &x1, &y1, &w1, &h1);
+
+  if (w > w1)
+  {
+    x += (w - w1) / 2.0;
+  }
+
+  // if (h > h1)
+  // {
+  //   y += (h - h1) / 2.0;
+  // }
+
+  _display.setCursor(x, y);
 
 	_display.println(text);
+}
+
+void TFTCanvas::DrawImage(int x, int y, int w, int h, const unsigned short* data)
+{
+  _display.drawRGBBitmap(x, y, data, w, h);
 }
 
 void TFTCanvas::Clear(const Color& color)

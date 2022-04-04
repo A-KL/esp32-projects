@@ -10,7 +10,9 @@ public:
 
 	virtual void DrawFilledRect(int x0, int y0, int w, int h, const TColor& color) = 0;
 
-	virtual void DrawText(int x0, int y0, const char* text, const TColor& color) = 0;
+	virtual void DrawRect(int x0, int y0, int w, int h, const TColor& color) = 0;
+
+	virtual void DrawText(int x, int y, int w, int h, const char* text, const TColor& color) = 0;
 
 	virtual int Height() const = 0;
 

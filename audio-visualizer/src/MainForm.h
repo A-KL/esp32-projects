@@ -5,14 +5,6 @@
 #include "UILabel.h"
 #include "UISoundAnalyzer.h"
 
-struct RadioStation 
-{
-    const char* Name;
-    const char* Url;
-
-    friend std::ostream& operator<<(std::ostream& os, const RadioStation& station);
-};
-
 // class MainForm : public UIContainer
 // {
 // public:

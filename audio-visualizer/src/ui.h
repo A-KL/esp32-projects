@@ -17,99 +17,13 @@
 
 #define BANDS_COUNT 30
 
-#define VOLUME_PIN_A  34
-#define VOLUME_PIN_B  35
-#define VOLUME_BUTTON 32
-
-#define MENU_PIN_A  00
-#define MENU_PIN_B  02
-#define MENU_BUTTON 15
-
-#define DEBOUNCE_TIME 50
-
-// ---------------------------------------------------
-
-RadioStation Stations[] { 
-  {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
-  {"KPop Radio", "http://streamer.radio.co/s06b196587/listen"},
-
-  {"Classic FM", "http://media-ice.musicradio.com:80/ClassicFMMP3"},
-  {"Lite Favorites", "http://naxos.cdnstream.com:80/1255_128"},
-  {"MAXXED Out", "http://149.56.195.94:8015/steam"},
-  {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"}
-};
-
-const int stationsCount = (sizeof(Stations)/sizeof(RadioStation) - 1);
-int stationIndex = 0;
-
-// ---------------------------------------------------
-
-static void onLeftEncoderChanged(void* arg);
-static void onRightEncoderChanged(void* arg);
-
-static ESP32Encoder encoder_left(true, onLeftEncoderChanged);
-static ESP32Encoder encoder_right(true, onRightEncoderChanged);
-
-static void onLeftEncoderChanged(void* arg) {
-  auto count = encoder_left.getCount();
-  Serial.printf("Left enc: %d\n", count);
-}
-
-static void onRightEncoderChanged(void* arg) {
-  auto count = encoder_right.getCount();
-  Serial.printf("Right enc: %d\n", count);
-}
-
-static void onLeftEncoderButtonUp()
-{
-  Serial.println("onLeftEncoderButtonUp");
-
-  // if (stationIndex >= stationsCount)
-  // {
-  //   stationIndex = 0;
-  // }
-  // else
-  // {
-  //   stationIndex++;
-  // }
-
-  // Serial.println(stationIndex);
-
-  // radio.Stop();
-  // radio.Play(Stations[stationIndex].Url);
-}
-
-static void onRightEncoderButtonUp()
-{
-  Serial.println("onRightEncoderButtonUp");
-}
-
-void setupEncoder()
-{
-  pinMode(VOLUME_BUTTON, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onLeftEncoderButtonUp, RISING );
-
-  pinMode(MENU_BUTTON, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(MENU_BUTTON), onRightEncoderButtonUp, RISING );
-
-  ESP32Encoder::useInternalWeakPullResistors=UP;
-
-  encoder_left.attachSingleEdge(VOLUME_PIN_A, VOLUME_PIN_B);
-  encoder_left.clearCount();
-  encoder_left.setFilter(1023);
-
-  encoder_right.attachSingleEdge(MENU_PIN_A, MENU_PIN_B);
-  encoder_right.clearCount();
-  encoder_right.setFilter(1023);
-}
-
 // ---------------------------------------------------
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 static InternetRadio radio;
 
-UILabel label_track({ 40, 0, 200, 23 }, "");
+UILabel label_track({ 0, 0, 320, 20 }, "");
 
 // ---------------------------------------------------
 
@@ -184,8 +98,6 @@ void main_analyzer(void * args)
     // Analyzer
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
-    UILabel label({ 0, 0, 320, 20 }, "Web");
-
     UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, 2);
 	  label_out_spdif.setForecolor(Color::Red);
 
@@ -194,6 +106,9 @@ void main_analyzer(void * args)
 
     UILabel label_input_web({ 50 + 2 + 42 + 2, 0, 42, 18 }, "Web", Color::Orange, 2);
 	  label_input_web.setForecolor(Color::Orange);
+
+    UILabel label_input_bt({ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::LightBlue, 2);
+	  label_input_bt.setForecolor(Color::LightBlue);
 
     // UILabel label_input_aux({ 52, 0, 42, 18 }, "AUX", Color::Gray, 2);
 	  // label_input_aux.setForecolor(Color::Gray);
@@ -218,13 +133,7 @@ void main_analyzer(void * args)
     UVProgressOf<uint16_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
     UVProgressOf<uint16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
 
-    level_left.Clear(canvas);
-    level_right.Clear(canvas);
-
-    analyzer_panel.Add(label);
-    analyzer_panel.Add(label_out_spdif);
-    analyzer_panel.Add(label_out_aux);
-    analyzer_panel.Add(label_input_web);
+    analyzer_panel.Add(label_track);
     analyzer_panel.Add(label_0);
     analyzer_panel.Add(label_10);
     analyzer_panel.Add(label_20);
@@ -252,15 +161,19 @@ void main_analyzer(void * args)
     UILabel label_vol({ 0, 0, 30, 23 }, "VOL:");
     label_vol.setBackgroundColor({ 56, 56, 56, 0 });
 
-    label_track.setBackgroundColor({ 56, 56, 56, 0 });
+    UIContainer footer({ 0, 240-18, 320, 18 }); // , { 56, 56, 56, 0 }
 
-    UIContainer footer({ 0, 240-23, 320, 23 }, { 56, 56, 56, 0 });
+    //footer.Add(label_vol);
 
-    footer.Add(label_vol);
-    footer.Add(label_track); 
+    footer.Add(label_out_spdif);
+    footer.Add(label_out_aux);
+    footer.Add(label_input_web);
+    
 
     panel.Add(analyzer_panel);
     panel.Add(footer);
+
+    panel.Update(canvas);
   
     AudioFrame frame = {0, 0};
 

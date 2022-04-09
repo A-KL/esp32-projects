@@ -1,13 +1,13 @@
 #include <limits.h>
 #include <Arduino.h>
 #include <arduinoFFT.h>
-#include <ESP32Encoder.h>
 
 #include "Network.h"
-#include "Radio.h"
+//#include "Radio.h"
 
 #include "Color.h"
 #include "Canvas.h"
+#include "espressif-logo-featured.h"
 
 #ifdef M5STACK
   #include "M5StackCanvas.h"
@@ -19,40 +19,57 @@
   TFTCanvas canvas;
 #endif
 
-#include "espressif-logo-featured.h"
+typedef struct __attribute__((packed)) {
+    int16_t left;
+    int16_t right;
+} AudioFrame;
 
 #include "urls.h"
+#include "events.h"
 #include "ui.h"
 #include "audio.h"
-#include "events.h"
 
 void setup() {
   Serial.begin(115200);
 
-  setupEncoder();
+  //setupEncoder();
 
   canvas.Init(Color(255, 255, 255));
-
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
 
   setupWiFi();
 
   canvas.Clear(Color(0, 0, 0));
 
- startAnalyzer((void*)&canvas);
-  
+  startAnalyzer((void*)&canvas);
+
   while (true)
   {
-    setupAudio(Stations[stationIndex].Url);
-    //setupRadio();
+    auto copier = setupAudio();
 
     while (true)
     {
-      loopAudio();
-      //loopRadio();
+      // if (encoder_left_.isEncoderButtonClicked(50))
+      // {
+      //     is_muted = !is_muted;
+      // }
+
+      // if (encoder_left_.encoderChanged())
+      // {
+      //     float level = encoder_left_.readEncoder();
+      //     Serial.print("Value: ");
+      //     Serial.println(level);
+      //     volume.setFactor(level / 255.0f);
+      // }
+      // else if (is_muted)
+      // {
+      //     volume.setFactor(0.0);
+      // }
+
+      loopAudio(copier);
+      
     }
   }
-  
 }
 
 void loop() {

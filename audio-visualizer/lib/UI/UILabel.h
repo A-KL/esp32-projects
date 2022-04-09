@@ -10,13 +10,19 @@ public:
 	UILabel(const UIRect& rect, const char* text, const Color& borderColor, int borderSize);
 
 	inline void setText(const char* text)
-	{
+	{		
+		if (text == _text) {
+			return;
+		}
 		_text = text;
 		Invalidate();
 	}
 
 	inline void setForecolor(const Color& color)
 	{
+		// if (color == _forecolor) {
+		// 	return;
+		// }
 		_forecolor = color;
 		Invalidate();
 	}

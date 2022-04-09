@@ -1,84 +1,61 @@
+#define USE_HELIX 
 
-#define USE_A2DP
-
-#include "BluetoothA2DPSink.h"
-#include "AudioConfigLocal.h"
 #include "AudioTools.h"
+#include "AudioCodecs/CodecMP3Helix.h"
 
-BluetoothA2DPSink a2dp_sink;
+URLStream url("kl-home","sunnycoconut971");
+ICYStream icy("kl-home","sunnycoconut971");
+
+//AudioOutputWithCallback callback;
+I2SStream i2s; // final output of decoded stream
 SPDIFStream spdif;
+MetaDataPrint metadata; // final output of metadata
 
-// Write data to SPDIF in callback
-void read_data_stream(const uint8_t *data, uint32_t length) {
-    spdif.write(data, length);
+EncodedAudioStream dec(&spdif, new MP3DecoderHelix()); // Decoding stream
+MultiOutput out(metadata, dec);
+
+StreamCopy copier(out, url); // copy url to decoder
+
+// callback for meta data
+void printMetaData(MetaDataType type, const char* str, int len){
+  Serial.print("==> ");
+  Serial.print(toStr(type));
+  Serial.print(": ");
+  Serial.println(str);
 }
 
-void setup() {
+void setup(){
   Serial.begin(115200);
-  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
-  
-  // register callback
-  a2dp_sink.set_stream_reader(read_data_stream, false);
+  AudioLogger::instance().begin(Serial, AudioLogger::Info);  
 
-  // Start Bluetooth Audio Receiver
-  a2dp_sink.set_auto_reconnect(false);
-  a2dp_sink.start("a2dp-spdif");
+  // mp3 radio
+  url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");//SWISS Jazz
 
-  // setup output
+  // setup metadata
+  metadata.setCallback(printMetaData);
+  metadata.begin(url.httpRequest());
+
+  // setup SPDIF
   auto cfg = spdif.defaultConfig();
   cfg.pin_data = 27;
-  cfg.sample_rate = a2dp_sink.sample_rate();
+  cfg.sample_rate = 441000;
   cfg.channels = 2;
   cfg.bits_per_sample = 16;
   spdif.begin(cfg);
 
+  // setup i2s
+//   auto config = i2s.defaultConfig(TX_MODE);
+//   config.pin_ws = 25;
+//   config.pin_bck = 26;
+//   config.pin_data = 33;
+//   //config.mode = I2S_STD_FORMAT;
+//   i2s.begin(config);
+
+  // setup I2S based on sampling rate provided by decoder
+  dec.setNotifyAudioChange(spdif);
+  dec.begin();
 }
 
-void loop() {
-  delay(100);
+void loop(){
+  copier.copy();
 }
-
-// A2DPStream a2dp = A2DPStream::instance(); // access A2DP as stream
-// //I2SStream i2sStream;                    // Access I2S as stream
-// SPDIFStream spdif;
-
-
-// VolumeStream volume(a2dp);
-// StreamCopy copier(volume, spdif); // copy i2sStream to a2dpStream to spdif
-
-// //ConverterFillLeftAndRight<int16_t> filler(LeftIsEmpty); // fill both channels
-
-// void setupBluetooth()
-// {
-//     Serial.begin(115200);
-
-//     // set intial volume
-//     volume.setVolume(0.3);
-
-//     // start SPDIF
-//     Serial.println("starting SPDIF...");
-
-//     auto config = spdif.defaultConfig();
-//     config.sample_rate = 44100; 
-//     config.channels = 2;
-//     config.pin_data = 27;
-    
-//     // start bluetooth
-//     Serial.println("starting A2DP...");
-
-//     auto configA2DP = a2dp.defaultConfig(RX_MODE);
-//     configA2DP.name = "LEXON MINO L";
-//     a2dp.begin(configA2DP);
-
-//     // start i2s input with default configuration
-//     Serial.println("starting I2S...");
-
-//     a2dp.setNotifyAudioChange(spdif);
-//     spdif.begin(config);
-// }
-
-// void loopBluetooth()
-// {
-//    // copier.copy(filler);
-//    copier.copy();
-// }

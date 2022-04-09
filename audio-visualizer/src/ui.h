@@ -10,19 +10,8 @@
 
 // ---------------------------------------------------
 #define SAMPLES 512              // Must be a power of 2
-
-#define SAMPLING_FREQUENCY 40000 // Hz, must be 40000 or less due to ADC conversion time. Determines maximum frequency that can be analysed by the FFT Fmax=sampleF/2.
 #define AMPLITUDE_MAX 255
-
 #define BANDS_COUNT 30
-
-// ---------------------------------------------------
-static arduinoFFT fft;
-static TaskHandle_t analyzerHandle;
-static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-//tatic InternetRadio radio;
-
-UILabel label_track({ 0, 0, 320, 20 }, "");
 
 unsigned char peak[BANDS_COUNT];
 
@@ -32,6 +21,15 @@ double vReal_r[SAMPLES];
 double vImag_l[SAMPLES];
 double vImag_r[SAMPLES];
 
+unsigned int sampling_period_us = round(1000000 * (1.0 / 44100));
+unsigned long newTime, oldTime, microseconds;
+// ---------------------------------------------------
+static arduinoFFT fft;
+static TaskHandle_t analyzerHandle;
+static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+//tatic InternetRadio radio;
+
+UILabel label_track({ 0, 0, 320, 20 }, "");
 // ---------------------------------------------------
 
 void onAudioFrameCallback(const AudioFrame& frame)
@@ -104,8 +102,8 @@ void main_analyzer(void * args)
     UILabel level_left_label({ 0, 181, 20, 16 }, "L");
     UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R");
 
-    UVProgressOf<uint16_t> level_left({ 24, 181,           246, 15 }, 0, 4095, 4095 * 0.9, 0);
-    UVProgressOf<uint16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 4095, 4095 * 0.9, 0);
+    UVProgressOf<int16_t> level_left({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 0);
+    UVProgressOf<int16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 0);
 
     analyzer_panel.Add(label_track);
     analyzer_panel.Add(label_0);
@@ -180,7 +178,10 @@ void main_analyzer(void * args)
         // }
 
         for (int i = 0; i < SAMPLES; i++) 
-        {
+        {            
+            newTime = micros()-oldTime;
+            oldTime = newTime;
+
             while (xQueueReceive(audioFrameQueue, &frame, portMAX_DELAY) == pdFALSE)
             {
                 vTaskDelay(2);
@@ -191,6 +192,8 @@ void main_analyzer(void * args)
 
             vImag_l[i] = 0;
             vImag_r[i] = 0;
+
+            while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
         fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
@@ -252,13 +255,12 @@ void main_analyzer(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      level_left.SetValueOf(abs(frame.left));
-      level_right.SetValueOf(abs(frame.right));
+      level_left.SetValueOf(frame.left);
+      level_right.SetValueOf(frame.right);
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {
-      //   panel.Update(canvas);
-        
+      //   panel.Update(canvas); 
       // }
       
       // if (50 < (millis() - time))

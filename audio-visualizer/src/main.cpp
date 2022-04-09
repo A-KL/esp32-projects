@@ -32,7 +32,7 @@ typedef struct __attribute__((packed)) {
 void setup() {
   Serial.begin(115200);
 
-  //setupEncoder();
+  setupEncoder();
 
   canvas.Init(Color(255, 255, 255));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
@@ -49,17 +49,17 @@ void setup() {
 
     while (true)
     {
-      // if (encoder_left_.isEncoderButtonClicked(50))
-      // {
-      //     is_muted = !is_muted;
-      // }
+      if (encoder_left_.isEncoderButtonClicked(50))
+      {
+          is_muted = !is_muted;
+      }
 
       // if (encoder_left_.encoderChanged())
       // {
       //     float level = encoder_left_.readEncoder();
       //     Serial.print("Value: ");
       //     Serial.println(level);
-      //     volume.setFactor(level / 255.0f);
+      //     //volume.setFactor(level / 255.0f);
       // }
       // else if (is_muted)
       // {

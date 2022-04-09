@@ -1,4 +1,5 @@
 #define USE_HELIX 
+#define SPDIF_DATA_PIN 27
 
 #include "BluetoothA2DPSink.h"
 #include "AudioTools.h"
@@ -110,7 +111,7 @@ static void printMetaData(MetaDataType type, const char* str, int len){
     Serial.print(": ");
     Serial.println(str);
 
-    //label_track.setText(str);
+    label_track.setText(str);
 }
 
 AudioStream* createWeb(const char* url) {

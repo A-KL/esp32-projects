@@ -25,3 +25,11 @@ Color::operator unsigned short() const
 {
 	return ((_r >> 3) << 11 | (_g >> 2) << 5 | _b>> 3);
 }
+
+bool Color::operator ==(const Color& other) const 
+{
+	return _r == other._r &&
+		   _g == other._g &&
+		   _b == other._b &&
+		   _a == other._a;
+}

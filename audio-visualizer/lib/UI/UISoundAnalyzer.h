@@ -21,7 +21,15 @@ public:
 		{
 			return false;
 		}
-		_channels[channel] = value;
+
+		auto new_value = value > _vertical_elements_count ? _vertical_elements_count : value;
+
+		if (new_value == _channels[channel])
+		{
+			return false;
+		}
+		
+		_channels[channel] = new_value;
 
 		Invalidate();
 

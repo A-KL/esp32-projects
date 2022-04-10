@@ -20,9 +20,9 @@ public:
 
 	inline void setForecolor(const Color& color)
 	{
-		// if (color == _forecolor) {
-		// 	return;
-		// }
+		if (color == _forecolor) {
+			return;
+		}
 		_forecolor = color;
 		Invalidate();
 	}

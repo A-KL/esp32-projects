@@ -9,8 +9,7 @@
 #include "MainForm.h"
 
 // ---------------------------------------------------
-#define SAMPLES 512              // Must be a power of 2
-#define AMPLITUDE_MAX 255
+#define SAMPLES 512
 #define BANDS_COUNT 30
 
 unsigned char peak[BANDS_COUNT];
@@ -27,7 +26,7 @@ unsigned long newTime, oldTime, microseconds;
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-//tatic InternetRadio radio;
+//static InternetRadio radio;
 
 UILabel label_track({ 0, 0, 320, 20 }, "");
 // ---------------------------------------------------
@@ -57,30 +56,15 @@ void onStreamChanged(const char *type, const char *value)
 //     radio.Loop();
 // }
 
-void displayBand(UISoundAnalyzer<BANDS_COUNT>& analyzer, int band, int amplitude)
-{
-  if (amplitude > AMPLITUDE_MAX) 
-  {
-    amplitude = AMPLITUDE_MAX;
-  }
-
-  analyzer.setBand(band, amplitude);
-
-  if (amplitude > peak[band]) 
-  {
-    peak[band] = amplitude;
-  }
-}
-
 // ---------------------------------------------------
 
 void main_analyzer(void * args)
 {
-    memset(peak, 0, BANDS_COUNT);
+    //memset(peak, 0, BANDS_COUNT);
 
-    auto canvas = *(TFTCanvas*)args;
+    auto canvas = (TCanvas*)args;
 
-    canvas.SetFont(NULL, 1);
+    canvas->SetFont(NULL, 1);
 
     // Root
     UIContainer panel({ 0, 0, 320, 240});
@@ -208,33 +192,33 @@ void main_analyzer(void * args)
             if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
               continue;
             }
-            displayBand(analyzer, band_index, (int)vReal_l[bin] / AMPLITUDE_MAX); 
+            analyzer.setBand(band_index, (int)vReal_l[bin] / 60);
         }
 
-        for (int i = 2, band_index = 0;  i < (SAMPLES/2); i+=2)
-        { 
-          if (vReal_l[i] < 400) { // Add a crude noise filter, 10 x amplitude or more
-            continue;
-          }
+        // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
+        // { 
+        //   if (vReal_l[i] < 400) { // Add a crude noise filter, 10 x amplitude or more
+        //     continue;
+        //   }
 
-          if (band_index>=30) {
-            break;
-          }
+        //   if (band_index>=30) {
+        //     break;
+        //   }
 
-          displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX); 
+        //   analyzer.setBand(band_index++, (int)vReal_l[bin] / 60); 
 
-            // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
-            // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
-            // if (i >5   && i<=7 )   displayBand(analyzer, 2, (int)vReal[i]/amplitude); // 500Hz
-            // if (i >7   && i<=15 )  displayBand(analyzer, 3, (int)vReal[i]/amplitude); // 1000Hz
-            // if (i >15  && i<=30 )  displayBand(analyzer, 4, (int)vReal[i]/amplitude); // 2000Hz
-            // if (i >30  && i<=53 )  displayBand(analyzer, 5, (int)vReal[i]/amplitude); // 4000Hz
-            // if (i >53  && i<=200 ) displayBand(analyzer, 6, (int)vReal[i]/amplitude); // 8000Hz
-            // if (i >200           ) displayBand(analyzer, 7, (int)vReal[i]/amplitude); // 16000Hz  
+        //     // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
+        //     // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
+        //     // if (i >5   && i<=7 )   displayBand(analyzer, 2, (int)vReal[i]/amplitude); // 500Hz
+        //     // if (i >7   && i<=15 )  displayBand(analyzer, 3, (int)vReal[i]/amplitude); // 1000Hz
+        //     // if (i >15  && i<=30 )  displayBand(analyzer, 4, (int)vReal[i]/amplitude); // 2000Hz
+        //     // if (i >30  && i<=53 )  displayBand(analyzer, 5, (int)vReal[i]/amplitude); // 4000Hz
+        //     // if (i >53  && i<=200 ) displayBand(analyzer, 6, (int)vReal[i]/amplitude); // 8000Hz
+        //     // if (i >200           ) displayBand(analyzer, 7, (int)vReal[i]/amplitude); // 16000Hz  
 
-          // for (byte band = 0; band <= 6; band++) 
-          //     display.drawHorizontalLine(18*band,64-peak[band],14);
-        }
+        //   // for (byte band = 0; band <= 6; band++) 
+        //   //     display.drawHorizontalLine(18*band,64-peak[band],14);
+        // }
 
         // if (millis()%4 == 0) 
         // {
@@ -244,9 +228,6 @@ void main_analyzer(void * args)
         //     peak[band] -= 1;
         //   }
         // } // Decay the peak
-
-      // auto avg_l = sum_l / (float)SAMPLES;
-      // auto avg_r = sum_r / (float)SAMPLES;
 
       // unsigned short l = frame.left + USHRT_MAX / 2.0;
       // unsigned short r = frame.right + USHRT_MAX / 2.0;
@@ -276,7 +257,7 @@ void main_analyzer(void * args)
       //   vTaskDelay(2);
       // }
 
-      panel.Update(canvas);
+      panel.Update(*canvas);
 
       vTaskDelay(2);
     }

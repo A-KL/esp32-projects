@@ -100,6 +100,7 @@ I2SStream* createI2S() {
     config.pin_ws = 25;
     config.pin_bck = 26;
     config.pin_data = 33;
+    //config.pin_mck = 10;
     i2s->begin(config);
     return i2s;
 }

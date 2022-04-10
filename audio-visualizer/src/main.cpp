@@ -11,13 +11,15 @@
 
 #ifdef M5STACK
   #include "M5StackCanvas.h"
-  M5StackCanvas canvas;
+  #define TCanvas M5StackCanvas
 #endif
 
 #ifdef ESP_WROVER
   #include "TFTCanvas.h"
-  TFTCanvas canvas;
+  #define TCanvas TFTCanvas
 #endif
+
+TCanvas canvas;
 
 typedef struct __attribute__((packed)) {
     int16_t left;

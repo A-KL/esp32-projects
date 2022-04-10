@@ -10,6 +10,8 @@ struct Color
 
 	operator unsigned short() const;
 
+	bool operator==(const Color& other) const;
+
 	const static Color Black;
 
 	const static Color White;

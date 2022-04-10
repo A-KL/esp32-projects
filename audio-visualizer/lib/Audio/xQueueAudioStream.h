@@ -24,19 +24,18 @@ public:
         if (!active) return 0;
         LOGD(LOG_METHOD);
 
+        if (this->innerStream != nullptr){
+            this->innerStream->write(buffer, size);
+        }
+
         size_t lenChannels = size / (sizeof(T)*channels); 
         data_ptr = (T*)buffer;
 
         for (size_t j=0;j<lenChannels;j++){     
             if (queue_handle != nullptr && data_ptr != nullptr) {
-                lastFrame.left = *data_ptr++;
-                lastFrame.right = *data_ptr++;
-                xQueueSend(queue_handle, &lastFrame, 0);
+                xQueueSend(queue_handle, data_ptr, 0);
+                data_ptr+=channels;
             }
-        }
-
-        if (this->innerStream != nullptr){
-            return this->innerStream->write(buffer, size);
         }
 
         return size;
@@ -112,7 +111,7 @@ public:
 
 protected:
     AudioStream* innerStream;
-    AudioFrame lastFrame {0, 0};
+    //AudioFrame lastFrame {0, 0};
     xQueueHandle queue_handle;
     T *data_ptr;
     int channels = 2;

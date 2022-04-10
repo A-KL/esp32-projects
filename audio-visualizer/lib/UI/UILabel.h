@@ -1,7 +1,10 @@
 #pragma once
 
 #include "UIElement.h"
- 
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+
 class UILabel : public UIElement
 {
 public:
@@ -18,6 +21,20 @@ public:
 		Invalidate();
 	}
 
+	inline void setTextF(const char* format, ...)
+	{		
+		va_list args;
+    	va_start(args, format);
+		char buffer[100];
+		memset(&buffer[0], 0, sizeof(buffer));
+		auto size = sprintf(&buffer[0], format, args);
+		va_end(args);
+
+		_text = &buffer[0];
+
+		Invalidate();
+	}
+
 	inline void setForecolor(const Color& color)
 	{
 		if (color == _forecolor) {
@@ -31,5 +48,5 @@ public:
 
 private:
 	Color _forecolor;
-	std::string  _text;
+	std::string _text;
 };

@@ -29,6 +29,7 @@ static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 //static InternetRadio radio;
 
 UILabel label_track({ 0, 0, 320, 20 }, "");
+UILabel label_vol({320 - 50, 0, 50, 20 }, "100%");
 // ---------------------------------------------------
 
 void onAudioFrameCallback(const AudioFrame& frame)
@@ -70,6 +71,8 @@ void main_analyzer(void * args)
     UIContainer panel({ 0, 0, 320, 240});
 
     // Analyzer
+    
+
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
     auto start = 18;
@@ -88,8 +91,9 @@ void main_analyzer(void * args)
 
     UVProgressOf<int16_t> level_left({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 0);
     UVProgressOf<int16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 0);
-
+    
     analyzer_panel.Add(label_track);
+    analyzer_panel.Add(label_vol);
     analyzer_panel.Add(label_0);
     analyzer_panel.Add(label_10);
     analyzer_panel.Add(label_20);
@@ -116,8 +120,6 @@ void main_analyzer(void * args)
     // Footer
     UIContainer footer({ 0, 240-18, 320, 18 });
 
-    UILabel label_vol({ 0, 0, 30, 23 }, "VOL:");
-
     UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, 2);
 	  label_out_spdif.setForecolor(Color::Red);
 
@@ -139,7 +141,6 @@ void main_analyzer(void * args)
     // UILabel label_input_aux({ 52, 0, 42, 18 }, "S/PDIF", Color::Gray, 2);
 	  // label_input_aux.setForecolor(Color::Gray);
 
-    //footer.Add(label_vol);
     footer.Add(label_out_spdif);
     footer.Add(label_out_aux);
     footer.Add(label_input_web);
@@ -149,10 +150,12 @@ void main_analyzer(void * args)
     panel.Add(analyzer_panel);
     panel.Add(footer);
   
-    AudioFrame frame = {0, 0};
+    panel.Update(*canvas);
 
     while (true)
     {
+      AudioFrame frame = {0, 0};
+
         // if (is_muted){
         //   label_input_mute.setBorderColor(Color::White);
         //   label_input_mute.setForecolor(Color::White);
@@ -166,10 +169,7 @@ void main_analyzer(void * args)
             newTime = micros()-oldTime;
             oldTime = newTime;
 
-            while (xQueueReceive(audioFrameQueue, &frame, portMAX_DELAY) == pdFALSE)
-            {
-                vTaskDelay(pdMS_TO_TICKS(1));
-            }
+            xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));// == pdFALSE)
 
             vReal_l[i] = frame.left;
             vReal_r[i] = frame.right;
@@ -177,7 +177,7 @@ void main_analyzer(void * args)
             vImag_l[i] = 0;
             vImag_r[i] = 0;
 
-            while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
+            //while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
         fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
@@ -190,9 +190,10 @@ void main_analyzer(void * args)
         for (int band_index = 0, bin = 5; band_index < BANDS_COUNT; band_index++, bin+=4)
         {
             if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
+              analyzer.setBand(band_index, 0);
               continue;
             }
-            analyzer.setBand(band_index, (int)vReal_l[bin]/ 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
+            analyzer.setBand(band_index, (int)vReal_l[bin] % 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
         }
 
         // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)

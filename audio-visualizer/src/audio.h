@@ -102,6 +102,6 @@ StreamCopy* setupAudio() {
 }
 
 void loopAudio(StreamCopy* copier) {
-   copier->copy();
+   copier->copy(volume);
 }
 

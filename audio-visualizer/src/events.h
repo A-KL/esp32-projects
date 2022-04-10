@@ -10,8 +10,6 @@
 
 #define DEBOUNCE_TIME 50
 
-static volatile bool is_muted = false;
-
 // static void onLeftEncoderChanged(void* arg);
 // static void onRightEncoderChanged(void* arg);
 
@@ -25,18 +23,18 @@ void IRAM_ATTR readEncoderISR()
     encoder_left_.readEncoder_ISR();
 }
 
-void rotary_onButtonClick()
-{
-    static unsigned long lastTimePressed = 0;
+// void rotary_onButtonClick()
+// {
+//     static unsigned long lastTimePressed = 0;
 
-    if (millis() - lastTimePressed < 200)
-    {
-      return;
-    }
+//     if (millis() - lastTimePressed < 200)
+//     {
+//       return;
+//     }
     
-    lastTimePressed = millis();
-    is_muted = !is_muted;
-}
+//     lastTimePressed = millis();
+//     //is_muted = !is_muted;
+// }
 
 // static void onLeftEncoderChanged(void* arg) {
 //   auto count = encoder_left.getCount(); 

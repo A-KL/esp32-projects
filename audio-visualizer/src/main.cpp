@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <sstream>
 #include <Arduino.h>
 #include <arduinoFFT.h>
 
@@ -45,6 +46,8 @@ void setup() {
 
   startAnalyzer((void*)&canvas);
 
+  auto is_muted = false;
+
   while (true)
   {
     auto copier = setupAudio();
@@ -56,17 +59,20 @@ void setup() {
           is_muted = !is_muted;
       }
 
-      // if (encoder_left_.encoderChanged())
-      // {
-      //     float level = encoder_left_.readEncoder();
-      //     Serial.print("Value: ");
-      //     Serial.println(level);
-      //     //volume.setFactor(level / 255.0f);
-      // }
-      // else if (is_muted)
-      // {
-      //     volume.setFactor(0.0);
-      // }
+      if (encoder_left_.encoderChanged())
+      {
+          float level = encoder_left_.readEncoder();
+          Serial.print("Value: ");
+          Serial.println(level);
+          volume.setFactor(level / 255.0f);
+          std::ostringstream temp;
+          temp << level;
+          label_vol.setText(temp.str().c_str());
+      }
+      else if (is_muted)
+      {
+          volume.setFactor(0.0);
+      }
 
       loopAudio(copier);
       

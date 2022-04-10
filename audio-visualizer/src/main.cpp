@@ -61,12 +61,14 @@ void setup() {
 
       if (encoder_left_.encoderChanged())
       {
-          float level = encoder_left_.readEncoder();
-          Serial.print("Value: ");
-          Serial.println(level);
-          volume.setFactor(level / 255.0f);
+          auto level = encoder_left_.readEncoder() / 255.0f;
+          
+          volume.setFactor(level);
+
           std::ostringstream temp;
-          temp << level;
+
+          temp << level * 100 << "%";
+
           label_vol.setText(temp.str().c_str());
       }
       else if (is_muted)

@@ -168,7 +168,7 @@ void main_analyzer(void * args)
 
             while (xQueueReceive(audioFrameQueue, &frame, portMAX_DELAY) == pdFALSE)
             {
-                vTaskDelay(2);
+                vTaskDelay(pdMS_TO_TICKS(1));
             }
 
             vReal_l[i] = frame.left;
@@ -187,12 +187,12 @@ void main_analyzer(void * args)
         // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
         // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-        for (int band_index = 0, bin = 4; band_index < BANDS_COUNT; band_index++, bin+=4)
+        for (int band_index = 0, bin = 5; band_index < BANDS_COUNT; band_index++, bin+=4)
         {
             if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
               continue;
             }
-            analyzer.setBand(band_index, (int)vReal_l[bin] / 60);
+            analyzer.setBand(band_index, (int)vReal_l[bin]/ 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
         }
 
         // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
@@ -259,10 +259,15 @@ void main_analyzer(void * args)
 
       panel.Update(*canvas);
 
-      vTaskDelay(2);
+      vTaskDelay(pdMS_TO_TICKS(1));
     }
 
     vTaskDelete(NULL);
+}
+
+uint binToFreq(int index)
+{
+
 }
 
 void startAnalyzer(void * args)

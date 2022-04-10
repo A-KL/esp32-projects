@@ -4,56 +4,7 @@
 #include "BluetoothA2DPSink.h"
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
-
-template<typename T>
-class VisualizerStream : public AudioPrint, public AudioBaseInfoDependent {   
-    public:
-        VisualizerStream(xQueueHandle handle, bool active=false) {
-            this->queue_handle = handle;
-            this->active = active;
-        }
-
-        void begin(){
-            LOGD(LOG_METHOD);
-            this->active = true;
-        }
-
-        /// Sets the CsvStream as inactive 
-        void end() {
-            LOGD(LOG_METHOD);
-            active = false;
-        }
-
-        /// defines the number of channels
-        virtual void setAudioInfo(AudioBaseInfo info) {
-            LOGI(LOG_METHOD);
-            info.logInfo();
-            this->channels = info.channels;
-        };
-
-        /// Writes the data - formatted as CSV -  to the output stream
-        virtual size_t write(const uint8_t* data, size_t len) {   
-            if (!active) return 0;
-            LOGD(LOG_METHOD);
-            size_t lenChannels = len / (sizeof(T)*channels); 
-            data_ptr = (T*)data;
-            for (size_t j=0;j<lenChannels;j++){     
-                if (queue_handle != nullptr && data_ptr != nullptr) {
-                    lastFrame.left = (int16_t)*data_ptr++;
-                    lastFrame.right = (int16_t)*data_ptr++;
-                    xQueueSend(queue_handle, &lastFrame, 0);
-                }
-            }
-            return len;
-        }
-
-    protected:
-        AudioFrame lastFrame {0, 0};
-        xQueueHandle queue_handle;
-        T *data_ptr;
-        int channels = 2;
-        bool active = false;        
-};
+#include "xQueueAudioStream.h"
 
 // Sources
 // URLStream urlSource;
@@ -72,10 +23,11 @@ class VisualizerStream : public AudioPrint, public AudioBaseInfoDependent {
 
 // Generic
 static MetaDataPrint metadata;
-static MP3DecoderHelix mp3Decoder;
+static MP3DecoderHelix mp3;
 static EncodedAudioStream decoder;
 static MultiOutput output(metadata, decoder); 
-// StreamCopy copier;
+static StreamCopy copier;
+static xQueueAudioStream<int16_t> visualization_output(audioFrameQueue);
 
 static ConverterScaler<int16_t> volume(1.0, 0, 32767);
 
@@ -139,18 +91,14 @@ StreamCopy* setupAudio() {
 
     source = createWeb(Stations[2].Url);
 
-    decoder.begin(target, &mp3Decoder);
-    decoder.setNotifyAudioChange(*target);
+    visualization_output.begin(target);
 
-    auto vis_output = new VisualizerStream<int16_t>(audioFrameQueue);
-    output.add(*vis_output);
-    vis_output->begin();
+    decoder.begin(&visualization_output, &mp3);
+    decoder.setNotifyAudioChange(visualization_output);
 
-    auto copier = new StreamCopy();
+    copier.begin(output, *source);
 
-    copier->begin(output, *source);
-
-    return copier;
+    return &copier;
 }
 
 void loopAudio(StreamCopy* copier) {

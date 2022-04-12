@@ -64,6 +64,7 @@ void setupEncoder()
   encoder_left_.begin();
 	encoder_left_.setup(readEncoderISR);
   encoder_left_.setBoundaries(0, 255, false);
+  encoder_left_.reset(255);
 
   // pinMode(VOLUME_BUTTON, INPUT_PULLUP);
   // attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onLeftEncoderButtonUp, RISING );

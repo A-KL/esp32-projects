@@ -22,13 +22,14 @@
 // };
 
 // Generic
-static MetaDataPrint metadata;
-static MP3DecoderHelix mp3;
-static EncodedAudioStream decoder;
-static MultiOutput output(metadata, decoder); 
-static StreamCopy copier;
 static xQueueAudioStream<int16_t> visualization_output(audioFrameQueue);
+static MP3DecoderHelix mp3;
+static EncodedAudioStream decoder(visualization_output, mp3);
+static MetaDataPrint metadata;
+static MultiOutput output(metadata, decoder);
+static StreamCopy copier;
 
+static ConverterAutoCenter<int16_t> converter;
 static ConverterScaler<int16_t> volume(1.0, 0, 32767);
 
 // Controls
@@ -46,13 +47,16 @@ SPDIFStream* createSPDIF(uint32_t sample_rate = 441000) {
     return spdif;
 }
 
-I2SStream* createI2S() {
+I2SStream* createI2S(uint32_t sample_rate = 441000) {
     auto i2s = new I2SStream();
     auto config = i2s->defaultConfig(TX_MODE);
+    //config.port_no = 0;
     config.pin_ws = 25;
     config.pin_bck = 26;
     config.pin_data = 33;
     //config.pin_mck = 10;
+    config.sample_rate = sample_rate;
+    config.i2s_format = I2S_STD_FORMAT;
     i2s->begin(config);
     return i2s;
 }
@@ -77,27 +81,56 @@ AudioStream* createWeb(const char* url) {
     return source;
 }
 
-StreamCopy* setupAudio() {
-    //AudioLogger::instance().begin(Serial, AudioLogger::Info);
+AudioStream* createAdc(uint16_t sample_rate = 44100) {
+    auto source = new AnalogAudioStream();
+
+    auto config = source->defaultConfig(RX_MODE);
+    config.sample_rate = sample_rate;
+    config.setInputPin1(36);
+    source->begin(config);
+
+    return source;
+}
+
+StreamCopy* setupAudio(int dest = 0, int src = 0) {
+
     if (target != NULL) {
         delete target;
     }
 
-    target = createSPDIF();
+    switch(dest)
+    {
+        case 0:
+            target = createSPDIF();
+            break;
+
+        case 1:
+            target = createI2S();
+            break;
+    }
+ 
+    visualization_output.begin(target);
+
+    decoder.setNotifyAudioChange(visualization_output);
+    decoder.begin();
 
     if (source != NULL) {
         delete source;
     }
 
-    source = createWeb(Stations[2].Url);
+    switch(src)
+    {
+        case 0:
+            source = createWeb(Stations[2].Url);
+            break;
 
-    visualization_output.begin(target);
-
-    decoder.begin(&visualization_output, &mp3);
-    decoder.setNotifyAudioChange(visualization_output);
+        case 1:
+            source = createAdc();
+            break;
+    }
 
     copier.begin(output, *source);
-
+    
     return &copier;
 }
 

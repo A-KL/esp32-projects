@@ -1,4 +1,5 @@
 #include "AudioTools.h"
+#include "AudioFrame.h"
 
 template<typename T>
 class xQueueAudioStream : public AudioStream
@@ -56,7 +57,7 @@ public:
         return AudioStream::begin();
     }
 
-    void begin(AudioStream& inner) {
+    bool begin(AudioStream& inner) {
         LOGD(LOG_METHOD);
         return this->begin(&inner);
     }
@@ -111,7 +112,6 @@ public:
 
 protected:
     AudioStream* innerStream;
-    //AudioFrame lastFrame {0, 0};
     xQueueHandle queue_handle;
     T *data_ptr;
     int channels = 2;

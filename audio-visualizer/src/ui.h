@@ -1,5 +1,7 @@
 #pragma once
 
+#include <arduinoFFT.h>
+
 #include "UIElement.h"
 #include "UVProgress.h"
 #include "UISoundAnalyzer.h"
@@ -57,6 +59,7 @@ void onStreamChanged(const char *type, const char *value)
 //     radio.Loop();
 // }
 
+
 // ---------------------------------------------------
 
 void main_analyzer(void * args)
@@ -108,12 +111,12 @@ void main_analyzer(void * args)
     analyzer_panel.Add(level_right_label);
 
     // Radio UI
-    UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
+    // UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
 
-    for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
-    {
-        stations.Add(Stations[0]);
-    }
+    // for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
+    // {
+    //     stations.Add(Stations[0]);
+    // }
 
     //panel.Add(stations);
 
@@ -163,12 +166,12 @@ void main_analyzer(void * args)
         //   label_input_mute.setBorderColor(Color::Gray);
         //   label_input_mute.setForecolor(Color::Gray);
         // }
-
+        
         for (int i = 0; i < SAMPLES; i++) 
         {            
             newTime = micros()-oldTime;
             oldTime = newTime;
-
+ 
             xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));// == pdFALSE)
 
             vReal_l[i] = frame.left;
@@ -177,7 +180,8 @@ void main_analyzer(void * args)
             vImag_l[i] = 0;
             vImag_r[i] = 0;
 
-            //while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
+            
+            while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
         fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);

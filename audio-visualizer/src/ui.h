@@ -28,7 +28,7 @@ unsigned long newTime, oldTime, microseconds;
 static arduinoFFT fft;
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-//static InternetRadio radio;
+static InternetRadio radio;
 
 UILabel label_track({ 0, 0, 320, 20 }, "");
 UILabel label_vol({320 - 50, 0, 50, 20 }, "100%");
@@ -47,18 +47,18 @@ void onStreamChanged(const char *type, const char *value)
   }
 }
 
-// void setupRadio()
-// {
-//   radio.Play(Stations[stationIndex].Url);
-//   radio.SampleCallback(onAudioFrameCallback);
-//   radio.StreamChanged = onStreamChanged;
-// }
+void setupAudio(int dest, int src)
+{
+  radio.selectStation(Stations[2]);
+  radio.Play(dest, src);
+  radio.SampleCallback(onAudioFrameCallback);
+  radio.StreamChanged = onStreamChanged;
+}
 
-// void loopRadio()
-// {
-//     radio.Loop();
-// }
-
+void loopAudio()
+{
+    radio.Loop();
+}
 
 // ---------------------------------------------------
 

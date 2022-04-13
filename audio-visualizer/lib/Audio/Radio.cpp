@@ -1,10 +1,11 @@
+#include "RadioStation.h"
 #include "Radio.h"
 #include "driver/i2s.h"
 
 StreamDelegate InternetRadio::StreamChanged;
 
 InternetRadio::InternetRadio()
-        : _mp3(NULL), _stream(NULL), _buffer(NULL), _outputAnalog(NULL), _outputSPDIF(NULL)
+        : _station(NULL), _stream(NULL), _mp3(NULL), _buffer(NULL), _output(NULL)
 { }
 
 void InternetRadio::Loop()
@@ -25,24 +26,35 @@ void InternetRadio::Loop()
     } 
 }
 
-void InternetRadio::Play(const char* url = NULL) 
+void InternetRadio::Play(int output, int input) 
 {
-    _stream = new AudioFileSourceICYStream(url == NULL ? _url : url);
-    _stream->RegisterMetadataCB(MDCallback, (void*)"ICY");
+    Stop();
 
+    switch (input)
+    {
+        case 0:
+            _stream = new AudioFileSourceICYStream(_station->Url);
+            _stream->RegisterMetadataCB(MDCallback, (void*)"ICY");
+            break;
+    }
+   
     _buffer = new AudioFileSourceBuffer(_stream, _bufferSize);
     _buffer->RegisterStatusCB(StatusCallback, (void*)"buffer");
 
-    _outputSPDIF = new AudioOutputSPDIFWithCallback();
+    switch (output)
+    {
+        case 0:
+            _output = new AudioOutputWithCallback(createI2S());
+            break;
 
-    // _outputAnalog = new CustomAudioOutputI2S(0, 0, 8, 1);
-    // _outputAnalog->SetPinout(26, 25, 33);
-    // _outputAnalog->SetGain(_gain*0.1);
+        case 1:
+            _output = new AudioOutputWithCallback(createSPDIF());
+            break;            
+    }
 
     _mp3 = new AudioGeneratorMP3();
     _mp3->RegisterStatusCB(StatusCallback, (void*)"mp3");
-    //_mp3->begin(_buffer, _outputAnalog);
-    _mp3->begin(_buffer, _outputSPDIF);
+    _mp3->begin(_buffer, _output);
 
     // PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
     // WRITE_PERI_REG(PIN_CTRL, 0xFFF0);
@@ -68,29 +80,18 @@ void InternetRadio::Stop()
         _stream = NULL;
     }
 
-    if (_outputAnalog) {
-        _outputAnalog->stop();
-        delete _outputAnalog;
-        _outputAnalog = NULL;
-    }
-
-    if (_outputSPDIF) {
-        _outputSPDIF->stop();
-        delete _outputSPDIF;
-        _outputSPDIF = NULL;
-    }   
+    if (_output) {
+        _output->stop();
+        delete _output;
+        _output = NULL;
+    }  
 }
 
 void InternetRadio::SampleCallback(SampleDelegate delegate)
 {
-    if (_outputAnalog != NULL)
+    if (_output != NULL)
     {
-        _outputAnalog->SampleCallback(delegate);
-    }
-
-    if (_outputSPDIF != NULL)
-    {
-        _outputSPDIF->SampleCallback(delegate);
+        _output->SampleCallback(delegate);
     }    
 }
 

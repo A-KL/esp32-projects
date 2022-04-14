@@ -1,4 +1,5 @@
 #include <AiEsp32RotaryEncoder.h>
+#include <EasyButton.h>
 
 #define VOLUME_PIN_A  34
 #define VOLUME_PIN_B  35
@@ -16,25 +17,11 @@
 // static ESP32Encoder encoder_left;
 // static ESP32Encoder encoder_right(false, onRightEncoderChanged);
 
-AiEsp32RotaryEncoder encoder_left_ = AiEsp32RotaryEncoder(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 5);
+EasyButton encoder_left_button(VOLUME_BUTTON);
+EasyButton encoder_right_button(MENU_BUTTON);
 
-void IRAM_ATTR readEncoderISR()
-{
-    encoder_left_.readEncoder_ISR();
-}
+//AiEsp32RotaryEncoder encoder_left_ = AiEsp32RotaryEncoder(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 5);
 
-// void rotary_onButtonClick()
-// {
-//     static unsigned long lastTimePressed = 0;
-
-//     if (millis() - lastTimePressed < 200)
-//     {
-//       return;
-//     }
-    
-//     lastTimePressed = millis();
-//     //is_muted = !is_muted;
-// }
 
 // static void onLeftEncoderChanged(void* arg) {
 //   auto count = encoder_left.getCount(); 
@@ -48,23 +35,31 @@ void IRAM_ATTR readEncoderISR()
 //   Serial.printf("Right enc: %d\n", count);
 // }
 
-// static void onLeftEncoderButtonUp()
-// {
-//   Serial.println("muted");
-//   is_muted = !is_muted;
-// }
-
-// static void onRightEncoderButtonUp()
-// {
-//   Serial.println("onRightEncoderButtonUp");
-// }
-
-void setupEncoder()
+void onLeftEncoderButtonUp()
 {
-  encoder_left_.begin();
-	encoder_left_.setup(readEncoderISR);
-  encoder_left_.setBoundaries(0, 255, false);
-  encoder_left_.reset(255);
+  Serial.println("onLeftEncoderButtonUp");
+}
+
+void onRightEncoderButtonUp()
+{
+  Serial.println("onRightEncoderButtonUp");
+}
+
+void setupControls()
+{
+  encoder_left_button.begin();
+  encoder_left_button.onPressed(onLeftEncoderButtonUp);
+
+  encoder_right_button.begin();
+  encoder_right_button.onPressed(onLeftEncoderButtonUp);
+  // encoder_left_button.onPressedFor(LONG_PRESS_MS, brightnessButton);
+  // encoder_left_button.onSequence(3, 2000, startAutoMode);
+  // encoder_left_button.onSequence(5, 2000, brightnessOff);
+
+  // encoder_left_.begin();
+	// encoder_left_.setup(readEncoderISR);
+  // encoder_left_.setBoundaries(0, 255, false);
+  // encoder_left_.reset(255);
 
   // pinMode(VOLUME_BUTTON, INPUT_PULLUP);
   // attachInterrupt(digitalPinToInterrupt(VOLUME_BUTTON), onLeftEncoderButtonUp, RISING );
@@ -81,4 +76,10 @@ void setupEncoder()
   // encoder_right.attachSingleEdge(MENU_PIN_A, MENU_PIN_B);
   // encoder_right.clearCount();
   // encoder_right.setFilter(1023);
+}
+
+void loopControls()
+{
+  encoder_right_button.read();
+  encoder_left_button.read();
 }

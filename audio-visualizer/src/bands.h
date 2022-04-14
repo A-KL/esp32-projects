@@ -10,11 +10,9 @@ struct bandData
 
   inline bool inRange(int index) const
   {
-    return (start =< index) && (index < (start + witdth));
+    return (start <= index) && (index < (start + witdth));
   }
 };
-
-
 
 bandData bands[BANDS_COUNT] = {
 

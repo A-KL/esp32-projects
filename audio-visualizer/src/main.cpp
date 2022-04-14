@@ -25,7 +25,7 @@ int stationIndex = 2;
 
 #include "Color.h"
 #include "Canvas.h"
-#include "espressif-logo-featured.h"
+#include "espressif_logo.h"
 
 #ifdef M5STACK
   #include "M5StackCanvas.h"
@@ -48,8 +48,6 @@ int _selectedAudioTarget = 1;
 void setup() {
   Serial.begin(115200);
 
-  setupEncoder();
-
   canvas.Init(Color(255, 255, 255));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
 
@@ -59,11 +57,12 @@ void setup() {
 
   startAnalyzer((void*)&canvas);
 
-  auto is_muted = false;
+  setupControls();
 
   while (true)
   {
     setupAudio(_selectedAudioTarget, _selectedAudioSource);
+    
 
     while (true)
     {
@@ -90,7 +89,7 @@ void setup() {
       // }
 
       loopAudio();
-      
+      loopControls();
     }
   }
 }

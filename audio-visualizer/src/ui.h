@@ -195,7 +195,7 @@ void main_analyzer(void * args)
           {
             if (bands[band_index].inRange(bin))
             {
-              bands[band_index].amplitude  += (int)vReal_l[i];
+              bands[band_index].amplitude  += (int)vReal_l[bin];
             }
           }
         }

@@ -10,11 +10,11 @@
 #include "UIList.h"
 #include "MainForm.h"
 
+#include "bands.h"
+
 // ---------------------------------------------------
 #define SAMPLES 512
 #define BANDS_COUNT 30
-
-unsigned char peak[BANDS_COUNT];
 
 double vReal_l[SAMPLES];
 double vReal_r[SAMPLES];
@@ -22,10 +22,15 @@ double vReal_r[SAMPLES];
 double vImag_l[SAMPLES];
 double vImag_r[SAMPLES];
 
-unsigned int sampling_period_us = round(1000000 * (1.0 / 44100));
+unsigned int samplig_rate = 44100;
+unsigned int sampling_period_us = round(1000000 * (1.0 / samplig_rate));
 unsigned long newTime, oldTime, microseconds;
+
+
 // ---------------------------------------------------
-static arduinoFFT fft;
+static arduinoFFT fft_left(vReal_l, vImag_l, SAMPLES, samplig_rate);
+static arduinoFFT fft_right(vReal_r, vImag_r, SAMPLES, samplig_rate);
+
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 static InternetRadio radio;
@@ -74,7 +79,6 @@ void main_analyzer(void * args)
     UIContainer panel({ 0, 0, 320, 240});
 
     // Analyzer
-    
 
     UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
 
@@ -155,50 +159,70 @@ void main_analyzer(void * args)
   
     panel.Update(*canvas);
 
+    AudioFrame frame = {0, 0};
+
     while (true)
     {
-      AudioFrame frame = {0, 0};
-
-        // if (is_muted){
-        //   label_input_mute.setBorderColor(Color::White);
-        //   label_input_mute.setForecolor(Color::White);
-        // } else {
-        //   label_input_mute.setBorderColor(Color::Gray);
-        //   label_input_mute.setForecolor(Color::Gray);
-        // }
-        
         for (int i = 0; i < SAMPLES; i++) 
-        {            
+        {
             newTime = micros()-oldTime;
             oldTime = newTime;
  
-            xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));// == pdFALSE)
+            xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));
 
             vReal_l[i] = frame.left;
             vReal_r[i] = frame.right;
 
             vImag_l[i] = 0;
             vImag_r[i] = 0;
-
-            
+           
             while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
-        fft.Windowing(vReal_l, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-        fft.Compute(vReal_l, vImag_l, SAMPLES, FFT_FORWARD);
-        fft.ComplexToMagnitude(vReal_l, vImag_l, SAMPLES);
+        fft_left.DCRemoval();
+        fft_left.Windowing(FFT_WIN_TYP_HANN, FFT_FORWARD);
+        fft_left.Compute(FFT_FORWARD);
+        fft_left.ComplexToMagnitude();
 
-        // double peak = fft.MajorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
+        //double max_f_left = 0;
+        //double max_v_left = 0;
 
-        // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-        for (int band_index = 0, bin = 5; band_index < BANDS_COUNT; band_index++, bin+=4)
+        //fft_left.MajorPeak(&max_f_left, &max_v_left);
+
+        for (int bin = 1; bin < (SAMPLES/2); bin++)
         {
-            if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
-              analyzer.setBand(band_index, 0);
-              continue;
+          for (int band_index = 0; band_index < BANDS_COUNT; band_index++)
+          {
+            if (bands[band_index].inRange(bin))
+            {
+              bands[band_index].amplitude  += (int)vReal_l[i];
             }
-            analyzer.setBand(band_index, (int)vReal_l[bin] % 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
+          }
         }
+
+        for (int band_index = 0; band_index < BANDS_COUNT; band_index++)
+        {
+          auto value = bands[band_index].amplitude / 60;
+          value = value > 60 ? 60 : value;
+
+          value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
+
+          bands[band_index].amplitude_old = value;
+
+          analyzer.setBand(band_index, value);
+        }
+
+        // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
+
+        // // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
+        // for (int band_index = 0, bin = 1; band_index < BANDS_COUNT; band_index++, bin+=4)
+        // {
+        //     if (vReal_l[bin] < 400) { // Add a crude noise filter, 10 x amplitude or more
+        //       analyzer.setBand(band_index, 0);
+        //       continue;
+        //     }
+        //     analyzer.setBand(band_index, (int)vReal_l[bin] % 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
+        // }
 
         // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
         // { 
@@ -209,8 +233,6 @@ void main_analyzer(void * args)
         //   if (band_index>=30) {
         //     break;
         //   }
-
-        //   analyzer.setBand(band_index++, (int)vReal_l[bin] / 60); 
 
         //     // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
         //     // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
@@ -233,9 +255,6 @@ void main_analyzer(void * args)
         //     peak[band] -= 1;
         //   }
         // } // Decay the peak
-
-      // unsigned short l = frame.left + USHRT_MAX / 2.0;
-      // unsigned short r = frame.right + USHRT_MAX / 2.0;
 
       // Serial.print(abs(frame.left));
       // Serial.print(" ");
@@ -270,9 +289,9 @@ void main_analyzer(void * args)
     vTaskDelete(NULL);
 }
 
-uint binToFreq(int index)
+float binToFreq(int index, unsigned int sample_count, unsigned int samplig_rate = 44100)
 {
-
+  return index * samplig_rate / (float)sample_count;
 }
 
 void startAnalyzer(void * args)

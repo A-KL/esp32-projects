@@ -5,12 +5,12 @@ class UVProgress : public UIElement
 {
 public:
 	UVProgress(const UIRect& rect, unsigned short value = 0) :
-		UIElement(rect, {30, 30, 30}),
+		UIElement(rect, {30, 30, 30, 0}),
 		_newValue(value),
 		_currentValue(value),
-		_activeColor(15, 185, 79),
-		_activeThresholdColor(255, 0, 0),
-		_activeWarningColor(185, 186, 48),
+		_activeColor(15, 185, 79, 0),
+		_activeThresholdColor(255, 0, 0, 0),
+		_activeWarningColor(185, 186, 48, 0),
 		_minValue(0), 
 		_maxValue(rect.w /_item_w),
 		_warning(_maxValue * 0.85),

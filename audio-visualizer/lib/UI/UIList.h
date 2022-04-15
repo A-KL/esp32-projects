@@ -60,8 +60,6 @@ public:
 
 		AbsolutePosition(origin_x, origin_y);
 
-
-
 		_focused = _focusedNew;
 		_selected = _selectedNew;
 	}

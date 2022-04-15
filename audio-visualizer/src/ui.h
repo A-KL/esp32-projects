@@ -13,6 +13,7 @@
 #include "bands.h"
 
 // ---------------------------------------------------
+
 #define SAMPLES 512
 #define BANDS_COUNT 30
 
@@ -26,10 +27,7 @@ unsigned int samplig_rate = 44100;
 unsigned int sampling_period_us = round(1000000 * (1.0 / samplig_rate));
 unsigned long newTime, oldTime, microseconds;
 
-
 // ---------------------------------------------------
-static arduinoFFT fft_left(vReal_l, vImag_l, SAMPLES, samplig_rate);
-static arduinoFFT fft_right(vReal_r, vImag_r, SAMPLES, samplig_rate);
 
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
@@ -37,6 +35,7 @@ static InternetRadio radio;
 
 UILabel label_track({ 0, 0, 320, 20 }, "");
 UILabel label_vol({320 - 50, 0, 50, 20 }, "100%");
+
 // ---------------------------------------------------
 
 void onAudioFrameCallback(const AudioFrame& frame)
@@ -127,20 +126,15 @@ void main_analyzer(void * args)
     // Footer
     UIContainer footer({ 0, 240-18, 320, 18 });
 
-    UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, 2);
-	  label_out_spdif.setForecolor(Color::Red);
+    UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, Color::Red, 2);
 
-    UILabel label_out_aux({ 50 + 2, 0, 42, 18 }, "AUX", Color::Gray, 2);
-	  label_out_aux.setForecolor(Color::Gray);
+    UILabel label_out_aux({ 50 + 2, 0, 42, 18 }, "AUX", Color::Gray, Color::Gray, 2);
 
-    UILabel label_input_web({ 50 + 2 + 42 + 2, 0, 42, 18 }, "Web", Color::Orange, 2);
-	  label_input_web.setForecolor(Color::Orange);
+    UILabel label_input_web({ 50 + 2 + 42 + 2, 0, 42, 18 }, "Web", Color::Orange, Color::Orange, 2);
 
-    UILabel label_input_bt({ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::Gray, 2);
-	  label_input_bt.setForecolor(Color::Gray);
+    UILabel label_input_bt({ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2);
 
-    UILabel label_input_mute({ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, 2);
-	  label_input_mute.setForecolor(Color::Gray);
+    UILabel label_input_mute({ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2);
 
     // UILabel label_input_aux({ 52, 0, 42, 18 }, "AUX", Color::Gray, 2);
 	  // label_input_aux.setForecolor(Color::Gray);
@@ -161,13 +155,13 @@ void main_analyzer(void * args)
 
     AudioFrame frame = {0, 0};
 
+    arduinoFFT fft_left(vReal_l, vImag_l, SAMPLES, samplig_rate);
+    arduinoFFT fft_right(vReal_r, vImag_r, SAMPLES, samplig_rate);
+
     while (true)
     {
         for (int i = 0; i < SAMPLES; i++) 
         {
-            newTime = micros()-oldTime;
-            oldTime = newTime;
- 
             xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));
 
             vReal_l[i] = frame.left;
@@ -175,8 +169,6 @@ void main_analyzer(void * args)
 
             vImag_l[i] = 0;
             vImag_r[i] = 0;
-           
-            while (micros() < (newTime + sampling_period_us)) { /* do nothing to wait */ }
         }
 
         fft_left.DCRemoval();

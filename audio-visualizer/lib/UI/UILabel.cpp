@@ -11,13 +11,11 @@
 #include "UILabel.h"
 
 UILabel::UILabel(const UIRect& rect, const char* text)
-		: UIElement(rect), _forecolor(255, 255, 255, 0)
-{
-    setText(text);
-}
+		: UILabel(rect, text, Color::White, Color::White, 0)
+{ }
 
-UILabel::UILabel(const UIRect& rect, const char* text, const Color& borderColor, int borderSize)
-		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(255, 255, 255, 0)
+UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize)
+		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(foreColor)
 {
     setText(text);
 }

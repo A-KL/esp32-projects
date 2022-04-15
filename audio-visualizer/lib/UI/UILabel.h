@@ -10,7 +10,7 @@ class UILabel : public UIElement
 public:
 	UILabel(const UIRect& rect, const char* text);
 
-	UILabel(const UIRect& rect, const char* text, const Color& borderColor, int borderSize);
+	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize);
 
 	inline void setText(const char* text)
 	{		

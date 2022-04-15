@@ -5,52 +5,94 @@
 #include "UILabel.h"
 #include "UISoundAnalyzer.h"
 
-// class MainForm : public UIContainer
-// {
-// public:
-//   MainForm() : 
-//     UIContainer({ 0, 0, 320, 240 }),
-//     _header(UIRect({ 0, 0, 320, 23 })),
-//     _footer(UIRect({ 0, 240-23, 320, 23 }), Color({ 56, 56, 56, 0 })),
-//     _input({ 0, 0, 320, 25 }, _inputSources[0], NULL, 16),
-//     _volume({ 0, 240-20, 40, 23 }, "VOL:0", NULL, 16)
-//   { 
-//     _header.Add(_input); 
-//     _footer.Add(_volume);
+class MainForm : public UIContainer
+{
+public:
+  MainForm(const UIRect& rect) : 
+    UIContainer(rect),
+
+    volume({ 320 - 50, 0, 50, 20 }, "100%"),
+    track({ 0, 0, 320, 20 }, "Test"),
+
+    levelLeft({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 100),
+    levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 100),
+
+    header({ 0, 0, 320, 23 }),
+    footer({ 0, 240-23, 320, 23 }),
+
+    levelLeftText({ 0, 181, 20, 16 }, "L"),
+    levelRightText({ 0, 181 + 13 + 3, 20, 16 }, "R")
+  { 
+    header.Add(track);
+    header.Add(volume); 
     
-//     Add(_header);
-//     Add(_footer);
-//   }
+    Add(header);
 
-//   void setVolume(int value)
-//   {
-//     if (value == 0){
-//       _volume.SetText("MUTE");
-//     }
-//     else
-//     {
-//       char buffer[5];
-//       snprintf(buffer, sizeof(buffer), "VOL:%d", value);
-//       _volume.SetText(buffer);
-//     }
-//   }
+    Add(levelLeftText);
+    Add(levelRightText);
 
-//   void setInput(int value = 0)
-//   {   
-//     _input.SetText(_inputSources[value]);
-//   }
+    Add(levelLeft);
+    Add(levelRight);
 
-// private:
-//     UIContainer _header;
-//     UIContainer _footer;
-//     UILabel _input;
-//     UILabel _volume;
+    for (int i=0; i<icons_count; i++)
+    {
+        footer.Add(icons[i]);
+    }
+    
+    Add(footer);
+  }
 
-//     const char* _inputSources[4] =
-//     {
-//       "Off", "S/PDIF", "Analog In", "Radio"
-//     };
-// };
+    UILabel volume;
+    UILabel track;
+
+    UVProgressOf<int16_t> levelLeft;
+    UVProgressOf<int16_t> levelRight;
+
+    void setIcon(int index, bool state)
+    {
+        if (index<0 || index >= icons_count){
+            return;
+        }
+
+        auto color = state ? icons_state_on[index] : icons_state_off[index];
+
+        icons[index].setForecolor(color);
+        icons[index].setBorderColor(color);
+    }
+
+private:
+    UIContainer header;
+    UIContainer footer;
+
+    UILabel levelLeftText;
+    UILabel levelRightText;
+
+    UILabel icons[5] {
+        {{ 0, 0, 50, 18 },                        "COAX", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2, 0, 42, 18 },                   "AUX",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2, 0, 42, 18 },          "Web",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
+    };
+
+    const Color icons_state_on[5] {
+        Color::Red,
+        Color::Orange,
+        Color::Orange,
+        Color::LightBlue,
+        Color::White
+    };
+
+    const Color icons_state_off[5] {
+        Color::Gray,
+        Color::Gray,
+        Color::Gray,
+        Color::Gray,
+        Color::Gray
+    };
+
+    const int icons_count = 5;// sizeof(icons) / sizeof(icons[0]);
+};
 
 // class SoundMetersView : public UIContainer
 // {

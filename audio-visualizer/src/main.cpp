@@ -40,10 +40,13 @@ int stationIndex = 2;
 TCanvas canvas;
 
 #include "ui.h"
+#include "MainForm.h"
 #include "events.h"
 
 int _selectedAudioSource = 0;
 int _selectedAudioTarget = 1;
+
+MainForm form({ 0, 0, 320, 240 });
 
 void setup() {
   Serial.begin(115200);
@@ -55,17 +58,22 @@ void setup() {
 
   canvas.Clear(Color(0, 0, 0));
 
-  startAnalyzer((void*)&canvas);
+  //startAnalyzer((void*)&canvas);
 
   setupControls();
 
+  canvas.SetFont(NULL, 1);
+ 
+
   while (true)
   {
-    setupAudio(_selectedAudioTarget, _selectedAudioSource);
+    //setupAudio(_selectedAudioTarget, _selectedAudioSource);
     
 
     while (true)
     {
+
+       form.Update(canvas);
       // if (encoder_left_.isEncoderButtonClicked(50))
       // {
       //     is_muted = !is_muted;
@@ -88,7 +96,7 @@ void setup() {
       //    // volume.setFactor(0.0);
       // }
 
-      loopAudio();
+      //loopAudio();
       loopControls();
     }
   }

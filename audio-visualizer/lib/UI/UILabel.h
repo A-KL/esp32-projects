@@ -1,7 +1,9 @@
 #pragma once
 
 #include "UIElement.h"
+#include <sstream>
 #include <stdio.h>
+#include <iostream>
 #include <stdarg.h>
 #include <string.h>
 
@@ -21,13 +23,22 @@ public:
 		Invalidate();
 	}
 
+	inline void setInt(int value)
+	{		
+		std::stringstream ss;  
+		ss << value;  
+		ss >> _text;
+
+		Invalidate();
+	}
+
 	inline void setTextF(const char* format, ...)
 	{		
 		va_list args;
     	va_start(args, format);
 		char buffer[100];
 		memset(&buffer[0], 0, sizeof(buffer));
-		//auto size = sprintf(&buffer[0], format, args);
+		auto size = sprintf(&buffer[0], format, args);
 		va_end(args);
 
 		_text = &buffer[0];
@@ -44,6 +55,13 @@ public:
 		Invalidate();
 	}
 
+	friend std::ostream& operator<<(std::ostream& out, const UILabel& obj)
+	{
+		out << obj._text;
+		return out;
+	}
+
+protected:
 	void Draw(Canvas<Color>& canvas);
 
 private:

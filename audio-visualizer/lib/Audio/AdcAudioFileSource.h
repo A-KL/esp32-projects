@@ -11,9 +11,7 @@ class AdcAudioFileSource : public AudioFileSource{
     public:
         AdcAudioFileSource(const i2s_port_t port = I2S_NUM_0, int samples = 1024, unint Frequency = 44100) :
             _port(port)
-        {
-            
-        }
+        { }
 
         virtual bool open(const char *filename) override
         { 

@@ -26,7 +26,6 @@ unsigned long newTime, oldTime, microseconds;
 
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-static InternetRadio radio;
 
 MainForm form({ 0, 0, 320, 240 });
 
@@ -35,32 +34,9 @@ void onAudioFrameCallback(const AudioFrame& frame)
   xQueueSend(audioFrameQueue, &frame, 0);
 }
 
-void onStreamChanged(const char *type, const char *value)
-{
-  if (strcmp(type, "StreamTitle") == 0) {
-    form.track.setText(value);
-    Serial.println(value);
-  }
-}
-
-void setupAudio(int dest, int src)
-{
-  radio.selectStation(Stations[2]);
-  radio.Play(dest, src);
-  radio.SampleCallback(onAudioFrameCallback);
-  radio.StreamChanged = onStreamChanged;
-}
-
-void loopAudio()
-{
-    radio.Loop();
-}
-
 void loopUI(void * args)
 {
     auto canvas = (TCanvas*)args;
-
-    canvas->SetFont(NULL, 1);
 
     AudioFrame frame = {0, 0};
 

@@ -25,7 +25,6 @@ int stationIndex = 2;
 
 #include "Color.h"
 #include "Canvas.h"
-#include "espressif_logo.h"
 
 #ifdef M5STACK
   #include "M5StackCanvas.h"
@@ -39,32 +38,35 @@ int stationIndex = 2;
 
 TCanvas canvas;
 
-#include "ui.h"
 #include "MainForm.h"
+#include "ui.h"
+#include "audio.h"
 #include "events.h"
+#include "espressif_logo.h"
 
 int _selectedAudioSource = 0;
-int _selectedAudioTarget = 1;
+int _selectedAudioTarget = 0;
 
 void setup() {
   Serial.begin(115200);
 
   canvas.Init(Color(255, 255, 255));
+  canvas.SetFont(NULL, 1);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
 
   setupWiFi();
+  setupControls();
 
   canvas.Clear(Color(0, 0, 0));
 
   startUI((void*)&canvas);
 
-  setupControls();
-
-  canvas.SetFont(NULL, 1);
-
   while (true)
   {
     setupAudio(_selectedAudioTarget, _selectedAudioSource);
+
+    form.setIcon(_selectedAudioTarget, 1);
+    form.setIcon(_selectedAudioSource + 2, 1);
 
     while (true)
     {

@@ -44,11 +44,11 @@ void InternetRadio::Play(int output, int input)
     switch (output)
     {
         case 0:
-            _output = new AudioOutputWithCallback(createI2S());
+            _output = new AudioOutputWithCallback(createSPDIF());
             break;
 
         case 1:
-            _output = new AudioOutputWithCallback(createSPDIF());
+            _output = new AudioOutputWithCallback(createI2S());
             break;            
     }
 

@@ -42,7 +42,9 @@ void onLeftEncoderButtonUp()
 
 void onRightEncoderButtonUp()
 {
-  Serial.println("onRightEncoderButtonUp");
+  auto muted = !radio.muted();
+  radio.setMute(muted);
+  form.setIcon(4, muted);
 }
 
 void setupControls()
@@ -51,7 +53,7 @@ void setupControls()
   encoder_left_button.onPressed(onLeftEncoderButtonUp);
 
   encoder_right_button.begin();
-  encoder_right_button.onPressed(onLeftEncoderButtonUp);
+  encoder_right_button.onPressed(onRightEncoderButtonUp);
   // encoder_left_button.onPressedFor(LONG_PRESS_MS, brightnessButton);
   // encoder_left_button.onSequence(3, 2000, startAutoMode);
   // encoder_left_button.onSequence(5, 2000, brightnessOff);

@@ -11,13 +11,12 @@ class UISoundEqualizer : public UIContainer
 {
 public:    
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
-        bands({ rect.x + 30, rect.y + 25, rect.w - 50, rect.h - 120 - 23})
+        bands({ rect.x + 30, rect.y, rect.w - 50, rect.h - 120 - 23})
     {
         for (int i=0; i< (sizeof(level_lables) / sizeof(level_lables[0])); i++)
         {
             Add(level_lables[i]);
         }
-
          Add(bands);
     }
 
@@ -39,48 +38,48 @@ class MainForm : public UIContainer
 {
 public:
   MainForm(const UIRect& rect) : 
-    UIContainer(rect),
+        UIContainer(rect),
 
-    volume({ 320 - 50, 0, 50, 20 }, "100%"),
-    track({ 0, 0, 320, 20 }, "Test"),
+        volume({ 320 - 50, 0, 50, 20 }, "100%"),
+        track({ 0, 0, 320, 20 }, "Test"),
 
-    equalizer({ 0, 0, 320, 240 - 23 }),
+        equalizer({ 0, 20, 320, 240 - 23 -20 }),
 
-    levelLeft({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 15),
-    levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 20),
+        levelLeft({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 15),
+        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 20),
 
-    header({ 0, 0, 320, 23 }),
-    footer({ 0, 240-23, 320, 23 }),
+        header({ 0, 0, 320, 23 }),
+        footer({ 0, 240-23, 320, 23 }),
 
-    leftTextL({ 0, 181, 20, 16 }, "L"),
-    rightTextL({ 0, 181 + 13 + 3, 20, 16 }, "R"),
+        leftTextL({ 0, 181, 20, 16 }, "L"),
+        rightTextL({ 0, 181 + 13 + 3, 20, 16 }, "R"),
 
-    leftTextValue({ 24 + 246 + 10, 181, 20, 16 }, "1.0"),
-    rightTextValue({ 24 + 246 + 10, 181 + 13 + 3, 20, 16 }, "1.0")
-  { 
-    header.Add(track);
-    header.Add(volume); 
-    
-    Add(header);
+        leftTextValue({ 24 + 246 + 10, 181, 20, 16 }, "1.0"),
+        rightTextValue({ 24 + 246 + 10, 181 + 13 + 3, 20, 16 }, "1.0")
+    { 
+        header.Add(track);
+        header.Add(volume); 
+        
+        Add(header);
 
-    Add(equalizer);
+        Add(equalizer);
 
-    Add(leftTextL);
-    Add(rightTextL);
+        Add(leftTextL);
+        Add(rightTextL);
 
-    Add(levelLeft);
-    Add(levelRight);
+        Add(levelLeft);
+        Add(levelRight);
 
-    Add(leftTextValue);
-    Add(rightTextValue);
+        Add(leftTextValue);
+        Add(rightTextValue);
 
-    for (int i=0; i<icons_count; i++)
-    {
-        footer.Add(icons[i]);
+        for (int i=0; i<icons_count; i++)
+        {
+            footer.Add(icons[i]);
+        }
+        
+        Add(footer);
     }
-    
-    Add(footer);
-  }
 
     UILabel volume;
     UILabel track;
@@ -92,7 +91,7 @@ public:
 
     void setIcon(int index, bool state)
     {
-        if (index<0 || index >= icons_count){
+        if (index < 0 || index >= icons_count){
             return;
         }
 
@@ -100,6 +99,20 @@ public:
 
         icons[index].setForecolor(color);
         icons[index].setBorderColor(color);
+    }
+
+protected:
+	void Draw(Canvas<Color>& canvas)
+	{
+        if (!levelLeft.IsValid()) {
+            //leftTextValue.setInt(levelLeft.value());
+        }
+
+        if (!levelRight.IsValid()) {
+            //rightTextValue.setInt(levelRight.value());
+        }        
+
+        UIContainer::Draw(canvas);
     }
 
 private:
@@ -113,19 +126,19 @@ private:
     UILabel rightTextValue;
 
     UILabel icons[5] {
-        {{ 0, 0, 50, 18 },                        "COAX", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2, 0, 42, 18 },                   "AUX",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2, 0, 42, 18 },          "Web",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 0, 0, 50, 18 },                                 "COAX", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2, 0, 42, 18 },                            "AUX",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2, 0, 42, 18 },                   "Web",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 },          "A2DP", Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
     };
 
     const Color icons_state_on[5] {
-        Color::Red,
+        Color::Green,
         Color::Orange,
         Color::Orange,
         Color::LightBlue,
-        Color::White
+        Color::Red
     };
 
     const Color icons_state_off[5] {

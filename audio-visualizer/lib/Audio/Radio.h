@@ -35,6 +35,26 @@ public:
         }
     }
 
+    inline bool muted() const
+    {
+        return _muted;
+    }
+
+    inline void setMute(bool muted)
+    {
+        if (_output == NULL) {
+            return;
+        }
+
+        _muted = muted;
+
+        if (_muted) {
+            _output->SetGain(0);            
+        } else {
+            _output->SetGain(_gain);
+        }
+    }
+
     void Loop();
 
     void Play(int output = 0, int input = 0);
@@ -46,15 +66,16 @@ public:
     static StreamDelegate StreamChanged;
 
 protected:
-    AudioOutput* createI2S(float gain = 1, int port=0, int output_mode=0, int dma_buf_count = 8, int use_apll=0) const {
+    AudioOutput* createI2S(int port=0, float gain = 1, int output_mode=0, int dma_buf_count = 8, int use_apll=0) const {
         auto output = new AudioOutputI2S(port, output_mode, dma_buf_count, use_apll);
         output->SetPinout(26, 25, 33);
         output->SetGain(gain);
         return output;
     }
 
-    AudioOutput* createSPDIF(int port=0, int dout_pin=SPDIF_OUT_PIN_DEFAULT, int dma_buf_count = DMA_BUF_COUNT_DEFAULT) const {
+    AudioOutput* createSPDIF(int port=0, float gain = 1, int dout_pin=SPDIF_OUT_PIN_DEFAULT, int dma_buf_count = DMA_BUF_COUNT_DEFAULT) const {
         auto output = new AudioOutputSPDIF(dout_pin, port, dma_buf_count);
+        output->SetGain(gain);
         return output;
     }
 
@@ -65,6 +86,9 @@ protected:
     // }
 
 private:
+    bool _muted = false;
+    float _gain = 1;
+
     const RadioStation* _station;
     
     const int _bufferSize = 16 * 1024; // buffer in byte, default 16 * 1024 = 16kb

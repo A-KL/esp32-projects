@@ -6,13 +6,17 @@ template <size_t TChannels>
 class UISoundAnalyzer : public UIElement
 {
 public:
-	UISoundAnalyzer(const UIRect& rect)
-		: UIElement(rect)
+	UISoundAnalyzer(const UIRect& rect) : UIElement(rect)
 	{ 
 		for (int j = 0; j < TChannels; j++)
 		{
 			_channels[j] = 0;
 		}
+	}
+
+	inline int count() const
+	{
+		return TChannels;
 	}
 
 	bool setBand(int channel, unsigned char value)

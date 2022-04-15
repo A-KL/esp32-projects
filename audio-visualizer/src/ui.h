@@ -12,10 +12,7 @@
 
 #include "bands.h"
 
-// ---------------------------------------------------
-
 #define SAMPLES 512
-#define BANDS_COUNT 30
 
 double vReal_l[SAMPLES];
 double vReal_r[SAMPLES];
@@ -27,16 +24,11 @@ unsigned int samplig_rate = 44100;
 unsigned int sampling_period_us = round(1000000 * (1.0 / samplig_rate));
 unsigned long newTime, oldTime, microseconds;
 
-// ---------------------------------------------------
-
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 static InternetRadio radio;
 
-UILabel label_track({ 0, 0, 320, 20 }, "");
-UILabel label_vol({320 - 50, 0, 50, 20 }, "100%");
-
-// ---------------------------------------------------
+MainForm form({ 0, 0, 320, 240 });
 
 void onAudioFrameCallback(const AudioFrame& frame)
 {
@@ -45,8 +37,8 @@ void onAudioFrameCallback(const AudioFrame& frame)
 
 void onStreamChanged(const char *type, const char *value)
 {
-  if (strcmp(type, "StreamTitle") == 0) { 
-    label_track.setText(value);
+  if (strcmp(type, "StreamTitle") == 0) {
+    form.track.setText(value);
     Serial.println(value);
   }
 }
@@ -64,94 +56,11 @@ void loopAudio()
     radio.Loop();
 }
 
-// ---------------------------------------------------
-
-void main_analyzer(void * args)
+void loopUI(void * args)
 {
-    //memset(peak, 0, BANDS_COUNT);
-
     auto canvas = (TCanvas*)args;
 
     canvas->SetFont(NULL, 1);
-
-    // Root
-    UIContainer panel({ 0, 0, 320, 240});
-
-    // Analyzer
-
-    UIContainer analyzer_panel({ 0, 0, 320, 240 - 23 });
-
-    auto start = 18;
-    UILabel label_0({ 10, start,       20, 16 }, "  0");
-    UILabel label_10({ 5, start += 20, 20, 16 }, "-10");
-    UILabel label_20({ 5, start += 20, 20, 16 }, "-20");
-    UILabel label_30({ 5, start += 20, 20, 16 }, "-30");
-    UILabel label_40({ 5, start += 20, 20, 16 }, "-40");
-    UILabel label_50({ 5, start += 20, 20, 16 }, "-50");
-    UILabel label_60({ 5, start += 20, 20, 16 }, "-60");
-
-	  UISoundAnalyzer<BANDS_COUNT> analyzer({ 30, 25, 270, 120 });
-
-    UILabel level_left_label({ 0, 181, 20, 16 }, "L");
-    UILabel level_right_label({ 0, 181 + 13 + 3, 20, 16 }, "R");
-
-    UVProgressOf<int16_t> level_left({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 0);
-    UVProgressOf<int16_t> level_right({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 0);
-    
-    analyzer_panel.Add(label_track);
-    analyzer_panel.Add(label_vol);
-    analyzer_panel.Add(label_0);
-    analyzer_panel.Add(label_10);
-    analyzer_panel.Add(label_20);
-    analyzer_panel.Add(label_30);
-    analyzer_panel.Add(label_40);
-    analyzer_panel.Add(label_50);
-    analyzer_panel.Add(label_60);
-    analyzer_panel.Add(analyzer);
-    analyzer_panel.Add(level_left);
-    analyzer_panel.Add(level_right);
-    analyzer_panel.Add(level_left_label);
-    analyzer_panel.Add(level_right_label);
-
-    // Radio UI
-    // UIList<RadioStation> stations({ 0, 0, 320, 240 - 23 });
-
-    // for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
-    // {
-    //     stations.Add(Stations[0]);
-    // }
-
-    //panel.Add(stations);
-
-    // Footer
-    UIContainer footer({ 0, 240-18, 320, 18 });
-
-    UILabel label_out_spdif({ 0, 0, 50, 18 }, "COAX", Color::Red, Color::Red, 2);
-
-    UILabel label_out_aux({ 50 + 2, 0, 42, 18 }, "AUX", Color::Gray, Color::Gray, 2);
-
-    UILabel label_input_web({ 50 + 2 + 42 + 2, 0, 42, 18 }, "Web", Color::Orange, Color::Orange, 2);
-
-    UILabel label_input_bt({ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2);
-
-    UILabel label_input_mute({ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2);
-
-    // UILabel label_input_aux({ 52, 0, 42, 18 }, "AUX", Color::Gray, 2);
-	  // label_input_aux.setForecolor(Color::Gray);
-
-    // UILabel label_input_aux({ 52, 0, 42, 18 }, "S/PDIF", Color::Gray, 2);
-	  // label_input_aux.setForecolor(Color::Gray);
-
-    footer.Add(label_out_spdif);
-    footer.Add(label_out_aux);
-    footer.Add(label_input_web);
-    footer.Add(label_input_bt);
-    footer.Add(label_input_mute);
-
-    panel.Add(analyzer_panel);
-    panel.Add(footer);
-  
-    panel.Update(*canvas);
 
     AudioFrame frame = {0, 0};
 
@@ -183,7 +92,7 @@ void main_analyzer(void * args)
 
         for (int bin = 1; bin < (SAMPLES/2); bin++)
         {
-          for (int band_index = 0; band_index < BANDS_COUNT; band_index++)
+          for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
           {
             if (bands[band_index].inRange(bin))
             {
@@ -192,7 +101,7 @@ void main_analyzer(void * args)
           }
         }
 
-        for (int band_index = 0; band_index < BANDS_COUNT; band_index++)
+        for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
           auto value = bands[band_index].amplitude / 60;
           value = value > 60 ? 60 : value;
@@ -201,10 +110,8 @@ void main_analyzer(void * args)
 
           bands[band_index].amplitude_old = value;
 
-          analyzer.setBand(band_index, value);
+          form.equalizer.bands.setBand(band_index, value);
         }
-
-        // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
 
         // // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
         // for (int band_index = 0, bin = 1; band_index < BANDS_COUNT; band_index++, bin+=4)
@@ -215,16 +122,6 @@ void main_analyzer(void * args)
         //     }
         //     analyzer.setBand(band_index, (int)vReal_l[bin] % 60); // map((int)vReal_l[bin], 0, 3300, 0, 60);
         // }
-
-        // for (int band_index = 0, bin = 2;  bin < (SAMPLES/2); bin+=2)
-        // { 
-        //   if (vReal_l[i] < 400) { // Add a crude noise filter, 10 x amplitude or more
-        //     continue;
-        //   }
-
-        //   if (band_index>=30) {
-        //     break;
-        //   }
 
         //     // if (i<=2           ) displayBand(analyzer, band_index++, (int)vReal_l[i] / AMPLITUDE_MAX);           
         //     // if (i >3   && i<=5 )   displayBand(analyzer, 1, (int)vReal[i]/amplitude); // 80Hz
@@ -252,8 +149,8 @@ void main_analyzer(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      level_left.SetValueOf(frame.left);
-      level_right.SetValueOf(frame.right);
+      form.levelLeft.SetValueOf(frame.left);
+      form.levelRight.SetValueOf(frame.right);
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {
@@ -272,8 +169,8 @@ void main_analyzer(void * args)
 
       //   vTaskDelay(2);
       // }
-
-      panel.Update(*canvas);
+      
+      form.Update(*canvas);
 
       vTaskDelay(pdMS_TO_TICKS(1));
     }
@@ -286,10 +183,10 @@ float binToFreq(int index, unsigned int sample_count, unsigned int samplig_rate 
   return index * samplig_rate / (float)sample_count;
 }
 
-void startAnalyzer(void * args)
+void startUI(void * args)
 {
   xTaskCreatePinnedToCore(
-                    main_analyzer,  /* Task function. */
+                    loopUI,  /* Task function. */
                     "UI",           /* name of task. */
                     20000,          /* Stack size of task */
                     args,           /* parameter of the task */

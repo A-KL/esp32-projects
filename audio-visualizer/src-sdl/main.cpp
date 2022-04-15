@@ -15,6 +15,10 @@
 #include "../lib/UI/UISoundAnalyzer.h"
 #include "../lib/UI/UVProgress.h"
 
+#include "MainForm.h"
+
+MainForm form({0, 0, 320, 240});
+
 using namespace std;
 
 int main()
@@ -58,7 +62,7 @@ int main()
 	UILabel label_50({ 17, start += 19, 24, 13 }, "-50");
 	UILabel label_60({ 17, start += 20, 24, 13 }, "-60");
 
-	UILabel label_out_spdif({ 30, 0, 40, 18 }, "COAX", { 255, 0, 0, 0 }, 2);
+	UILabel label_out_spdif({ 30, 0, 40, 18 }, "COAX", Color::Red, Color::Red, 2);
 	label_out_spdif.setForecolor({ 255, 0, 0, 0 });
 
 	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
@@ -107,37 +111,24 @@ int main()
 		level_left.SetValueOf(value_l);
 		level_right.SetValueOf(value_r);
 
-		while (!level_left.IsValid() || !level_right.IsValid())
-		{
-			level_left.Update(sdl);
-			level_right.Update(sdl);
+		//while (!level_left.IsValid() || !level_right.IsValid())
+		//{
+		//	panel.Update(sdl);
 
-			sdl.Update();
+		//	sdl.Update();
 
-			SDL_PollEvent(&event);
-			SDL_Delay(2);
-		}
+		//	SDL_PollEvent(&event);
+		//	SDL_Delay(2);
+		//}
 
-		level_left.SetValueOf(0);
-		level_right.SetValueOf(0);
-
-		while (!level_left.IsValid() || !level_right.IsValid())
-		{
-			level_left.Update(sdl);
-			level_right.Update(sdl);
-
-			sdl.Update();
-
-			SDL_PollEvent(&event);
-			SDL_Delay(7);
-		}
+		form.Update(sdl);
 
 		for (auto i = 0; i < 30; i++)
 		{
 			analyzer.setBand(i, (rand() % 255));
 		}
 
-		panel.Update(sdl);
+		//panel.Update(sdl);
 
 		sdl.Update();
 

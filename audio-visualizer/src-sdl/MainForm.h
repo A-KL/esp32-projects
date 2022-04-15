@@ -1,39 +1,10 @@
 #pragma once
 
-#include "UIElement.h"
-#include "UVProgress.h"
-#include "UIContainer.h"
-#include "UILabel.h"
-#include "UISoundAnalyzer.h"
-
-template <size_t TChannels>
-class UISoundEqualizer : public UIContainer 
-{
-public:    
-    UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
-        bands({ rect.x + 30, rect.y + 25, rect.w - 50, rect.h - 120 - 23})
-    {
-        for (int i=0; i< (sizeof(level_lables) / sizeof(level_lables[0])); i++)
-        {
-            Add(level_lables[i]);
-        }
-
-         Add(bands);
-    }
-
-    UISoundAnalyzer<TChannels> bands;
-
-private:
-    UILabel level_lables[7] {
-        {{ 10, 18,         20, 16 }, "  0"},
-        {{ 5, 18 + 20 * 1, 20, 16 }, "-10"},
-        {{ 5, 18 + 20 * 2, 20, 16 }, "-20"},
-        {{ 5, 18 + 20 * 3, 20, 16 }, "-30"},
-        {{ 5, 18 + 20 * 4, 20, 16 }, "-40"},
-        {{ 5, 18 + 20 * 5, 20, 16 }, "-50"},
-        {{ 5, 18 + 20 * 6, 20, 16 }, "-60"}
-    };
-};
+#include "../lib/UI/UIElement.h"
+#include "../lib/UI/UIContainer.h"
+#include "../lib/UI/UILabel.h"
+#include "../lib/UI/UISoundAnalyzer.h"
+#include "../lib/UI/UVProgress.h"
 
 class MainForm : public UIContainer
 {
@@ -44,9 +15,7 @@ public:
     volume({ 320 - 50, 0, 50, 20 }, "100%"),
     track({ 0, 0, 320, 20 }, "Test"),
 
-    equalizer({ 0, 0, 320, 240 - 23 }),
-
-    levelLeft({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 15),
+    levelLeft({ 24, 181,           246, 15 }, 0, 32767, 32767 * 0.9, 20),
     levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767, 32767 * 0.9, 20),
 
     header({ 0, 0, 320, 23 }),
@@ -59,8 +28,6 @@ public:
     header.Add(volume); 
     
     Add(header);
-
-    Add(equalizer);
 
     Add(levelLeftText);
     Add(levelRightText);
@@ -78,8 +45,6 @@ public:
 
     UILabel volume;
     UILabel track;
-
-    UISoundEqualizer<30> equalizer;
 
     UVProgressOf<int16_t> levelLeft;
     UVProgressOf<int16_t> levelRight;
@@ -127,8 +92,49 @@ private:
         Color::Gray
     };
 
-    const int icons_count = sizeof(icons) / sizeof(icons[0]);
+    const int icons_count = 5;// sizeof(icons) / sizeof(icons[0]);
 };
+
+// class SoundMetersView : public UIContainer
+// {
+// public:
+//   SoundMetersView() : 
+//     UIContainer({ 0, 0, 320, 240 - 23 }), 
+//     _analyzer({ 30, 25, 270, 120 })
+//   {
+//     memset(peak, 0, BANDS_COUNT);
+
+//     Add(_analyzer);
+//   }
+
+//   void updateBand(int band, int amplitude)
+//   {
+//     if (amplitude > AMPLITUDE_MAX) 
+//     {
+//       amplitude = AMPLITUDE_MAX;
+//     }
+
+//     _analyzer.Update(band, amplitude);
+
+//     if (amplitude > peak[band]) 
+//     {
+//       peak[band] = amplitude;
+//     }
+//   }
+
+// private:
+//   const static int BANDS_COUNT = 60;
+//   const static int AMPLITUDE_MAX = 255;
+
+//   UISoundAnalyzer<BANDS_COUNT> _analyzer;
+//   unsigned char peak[BANDS_COUNT];
+// };
+
+// std::ostream& operator<<(std::ostream& os, const RadioStation& station)
+// {
+//     os << station.Name;
+//     return os;
+// }
 
 // class InternetRadioView : public UIContainer
 // {

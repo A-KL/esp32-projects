@@ -57,5 +57,8 @@
     <ClInclude Include="..\lib\UI\UVProgress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MainForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

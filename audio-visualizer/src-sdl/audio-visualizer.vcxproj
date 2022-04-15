@@ -160,6 +160,7 @@
     <ClInclude Include="..\lib\UI\UIList.h" />
     <ClInclude Include="..\lib\UI\UISoundAnalyzer.h" />
     <ClInclude Include="..\lib\UI\UVProgress.h" />
+    <ClInclude Include="MainForm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

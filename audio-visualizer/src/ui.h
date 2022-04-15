@@ -36,7 +36,7 @@ void onAudioFrameCallback(const AudioFrame& frame)
 
 void loopUI(void * args)
 {
-    auto canvas = (TCanvas*)args;
+    auto canvas = *(TCanvas*)args;
 
     AudioFrame frame = {0, 0};
 
@@ -147,7 +147,7 @@ void loopUI(void * args)
       //   vTaskDelay(2);
       // }
       
-      form.Update(*canvas);
+      form.Update(canvas);
 
       vTaskDelay(pdMS_TO_TICKS(1));
     }

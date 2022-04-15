@@ -64,10 +64,10 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
 
   if (h > h1)
   {
-    y += (h - h1) / 2.0;
+    y += (h - h1) / 2.0 - 1;
   }
 
-  _display.setCursor(x, y + h1-1);
+  _display.setCursor(x, y + h1);
 
 	_display.println(text);
 }

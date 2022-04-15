@@ -12,7 +12,9 @@
 
 UILabel::UILabel(const UIRect& rect, const char* text)
 		: UILabel(rect, text, Color::White, Color::White, 0)
-{ }
+{ 
+    setBackgroundColor(Color::Red);
+}
 
 UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize)
 		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(foreColor)

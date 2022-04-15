@@ -8,7 +8,7 @@ class UISoundAnalyzer : public UIElement
 public:
 	UISoundAnalyzer(const UIRect& rect) : UIElement(rect)
 	{ 
-		for (int j = 0; j < TChannels; j++)
+		for (int j = 0; j < count(); j++)
 		{
 			_channels[j] = 0;
 		}

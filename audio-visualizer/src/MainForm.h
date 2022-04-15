@@ -52,8 +52,11 @@ public:
     header({ 0, 0, 320, 23 }),
     footer({ 0, 240-23, 320, 23 }),
 
-    levelLeftText({ 0, 181, 20, 16 }, "L"),
-    levelRightText({ 0, 181 + 13 + 3, 20, 16 }, "R")
+    leftTextL({ 0, 181, 20, 16 }, "L"),
+    rightTextL({ 0, 181 + 13 + 3, 20, 16 }, "R"),
+
+    leftTextValue({ 24 + 246 + 10, 181, 20, 16 }, "1.0"),
+    rightTextValue({ 24 + 246 + 10, 181 + 13 + 3, 20, 16 }, "1.0")
   { 
     header.Add(track);
     header.Add(volume); 
@@ -62,11 +65,14 @@ public:
 
     Add(equalizer);
 
-    Add(levelLeftText);
-    Add(levelRightText);
+    Add(leftTextL);
+    Add(rightTextL);
 
     Add(levelLeft);
     Add(levelRight);
+
+    Add(leftTextValue);
+    Add(rightTextValue);
 
     for (int i=0; i<icons_count; i++)
     {
@@ -100,8 +106,11 @@ private:
     UIContainer header;
     UIContainer footer;
 
-    UILabel levelLeftText;
-    UILabel levelRightText;
+    UILabel leftTextL;
+    UILabel rightTextL;
+
+    UILabel leftTextValue;
+    UILabel rightTextValue;
 
     UILabel icons[5] {
         {{ 0, 0, 50, 18 },                        "COAX", Color::Gray, Color::Gray, 2},

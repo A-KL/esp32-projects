@@ -19,6 +19,11 @@ public:
 		return TChannels;
 	}
 
+	inline int maxBand() const
+	{
+		return _vertical_elements_count;
+	}
+
 	bool setBand(int channel, unsigned char value)
 	{
 		if (channel >= TChannels)

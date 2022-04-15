@@ -18,7 +18,7 @@ public:
 		_threshold(_maxValue * 0.95)
 	{}
 
-	virtual unsigned short Value() const
+	virtual unsigned short value() const
 	{
 		return _currentValue;
 	}
@@ -28,7 +28,7 @@ public:
 		return _newValue == _currentValue && UIElement::IsValid();
 	}
 
-	virtual void SetValue(unsigned short new_value)
+	virtual void setValue(unsigned short new_value)
 	{
 		_newValue = new_value > _maxValue ? _maxValue : new_value;
 
@@ -92,7 +92,7 @@ public:
 		UVProgress(rect, value), _animatedValue(0)
 	{}
 
-	void SetValue(unsigned short new_value)
+	void setValue(unsigned short new_value)
 	{
 		_animatedValue = new_value > _maxValue ? _maxValue : new_value;
 
@@ -101,21 +101,23 @@ public:
 
 	bool IsValid() const
 	{
-		return UVProgress::IsValid() && (Value() == _animatedValue);
+		return UVProgress::IsValid() && (value() == _animatedValue);
 	}
 
+protected:
 	void Draw(Canvas<Color>& canvas)
 	{
 		if (!IsValid())
 		{
-			if (Value()<_animatedValue)
-				UVProgress::SetValue(UVProgress::Value()+1);
+			if (value()<_animatedValue)
+				UVProgress::setValue(UVProgress::value()+1);
 			else
-				UVProgress::SetValue(UVProgress::Value()-1);
+				UVProgress::setValue(UVProgress::value()-1);
 		}
 
 		UVProgress::Draw(canvas);
 	}
+
 private:
 	unsigned short _animatedValue;
 };
@@ -128,14 +130,14 @@ public:
 		UVAnimatedProgress(rect, value), _minValueT(min), _maxValueT(max)
 	{}
 
-	inline TValue ValueOf() const
+	inline TValue valueOf() const
 	{
-		return map(Value(), _minValue, _maxValue, _minValueT, _maxValueT);
+		return map(value(), _minValue, _maxValue, _minValueT, _maxValueT);
 	}
 
-	inline void SetValueOf(TValue new_value)
+	inline void setValueOf(TValue new_value)
 	{
-		SetValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
+		setValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
 	}
 
 private:
@@ -156,14 +158,14 @@ class UVProgressOf : public UVProgress
 			UVProgress(rect, value), _minValueT(min), _maxValueT(max)
 	{}
 
-	inline TValue ValueOf() const
+	inline TValue valueOf() const
 	{
-		return map(Value(), _minValue, _maxValue,  _minValueT, _maxValueT);
+		return map(value(), _minValue, _maxValue,  _minValueT, _maxValueT);
 	}
 
-	inline void SetValueOf(TValue new_value)
+	inline void setValueOf(TValue new_value)
 	{
-		SetValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
+		setValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
 	}
 
 private:

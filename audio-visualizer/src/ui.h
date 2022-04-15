@@ -103,8 +103,9 @@ void loopUI(void * args)
 
         for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
-          auto value = bands[band_index].amplitude / 60;
-          value = value > 60 ? 60 : value;
+          auto value = bands[band_index].amplitude / form.equalizer.bands.maxBand();
+
+          value = value > form.equalizer.bands.maxBand() ? form.equalizer.bands.maxBand()  : value;
 
           value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
 
@@ -149,8 +150,8 @@ void loopUI(void * args)
       // Serial.print(" ");
       // Serial.println(abs(frame.right));
 
-      form.levelLeft.SetValueOf(frame.left);
-      form.levelRight.SetValueOf(frame.right);
+      form.levelLeft.setValueOf(frame.left);
+      form.levelRight.setValueOf(frame.right);
 
       // while (!level_left.IsValid() || !level_right.IsValid())
       // {

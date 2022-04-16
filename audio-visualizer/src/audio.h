@@ -1,5 +1,9 @@
+#pragma once
 
-InternetRadio radio;
+void onAudioFrameCallback(const AudioFrame& frame)
+{
+  xQueueSend(audioFrameQueue, &frame, 0);
+}
 
 void onStreamChanged(const char *type, const char *value)
 {

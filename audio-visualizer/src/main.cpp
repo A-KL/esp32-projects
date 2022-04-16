@@ -1,7 +1,14 @@
 #include <limits.h>
 #include <sstream>
 #include <Arduino.h>
+#include "Network.h"
+#include "Color.h"
+#include "Canvas.h"
+#include "MainForm.h"
+#include "AudioFrame.h"
 #include "RadioStation.h"
+#include "Radio.h"
+#include "AdcAudioDevice.h"
 
 RadioStation Stations[] { 
   {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
@@ -20,11 +27,16 @@ RadioStation Stations[] {
 const int stationsCount = (sizeof(Stations)/sizeof(RadioStation) - 1);
 int stationIndex = 2;
 
-#include "Network.h"
-#include "Radio.h"
+#define SAMPLES 512
 
-#include "Color.h"
-#include "Canvas.h"
+double vReal_l[SAMPLES];
+double vReal_r[SAMPLES];
+
+double vImag_l[SAMPLES];
+double vImag_r[SAMPLES];
+
+InternetRadio radio;
+AdcAudioDevice adc((float*)vReal_l, SAMPLES);
 
 #ifdef M5STACK
   #include "M5StackCanvas.h"
@@ -37,8 +49,8 @@ int stationIndex = 2;
 #endif
 
 TCanvas canvas;
+MainForm form({ 0, 0, 320, 240 });
 
-#include "MainForm.h"
 #include "ui.h"
 #include "audio.h"
 #include "events.h"

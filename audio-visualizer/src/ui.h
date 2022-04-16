@@ -1,38 +1,12 @@
 #pragma once
 
 #include <arduinoFFT.h>
-
-#include "UIElement.h"
-#include "UVProgress.h"
-#include "UISoundAnalyzer.h"
-#include "UILabel.h"
-#include "UIContainer.h"
-#include "UIList.h"
-#include "MainForm.h"
-
 #include "bands.h"
 
-#define SAMPLES 512
-
-double vReal_l[SAMPLES];
-double vReal_r[SAMPLES];
-
-double vImag_l[SAMPLES];
-double vImag_r[SAMPLES];
-
 unsigned int samplig_rate = 44100;
-unsigned int sampling_period_us = round(1000000 * (1.0 / samplig_rate));
-unsigned long newTime, oldTime, microseconds;
 
 static TaskHandle_t analyzerHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
-
-MainForm form({ 0, 0, 320, 240 });
-
-void onAudioFrameCallback(const AudioFrame& frame)
-{
-  xQueueSend(audioFrameQueue, &frame, 0);
-}
 
 void loopUI(void * args)
 {
@@ -45,50 +19,55 @@ void loopUI(void * args)
 
     while (true)
     {
-        for (int i = 0; i < SAMPLES; i++) 
+        // for (int i = 0; i < SAMPLES; i++) 
+        // {
+        //     xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));
+
+        //     vReal_l[i] = frame.left;
+        //     vReal_r[i] = frame.right;
+
+        //     vImag_l[i] = 0;
+        //     vImag_r[i] = 0;
+        // }
+
+        if (adc.lock())
         {
-            xQueueReceive(audioFrameQueue, &frame, pdMS_TO_TICKS(1));
+          fft_left.DCRemoval();
+          fft_left.Windowing(FFT_WIN_TYP_HANN, FFT_FORWARD);
+          fft_left.Compute(FFT_FORWARD);
+          fft_left.ComplexToMagnitude();
 
-            vReal_l[i] = frame.left;
-            vReal_r[i] = frame.right;
+          for (int bin = 1; bin < (SAMPLES/2); bin++)
+          {
+            for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
+            {
+              if (bands[band_index].inRange(bin))
+              {
+                bands[band_index].amplitude  += (int)vReal_l[bin];
+              }
+            }
+          }
 
-            vImag_l[i] = 0;
-            vImag_r[i] = 0;
+          adc.unlock();
+
+          for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
+          {
+            auto value = bands[band_index].amplitude / form.equalizer.bands.maxBand();
+
+            value = value > form.equalizer.bands.maxBand() ? form.equalizer.bands.maxBand()  : value;
+
+            value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
+
+            bands[band_index].amplitude_old = value;
+
+            form.equalizer.bands.setBand(band_index, value);
+          }
         }
-
-        fft_left.DCRemoval();
-        fft_left.Windowing(FFT_WIN_TYP_HANN, FFT_FORWARD);
-        fft_left.Compute(FFT_FORWARD);
-        fft_left.ComplexToMagnitude();
 
         //double max_f_left = 0;
         //double max_v_left = 0;
 
         //fft_left.MajorPeak(&max_f_left, &max_v_left);
-
-        for (int bin = 1; bin < (SAMPLES/2); bin++)
-        {
-          for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
-          {
-            if (bands[band_index].inRange(bin))
-            {
-              bands[band_index].amplitude  += (int)vReal_l[bin];
-            }
-          }
-        }
-
-        for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
-        {
-          auto value = bands[band_index].amplitude / form.equalizer.bands.maxBand();
-
-          value = value > form.equalizer.bands.maxBand() ? form.equalizer.bands.maxBand()  : value;
-
-          value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
-
-          bands[band_index].amplitude_old = value;
-
-          form.equalizer.bands.setBand(band_index, value);
-        }
 
         // // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
         // for (int band_index = 0, bin = 1; band_index < BANDS_COUNT; band_index++, bin+=4)

@@ -125,23 +125,28 @@ private:
     UILabel leftTextValue;
     UILabel rightTextValue;
 
-    UILabel icons[5] {
+    UILabel icons[6] {
         {{ 0, 0, 50, 18 },                                 "COAX", Color::Gray, Color::Gray, 2},
         {{ 50 + 2, 0, 42, 18 },                            "AUX",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 42 + 2, 0, 42, 18 },                   "Web",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 },          "A2DP", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
+        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 },          "LINE", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
     };
 
-    const Color icons_state_on[5] {
+    const Color icons_state_on[6] {
+        Color::Orange,
         Color::Green,
-        Color::Orange,
-        Color::Orange,
+
+        Color::Purpule,
+        Color::Purpule,
         Color::LightBlue,
-        Color::Red
+        
+        Color::Red,
     };
 
-    const Color icons_state_off[5] {
+    const Color icons_state_off[6] {
+        Color::Gray,
         Color::Gray,
         Color::Gray,
         Color::Gray,

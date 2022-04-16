@@ -3,10 +3,8 @@
 #include <arduinoFFT.h>
 #include "bands.h"
 
-unsigned int samplig_rate = 44100;
-
 static TaskHandle_t analyzerHandle;
-static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+//static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
 void loopUI(void * args)
 {

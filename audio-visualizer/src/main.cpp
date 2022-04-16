@@ -10,6 +10,19 @@
 #include "Radio.h"
 #include "AdcAudioDevice.h"
 
+#ifdef M5STACK
+  #include "M5StackCanvas.h"
+  #define TCanvas M5StackCanvas
+#endif
+
+#ifdef ESP_WROVER
+  #include "TFTCanvas.h"
+  #define TCanvas TFTCanvas
+#endif
+
+TCanvas canvas;
+MainForm form({ 0, 0, 320, 240 });
+
 RadioStation Stations[] { 
   {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
   {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
@@ -35,29 +48,18 @@ double vReal_r[SAMPLES];
 double vImag_l[SAMPLES];
 double vImag_r[SAMPLES];
 
+unsigned int samplig_rate = 44100;
+
 InternetRadio radio;
-AdcAudioDevice adc((float*)vReal_l, SAMPLES);
+AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 
-#ifdef M5STACK
-  #include "M5StackCanvas.h"
-  #define TCanvas M5StackCanvas
-#endif
-
-#ifdef ESP_WROVER
-  #include "TFTCanvas.h"
-  #define TCanvas TFTCanvas
-#endif
-
-TCanvas canvas;
-MainForm form({ 0, 0, 320, 240 });
+int _selectedAudioSource = 1;
+int _selectedAudioTarget = 0;
 
 #include "ui.h"
 #include "audio.h"
 #include "events.h"
 #include "espressif_logo.h"
-
-int _selectedAudioSource = 0;
-int _selectedAudioTarget = 0;
 
 void setup() {
   Serial.begin(115200);

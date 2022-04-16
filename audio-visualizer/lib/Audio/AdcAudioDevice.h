@@ -1,13 +1,12 @@
 #pragma once
 
-//#include <Arduino.h>
-
 class AdcAudioDevice
 {
 public: 
-  AdcAudioDevice(float buffer[], int size = 512, uint f = 44100, int pin = 37) :
+  AdcAudioDevice(float real[], float img[], int size = 512, uint f = 44100, int pin = 37) :
     _mutex(xSemaphoreCreateBinary()),
-    _buffer(buffer),
+    _real_l(real),
+    _img_l(img),
     _size(size),
     _freq(f),
     _pin(pin),
@@ -27,8 +26,8 @@ public:
     {
         newTime = micros();
 
-        _buffer[i] = analogRead(_pin); // A conversion takes about 9.7uS on an ESP32
-        //vImag_l[i] = 0;
+        _real_l[i] = analogRead(_pin); // A conversion takes about 9.7uS on an ESP32
+        _img_l[i] = 0;
 
         // vReal_r[i] = analogRead(AUDIO_IN_PIN); // A conversion takes about 9.7uS on an ESP32
         // vImag_r[i] = 0;
@@ -51,11 +50,12 @@ public:
 
 private:
   SemaphoreHandle_t _mutex;
-  float* _buffer;
+
+  float* _real_l;
+  float* _img_l;
   const int _size;
   const unsigned int _freq;
   const int _pin;
 
   const unsigned int _sampling_period_us;
-
 };

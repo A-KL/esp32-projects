@@ -20,11 +20,19 @@ struct Color
 
 	const static Color Green;
 
+	const static Color DarkGreen;
+
 	const static Color Blue;
 
 	const static Color Orange;
 
 	const static Color LightBlue;
+
+	const static Color Purpule;
+
+	const static Color Yellow;
+
+	const static Color Pink;
 
 	const static Color Gray;
 };

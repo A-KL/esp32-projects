@@ -40,8 +40,8 @@ public:
   MainForm(const UIRect& rect) : 
         UIContainer(rect),
 
-        volume({ 320 - 50, 0, 50, 20 }, "100%"),
-        track({ 0, 0, 320, 20 }, "Test"),
+        volume({ 320 - 40, 0, 40, 20 }, "100%"),
+        track({ 0, 0, 320 - 40, 20 }, "Test"),
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 

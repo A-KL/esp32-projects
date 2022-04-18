@@ -70,6 +70,7 @@ protected:
         auto output = new AudioOutputI2S(port, output_mode, dma_buf_count, use_apll);
         output->SetPinout(26, 25, 33);
         output->SetGain(gain);
+        //output->SetRate(48800);
         return output;
     }
 

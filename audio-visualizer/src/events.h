@@ -44,7 +44,10 @@ void onRightEncoderButtonUp()
 {
   auto muted = !radio.muted();
   radio.setMute(muted);
-  form.setIcon(4, muted);
+  form.setIcon(5, muted);
+
+  // Serial.print("Muted: ");
+  // Serial.println(muted);
 }
 
 void setupControls()

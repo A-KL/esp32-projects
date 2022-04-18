@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <sstream>
+#include <wm8960.h>
 #include <Arduino.h>
 #include "Network.h"
 #include "Color.h"
@@ -53,8 +54,8 @@ unsigned int samplig_rate = 44100;
 InternetRadio radio;
 AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 
-int _selectedAudioSource = 1;
-int _selectedAudioTarget = 0;
+int _selectedAudioSource = 0;
+int _selectedAudioTarget = 1;
 
 #include "ui.h"
 #include "audio.h"
@@ -62,8 +63,14 @@ int _selectedAudioTarget = 0;
 #include "espressif_logo.h"
 
 void setup() {
-  Serial.begin(115200);
 
+  Serial.begin(115200);
+  auto error = wm8960_init();
+
+  if (error){
+    Serial.print("Error: ");
+    Serial.println(error);
+  }
   canvas.Init(Color(255, 255, 255));
   canvas.SetFont(NULL, 1);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
@@ -72,6 +79,7 @@ void setup() {
   setupControls();
 
   canvas.Clear(Color(0, 0, 0));
+
 
   startUI((void*)&canvas);
 

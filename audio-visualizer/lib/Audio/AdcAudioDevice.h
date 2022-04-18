@@ -3,8 +3,8 @@
 class AdcAudioDevice
 {
 public: 
-  AdcAudioDevice(float real[], float img[], int size = 512, uint f = 44100, int pin = 37) :
-    _mutex(xSemaphoreCreateBinary()),
+  AdcAudioDevice(float real[], float img[], int size = 512, uint f = 44100, int pin = 36) :
+    _mutex(xSemaphoreCreateMutex()),
     _real_l(real),
     _img_l(img),
     _size(size),
@@ -35,12 +35,17 @@ public:
         while ((micros() - newTime) < _sampling_period_us) { /* chill */ }
     }
 
+    for (int i = 0; i < _size; i++)
+    {
+      Serial.println(_real_l[i]);
+    }
+
     return unlock();
   }
 
-  inline bool lock() const
+  inline bool lock(int waitMs = 1) const
   {
-      return (xSemaphoreTake(_mutex, 100) == pdTRUE);
+      return (xSemaphoreTake(_mutex, waitMs / portTICK_PERIOD_MS) == pdTRUE);
   }
 
   inline bool unlock() const

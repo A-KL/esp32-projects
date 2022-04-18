@@ -2,7 +2,7 @@
 
 void onAudioFrameCallback(const AudioFrame& frame)
 {
-  //xQueueSend(audioFrameQueue, &frame, 0);
+  xQueueSend(audioFrameQueue, &frame, 0);
 }
 
 void onStreamChanged(const char *type, const char *value)
@@ -38,8 +38,7 @@ void loopAudio()
     {
       adc.loop();
     } 
-
-    if (_selectedAudioSource == 0)
+    else if (_selectedAudioSource == 0)
     {
       radio.Loop();
     }  

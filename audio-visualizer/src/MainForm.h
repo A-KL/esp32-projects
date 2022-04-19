@@ -11,11 +11,16 @@ class UISoundEqualizer : public UIContainer
 {
 public:    
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
-        bands({ rect.x + 30, rect.y, rect.w - 50, rect.h - 120 - 23})
+        bands({ 30, 10, rect.w - 50, rect.h - 120 - 23})
     {
         for (int i=0; i< (sizeof(level_lables) / sizeof(level_lables[0])); i++)
         {
             Add(level_lables[i]);
+        }
+        
+        for (int i=0; i< (sizeof(freq_lables) / sizeof(freq_lables[0])); i++)
+        {
+            Add(freq_lables[i]);
         }
          Add(bands);
     }
@@ -32,6 +37,15 @@ private:
         {{ 5, 20 * 5, 20, 16 }, "-50"},
         {{ 5, 20 * 6, 20, 16 }, "-60"}
     };
+
+    UILabel freq_lables[5] {
+        {{ 25,          20 * 7,      20, 16 }, "25", 1},
+        {{ 25 + 20 * 1, 20 * 6 + 10, 20, 16 }, "40", 1},
+        {{ 25 + 20 * 2, 20 * 7,      20, 16 }, "63", 1},
+        {{ 25 + 20 * 3, 20 * 6 + 10, 25, 16 }, "100", 1},
+        {{ 25 + 20 * 4, 20 * 7,      25, 16 }, "157", 1},
+
+    };
 };
 
 class MainForm : public UIContainer
@@ -41,7 +55,7 @@ public:
         UIContainer(rect),
 
         volume({ 320 - 40, 0, 40, 20 }, "100%"),
-        track({ 0, 0, 320 - 40, 20 }, "Test"),
+        track({ 0, 0, 320 - 40, 20 }, "[Title]"),
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 

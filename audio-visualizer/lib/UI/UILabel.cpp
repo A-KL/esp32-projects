@@ -10,14 +10,15 @@
 #include "UIElement.h"
 #include "UILabel.h"
 
-UILabel::UILabel(const UIRect& rect, const char* text)
+UILabel::UILabel(const UIRect& rect, const char* text, int fontIndex)
 		: UILabel(rect, text, Color::White, Color::White, 0)
 { 
-    setBackgroundColor(Color::Red);
+    _fontIndex = fontIndex;
+    //setBackgroundColor(Color::Red);
 }
 
 UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize)
-		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(foreColor)
+		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(foreColor), _fontIndex(0)
 {
     setText(text);
 }
@@ -34,6 +35,8 @@ void UILabel::Draw(Canvas<Color>& canvas)
     auto origin_y = _rect.y;
 
     AbsolutePosition(origin_x, origin_y);
+
+    canvas.SetFont(_fontIndex, 1);
 
     canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _forecolor);
 }

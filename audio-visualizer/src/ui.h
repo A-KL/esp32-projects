@@ -36,6 +36,8 @@ void loopUI(void * args)
 
         for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
+          bands[band_index].amplitude = 0;
+
           for (int bin = 1; bin < (SAMPLES/2); bin++)
           {
             if (bands[band_index].inRange(bin) && vReal_l[bin] > 500)

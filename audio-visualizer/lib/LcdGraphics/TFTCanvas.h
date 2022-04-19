@@ -35,7 +35,7 @@ public:
 
 	void DrawImage(int x, int y, int w, int h, const unsigned short* data);
 
-	void SetFont(const char* fontName, unsigned char size);
+	void SetFont(int index, unsigned char size);
 
 	inline int Height() const
 	{

@@ -24,6 +24,8 @@ const Color Color::Pink {255, 0, 165, 0};
 
 const Color Color::Gray { 56, 56, 56, 0 };
 
+const Color Color::LightGray {179, 179, 179};
+
 Color::operator unsigned int() const
 {
 	return (_r << 16) | (_g << 8) | _b;

@@ -14,6 +14,8 @@ public:
 
 	virtual void DrawText(int x, int y, int w, int h, const char* text, const TColor& color) = 0;
 
+	virtual void SetFont(int index, unsigned char size) = 0;
+
 	virtual int Height() const = 0;
 
 	virtual int Witdth() const = 0;

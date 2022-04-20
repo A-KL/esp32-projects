@@ -35,4 +35,6 @@ struct Color
 	const static Color Pink;
 
 	const static Color Gray;
+
+	const static Color LightGray;
 };

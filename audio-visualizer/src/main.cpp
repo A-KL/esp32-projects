@@ -23,6 +23,7 @@
 
 TCanvas canvas;
 MainForm form({ 0, 0, 320, 240 });
+int font_index = 0;
 
 RadioStation Stations[] { 
   {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
@@ -63,23 +64,17 @@ int _selectedAudioTarget = 1;
 #include "espressif_logo.h"
 
 void setup() {
-
   Serial.begin(115200);
-  auto error = wm8960_init();
 
-  if (error){
-    Serial.print("Error: ");
-    Serial.println(error);
-  }
-  canvas.Init(Color(255, 255, 255));
-  canvas.SetFont(NULL, 1);
+  canvas.Init(Color::White);
+  canvas.SetFont(0, 1);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
 
+  wm8960_init();
   setupWiFi();
   setupControls();
 
-  canvas.Clear(Color(0, 0, 0));
-
+  canvas.Clear(Color::Black);
 
   startUI((void*)&canvas);
 

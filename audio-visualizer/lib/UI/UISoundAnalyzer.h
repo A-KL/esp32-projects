@@ -51,7 +51,7 @@ protected:
 		auto origin_x = _rect.x;
 		auto origin_y = _rect.y;
 
-		//AbsolutePosition(origin_x, origin_y);
+		AbsolutePosition(origin_x, origin_y);
 
 		auto y = origin_y;
 

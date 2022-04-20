@@ -15,10 +15,10 @@ public:
 
   bool loop()
   {
-    if (!lock())
-    {
-        return false;
-    }
+    // if (!lock())
+    // {
+    //     return false;
+    // }
 
     unsigned long newTime;
 
@@ -40,18 +40,18 @@ public:
       Serial.println(_real_l[i]);
     }
 
-    return unlock();
+    return true;// unlock();
   }
 
-  inline bool lock(int waitMs = 1) const
-  {
-      return (xSemaphoreTake(_mutex, waitMs / portTICK_PERIOD_MS) == pdTRUE);
-  }
+  // inline bool lock(int waitMs = 1) const
+  // {
+  //     return (xSemaphoreTake(_mutex, waitMs / portTICK_PERIOD_MS) == pdTRUE);
+  // }
 
-  inline bool unlock() const
-  {
-      return (xSemaphoreGive(_mutex) == pdTRUE);
-  }
+  // inline bool unlock() const
+  // {
+  //     return (xSemaphoreGive(_mutex) == pdTRUE);
+  // }
 
 private:
   SemaphoreHandle_t _mutex;

@@ -29,10 +29,9 @@ void loopUI(void * args)
         }
 
         fft_left.DCRemoval();
-        fft_left.Windowing(FFT_WIN_TYP_HANN, FFT_FORWARD);
+        fft_left.Windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
         fft_left.Compute(FFT_FORWARD);
         fft_left.ComplexToMagnitude();
-
 
         for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
@@ -40,7 +39,7 @@ void loopUI(void * args)
 
           for (int bin = 1; bin < (SAMPLES/2); bin++)
           {
-            if (bands[band_index].inRange(bin) && vReal_l[bin] > 500)
+            if (bands[band_index].inRange(bin) && vReal_l[bin] > 50)
             {
               bands[band_index].amplitude  += (int)vReal_l[bin];
             }
@@ -49,13 +48,15 @@ void loopUI(void * args)
 
         for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
-          auto value = bands[band_index].amplitude / form.equalizer.bands.maxBand();
+          auto value = map(bands[band_index].amplitude_avg(), 0, 600000, 0, form.equalizer.bands.maxBand());
 
-          value = value > form.equalizer.bands.maxBand() ? form.equalizer.bands.maxBand() : value;
+         // Serial.println(bands[band_index].amplitude_avg());
 
-          value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
+         // value = value > form.equalizer.bands.maxBand() ? form.equalizer.bands.maxBand() : value;
 
-          bands[band_index].amplitude_old = value;
+          //value = (bands[band_index].amplitude_old + bands[band_index].amplitude) / 2;
+
+          //bands[band_index].amplitude_old = value;
 
           form.equalizer.bands.setBand(band_index, value);
         }
@@ -101,8 +102,8 @@ void loopUI(void * args)
         // Serial.print(" ");
         // Serial.println(abs(frame.right));
 
-        form.levelLeft.setValueOf((frame.left + form.levelLeft.valueOf()) / 2);
-        form.levelRight.setValueOf((frame.right + form.levelRight.valueOf()) / 2);
+        form.levelLeft.setValueOf(frame.left);
+        form.levelRight.setValueOf(frame.right);
 
         // while (!level_left.IsValid() || !level_right.IsValid())
         // {

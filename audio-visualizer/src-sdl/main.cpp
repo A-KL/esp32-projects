@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+#include "../lib/FFT_CODE/complex.h"
+#include "../lib/FFT_CODE/fft.h"
+
 #include "../lib/BaseGraphics/Color.h"
 #include "../lib/BaseGraphics/Canvas.h"
 #include "../lib/SDLGraphics/SDLCanvas.h"
@@ -17,17 +20,25 @@
 
 #include "MainForm.h"
 
+
 MainForm form({0, 0, 320, 240});
+UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
+
+#include "audio.h"
 
 using namespace std;
 
 int main()
 {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
 		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
 		return 1;
 	}
+
+	listDevices(0);
+
+	listDevices(1);
 
 	TTF_Init();
 
@@ -65,12 +76,12 @@ int main()
 	UILabel label_out_spdif({ 30, 0, 40, 18 }, "COAX", Color::Red, Color::Red, 2);
 	label_out_spdif.setForecolor({ 255, 0, 0, 0 });
 
-	UISoundAnalyzer<30> analyzer({ 30, 25, 270, 120 });
+	
 
-	analyzer.setBand(0, 50);
-	analyzer.setBand(1, 30);
-	analyzer.setBand(2, 0);
-	analyzer.setBand(3, 10);
+	//analyzer.setBand(0, 50);
+	//analyzer.setBand(1, 30);
+	//analyzer.setBand(2, 0);
+	//analyzer.setBand(3, 10);
 
 	// Levels
 
@@ -88,28 +99,30 @@ int main()
 	UIContainer footer({ 0, 240-23, 320, 23 }, { 56, 56, 56, 0 });
 
 	// Render
-	panel.Add(label_out_spdif);
-	panel.Add(label_0);
-	panel.Add(label_10);
-	panel.Add(label_20);
-	panel.Add(label_30);
-	panel.Add(label_40);
-	panel.Add(label_50);
-	panel.Add(label_60);
+	//panel.Add(label_0);
+	//panel.Add(label_10);
+	//panel.Add(label_20);
+	//panel.Add(label_30);
+	//panel.Add(label_40);
+	//panel.Add(label_50);
+	//panel.Add(label_60);
 	panel.Add(analyzer);
 	panel.Add(level_left);
 	panel.Add(level_right);
 	panel.Add(level_left_label);
 	panel.Add(level_right_label);
-	panel.Add(footer);
+
+	auto dev = setupAudio("C:\\Sources\\esp32-projects\\audio-visualizer\\x64\\Debug\\Etherwood - Spoken.wav");
+
+	SDL_PauseAudioDevice(dev, SDL_FALSE); /* start audio playing. */
 
 	do
 	{
-		auto value_l = rand() % 255;
-		auto value_r = rand() % 255;
+		//auto value_l = rand() % 255;
+		//auto value_r = rand() % 255;
 
-		level_left.SetValueOf(value_l);
-		level_right.SetValueOf(value_r);
+		//level_left.SetValueOf(value_l);
+		//level_right.SetValueOf(value_r);
 
 		//while (!level_left.IsValid() || !level_right.IsValid())
 		//{
@@ -121,21 +134,24 @@ int main()
 		//	SDL_Delay(2);
 		//}
 
-		form.Update(sdl);
+		//form.Update(sdl);
 
-		for (auto i = 0; i < 30; i++)
-		{
-			analyzer.setBand(i, (rand() % 255));
-		}
+		//for (auto i = 0; i < 30; i++)
+		//{
+		//	analyzer.setBand(i, (rand() % 255));
+		//}
 
-		//panel.Update(sdl);
-
+		panel.Update(sdl);
 		sdl.Update();
 
 		SDL_PollEvent(&event);
 		SDL_Delay(5);
 	} 
 	while (event.type != SDL_QUIT);
+
+	SDL_CloseAudioDevice(dev);
+
+	SDL_FreeWAV(wavBuffer);
 
 	SDL_DestroyWindow(window);
 

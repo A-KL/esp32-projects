@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -145,6 +145,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\lib\BaseGraphics\Color.cpp" />
+    <ClCompile Include="..\lib\FFT_CODE\complex.cpp" />
+    <ClCompile Include="..\lib\FFT_CODE\fft.cpp" />
     <ClCompile Include="..\lib\SDLGraphics\SDLCanvas.cpp" />
     <ClCompile Include="..\lib\UI\UIElement.cpp" />
     <ClCompile Include="..\lib\UI\UILabel.cpp" />
@@ -153,6 +155,8 @@
   <ItemGroup>
     <ClInclude Include="..\lib\BaseGraphics\Canvas.h" />
     <ClInclude Include="..\lib\BaseGraphics\Color.h" />
+    <ClInclude Include="..\lib\FFT_CODE\complex.h" />
+    <ClInclude Include="..\lib\FFT_CODE\fft.h" />
     <ClInclude Include="..\lib\SDLGraphics\SDLCanvas.h" />
     <ClInclude Include="..\lib\UI\UIContainer.h" />
     <ClInclude Include="..\lib\UI\UIElement.h" />
@@ -160,6 +164,7 @@
     <ClInclude Include="..\lib\UI\UIList.h" />
     <ClInclude Include="..\lib\UI\UISoundAnalyzer.h" />
     <ClInclude Include="..\lib\UI\UVProgress.h" />
+    <ClInclude Include="audio.h" />
     <ClInclude Include="MainForm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

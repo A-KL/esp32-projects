@@ -38,7 +38,7 @@ public:
     	va_start(args, format);
 		char buffer[100];
 		memset(&buffer[0], 0, sizeof(buffer));
-		sprintf(&buffer[0], format, args);
+		//sprintf(&buffer[0], format, args);
 		va_end(args);
 
 		_text = &buffer[0];

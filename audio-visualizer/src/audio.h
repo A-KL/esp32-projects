@@ -15,7 +15,7 @@ RadioStation Stations[] {
 };
 
 const int stationsCount = (sizeof(Stations)/sizeof(RadioStation) - 1);
-const int stationIndex = 3;
+const int stationIndex = 4;
 
 void onAudioFrameCallback(const AudioFrame& frame)
 {

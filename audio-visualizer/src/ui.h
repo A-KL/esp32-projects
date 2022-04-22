@@ -48,7 +48,7 @@ void loopUI(void * args)
 
         for (int band_index = 0; band_index < form.equalizer.bands.count(); band_index++)
         {
-          auto value = map(bands[band_index].amplitude_avg(), 0, 600000, 0, form.equalizer.bands.maxBand());
+          auto value = map(bands[band_index].amplitude_avg(), 0, 700000, 0, form.equalizer.bands.maxBand());
 
          // Serial.println(bands[band_index].amplitude_avg());
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#define USE_A2DP
+//#define USE_A2DP
 #define USE_I2S
 
-#include <AudioFileSource.h>
 #include <AudioFileSourceBuffer.h>
 #include <AudioFileSourceICYStream.h>
 #include <AudioGeneratorTalkie.h>
@@ -67,9 +66,9 @@ public:
 
 protected:
     AudioOutput* createI2S(int port=0, float gain = 1, int output_mode=0, int dma_buf_count = 8, int use_apll=0) const {
-        auto output = new AudioOutputI2S(port, output_mode, dma_buf_count, use_apll);
+        auto output = new AudioOutputI2S(port, output_mode, dma_buf_count, -1);
         output->SetPinout(26, 25, 33);
-        output->SetGain(gain);
+        //output->SetGain(gain);
         //output->SetRate(48800);
         return output;
     }

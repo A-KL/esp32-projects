@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dac.h"
+
 RadioStation Stations[] { 
   {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
   {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
@@ -31,9 +33,8 @@ void onStreamChanged(const char *type, const char *value)
 }
 
 void setupAudio()
-{
-  radio.SampleCallback(onAudioFrameCallback);
-  radio.StreamChanged = onStreamChanged;
+{ 
+    initDac();
 }
 
 void selectAudio(int dest, int src)
@@ -43,8 +44,8 @@ void selectAudio(int dest, int src)
     case 0:
       form.track.setText(Stations[stationIndex].Name);
       radio.selectStation(Stations[stationIndex]);
+      radio.StreamChanged = onStreamChanged;
       radio.Play(dest, src);
-
       radio.SampleCallback(onAudioFrameCallback);
       break;
 

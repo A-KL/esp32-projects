@@ -22,7 +22,6 @@ EasyButton encoder_right_button(MENU_BUTTON);
 
 //AiEsp32RotaryEncoder encoder_left_ = AiEsp32RotaryEncoder(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 5);
 
-
 // static void onLeftEncoderChanged(void* arg) {
 //   auto count = encoder_left.getCount(); 
 //   auto level = count > 255.0 ? 255.0 : count < 0 ? 0 : count;
@@ -45,9 +44,6 @@ void onRightEncoderButtonUp()
   auto muted = !radio.muted();
   radio.setMute(muted);
   form.setIcon(5, muted);
-
-  // Serial.print("Muted: ");
-  // Serial.println(muted);
 }
 
 void setupControls()

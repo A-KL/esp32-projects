@@ -54,13 +54,13 @@ public:
   MainForm(const UIRect& rect) : 
         UIContainer(rect),
 
-        volume({ 320 - 40, 0, 40, 20 }, "100%"),
+        volume({ 320 - 40, 0, 40, 20 }, "-20db"),
         track({ 0, 0, 320 - 40, 20 }, "[Title]"),
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelLeft({ 24, 181,           246, 15 }, 0, 32767 * 10, 32767 * 0.95 * 10, 0),
-        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, 32767* 10, 32767 * 0.95 * 10, 0),
+        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
+        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 0, 240-18, 320, 18 }),
@@ -100,8 +100,8 @@ public:
 
     UISoundEqualizer<30> equalizer;
 
-    UVProgressOf<int16_t> levelLeft;
-    UVProgressOf<int16_t> levelRight;
+    UVProgressOf<ushort> levelLeft;
+    UVProgressOf<ushort> levelRight;
 
     void setIcon(int index, bool state)
     {

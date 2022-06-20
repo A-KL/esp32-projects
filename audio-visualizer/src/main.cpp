@@ -34,14 +34,13 @@ double vImag_r[SAMPLES];
 unsigned int samplig_rate = 44100;
 
 InternetRadio radio;
-AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
+//AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 
 int _selectedAudioSource = 0;
 int _selectedAudioTarget = 1;
 
 #include "ui.h"
 #include "audio.h"
-#include "events.h"
 #include "espressif_logo.h"
 
 void setup() {
@@ -68,28 +67,6 @@ void setup() {
 
     while (true)
     {
-      // if (encoder_left_.isEncoderButtonClicked(50))
-      // {
-      //     is_muted = !is_muted;
-      // }
-
-      // if (encoder_left_.encoderChanged())
-      // {
-      //     auto level = encoder_left_.readEncoder() / 255.0f;
-
-      //     //volume.setFactor(level);
-
-      //     std::ostringstream temp;
-
-      //     temp << (int)(level * 100) << "%";
-
-      //     label_vol.setText(temp.str().c_str());
-      // }
-      // else if (is_muted)
-      // {
-      //    // volume.setFactor(0.0);
-      // }
-
       loopAudio();
       loopControls();
     }

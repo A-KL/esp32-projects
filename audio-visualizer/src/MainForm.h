@@ -100,8 +100,8 @@ public:
 
     UISoundEqualizer<30> equalizer;
 
-    UVFadingProgressOf<ushort> levelLeft;
-    UVFadingProgressOf<ushort> levelRight;
+    UVProgressOf<ushort> levelLeft;
+    UVProgressOf<ushort> levelRight;
 
     void setIcon(int index, bool state)
     {

@@ -66,6 +66,8 @@ void initDac()
 {
   Wire.begin(GPIO_NUM_21, GPIO_NUM_22);
 
+  return;
+
   uint8_t res = 0; 
 
   if (readI2c(dac_address, 0x40, res)){

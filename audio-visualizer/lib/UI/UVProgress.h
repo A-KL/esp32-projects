@@ -1,4 +1,3 @@
-
 #pragma once
 
 class UVProgress : public UIElement
@@ -169,12 +168,12 @@ class UVProgressOf : public UVProgress
 		}
 
 	protected:
-		inline TValue maxValueT()
+		inline TValue maxValueT() const
 		{
 			return _maxValueT;
 		}
 
-		inline TValue minValueT()
+		inline TValue minValueT() const
 		{
 			return _minValueT;
 		}
@@ -193,9 +192,9 @@ template <typename TValue>
 class UVFadingProgressOf : public UVProgressOf<TValue>
 {
 	public:
-		// UVFadingProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
-		// 	UVProgressOf<TValue>(rect, min, max, threshold, value)
-		// {}
+		UVFadingProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
+			UVProgressOf<TValue>(rect, min, max, threshold, value)
+		{}
 
 		bool IsValid() const
 		{

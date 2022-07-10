@@ -102,8 +102,17 @@ void loopUI(void * args)
         // Serial.print(" ");
         // Serial.println(abs(frame.right));
 
-        form.levelLeft.setValueOf(frame.left);
-        form.levelRight.setValueOf(frame.right);
+        auto current_left = form.levelLeft.valueOf();
+        auto current_right = form.levelRight.valueOf();
+
+        if (current_left < frame.left)
+        {
+          form.levelLeft.setValueOf(frame.left);
+        }
+        if (current_right < frame.right)
+        {
+          form.levelRight.setValueOf(frame.right);
+        }
 
         // while (!level_left.IsValid() || !level_right.IsValid())
         // {

@@ -1,17 +1,14 @@
 #pragma once
 
 #include "Adafruit_ILI9341.h"
-
-//#include "TFT_eSPI.h"
-
 #include "../BaseGraphics/Canvas.h"
 
-#define TFT_SCK    18
-#define TFT_MOSI   23
-#define TFT_MISO   19
-#define TFT_CS     05
-#define TFT_DC     04
-#define TFT_RESET  00
+// #define TFT_SCK    18
+// #define TFT_MOSI   23
+// #define TFT_MISO   19
+#define TFT_CS     00
+#define TFT_DC     02
+#define TFT_RESET  13
 
 class TFTCanvas :
 	public Canvas<Color>

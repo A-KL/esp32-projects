@@ -1,8 +1,8 @@
 #include "Adafruit_GFX.h"
 
- #include "../Fonts/FreeSans7pt7b.h"
+ //#include "FreeSans16pt7b.h"
 // #include "../Fonts/FreeSans8pt7b.h"
-#include "../Fonts/FreeSansBold7pt7b.h"
+#include "FreeSansBold16pt7b.h"
 //#include "../Fonts/FreeSansBold8pt7b.h"
 
 #include "../BaseGraphics/Color.h"
@@ -44,10 +44,10 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
   if (index == 0) {
-    _display.setFont(&FreeSansBold7pt7b);
+    _display.setFont(&FreeSansBold16pt7b);
   }
   else {
-    _display.setFont(&FreeSans7pt7b);
+    _display.setFont(&FreeSansBold16pt7b);
   }
 
   _display.setTextSize(size);

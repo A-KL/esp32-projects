@@ -3,6 +3,10 @@
 
 #include <driver/i2s.h>
 
+#include "espressif_logo.h"
+#include "Color.h"
+#include "TFTCanvas.h"
+
 #define I2S_PORT I2S_NUM_0
 #define I2S_WS 25
 #define I2S_SD 33
@@ -10,6 +14,8 @@
 
 #define bufferLen 64
 int16_t buffer[bufferLen];
+
+TFTCanvas canvas;
 
 // // don't mess around with this
 // i2s_config_t i2s_config = {
@@ -87,6 +93,7 @@ void i2s_setpin() {
   const i2s_pin_config_t pin_config = {
     .bck_io_num = I2S_SCK,
     .ws_io_num = I2S_WS,
+   // .mck_io_num = I2S_PIN_NO_CHANGE,
     .data_out_num = I2S_PIN_NO_CHANGE,
     .data_in_num = I2S_SD
   };
@@ -96,15 +103,21 @@ void i2s_setpin() {
 
 void setup() {
   Serial.begin(115200);
+  
+  canvas.Init(Color::Red);
+  // canvas.SetFont(0, 1);
+  // canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
+
+  // i2s_install();
+  // i2s_setpin();
+  // i2s_start(I2S_PORT);
  
-  i2s_install();
-  i2s_setpin();
-  i2s_start(I2S_PORT);
- 
-  delay(500);
+  delay(5000);
 }
 
 void loop() {
+  delay(5000);
+  return;
   // False print statements to "lock range" on serial plotter display
   // Change rangelimit value to adjust "sensitivity"
   int rangelimit = 3000;
@@ -117,7 +130,7 @@ void loop() {
   // Get I2S data and place in data buffer
   size_t bytesIn = 0;
 
-  esp_err_t result = i2s_read(I2S_PORT, &sBuffer, bufferLen, &bytesIn, portMAX_DELAY);
+  esp_err_t result = i2s_read(I2S_PORT, &buffer, bufferLen, &bytesIn, portMAX_DELAY);
  
   if (result == ESP_OK)
   {
@@ -126,7 +139,7 @@ void loop() {
     if (samples_read > 0) {
       float mean = 0;
       for (int16_t i = 0; i < samples_read; ++i) {
-        mean += (sBuffer[i]);
+        mean += (buffer[i]);
       }
  
       // Average the data reading

@@ -1,5 +1,10 @@
 #include "TFTCanvas.h"
 
+#include "Free_Fonts.h"
+#include "FreeSansBold16pt7b.h"
+#include "Orbitron_Bold_12.h"
+#include "DejaVu_Sans.h"
+
 TFTCanvas::TFTCanvas() : 
   _display(), _background(0, 0, 0)
 { }
@@ -39,13 +44,14 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
   if (index == 0) {
-    _display.setFreeFont(&FreeSansBold16pt7b);
+    _display.setFreeFont(&DejaVu_Sans_Bold_11);
   }
   else {
     _display.setFreeFont(&FreeSansBold16pt7b);
   }
 
-  _display.setTextSize(size);
+ // _display.setTextSize(size);
+ _display.setFreeFont(&DejaVu_Sans_Bold_11);
 }
 
 void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)
@@ -57,9 +63,7 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
   uint16_t w1, h1;
 
   w1 = _display.textWidth(text);
- // h1 = _display.textWidth(text);
-
-  //_display.textWidth(text, x0, y0, &x1, &y1, &w1, &h1);
+  h1 = _display.fontHeight();
 
   if (w > w1)
   {
@@ -68,12 +72,10 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
 
   if (h > h1)
   {
-    y += (h - h1) / 2.0 - 1;
+    y += (h - h1) / 2.0;
   }
 
-  _display.setCursor(x, y + h1);
-
-	_display.println(text);
+  _display.drawString(text, x, y + 2, GFXFF);
 }
 
 void TFTCanvas::DrawImage(int x, int y, int w, int h, const unsigned short* data)

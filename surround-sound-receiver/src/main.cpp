@@ -6,6 +6,8 @@
 #include "espressif_logo.h"
 #include "TFTCanvas.h"
 
+#include "MainForm.h"
+
 #define I2S_PORT I2S_NUM_0
 #define I2S_WS 25
 #define I2S_SD 33
@@ -15,6 +17,8 @@
 int16_t buffer[bufferLen];
 
 TFTCanvas canvas;
+
+MainForm form({ 0, 0, 320, 240 });
 
 // // don't mess around with this
 // i2s_config_t i2s_config = {
@@ -107,16 +111,17 @@ void setup() {
   canvas.SetFont(0, 1);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo);
 
-  // i2s_install();
-  // i2s_setpin();
-  // i2s_start(I2S_PORT);
- 
-  delay(5000);
+  delay(1000);
+
+  i2s_install();
+  i2s_setpin();
+  i2s_start(I2S_PORT);
+
+  canvas.Clear(Color::Black);
+
 }
 
 void loop() {
-  delay(5000);
-  return;
   // False print statements to "lock range" on serial plotter display
   // Change rangelimit value to adjust "sensitivity"
   int rangelimit = 3000;
@@ -147,4 +152,6 @@ void loop() {
       Serial.println(mean);
     }
   }
+
+  form.Update(canvas);
 }

@@ -2,9 +2,6 @@
 
 #include "SPI.h"
 #include "TFT_eSPI.h"
-
-#include "FreeSansBold16pt7b.h"
-
 #include "Color.h"
 #include "Canvas.h"
 

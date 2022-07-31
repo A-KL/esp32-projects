@@ -16,9 +16,9 @@ public:
 
 	virtual void SetFont(int index, unsigned char size) = 0;
 
-	virtual int Height() const = 0;
+	virtual int Height() = 0;
 
-	virtual int Witdth() const = 0;
+	virtual int Witdth() = 0;
 
 	virtual void Clear(const TColor& color) = 0;
 

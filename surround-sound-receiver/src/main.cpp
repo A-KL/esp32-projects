@@ -4,7 +4,6 @@
 #include <driver/i2s.h>
 
 #include "espressif_logo.h"
-#include "Color.h"
 #include "TFTCanvas.h"
 
 #define I2S_PORT I2S_NUM_0
@@ -104,9 +103,9 @@ void i2s_setpin() {
 void setup() {
   Serial.begin(115200);
   
-  canvas.Init(Color::Red);
-  // canvas.SetFont(0, 1);
-  // canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
+  canvas.Init(Color::White);
+  canvas.SetFont(0, 1);
+  canvas.DrawImage(0, 30, 320, 180, espressif_logo);
 
   // i2s_install();
   // i2s_setpin();

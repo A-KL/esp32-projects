@@ -1,13 +1,8 @@
-#include "Adafruit_GFX.h"
-
- //#include "FreeSans16pt7b.h"
-// #include "../Fonts/FreeSans8pt7b.h"
-#include "FreeSansBold16pt7b.h"
-//#include "../Fonts/FreeSansBold8pt7b.h"
-
-#include "../BaseGraphics/Color.h"
-
 #include "TFTCanvas.h"
+
+TFTCanvas::TFTCanvas() : 
+  _display(), _background(0, 0, 0)
+{ }
 
 void TFTCanvas::Init(const Color& color)
 {
@@ -44,10 +39,10 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
   if (index == 0) {
-    _display.setFont(&FreeSansBold16pt7b);
+    _display.setFreeFont(&FreeSansBold16pt7b);
   }
   else {
-    _display.setFont(&FreeSansBold16pt7b);
+    _display.setFreeFont(&FreeSansBold16pt7b);
   }
 
   _display.setTextSize(size);
@@ -61,7 +56,10 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
   int16_t  x1, y1;
   uint16_t w1, h1;
 
-  _display.getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
+  w1 = _display.textWidth(text);
+ // h1 = _display.textWidth(text);
+
+  //_display.textWidth(text, x0, y0, &x1, &y1, &w1, &h1);
 
   if (w > w1)
   {
@@ -80,7 +78,9 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
 
 void TFTCanvas::DrawImage(int x, int y, int w, int h, const unsigned short* data)
 {
-  _display.drawRGBBitmap(x, y, data, w, h);
+    // Swap the colour byte order when rendering
+  _display.setSwapBytes(true);
+  _display.pushImage(x, y, w, h, (const uint16_t *)data);
 }
 
 void TFTCanvas::Clear(const Color& color)

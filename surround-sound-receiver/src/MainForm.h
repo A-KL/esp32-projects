@@ -62,35 +62,59 @@ public:
         volume({ 320 - 40, 0, 40, 20 }, "-20db"),
         track({ 0, 0, 320 - 40, 20 }, "[Title]"),
 
-        equalizer({ 0, 20, 320, 240 - 23 - 20 }),
+       // equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
-        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
+        levelCenter({ 24, 25,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelSubwoofer({ 24, 25 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+
+        levelLeft({ 24, 61,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelRight({ 24, 61 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+
+        levelLeftRear({ 24, 97,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelRightRear({ 24, 97 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+
+        levelLeftSurround({ 24, 133,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelRightSurround({ 24, 133 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 0, 240-18, 320, 18 }),
 
-        leftTextL({ 0, 181, 20, 15 }, "L"),
-        rightTextL({ 0, 181 + 15 + 3, 20, 15 }, "R"),
+        leftTextL({ 0, 25, 20, 15 }, "L"),
+        rightTextL({ 0, 25 + 15 + 3, 20, 15 }, "R"),
 
-        leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
-        rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0")
+        centerText({ 0, 61, 20, 15 }, "C"),
+        subText({ 0, 61 + 15 + 3, 20, 15 }, "S"),
+
+        leftTextValue({ 24 + 246 + 10, 25, 25, 15 }, "1.0"),
+        rightTextValue({ 24 + 246 + 10, 25 + 15 + 3, 25, 15 }, "1.0")
     { 
         header.Add(track);
         header.Add(volume); 
         
         Add(header);
 
-        Add(equalizer);
+        //Add(equalizer);
 
         Add(leftTextL);
         Add(rightTextL);
 
+        Add(centerText);
+        Add(subText);
+
+        Add(levelCenter);
+        Add(levelSubwoofer);
+
         Add(levelLeft);
         Add(levelRight);
 
+        Add(levelLeftRear);
+        Add(levelRightRear);
+
         Add(leftTextValue);
         Add(rightTextValue);
+
+        Add(levelLeftSurround);
+        Add(levelRightSurround);
 
         for (int i=0; i<icons_count; i++)
         {
@@ -103,10 +127,19 @@ public:
     UILabel volume;
     UILabel track;
 
-    UISoundEqualizer<30> equalizer;
+    //UISoundEqualizer<30> equalizer;
 
-    UVProgressOf<ushort> levelLeft;
-    UVProgressOf<ushort> levelRight;
+    UVProgressOf<uint8_t> levelLeft;
+    UVProgressOf<uint8_t> levelRight;
+    
+    UVProgressOf<uint8_t> levelCenter;
+    UVProgressOf<uint8_t> levelSubwoofer;
+
+    UVProgressOf<uint8_t> levelLeftRear;
+    UVProgressOf<uint8_t> levelRightRear;
+
+    UVProgressOf<uint8_t> levelLeftSurround;
+    UVProgressOf<uint8_t> levelRightSurround;
 
     void setIcon(int index, bool state)
     {
@@ -140,6 +173,9 @@ private:
 
     UILabel leftTextL;
     UILabel rightTextL;
+
+    UILabel centerText;
+    UILabel subText;
 
     UILabel leftTextValue;
     UILabel rightTextValue;

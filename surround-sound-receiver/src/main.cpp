@@ -118,7 +118,6 @@ void setup() {
   i2s_start(I2S_PORT);
 
   canvas.Clear(Color::Black);
-
 }
 
 void loop() {
@@ -148,6 +147,8 @@ void loop() {
  
       // Average the data reading
       mean /= samples_read;
+
+      form.levelLeft.setValueOf(mean * UCHAR_MAX);
  
       Serial.println(mean);
     }

@@ -58,7 +58,7 @@ void TFTCanvas::SetFont(int index, unsigned char size)
   }
 
  // _display.setTextSize(size);
- _display.setFreeFont(&Orbitron_Regular11pt7b);
+ _display.setFreeFont(&DejaVu_Sans_Bold_11);
 }
 
 void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)

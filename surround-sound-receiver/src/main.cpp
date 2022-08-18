@@ -120,10 +120,13 @@ void setup() {
   canvas.Clear(Color::Black);
 }
 
+float mean = 0;
+unsigned long started = 0;
+
 void loop() {
   // False print statements to "lock range" on serial plotter display
   // Change rangelimit value to adjust "sensitivity"
-  int rangelimit = 3000;
+  int rangelimit = 16000;
 
   Serial.print(rangelimit * -1);
   Serial.print(" ");
@@ -140,18 +143,23 @@ void loop() {
     // Read I2S data buffer
     int16_t samples_read = bytesIn / 8;
     if (samples_read > 0) {
-      float mean = 0;
+      
       for (int16_t i = 0; i < samples_read; ++i) {
         mean += (buffer[i]);
       }
  
       // Average the data reading
       mean /= samples_read;
-
-      form.levelLeft.setValueOf(mean * UCHAR_MAX);
- 
-      Serial.println(mean);
     }
+  }
+
+  if (millis() - started > 200)
+  {
+    started = millis();
+    form.levelLeft.setValueOf(mean * UCHAR_MAX);
+ 
+    Serial.println(mean);
+    mean = 0;
   }
 
   form.Update(canvas);

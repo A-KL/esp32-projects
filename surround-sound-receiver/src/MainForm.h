@@ -64,17 +64,17 @@ public:
 
        // equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelCenter({ 24, 25,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
-        levelSubwoofer({ 24, 25 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelCenter({ 24, 25,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelSubwoofer({ 24, 25 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
 
-        levelLeft({ 24, 61,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
-        levelRight({ 24, 61 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelLeft({ 24, 61,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelRight({ 24, 61 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
 
-        levelLeftRear({ 24, 97,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
-        levelRightRear({ 24, 97 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelLeftRear({ 24, 97,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelRightRear({ 24, 97 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
 
-        levelLeftSurround({ 24, 133,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
-        levelRightSurround({ 24, 133 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.95, 0),
+        levelLeftSurround({ 24, 133,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelRightSurround({ 24, 133 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 0, 240-18, 320, 18 }),

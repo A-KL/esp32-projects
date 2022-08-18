@@ -2,7 +2,14 @@
 
 #include "Free_Fonts.h"
 #include "FreeSansBold16pt7b.h"
+
 #include "Orbitron_Bold_12.h"
+#include "Orbitron_Regular9pt7b.h"
+#include "Orbitron_Regular11pt7b.h"
+
+#include "Prototype9pt7b.h"
+#include "Prototype11pt7b.h"
+
 #include "DejaVu_Sans.h"
 
 TFTCanvas::TFTCanvas() : 
@@ -51,7 +58,7 @@ void TFTCanvas::SetFont(int index, unsigned char size)
   }
 
  // _display.setTextSize(size);
- _display.setFreeFont(&DejaVu_Sans_Bold_11);
+ _display.setFreeFont(&Orbitron_Regular11pt7b);
 }
 
 void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)

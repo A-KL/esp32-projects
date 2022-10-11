@@ -4,6 +4,7 @@
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
 #include "lego_plus_driver.h"
+#include "radio.h"
 
 #define GFXFF 1
 #define FF18  &FreeSans12pt7b
@@ -33,6 +34,8 @@ void setup() {
 
   Wire.begin();
   Serial.begin(115200);
+
+  setupRadio();
 
   if (!ina219_output.begin()) {
     Serial.println("Failed to find output INA219 chip");
@@ -90,6 +93,14 @@ void loop() {
     Serial.println(sbus_rx.failsafe());
   }
 
+  auto ch_0 = 0;
+  auto ch_1 = 0;
+
+  if (isReceived()) {
+    ch_0 = received.channels[0].value;
+    ch_1 = received.channels[1].value;
+  }
+
   spr.setTextColor(GREEN); 
 
   for (int8_t i = 0; i < 4; i++) {
@@ -114,6 +125,13 @@ void loop() {
   spr.printf("V: %.2fV\n", ina219_input.getBusVoltage_V());
   spr.setCursor(150, 180);
   spr.printf("I: %.2fmA\n", ina219_input.getCurrent_mA());
+
+  spr.setTextColor(WHITE); 
+
+  spr.setCursor(150, 210);
+  spr.printf("RF0: %d\n", ch_0);
+  spr.setCursor(150, 230);
+  spr.printf("RF1: %d\n", ch_1);
 
   spr.pushSprite(0, 0);
 }

@@ -6,6 +6,7 @@
 #define SLAVE_ADDR        0x56
 #define MOTOR_ADDR_BASE   0x00
 #define ENCODER_ADDR_BASE 0x08
+#define FIRWMARE_VER_ADDR 0x64
 #define STEP_V            51
 
 CommUtil Util;
@@ -37,7 +38,7 @@ Input:
 Return: Successful return 1
 Others:
 *************************************************/
-int32_t ReadEncoder(uint8_t n) {
+int32_t readEncoder(uint8_t n) {
     uint8_t dest[4] = {0};
 
     if (n > 3) return 0;
@@ -45,6 +46,14 @@ int32_t ReadEncoder(uint8_t n) {
     Util.readBytes(SLAVE_ADDR, ENCODER_ADDR_BASE + n * 4, 4, dest);
 
     return *((int32_t *)dest);
+}
+
+uint8_t readVersion() {
+    uint8_t dest = 0;
+
+    Util.readBytes(SLAVE_ADDR, FIRWMARE_VER_ADDR, 1, &dest);
+
+    return dest;
 }
 
 #endif

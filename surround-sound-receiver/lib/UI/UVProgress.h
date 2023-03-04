@@ -8,9 +8,9 @@ class UVProgress : public UIElement
 			_first(true),
 			_newValue(value),
 			_currentValue(0),
-			_activeColor(15, 185, 50, 0),
-			_activeThresholdColor(255, 0, 0, 0),
-			_activeWarningColor(185, 186, 48, 0),
+			_activeColor(Color::Green), // (15, 185, 50, 0),
+			_activeThresholdColor(Color::Red), //(255, 0, 0, 0),
+			_activeWarningColor(150, 150, 0, 0),//(185, 186, 48, 0),
 			_minValue(0), 
 			_maxValue(rect.w /_item_w),
 			_warning(_maxValue * 0.85),
@@ -84,6 +84,45 @@ class UVProgress : public UIElement
 		const unsigned short _threshold;
 };
 
+template <typename TValue>
+class UVProgressOf : public UVProgress
+{
+	public:
+		UVProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
+			UVProgress(rect, value), _minValueT(min), _maxValueT(max)
+		{}
+
+		inline TValue valueOf() const
+		{
+			return map(value(), _minValue, _maxValue,  _minValueT, _maxValueT);
+		}
+
+		inline void setValueOf(TValue new_value)
+		{
+			setValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
+		}
+
+	protected:
+		inline TValue maxValueT() const
+		{
+			return _maxValueT;
+		}
+
+		inline TValue minValueT() const
+		{
+			return _minValueT;
+		}
+
+	private:
+		const TValue _minValueT;
+		const TValue _maxValueT;
+
+		inline static TValue map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
+		{
+			return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+		}
+};
+
 class UVAnimatedProgress : public UVProgress
 {
 	public:
@@ -137,45 +176,6 @@ class UVAnimatedProgressOf : public UVAnimatedProgress
 		inline void setValueOf(TValue new_value)
 		{
 			setValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
-		}
-
-	private:
-		const TValue _minValueT;
-		const TValue _maxValueT;
-
-		inline static TValue map(TValue x, TValue in_min, TValue in_max, int out_min, int out_max)
-		{
-			return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-		}
-};
-
-template <typename TValue>
-class UVProgressOf : public UVProgress
-{
-	public:
-		UVProgressOf(const UIRect& rect, TValue min, TValue max, TValue threshold, TValue value = 0) :
-			UVProgress(rect, value), _minValueT(min), _maxValueT(max)
-		{}
-
-		inline TValue valueOf() const
-		{
-			return map(value(), _minValue, _maxValue,  _minValueT, _maxValueT);
-		}
-
-		inline void setValueOf(TValue new_value)
-		{
-			setValue(map(new_value, _minValueT, _maxValueT, _minValue, _maxValue));
-		}
-
-	protected:
-		inline TValue maxValueT() const
-		{
-			return _maxValueT;
-		}
-
-		inline TValue minValueT() const
-		{
-			return _minValueT;
 		}
 
 	private:

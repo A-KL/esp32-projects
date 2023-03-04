@@ -64,17 +64,17 @@ public:
 
        // equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelCenter({ 24, 25,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
-        levelSubwoofer({ 24, 25 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelCenter({ 24, 25,           246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
+        levelSubwoofer({ 24, 25 + 15 + 3, 246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
 
-        levelLeft({ 24, 61,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
-        levelRight({ 24, 61 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelLeft({ 24, 61,           246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
+        levelRight({ 24, 61 + 15 + 3, 246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
 
-        levelLeftRear({ 24, 97,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
-        levelRightRear({ 24, 97 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelLeftRear({ 24, 97,           246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
+        levelRightRear({ 24, 97 + 15 + 3, 246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
 
-        levelLeftSurround({ 24, 133,           246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
-        levelRightSurround({ 24, 133 + 15 + 3, 246, 15 }, 0, UCHAR_MAX, UCHAR_MAX * 0.99, 0),
+        levelLeftSurround({ 24, 133,           246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
+        levelRightSurround({ 24, 133 + 15 + 3, 246, 15 }, 0, UINT16_MAX, UINT16_MAX * 0.99, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 0, 240-18, 320, 18 }),
@@ -129,17 +129,17 @@ public:
 
     //UISoundEqualizer<30> equalizer;
 
-    UVProgressOf<uint8_t> levelLeft;
-    UVProgressOf<uint8_t> levelRight;
+    UVProgressOf<unsigned short> levelLeft;
+    UVProgressOf<unsigned short> levelRight;
     
-    UVProgressOf<uint8_t> levelCenter;
-    UVProgressOf<uint8_t> levelSubwoofer;
+    UVProgressOf<unsigned short> levelCenter;
+    UVProgressOf<unsigned short> levelSubwoofer;
 
-    UVProgressOf<uint8_t> levelLeftRear;
-    UVProgressOf<uint8_t> levelRightRear;
+    UVProgressOf<unsigned short> levelLeftRear;
+    UVProgressOf<unsigned short> levelRightRear;
 
-    UVProgressOf<uint8_t> levelLeftSurround;
-    UVProgressOf<uint8_t> levelRightSurround;
+    UVProgressOf<unsigned short> levelLeftSurround;
+    UVProgressOf<unsigned short> levelRightSurround;
 
     void setIcon(int index, bool state)
     {

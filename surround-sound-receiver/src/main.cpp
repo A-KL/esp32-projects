@@ -86,7 +86,7 @@ void setup() {
 
   canvas.Clear(Color::Black);
 
-  form.levelRight.setValueOf(100);
+  form.levelRight.setValueOf(65535);
 }
 
 float mean = 0;
@@ -97,52 +97,37 @@ void loop() {
   size_t bytes_read;
   uint16_t buffer[I2S_DMA_BUF_LEN] = {0};
 
-  #ifdef AVERAGE_EVERY_N_SAMPLES
-    uint32_t read_counter = 0;
-    uint32_t averaged_reading = 0;
-    uint64_t read_sum = 0;
-  #endif
+  uint32_t read_counter = 0;
+  uint32_t averaged_reading = 0;
+  uint64_t read_sum = 0;
 
-    while(1) {
-      esp_err_t result = i2s_read(I2S_NUM_0, &buffer, sizeof(buffer), &bytes_read, 15);
-      //Serial.printf("read %d Bytes\n", bytes_read);
+  while(1) 
+  {
+    esp_err_t result = i2s_read(I2S_NUM_0, &buffer, sizeof(buffer), &bytes_read, 15);
 
-      if (result == ESP_OK) {
-        for(int i = 0; i < bytes_read/2; ++i) {
-    // #ifdef PRINT_ALL_VALUES
-    //       //Serial.printf("[%d] = %d\n", i, buffer[i] & 0x0FFF); // Print with indexes
-    //       Serial.printf("Signal:%d ", buffer[i] & 0x0FFF); // Print compatible with Arduino Plotter
-    // #endif
-    #ifdef AVERAGE_EVERY_N_SAMPLES
-          read_sum += buffer[i] & 0x0FFF;
-          ++read_counter;
-          if(read_counter == AVERAGE_EVERY_N_SAMPLES){
-            averaged_reading = read_sum / AVERAGE_EVERY_N_SAMPLES;
-            //Serial.printf("averaged_reading = %d over %d samples\n", averaged_reading, read_counter); // Print with additional info
-            // Serial.printf("Averaged_signal:%d", averaged_reading); // Print compatible with Arduino Plotter
-            read_counter = 0;
-            read_sum = 0;
+    if (result == ESP_OK) 
+    {
+      for (int i = 0; i < bytes_read/2; ++i) 
+      {
+        read_sum += buffer[i] & 0x0FFF;
+        ++read_counter;
 
-            auto d = averaged_reading / 4048.0 * UCHAR_MAX;
+        if (read_counter == AVERAGE_EVERY_N_SAMPLES)
+        {
+          averaged_reading = read_sum / AVERAGE_EVERY_N_SAMPLES;
 
-            Serial.printf("Averaged_signal:%d", averaged_reading); // Print compatible with Arduino Plotter
+          read_counter = 0;
+          read_sum = 0;
 
-            //  Serial.printf("Display_signal:%d", d); // Print compatible with Arduino Plotter
+          Serial.println(averaged_reading); // Print compatible with Arduino Plotter
+          // Serial.printf("Display_signal:%d", d); // Print compatible with Arduino Plotter
 
-            form.levelLeft.setValueOf((averaged_reading / 4048.0) * UCHAR_MAX);
-          }
-    #endif
-    #if defined(PRINT_ALL_VALUES) || defined (AVERAGE_EVERY_N_SAMPLES)
-          Serial.printf("\n");
-    #endif
-    // #if defined(PRINT_ALL_VALUES) || defined (AVERAGE_EVERY_N_SAMPLES)
-    //       Serial.printf("\n");
-    // #endif
-
-        } // for
-      }
-       form.Update(canvas);
-    } // while
+          form.levelLeft.setValueOf(averaged_reading / 2510.0  * 65535);
+        }
+      } // for
+    }
+    form.Update(canvas);
+  } // while
 
   // // False print statements to "lock range" on serial plotter display
   // // Change rangelimit value to adjust "sensitivity"

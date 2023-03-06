@@ -7,7 +7,7 @@
 
 // Sample post processing
 #define PRINT_ALL_VALUES
-#define AVERAGE_EVERY_N_SAMPLES (100)
+#define AVERAGE_EVERY_N_SAMPLES (1000)
 
 void i2s_adc_install(){
   i2s_config_t i2s_config = {

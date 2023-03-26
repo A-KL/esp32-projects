@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+#include <Ps3Controller.h>
 #include "lego_plus_driver.h"
 #include "radio.h"
 
@@ -38,6 +39,8 @@ void setup() {
 
   Wire.begin();
   Serial.begin(115200);
+
+  Ps3.begin("b8:27:eb:df:b3:ff");
 
   setupRadio();
 

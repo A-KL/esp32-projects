@@ -96,15 +96,18 @@ void loop() {
   }
 
   if (isReceived()) {
-    auto ch_0 = received.channels[0].value;
-    auto ch_1 = received.channels[1].value;
+    auto ch_left = received.channels[2].value;
+    auto ch_right = received.channels[4].value;
+
+    left_speed = map(ch_left, min_ch_value, max_ch_value, 255, -255);
+    right_speed = map(ch_right, min_ch_value, max_ch_value, 255, -255);
 
     spr.setTextColor(WHITE); 
 
     spr.setCursor(150, 210);
-    spr.printf("RF0: %d\n", ch_0);
+    spr.printf("RF0: %d\n", ch_left);
     spr.setCursor(150, 230);
-    spr.printf("RF1: %d\n", ch_1);
+    spr.printf("RF1: %d\n", ch_right);
   }
 
   if (ina219_output_connected && ina219_input_connected) {
@@ -129,7 +132,6 @@ void loop() {
   }
 
   if (motor_driver_connected) {
-
     spr.setTextColor(GREEN);
 
     for (int8_t i = 0; i < 4; i++) {
@@ -143,8 +145,8 @@ void loop() {
     spr.setCursor(0, (11 * 20));
     spr.printf("Right: %d\n", right_speed);
 
-    MotorRun(1, left_speed);
-    MotorRun(2, left_speed);
+    MotorRun(1, -left_speed);
+    MotorRun(2, -left_speed);
 
     MotorRun(3, right_speed);
     MotorRun(0, right_speed);

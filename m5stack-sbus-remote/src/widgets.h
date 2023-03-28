@@ -112,24 +112,49 @@ const int WidgetPanel::Large = widget_l_height;
 const int WidgetPanel::ExtraLarge = widget_xl_height;
 
 template <std::size_t TSize>
-class WidgetList
+class WidgetList : public Widget
 {
    public:
-        WidgetList(const int x, const int y, const uint32_t color) 
-            : X(x), Y(y), _color(color)
+        WidgetList(const int left, const int top, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : Widget(left, top), _margin_x(text_margin_x), _margin_y(text_margin_y), _color(color)
         {}
 
-         void setText(int index, String value) 
+         void SetText(int index, String value) 
          {
             _list[index] = value;
          }
 
-        const int X;
-        const int Y;
+         template<typename... Args>
+         void SetText(int index, const char* format, Args... args) 
+         {
+            char buff[15];
+
+            snprintf(buff, sizeof(buff), format, args...);
+
+            _list[index] = buff;
+         }
+
+         void Clear()
+         {
+            for(auto i = 0; i < TSize; ++i) 
+            {
+               _list[i] = "";
+            }
+         }
+
+      void Render(TFT_eSprite& canvas)
+      {
+         for (auto i = 0; i < TSize; ++i) 
+         {
+            Widget::RenderText(canvas, Left + _margin_x, Top + (_margin_y + 4) * (i + 1), _color, _list[i].c_str());
+         }
+      }
 
     private:
-        String _list[TSize];
+        const int _margin_x;
+        const int _margin_y;
         const uint32_t _color;
+        String _list[TSize];
 };
 
 #endif

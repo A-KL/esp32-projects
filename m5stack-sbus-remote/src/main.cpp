@@ -41,6 +41,8 @@ WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_pa
 
 WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
+WidgetList<8> sbus_values(margin, margin + widget_title_height);
+
 int16_t perc(int16_t value)
 {
   return map(value, min_ch_value, max_ch_value, 0, 100);
@@ -162,8 +164,10 @@ void loop() {
     spr.setTextColor(WHITE); 
 
     for (int8_t i = 0; i < max_ch; i++) {
-      spr.setCursor(0, (i + 1) * 20);
-      spr.printf("CH%d: %d\n", i, perc(sbus_data[i]));
+      sbus_values.SetText(i, "ch%d %d", i, perc(sbus_data[i]));
+
+      // spr.setCursor(0, (i + 1) * 20);
+      // spr.printf("CH%d: %d\n", i, perc(sbus_data[i]));
 
       Serial.print(sbus_data[i]);
       Serial.print("\t");
@@ -180,7 +184,8 @@ void loop() {
   else
   {
     for (int8_t i = 0; i < max_ch; i++) {
-      gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHT_GRAY);
+      sbus_values.SetText(i, "ch%d 0.00", i);
+      //gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHT_GRAY);
     } 
   }
 
@@ -300,6 +305,8 @@ void loop() {
       margin + widget_s_height + margin + widget_title_height + text_margin_y * 4, 
       "ch3 0.00", COLOR_LIGHT_GRAY);
   }
+
+  sbus_values.Render(spr);
 
   spr.pushSprite(0, 0);
 }

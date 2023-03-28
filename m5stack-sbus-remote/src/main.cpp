@@ -26,47 +26,31 @@ const int max_ch_value = 1800;
 
 const int max_ch = 8;
 
+const int COLOR_LIGHTGRAY = 0xBDBDBD;
+
+const int COLOR_DARKGRAY = 0x202020; // change
+const int COLOR_GRAY = 0x464646; 
+
+const int COLOR_DARKRED = 0x3c0000;
+const int COLOR_RED = 0x730000;
+
+const int COLOR_DARKMAGENTA = 0x3e0030; // change
+const int COLOR_MAGENTA = 0x710054;
+
+const int COLOR_DARKGREEN = 0x092b00;
+const int COLOR_GREEN = 0x155804;
+
+const int COLOR_DARKBLUE = 0x00252F; // change
+const int COLOR_BLUE = 0x004056;
+
+const int COLOR_DARKYELLOW = 0x804500;
+const int COLOR_YELLOW = 0xAF6700;
+
 TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
 
 int16_t perc(int16_t value)
 {
   return map(value, min_ch_value, max_ch_value, 0, 100);
-}
-
-void setup() {
-
-  M5.begin();
-  M5.Power.begin();
-
-  Wire.begin();
-  Serial.begin(115200);
-
-  Ps3.begin("b8:27:eb:df:b3:ff");
-
-  setupRadio();
-
-  if (!ina219_output.begin()) {
-    Serial.println("Failed to find output INA219 chip");
-    ina219_output_connected = false;
-  }
-
-  if (!ina219_input.begin()) {
-    Serial.println("Failed to find input INA219 chip");
-    ina219_input_connected = false;
-  }
-
-  auto version = readVersion();
-  motor_driver_connected = version != 0;
-  Serial.printf("Motor Driver ver: %d", version);
-
-  sbus_rx.Begin(16, 17);
-
-  M5.Lcd.fillScreen(0xff0000);
-
-  //spr.setTextSize(2);
-  spr.setFreeFont(CF_OL24);
-  spr.setColorDepth(8);
-  spr.createSprite(320, 240);
 }
 
 uint16_t color565( const unsigned long rgb) {
@@ -82,6 +66,48 @@ uint16_t color565( const unsigned long rgb) {
   return( ret);
 }
 
+void setup() {
+
+  M5.begin();
+  M5.Power.begin();
+
+  Wire.begin();
+  Serial.begin(115200);
+
+  if (!Ps3.begin("b8:27:eb:df:b3:ff"))
+  {
+    Serial.println("Failed to start PS3 Controller Host");
+  }
+
+  setupRadio();
+
+  if (!ina219_output.begin()) {
+    Serial.println("Failed to find output INA219 chip");
+    ina219_output_connected = false;
+  }
+
+  if (!ina219_input.begin()) {
+    Serial.println("Failed to find input INA219 chip");
+    ina219_input_connected = false;
+  }
+
+  auto version = readVersion();
+  motor_driver_connected = version != 0;
+  Serial.printf("Motor Driver ver: %d\r\n", version);
+
+  Serial.print("BT MAC: ");
+  Serial.println(Ps3.getAddress());
+
+  sbus_rx.Begin(16, 17);
+
+  M5.Lcd.fillScreen(0xff0000);
+
+  //spr.setTextSize(2);
+  spr.setFreeFont(CF_OL24);
+  spr.setColorDepth(8);
+  spr.createSprite(320, 240);
+}
+
 void gui_text(TFT_eSprite& canvas, int16_t x, int16_t y, const char* text, uint32_t color) {
 
   canvas.setTextColor(color565(color)); 
@@ -94,8 +120,6 @@ void gui_panel(TFT_eSprite& canvas, int16_t x, int16_t y, int16_t height, const 
   const int corner_radius = 0;
   const int widget_width = 100;
   const int widget_title_height = 16;
-
-  const int margin = 5;
 
   const int text_margin_y = 12;
   const int text_margin_x = 5;
@@ -113,36 +137,16 @@ void gui_panel(TFT_eSprite& canvas, int16_t x, int16_t y, int16_t height, const 
 
 void gui(TFT_eSprite& canvas) {
 
-const int COLOR_LIGHTGRAY = 0xBDBDBD;
-
-  const int COLOR_DARKGRAY = 0x292929;
-  const int COLOR_GRAY = 0x464646;
-  
-  const int COLOR_DARKRED = 0x3c0000;
-  const int COLOR_RED = 0x730000;
-
-  const int COLOR_DARKMAGENTA = 0x3e002e;
-  const int COLOR_MAGENTA = 0x710054;
-
-  const int COLOR_DARKGREEN = 0x092b00;
-  const int COLOR_GREEN = 0x155804;
-
-  const int COLOR_DARKBLUE = 0x00202B;
-  const int COLOR_BLUE = 0x004056;
-
-  const int COLOR_DARKYELLOW = 0x905500;
-  const int COLOR_YELLOW = 0xAF6700;
-
-  const int corner_radius = 0;
   const int margin = 5;
+
   const int widget_width = 100;
+
   const int widget_s_height = 55;
   const int widget_m_height = 110;
   const int widget_l_height = 170;
   const int widget_xl_height = 230;
-  const int widget_title_height = 16;
 
- // Left
+  // Left
   int x = margin;
   int y = margin;
 
@@ -184,19 +188,33 @@ const int COLOR_LIGHTGRAY = 0xBDBDBD;
   x += widget_width;
   x += margin;
 
-  //gui_panel(canvas, x, y, widget_xl_height, "motors", COLOR_DARKYELLOW, COLOR_YELLOW, COLOR_LIGHTGRAY);
+  gui_panel(canvas, x, y, widget_l_height, "power", COLOR_DARKYELLOW, COLOR_YELLOW, COLOR_LIGHTGRAY);
 }
 
 void loop() {
- spr.fillSprite(TFT_BLACK);
 
-  //gui(spr);
+  spr.fillSprite(TFT_BLACK);
+
+  gui(spr);
 
   auto left_speed = 0;
   auto right_speed = 0;
 
-  if (Ps3.isConnected())
-  {
+  const int margin = 5;
+
+  const int widget_width = 100;
+  const int widget_title_height = 16;
+
+  const int text_margin_y = 14;
+  const int text_margin_x = 5;
+
+  const int widget_s_height = 55;
+  const int widget_m_height = 110;
+  const int widget_l_height = 170;
+  const int widget_xl_height = 230;
+
+  if (Ps3.isConnected()) {
+
     Ps3.setPlayer(1);
 
     spr.setTextColor(ORANGE);
@@ -204,6 +222,11 @@ void loop() {
     spr.printf("PS3: %d\n", Ps3.data.analog.stick.ly);
     spr.setCursor(180, 20);
     spr.printf("PS3: %d\n", Ps3.data.analog.stick.ry);
+  }
+  else
+  {
+    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + widget_title_height + text_margin_y * 1, "ls 0.00", COLOR_LIGHTGRAY);
+    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + + widget_title_height + text_margin_y * 2, "rs 0.00", COLOR_LIGHTGRAY);
   }
 
   auto sbus_enabled = sbus_rx.Read();
@@ -230,6 +253,12 @@ void loop() {
     left_speed = map(sbus_data[2], min_ch_value, max_ch_value, -255, 255);
     right_speed = map(sbus_data[1], min_ch_value, max_ch_value, 255, -255);
   }
+  else
+  {
+    for (int8_t i = 0; i < max_ch; i++) {
+      gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHTGRAY);
+    } 
+  }
 
   if (isReceived()) {
     auto ch_left = received.channels[2].value;
@@ -244,6 +273,11 @@ void loop() {
     spr.printf("RF0: %d\n", ch_left);
     spr.setCursor(150, 230);
     spr.printf("RF1: %d\n", ch_right);
+  }  
+  else
+  {
+    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 1 + widget_title_height, "ch0 0.00", COLOR_LIGHTGRAY);
+    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 2 + widget_title_height, "ch1 0.00", COLOR_LIGHTGRAY);
   }
 
   if (ina219_output_connected && ina219_input_connected) {
@@ -266,6 +300,28 @@ void loop() {
     spr.setCursor(150, 180);
     spr.printf("I: %.2fmA\n", ina219_input.getCurrent_mA());
   }
+  else
+  {
+    gui_text(spr, 
+    margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    margin + widget_title_height + text_margin_y * 1, 
+    "0.00 V", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+    margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    margin + widget_title_height + text_margin_y * 2, 
+    "0.00 mA", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+    margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    margin + widget_title_height + text_margin_y * 3, 
+    "0.00 V", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+    margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    margin + widget_title_height + text_margin_y * 4, 
+    "0.00 mA", COLOR_LIGHTGRAY);
+  }
 
   if (motor_driver_connected) {
     spr.setTextColor(GREEN);
@@ -286,6 +342,39 @@ void loop() {
 
     MotorRun(3, right_speed);
     MotorRun(0, right_speed);
+  }
+  else
+  {
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 1, 
+      "l 0.00%", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 2, 
+      "r 0.00%", COLOR_LIGHTGRAY);
+
+
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height  + margin + widget_title_height + text_margin_y * 1, 
+      "ch0 0.00", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height + margin + widget_title_height + text_margin_y * 2, 
+      "ch1 0.00", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height  + margin + widget_title_height + text_margin_y * 3, 
+      "ch2 0.00", COLOR_LIGHTGRAY);
+
+    gui_text(spr, 
+      margin + widget_width + margin + text_margin_x, 
+      margin + widget_s_height + margin + widget_title_height + text_margin_y * 4, 
+      "ch3 0.00", COLOR_LIGHTGRAY);
   }
 
   spr.pushSprite(0, 0);

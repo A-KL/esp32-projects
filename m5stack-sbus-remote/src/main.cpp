@@ -6,6 +6,7 @@
 #include <Ps3Controller.h>
 #include "lego_plus_driver.h"
 #include "radio.h"
+#include "widgets.h"
 
 #define GFXFF 1
 //#define FF18  &FreeSans12pt7b
@@ -26,27 +27,19 @@ const int max_ch_value = 1800;
 
 const int max_ch = 8;
 
-const int COLOR_LIGHTGRAY = 0xBDBDBD;
-
-const int COLOR_DARKGRAY = 0x202020; // change
-const int COLOR_GRAY = 0x464646; 
-
-const int COLOR_DARKRED = 0x3c0000;
-const int COLOR_RED = 0x730000;
-
-const int COLOR_DARKMAGENTA = 0x3e0030; // change
-const int COLOR_MAGENTA = 0x710054;
-
-const int COLOR_DARKGREEN = 0x092b00;
-const int COLOR_GREEN = 0x155804;
-
-const int COLOR_DARKBLUE = 0x00252F; // change
-const int COLOR_BLUE = 0x004056;
-
-const int COLOR_DARKYELLOW = 0x804500;
-const int COLOR_YELLOW = 0xAF6700;
-
 TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
+
+// GUI
+const int margin = 5;
+
+WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus");
+WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps3", COLOR_DARK_BLUE, COLOR_BLUE);
+
+WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
+WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
+WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_panel.Height + nrf42_panel.Height, WidgetPanel::Small, "motors", COLOR_DARK_GREEN, COLOR_GREEN);
+
+WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
 int16_t perc(int16_t value)
 {
@@ -63,7 +56,7 @@ uint16_t color565( const unsigned long rgb) {
            ret |= (G & 0xFC) << 3;  // 6 bits
            ret |= (B & 0xF8) >> 3;  // 5 bits
        
-  return( ret);
+  return (ret);
 }
 
 void setup() {
@@ -115,87 +108,18 @@ void gui_text(TFT_eSprite& canvas, int16_t x, int16_t y, const char* text, uint3
   canvas.print(text);
 }
 
-void gui_panel(TFT_eSprite& canvas, int16_t x, int16_t y, int16_t height, const char* title, uint32_t color1, uint32_t color2, uint32_t text_color) {
-
-  const int corner_radius = 0;
-  const int widget_width = 100;
-  const int widget_title_height = 16;
-
-  const int text_margin_y = 12;
-  const int text_margin_x = 5;
-
-  const int widget_s_height = 55;
-  const int widget_m_height = 110;
-  const int widget_l_height = 170;
-  const int widget_xl_height = 230;
-
-  canvas.fillRoundRect(x, y, widget_width, height, corner_radius, color565(color1));
-  canvas.fillRoundRect(x, y, widget_width, widget_title_height, corner_radius, color565(color2));
-
-  gui_text(canvas, x + text_margin_x, y + text_margin_y, title, text_color);
-}
-
-void gui(TFT_eSprite& canvas) {
-
-  const int margin = 5;
-
-  const int widget_width = 100;
-
-  const int widget_s_height = 55;
-  const int widget_m_height = 110;
-  const int widget_l_height = 170;
-  const int widget_xl_height = 230;
-
-  // Left
-  int x = margin;
-  int y = margin;
-
-  gui_panel(canvas, x, y, widget_l_height, "sbus", COLOR_DARKGRAY, COLOR_GRAY, COLOR_LIGHTGRAY);
-
-  y += widget_l_height;
-  y += margin;
-
-  gui_panel(canvas, x, y, widget_s_height, "ps3", COLOR_DARKBLUE, COLOR_BLUE, COLOR_LIGHTGRAY);
-
-  // Center
-
-  x = margin;
-  y = margin;
-
-  x += widget_width;
-  x += margin;
-
-  gui_panel(canvas, x, y, widget_s_height, "nrf42", COLOR_DARKRED, COLOR_RED, COLOR_LIGHTGRAY);
-
-  y += widget_s_height;
-  y += margin;
-
-  gui_panel(canvas, x, y, widget_m_height, "encoders", COLOR_DARKMAGENTA, COLOR_MAGENTA, COLOR_LIGHTGRAY);
-
-  y += widget_m_height;
-  y += margin;
-
-  gui_panel(canvas, x, y, widget_s_height, "motors", COLOR_DARKGREEN, COLOR_GREEN, COLOR_LIGHTGRAY);
-
-  // Right
-
-  x = margin;
-  y = margin;
-
-  x += widget_width;
-  x += margin;
-
-  x += widget_width;
-  x += margin;
-
-  gui_panel(canvas, x, y, widget_l_height, "power", COLOR_DARKYELLOW, COLOR_YELLOW, COLOR_LIGHTGRAY);
-}
-
 void loop() {
 
   spr.fillSprite(TFT_BLACK);
 
-  gui(spr);
+  sbus_panel.Render(spr);
+  ps3_panel.Render(spr);
+
+  nrf42_panel.Render(spr);
+  encoders_panel.Render(spr);
+  motors_panel.Render(spr);
+
+  power_panel.Render(spr);
 
   auto left_speed = 0;
   auto right_speed = 0;
@@ -225,8 +149,8 @@ void loop() {
   }
   else
   {
-    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + widget_title_height + text_margin_y * 1, "ls 0.00", COLOR_LIGHTGRAY);
-    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + + widget_title_height + text_margin_y * 2, "rs 0.00", COLOR_LIGHTGRAY);
+    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + widget_title_height + text_margin_y * 1, "ls 0.00", COLOR_LIGHT_GRAY);
+    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + + widget_title_height + text_margin_y * 2, "rs 0.00", COLOR_LIGHT_GRAY);
   }
 
   auto sbus_enabled = sbus_rx.Read();
@@ -256,7 +180,7 @@ void loop() {
   else
   {
     for (int8_t i = 0; i < max_ch; i++) {
-      gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHTGRAY);
+      gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHT_GRAY);
     } 
   }
 
@@ -276,8 +200,8 @@ void loop() {
   }  
   else
   {
-    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 1 + widget_title_height, "ch0 0.00", COLOR_LIGHTGRAY);
-    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 2 + widget_title_height, "ch1 0.00", COLOR_LIGHTGRAY);
+    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 1 + widget_title_height, "ch0 0.00", COLOR_LIGHT_GRAY);
+    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 2 + widget_title_height, "ch1 0.00", COLOR_LIGHT_GRAY);
   }
 
   if (ina219_output_connected && ina219_input_connected) {
@@ -305,22 +229,22 @@ void loop() {
     gui_text(spr, 
     margin + widget_width + margin + widget_width + margin + text_margin_x, 
     margin + widget_title_height + text_margin_y * 1, 
-    "0.00 V", COLOR_LIGHTGRAY);
+    "0.00 V", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
     margin + widget_width + margin + widget_width + margin + text_margin_x, 
     margin + widget_title_height + text_margin_y * 2, 
-    "0.00 mA", COLOR_LIGHTGRAY);
+    "0.00 mA", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
     margin + widget_width + margin + widget_width + margin + text_margin_x, 
     margin + widget_title_height + text_margin_y * 3, 
-    "0.00 V", COLOR_LIGHTGRAY);
+    "0.00 V", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
     margin + widget_width + margin + widget_width + margin + text_margin_x, 
     margin + widget_title_height + text_margin_y * 4, 
-    "0.00 mA", COLOR_LIGHTGRAY);
+    "0.00 mA", COLOR_LIGHT_GRAY);
   }
 
   if (motor_driver_connected) {
@@ -348,33 +272,33 @@ void loop() {
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 1, 
-      "l 0.00%", COLOR_LIGHTGRAY);
+      "l 0.00%", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 2, 
-      "r 0.00%", COLOR_LIGHTGRAY);
+      "r 0.00%", COLOR_LIGHT_GRAY);
 
 
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height  + margin + widget_title_height + text_margin_y * 1, 
-      "ch0 0.00", COLOR_LIGHTGRAY);
+      "ch0 0.00", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height + margin + widget_title_height + text_margin_y * 2, 
-      "ch1 0.00", COLOR_LIGHTGRAY);
+      "ch1 0.00", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height  + margin + widget_title_height + text_margin_y * 3, 
-      "ch2 0.00", COLOR_LIGHTGRAY);
+      "ch2 0.00", COLOR_LIGHT_GRAY);
 
     gui_text(spr, 
       margin + widget_width + margin + text_margin_x, 
       margin + widget_s_height + margin + widget_title_height + text_margin_y * 4, 
-      "ch3 0.00", COLOR_LIGHTGRAY);
+      "ch3 0.00", COLOR_LIGHT_GRAY);
   }
 
   spr.pushSprite(0, 0);

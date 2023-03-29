@@ -61,7 +61,7 @@ class Widget
          return( ret);
       }
 
-      void RenderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* text) 
+      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* text) 
       {
          canvas.setTextColor(color565(color)); 
          canvas.setCursor(x, y);
@@ -69,7 +69,7 @@ class Widget
       }
 
       template<typename... Args>
-      void RenderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* format, Args... args) 
+      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* format, Args... args) 
       {
          canvas.setTextColor(color565(color)); 
          canvas.setCursor(x, y);
@@ -84,12 +84,12 @@ class WidgetPanel : public Widget
             Widget(left, top), Height(size), Width(widget_width), _text(text), _background(background), _title(title)
         {}
     
-      void Render(TFT_eSprite& canvas)
+      void render(TFT_eSprite& canvas)
       {
          canvas.fillRoundRect(Left, Top, Width, Height, corner_radius, color565(_background));
          canvas.fillRoundRect(Left, Top, Width, widget_title_height, corner_radius, color565(_title));
 
-         RenderText(canvas, Left + text_margin_x, Top + text_margin_y, COLOR_LIGHT_GRAY, _text);
+         renderText(canvas, Left + text_margin_x, Top + text_margin_y, COLOR_LIGHT_GRAY, _text);
       }
 
    const static int Small;
@@ -119,13 +119,13 @@ class WidgetList : public Widget
             : Widget(left, top), _margin_x(text_margin_x), _margin_y(text_margin_y), _color(color)
         {}
 
-         void SetText(int index, String value) 
+         void setText(int index, String value) 
          {
             _list[index] = value;
          }
 
          template<typename... Args>
-         void SetText(int index, const char* format, Args... args) 
+         void setText(int index, const char* format, Args... args) 
          {
             char buff[15];
 
@@ -134,7 +134,7 @@ class WidgetList : public Widget
             _list[index] = buff;
          }
 
-         void Clear()
+         void clear()
          {
             for(auto i = 0; i < TSize; ++i) 
             {
@@ -142,11 +142,11 @@ class WidgetList : public Widget
             }
          }
 
-      void Render(TFT_eSprite& canvas)
+      void render(TFT_eSprite& canvas)
       {
          for (auto i = 0; i < TSize; ++i) 
          {
-            Widget::RenderText(canvas, Left + _margin_x, Top + (_margin_y + 4) * (i + 1), _color, _list[i].c_str());
+            renderText(canvas, Left + _margin_x, Top + (_margin_y + 4) * (i + 1), _color, _list[i].c_str());
          }
       }
 

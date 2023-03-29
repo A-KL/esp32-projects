@@ -41,7 +41,14 @@ WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_pa
 
 WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
-WidgetList<8> sbus_values(margin, margin + widget_title_height);
+WidgetList<8> sbus_values(sbus_panel.Left, sbus_panel.Top + widget_title_height);
+WidgetList<2> ps3_values(ps3_panel.Left, ps3_panel.Top + widget_title_height);
+
+WidgetList<2> nrf42_values(nrf42_panel.Left, nrf42_panel.Top + widget_title_height);
+WidgetList<4> encoder_values(encoders_panel.Left, encoders_panel.Top + widget_title_height);
+WidgetList<2> motors_values(motors_panel.Left, motors_panel.Top + widget_title_height);
+
+WidgetList<3> power_values(power_panel.Left, power_panel.Top + widget_title_height);
 
 int16_t perc(int16_t value)
 {
@@ -126,45 +133,35 @@ void loop() {
   auto left_speed = 0;
   auto right_speed = 0;
 
-  const int margin = 5;
-
-  const int widget_width = 100;
-  const int widget_title_height = 16;
-
-  const int text_margin_y = 14;
-  const int text_margin_x = 5;
-
-  const int widget_s_height = 55;
-  const int widget_m_height = 110;
-  const int widget_l_height = 170;
-  const int widget_xl_height = 230;
-
   if (Ps3.isConnected()) {
 
     Ps3.setPlayer(1);
 
-    spr.setTextColor(ORANGE);
-    spr.setCursor(180, 0);
-    spr.printf("PS3: %d\n", Ps3.data.analog.stick.ly);
-    spr.setCursor(180, 20);
-    spr.printf("PS3: %d\n", Ps3.data.analog.stick.ry);
+    // spr.setTextColor(ORANGE);
+    // spr.setCursor(180, 0);
+    // spr.printf("PS3: %d\n", Ps3.data.analog.stick.ly);
+    // spr.setCursor(180, 20);
+    // spr.printf("PS3: %d\n", Ps3.data.analog.stick.ry);
+
+    ps3_values.SetText(0, "ls %d", Ps3.data.analog.stick.ly);
+    ps3_values.SetText(1, "rs %d", Ps3.data.analog.stick.ry);
   }
   else
   {
-    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + widget_title_height + text_margin_y * 1, "ls 0.00", COLOR_LIGHT_GRAY);
-    gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + + widget_title_height + text_margin_y * 2, "rs 0.00", COLOR_LIGHT_GRAY);
+    ps3_values.SetText(0, "ls 0.00");
+    ps3_values.SetText(1, "rs 0.00");
+    //gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + widget_title_height + text_margin_y * 1, "ls 0.00", COLOR_LIGHT_GRAY);
+    //gui_text(spr, margin + text_margin_x, margin + widget_l_height + margin + + widget_title_height + text_margin_y * 2, "rs 0.00", COLOR_LIGHT_GRAY);
   }
 
-  auto sbus_enabled = sbus_rx.Read();
-
-  if (sbus_enabled)
+  if (sbus_rx.Read())
   {
     sbus_data = sbus_rx.ch();
 
     spr.setTextColor(WHITE); 
 
     for (int8_t i = 0; i < max_ch; i++) {
-      sbus_values.SetText(i, "ch%d %d", i, perc(sbus_data[i]));
+      sbus_values.SetText(i, "ch%d %d%", i, perc(sbus_data[i]));
 
       // spr.setCursor(0, (i + 1) * 20);
       // spr.printf("CH%d: %d\n", i, perc(sbus_data[i]));
@@ -185,7 +182,6 @@ void loop() {
   {
     for (int8_t i = 0; i < max_ch; i++) {
       sbus_values.SetText(i, "ch%d 0.00", i);
-      //gui_text(spr, margin + text_margin_x, margin + widget_title_height + text_margin_y * (1 + i) + 2, "ch0 0.00", COLOR_LIGHT_GRAY);
     } 
   }
 
@@ -196,75 +192,86 @@ void loop() {
     left_speed = map(ch_left, min_ch_value, max_ch_value, 255, -255);
     right_speed = map(ch_right, min_ch_value, max_ch_value, 255, -255);
 
-    spr.setTextColor(WHITE); 
+    // spr.setTextColor(WHITE); 
+    // spr.setCursor(150, 210);
+    // spr.printf("RF0: %d\n", ch_left);
+    // spr.setCursor(150, 230);
+    // spr.printf("RF1: %d\n", ch_right);
 
-    spr.setCursor(150, 210);
-    spr.printf("RF0: %d\n", ch_left);
-    spr.setCursor(150, 230);
-    spr.printf("RF1: %d\n", ch_right);
+    nrf42_values.SetText(0, "ch0 %d", ch_left);
+    nrf42_values.SetText(1, "ch1 %d", ch_right);
   }  
   else
   {
-    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 1 + widget_title_height, "ch0 0.00", COLOR_LIGHT_GRAY);
-    gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 2 + widget_title_height, "ch1 0.00", COLOR_LIGHT_GRAY);
+    nrf42_values.SetText(0, "ch0 0.00");
+    nrf42_values.SetText(1, "ch1 0.00");
+    //gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 1 + widget_title_height, "ch0 0.00", COLOR_LIGHT_GRAY);
+    //gui_text(spr, margin + margin + text_margin_x + widget_width, margin + text_margin_y * 2 + widget_title_height, "ch1 0.00", COLOR_LIGHT_GRAY);
   }
 
   if (ina219_output_connected && ina219_input_connected) {
 
-    auto shuntvoltage = ina219_output.getShuntVoltage_mV();
-    auto busvoltage = ina219_output.getBusVoltage_V();
+    auto shunt_voltage = ina219_output.getShuntVoltage_mV();
+    auto bus_voltage = ina219_output.getBusVoltage_V();
     auto current_mA = ina219_output.getCurrent_mA();
     auto power_mW = ina219_output.getPower_mW();
-    auto loadvoltage = busvoltage + (shuntvoltage / 1000);
+    auto load_voltage = bus_voltage + (shunt_voltage / 1000);
 
-    spr.setTextColor(ORANGE); 
+    // spr.setTextColor(ORANGE); 
+    // spr.setCursor(150, 110);
+    // spr.printf("V: %.2fV\n", bus_voltage);
+    // spr.setCursor(150, 130);
+    // spr.printf("I: %.2fmA\n", current_mA);
 
-    spr.setCursor(150, 110);
-    spr.printf("V: %.2fV\n", busvoltage);
-    spr.setCursor(150, 130);
-    spr.printf("I: %.2fmA\n", current_mA);
-
-    spr.setCursor(150, 160);
-    spr.printf("V: %.2fV\n", ina219_input.getBusVoltage_V());
-    spr.setCursor(150, 180);
-    spr.printf("I: %.2fmA\n", ina219_input.getCurrent_mA());
+    power_values.SetText(0, "%.2f V", bus_voltage);
+    power_values.SetText(1, "%.2f mA", current_mA);
+    power_values.SetText(2, "%.2f mW", power_mW);
   }
   else
   {
-    gui_text(spr, 
-    margin + widget_width + margin + widget_width + margin + text_margin_x, 
-    margin + widget_title_height + text_margin_y * 1, 
-    "0.00 V", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    // margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    // margin + widget_title_height + text_margin_y * 1, 
+    // "0.00 V", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-    margin + widget_width + margin + widget_width + margin + text_margin_x, 
-    margin + widget_title_height + text_margin_y * 2, 
-    "0.00 mA", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    // margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    // margin + widget_title_height + text_margin_y * 2, 
+    // "0.00 mA", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-    margin + widget_width + margin + widget_width + margin + text_margin_x, 
-    margin + widget_title_height + text_margin_y * 3, 
-    "0.00 V", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    // margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    // margin + widget_title_height + text_margin_y * 3, 
+    // "0.00 V", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-    margin + widget_width + margin + widget_width + margin + text_margin_x, 
-    margin + widget_title_height + text_margin_y * 4, 
-    "0.00 mA", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    // margin + widget_width + margin + widget_width + margin + text_margin_x, 
+    // margin + widget_title_height + text_margin_y * 4, 
+    // "0.00 mA", COLOR_LIGHT_GRAY);
+
+    power_values.SetText(0, "0.00 V");
+    power_values.SetText(1, "0.00 mA");
+    power_values.SetText(2, "0.00 mW");
   }
 
   if (motor_driver_connected) {
-    spr.setTextColor(GREEN);
+    // spr.setTextColor(GREEN);
 
     for (int8_t i = 0; i < 4; i++) {
-      spr.setCursor(150, (i + 1) * 20 ); //+ 8 * 15
-      spr.printf("Enc%d: %d\n", i, readEncoder(i));
+      // spr.setCursor(150, (i + 1) * 20 ); //+ 8 * 15
+      // spr.printf("Enc%d: %d\n", i, readEncoder(i));
+
+      encoder_values.SetText(i, "ch%d %d", i, readEncoder(i));
     }
 
-    spr.setTextColor(RED); 
-    spr.setCursor(0, (10 * 20));
-    spr.printf("Left: %d\n", left_speed);
-    spr.setCursor(0, (11 * 20));
-    spr.printf("Right: %d\n", right_speed);
+    // spr.setTextColor(RED); 
+    // spr.setCursor(0, (10 * 20));
+    // spr.printf("Left: %d\n", left_speed);
+    // spr.setCursor(0, (11 * 20));
+    // spr.printf("Right: %d\n", right_speed);
+
+    motors_values.SetText(0, "l %d", left_speed);
+    motors_values.SetText(1, "r %d", right_speed);
 
     MotorRun(1, -left_speed);
     MotorRun(2, -left_speed);
@@ -274,39 +281,50 @@ void loop() {
   }
   else
   {
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 1, 
-      "l 0.00%", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 1, 
+    //   "l 0.00%", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 2, 
-      "r 0.00%", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height + margin + widget_m_height + margin + widget_title_height + text_margin_y * 2, 
+    //   "r 0.00%", COLOR_LIGHT_GRAY);
 
+    motors_values.SetText(0, "l 0.00");
+    motors_values.SetText(1, "r 0.00");
 
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height  + margin + widget_title_height + text_margin_y * 1, 
-      "ch0 0.00", COLOR_LIGHT_GRAY);
+    for (int8_t i = 0; i < 4; i++) {
+      encoder_values.SetText(i, "ch%d 0.00", i);
+    }
 
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height + margin + widget_title_height + text_margin_y * 2, 
-      "ch1 0.00", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height  + margin + widget_title_height + text_margin_y * 1, 
+    //   "ch0 0.00", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height  + margin + widget_title_height + text_margin_y * 3, 
-      "ch2 0.00", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height + margin + widget_title_height + text_margin_y * 2, 
+    //   "ch1 0.00", COLOR_LIGHT_GRAY);
 
-    gui_text(spr, 
-      margin + widget_width + margin + text_margin_x, 
-      margin + widget_s_height + margin + widget_title_height + text_margin_y * 4, 
-      "ch3 0.00", COLOR_LIGHT_GRAY);
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height  + margin + widget_title_height + text_margin_y * 3, 
+    //   "ch2 0.00", COLOR_LIGHT_GRAY);
+
+    // gui_text(spr, 
+    //   margin + widget_width + margin + text_margin_x, 
+    //   margin + widget_s_height + margin + widget_title_height + text_margin_y * 4, 
+    //   "ch3 0.00", COLOR_LIGHT_GRAY);
   }
 
   sbus_values.Render(spr);
+  ps3_values.Render(spr);
+  nrf42_values.Render(spr);
+  encoder_values.Render(spr);
+  motors_values.Render(spr);
+  power_values.Render(spr);
 
   spr.pushSprite(0, 0);
 }

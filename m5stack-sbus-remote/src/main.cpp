@@ -41,14 +41,16 @@ WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_pa
 
 WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
-WidgetList<8> sbus_values(sbus_panel.Left, sbus_panel.Top + widget_title_height);
-WidgetList<2> ps3_values(ps3_panel.Left, ps3_panel.Top + widget_title_height);
+WidgetList<8> sbus_values(sbus_panel, 0, widget_title_height);
+WidgetList<2> ps3_values(ps3_panel, 0, widget_title_height);
 
-WidgetList<2> nrf42_values(nrf42_panel.Left, nrf42_panel.Top + widget_title_height);
-WidgetList<4> encoder_values(encoders_panel.Left, encoders_panel.Top + widget_title_height);
-WidgetList<2> motors_values(motors_panel.Left, motors_panel.Top + widget_title_height);
+WidgetList<2> nrf42_values(nrf42_panel, 0, widget_title_height);
+WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height);
+WidgetList<2> motors_values(motors_panel, 0, widget_title_height);
 
-WidgetList<3> power_values(power_panel.Left, power_panel.Top + widget_title_height);
+WidgetList<3> power_values(power_panel, 0, widget_title_height);
+
+//WidgetListPanel<3> power(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
 int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value)
 {

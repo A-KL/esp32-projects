@@ -77,14 +77,25 @@ class Widget
       }
 };
 
-class WidgetPanel : public Widget
+class WidgetRect: public Widget
+{
+   public:
+        WidgetRect(const int left, const int top, const int width, const int height) :
+            Widget(left, top), Width(widget_width), Height(height)
+        {}
+
+      const int Width;
+      const int Height;     
+};
+
+class WidgetPanel : public WidgetRect
 {
    public:
         WidgetPanel(const int left, const int top, const int size, const char* text, const uint32_t background = COLOR_DARK_GRAY, const uint32_t title = COLOR_GRAY) :
-            Widget(left, top), Height(size), Width(widget_width), _text(text), _background(background), _title(title)
+            WidgetRect(left, top, widget_width, size), _text(text), _background(background), _title(title)
         {}
     
-      void render(TFT_eSprite& canvas)
+      virtual void render(TFT_eSprite& canvas)
       {
          canvas.fillRoundRect(Left, Top, Width, Height, corner_radius, color565(_background));
          canvas.fillRoundRect(Left, Top, Width, widget_title_height, corner_radius, color565(_title));
@@ -92,13 +103,10 @@ class WidgetPanel : public Widget
          renderText(canvas, Left + text_margin_x, Top + text_margin_y, COLOR_LIGHT_GRAY, _text);
       }
 
-   const static int Small;
-   const static int Medium;
-   const static int Large;
-   const static int ExtraLarge;
-
-   const int Height;
-   const int Width;
+      const static int Small;
+      const static int Medium;
+      const static int Large;
+      const static int ExtraLarge;
 
    private:
       const char* _text;
@@ -115,8 +123,12 @@ template <std::size_t TSize>
 class WidgetList : public Widget
 {
    public:
-        WidgetList(const int left, const int top, const uint32_t color = COLOR_LIGHT_GRAY) 
+        WidgetList(const int left = 0, const int top = 0, const uint32_t color = COLOR_LIGHT_GRAY) 
             : Widget(left, top), _margin_x(text_margin_x), _margin_y(text_margin_y), _color(color)
+        {}
+
+        WidgetList(const Widget& parent, const int margin_left = 0, const int margin_top = 0, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : WidgetList(parent.Left + margin_left, parent.Top + margin_top, color)
         {}
 
          void setText(int index, String value) 
@@ -155,6 +167,23 @@ class WidgetList : public Widget
         const int _margin_y;
         const uint32_t _color;
         String _list[TSize];
+};
+
+template <std::size_t TSize>
+class WidgetListPanel : public WidgetPanel
+{
+   public:
+      WidgetListPanel(const int left, const int top, const int size, const char* text, const uint32_t background = COLOR_DARK_GRAY, const uint32_t title = COLOR_GRAY) 
+         : WidgetPanel(left, top, size, text, background, title), items(left, top + widget_title_height)
+      {}
+
+      WidgetList<TSize> items;
+
+      virtual void render(TFT_eSprite& canvas)
+      {
+         WidgetPanel::render(canvas);
+         items.render(canvas);
+      }
 };
 
 #endif

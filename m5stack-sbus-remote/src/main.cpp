@@ -3,12 +3,27 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
-//#include <Ps3Controller.h>
-#include <PS4Controller.h>
-
 #include "lego_plus_driver.h"
 #include "radio.h"
 #include "widgets.h"
+
+#ifdef PS3
+  #include <Ps3Controller.h>
+  #define INIT_CONTROLLER Ps3.begin("b8:27:eb:df:b3:ff")
+  #define Ps3.isConnected()
+#elif PS4
+  #include <PS4Controller.h>
+  #define INIT_CONTROLLER PS4.begin("b8:27:eb:df:b3:ff")
+  #define PS4.isConnected()
+#else XBOX
+  #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
+
+  XboxSeriesXControllerESP32_asukiaaa::Core
+  xboxController("4c:3b:df:a5:1c:42");
+
+  #define INIT_CONTROLLER xboxController.begin()
+  #define CONTROLLER_CONNECTED xboxController.isConnected()
+#endif
 
 #define GFXFF 1
 //#define FF18  &FreeSans12pt7b
@@ -72,15 +87,12 @@ void setup() {
   Wire.begin();
   Serial.begin(115200);
 
-  // if (!Ps3.begin("b8:27:eb:df:b3:ff"))
-  // {
-  //   Serial.println("Failed to start PS3 Controller Host");
-  // }
+  xboxController.begin();
 
-  if (PS4.begin("b8:27:eb:df:b3:ff"))
-  {
-    Serial.println("Failed to start PS3 Controller Host");
-  }
+  // if (INIT_CONTROLLER)
+  // {
+  //   Serial.println("Failed to start Controller Host");
+  // }
 
   setupRadio();
 
@@ -98,7 +110,7 @@ void setup() {
   motor_driver_connected = version != 0;
   Serial.printf("Motor Driver ver: %d\r\n", version);
 
-  Serial.print("BT MAC: ");
+  //Serial.print("BT MAC: ");
   //Serial.println(PS4.Cross .getAddress());
 
   sbus_rx.Begin(16, 17);
@@ -116,7 +128,9 @@ void loop() {
   auto left_speed = 0;
   auto right_speed = 0;
 
-  if (PS4.isConnected()) {
+  xboxController.onLoop();
+
+  if (CONTROLLER_CONNECTED) {
 
     //PS3.setPlayer(1);
 

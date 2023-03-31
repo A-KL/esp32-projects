@@ -3,7 +3,9 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
-#include <Ps3Controller.h>
+//#include <Ps3Controller.h>
+#include <PS4Controller.h>
+
 #include "lego_plus_driver.h"
 #include "radio.h"
 #include "widgets.h"
@@ -33,7 +35,7 @@ TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
 const int margin = 5;
 
 WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus");
-WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps3", COLOR_DARK_BLUE, COLOR_BLUE);
+WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", COLOR_DARK_BLUE, COLOR_BLUE);
 
 WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
 WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
@@ -70,7 +72,12 @@ void setup() {
   Wire.begin();
   Serial.begin(115200);
 
-  if (!Ps3.begin("b8:27:eb:df:b3:ff"))
+  // if (!Ps3.begin("b8:27:eb:df:b3:ff"))
+  // {
+  //   Serial.println("Failed to start PS3 Controller Host");
+  // }
+
+  if (PS4.begin("b8:27:eb:df:b3:ff"))
   {
     Serial.println("Failed to start PS3 Controller Host");
   }
@@ -92,7 +99,7 @@ void setup() {
   Serial.printf("Motor Driver ver: %d\r\n", version);
 
   Serial.print("BT MAC: ");
-  Serial.println(Ps3.getAddress());
+  //Serial.println(PS4.Cross .getAddress());
 
   sbus_rx.Begin(16, 17);
 
@@ -109,17 +116,20 @@ void loop() {
   auto left_speed = 0;
   auto right_speed = 0;
 
-  if (Ps3.isConnected()) {
+  if (PS4.isConnected()) {
 
-    Ps3.setPlayer(1);
+    //PS3.setPlayer(1);
 
-    ps3_values.setText(0, "ls %d", Ps3.data.analog.stick.ly);
-    ps3_values.setText(1, "rs %d", Ps3.data.analog.stick.ry);
+    ps3_values.setText(0, "ls %d", PS4.data.analog.stick.ly);
+    ps3_values.setText(1, "rs %d", PS4.data.analog.stick.ry);
+
+    left_speed = map(PS4.data.analog.stick.ly, -128, 128, -255, 255);
+    right_speed = map(PS4.data.analog.stick.ry, -128, 128, 255, -255);
   }
   else
   {
-    ps3_values.setText(0, "ls 0.00");
-    ps3_values.setText(1, "rs 0.00");
+    ps3_values.setText(0, "ls ---");
+    ps3_values.setText(1, "rs ---");
   }
 
   if (sbus_rx.Read())

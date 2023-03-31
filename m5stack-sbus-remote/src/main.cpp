@@ -124,7 +124,7 @@ void loop() {
     ps3_values.setText(1, "rs %d", PS4.data.analog.stick.ry);
 
     left_speed = map(PS4.data.analog.stick.ly, -128, 128, -255, 255);
-    right_speed = map(PS4.data.analog.stick.ry, -128, 128, 255, -255);
+    right_speed = map(PS4.data.analog.stick.ry, 128, -128, 255, -255);
   }
   else
   {

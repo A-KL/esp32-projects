@@ -7,15 +7,15 @@
 #include "radio.h"
 #include "widgets.h"
 
-#ifdef PS3
+#if defined(PS3)
   #include <Ps3Controller.h>
   #define INIT_CONTROLLER Ps3.begin("b8:27:eb:df:b3:ff")
   #define Ps3.isConnected()
-#elif PS4
+#elif defined(PS4)
   #include <PS4Controller.h>
   #define INIT_CONTROLLER PS4.begin("b8:27:eb:df:b3:ff")
   #define PS4.isConnected()
-#else XBOX
+#else
   #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
 
   XboxSeriesXControllerESP32_asukiaaa::Core
@@ -134,11 +134,11 @@ void loop() {
 
     //PS3.setPlayer(1);
 
-    ps3_values.setText(0, "ls %d", PS4.data.analog.stick.ly);
-    ps3_values.setText(1, "rs %d", PS4.data.analog.stick.ry);
+    // ps3_values.setText(0, "ls %d", PS4.data.analog.stick.ly);
+    // ps3_values.setText(1, "rs %d", PS4.data.analog.stick.ry);
 
-    left_speed = map(PS4.data.analog.stick.ly, -128, 128, -255, 255);
-    right_speed = map(PS4.data.analog.stick.ry, 128, -128, 255, -255);
+    // left_speed = map(PS4.data.analog.stick.ly, -128, 128, -255, 255);
+    // right_speed = map(PS4.data.analog.stick.ry, 128, -128, 255, -255);
   }
   else
   {

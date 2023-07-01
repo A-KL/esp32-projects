@@ -42,6 +42,7 @@ MainForm form({ 0, 0, 320, 240 });
 #include "UvMeterI2S.h"
 
 UvMeterI2S i2s;
+//UvAvgMeterI2S i2s;
 MultiOutput multi;
 
 StreamCopy copier(multi, i2s);
@@ -85,6 +86,9 @@ TaskHandle_t vuTask;
 // float mean = 0;
 // unsigned long started = 0;
 
+uint16_t right = 0;
+uint16_t left = 0;
+
 void vu_task( void * parameter) {
   for (;;) {
     if (i2s.sampled) {
@@ -96,10 +100,35 @@ void vu_task( void * parameter) {
       // }
       //esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(send_struct));
 
+      if (i2s.left > left)
+      {
+        left += (i2s.left - left) * 0.30;
+      }
+      else
+      {
+        left -= (left - i2s.left) * 0.30;
+      }
+
+      if (i2s.right > right)
+      {
+        right += (i2s.right - right) * 0.30;
+      }
+      else
+      {
+        right -= (right - i2s.right) * 0.30;
+      }
+
+      // auto val = map(left, 61000, 65535, 0, 65535);
+      // auto val2 = map(right, 61000, 65535, 0, 65535);
+
+      Serial.println(left);
+
       form.levelLeft.setValueOf(i2s.left);
       form.levelRight.setValueOf(i2s.right);
+
+      form.Update(canvas);
     }
-    form.Update(canvas);
+    
     vTaskDelay(2 / portTICK_PERIOD_MS);
   }
 }

@@ -1,5 +1,7 @@
+#include "NotoSansBold15.h"
+
 #include "sbus.h"
-#include <M5Stack.h>
+//#include <M5Stack.h>
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
@@ -25,9 +27,10 @@
   #define CONTROLLER_CONNECTED xboxController.isConnected()
 #endif
 
-#define GFXFF 1
+//#define GFXFF 1
 //#define FF18  &FreeSans12pt7b
-#define CF_OL24 &FreeMonoBold9pt7b
+//#define CF_OL24 &FreeMonoBold9pt7b
+#define AA_FONT_SMALL NotoSansBold15
 
 Adafruit_INA219 ina219_output(INA219_ADDRESS);
 Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
@@ -44,13 +47,14 @@ const int ch_max_value = 1800;
 
 const int max_ch = 8;
 
-TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
+TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite spr = TFT_eSprite(&tft);
 
 // GUI
 const int margin = 5;
 
 WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus");
-WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", COLOR_DARK_BLUE, COLOR_BLUE);
+WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_DARKGREEN, TFT_BLUE);
 
 WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
 WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
@@ -80,10 +84,6 @@ int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_va
 }
 
 void setup() {
-
-  M5.begin();
-  M5.Power.begin();
-
   Wire.begin();
   Serial.begin(115200);
 
@@ -115,16 +115,26 @@ void setup() {
 
   sbus_rx.Begin(16, 17);
 
-  M5.Lcd.fillScreen(0xff0000);
+  tft.init();
+  tft.setRotation(TFT_ROTATE);
+  tft.fillScreen(TFT_BLACK);
 
-  //spr.setTextSize(2);
-  spr.setFreeFont(CF_OL24);
-  spr.setColorDepth(8);
-  spr.createSprite(320, 240);
+  // spr.setTextSize(2);
+  // spr.setFreeFont(CF_OL24);
+  // spr.setColorDepth(8);
+
+  spr.setColorDepth(16); // 16 bit colour needed to show antialiased fonts
+  spr.loadFont(AA_FONT_SMALL);
+
+  sbus_panel.render(spr);
+  ps3_panel.render(spr);
+  nrf42_panel.render(spr);
+  encoders_panel.render(spr);
+  motors_panel.render(spr);
+  power_panel.render(spr);
 }
 
 void loop() {
-
   auto left_speed = 0;
   auto right_speed = 0;
 
@@ -150,7 +160,7 @@ void loop() {
   {
     sbus_data = sbus_rx.ch();
 
-    spr.setTextColor(WHITE); 
+    //spr.setTextColor(WHITE); 
 
     for (int8_t i = 0; i < max_ch; i++)
     {
@@ -187,8 +197,8 @@ void loop() {
   }  
   else
   {
-    nrf42_values.setText(0, "ch0 0.00");
-    nrf42_values.setText(1, "ch1 0.00");
+    nrf42_values.setText(0, "ch0 ---");
+    nrf42_values.setText(1, "ch1 ---");
   }
 
   if (ina219_output_connected && ina219_input_connected) 
@@ -205,9 +215,9 @@ void loop() {
   }
   else
   {
-    power_values.setText(0, "0.00 V");
-    power_values.setText(1, "0.00 mA");
-    power_values.setText(2, "0.00 mW");
+    power_values.setText(0, "--- V");
+    power_values.setText(1, "--- mA");
+    power_values.setText(2, "--- mW");
   }
 
   // Encoder
@@ -224,20 +234,17 @@ void loop() {
 
     MotorRun(3, right_speed);
     MotorRun(0, right_speed);
+
+    motors_values.setText(0, "l %d", left_speed);
+    motors_values.setText(1, "r %d", right_speed);
+  }
+  else
+  {
+    motors_values.setText(0, "l ---");
+    motors_values.setText(1, "r ---");
   }
 
-  motors_values.setText(0, "l %d", left_speed);
-  motors_values.setText(1, "r %d", right_speed);
-
   // Update GUI
-  spr.fillSprite(TFT_BLACK);
-
-  sbus_panel.render(spr);
-  ps3_panel.render(spr);
-  nrf42_panel.render(spr);
-  encoders_panel.render(spr);
-  motors_panel.render(spr);
-  power_panel.render(spr);
 
   sbus_values.render(spr);
   ps3_values.render(spr);
@@ -245,6 +252,4 @@ void loop() {
   encoder_values.render(spr);
   motors_values.render(spr);
   power_values.render(spr);
-
-  spr.pushSprite(0, 0);
 }

@@ -157,12 +157,12 @@ template <std::size_t TSize>
 class WidgetList : public WidgetRect
 {
    public:
-        WidgetList(const int left = 0, const int top = 0, const int width = widget_width, const int height = WidgetPanel::Medium, const uint32_t color = COLOR_LIGHT_GRAY) 
-            : WidgetRect(left, top, width, height), _margin_x(text_margin_x), _margin_y(text_margin_y), _color(color)
+        WidgetList(const int left = 0, const int top = 0, const int width = widget_width, const int height = WidgetPanel::Medium, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : WidgetRect(left, top, width, height), _margin_x(text_margin_x), _margin_y(text_margin_y), _background(background), _color(color)
         {}
 
-        WidgetList(const WidgetRect& parent, const int margin_left = 0, const int margin_top = 0, const uint32_t color = COLOR_LIGHT_GRAY) 
-            : WidgetList(parent.Left + margin_left, parent.Top + margin_top, parent.Width - margin_left * 2, parent.Height - margin_top, color)
+        WidgetList(const WidgetRect& parent, const int margin_left = 0, const int margin_top = 0, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : WidgetList(parent.Left + margin_left, parent.Top + margin_top, parent.Width - margin_left * 2, parent.Height - margin_top, background, color)
         {}
 
          void setText(int index, String value) 
@@ -191,14 +191,14 @@ class WidgetList : public WidgetRect
       void render(TFT_eSprite& canvas)
       {
          canvas.createSprite(Width, Height);
-         canvas.fillSprite(TFT_TRANSPARENT);
+         canvas.fillSprite(color565(_background));
 
          for (auto i = 0; i < TSize; ++i) 
          {
             renderText(canvas, _margin_x, _margin_y + _margin_x / 2 + i * 15, _color, _list[i].c_str());
          }
 
-         canvas.pushSprite(Left, Top, TFT_TRANSPARENT);
+         canvas.pushSprite(Left, Top);
          canvas.deleteSprite();
       }
 
@@ -206,6 +206,7 @@ class WidgetList : public WidgetRect
         const int _margin_x;
         const int _margin_y;
         const uint32_t _color;
+        const uint32_t _background;
         String _list[TSize];
 };
 

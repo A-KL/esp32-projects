@@ -53,7 +53,7 @@ TFT_eSprite spr = TFT_eSprite(&tft);
 // GUI
 const int margin = 5;
 
-WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus");
+WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus", COLOR_DARK_GRAY);
 WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_DARKGREEN, TFT_BLUE);
 
 WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
@@ -62,14 +62,14 @@ WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_pa
 
 WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
-WidgetList<8> sbus_values(sbus_panel, 0, widget_title_height);
-WidgetList<2> ps3_values(ps3_panel, 0, widget_title_height);
+WidgetList<8> sbus_values(sbus_panel, 0, widget_title_height, COLOR_DARK_GRAY);
+WidgetList<2> ps3_values(ps3_panel, 0, widget_title_height, TFT_DARKGREEN);
 
-WidgetList<2> nrf42_values(nrf42_panel, 0, widget_title_height);
-WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height);
-WidgetList<2> motors_values(motors_panel, 0, widget_title_height);
+WidgetList<2> nrf42_values(nrf42_panel, 0, widget_title_height, COLOR_DARK_RED);
+WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height, COLOR_DARK_MAGENTA);
+WidgetList<2> motors_values(motors_panel, 0, widget_title_height, COLOR_DARK_GREEN);
 
-WidgetList<3> power_values(power_panel, 0, widget_title_height);
+WidgetList<3> power_values(power_panel, 0, widget_title_height, COLOR_DARK_YELLOW);
 
 //WidgetListPanel<3> power(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 

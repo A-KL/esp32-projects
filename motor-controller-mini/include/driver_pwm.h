@@ -1,3 +1,6 @@
+#ifndef rc_driver_pwm_h
+#define rc_driver_pwm_h
+
 #include <Arduino.h>
 
 typedef struct {
@@ -31,3 +34,5 @@ void IRAM_ATTR TimerInput0() {
 void IRAM_ATTR TimerInput1() {
   input_1_pwm.Capture();
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef web_h
+#define web_h
+
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
@@ -99,3 +102,5 @@ void ws_loop() {
 
   ws.cleanupClients();
 }
+
+#endif

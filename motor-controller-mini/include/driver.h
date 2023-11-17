@@ -1,3 +1,6 @@
+#ifndef rc_driver_h
+#define rc_driver_h
+
 #include <math.h>
 #include <Arduino.h>
 #include <sbus.h>
@@ -189,3 +192,5 @@ void driver_loop()
 
   delay(50);
 }
+
+#endif

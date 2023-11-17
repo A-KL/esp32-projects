@@ -1,0 +1,72 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    display: inline-block;
+    text-align: center;
+}
+h1 {
+    font-size: 1.8rem;
+    color: white;
+}
+.topnav {
+    overflow: hidden;
+    background-color: #db2c9b;
+}
+body {
+    margin: 0;
+    background-color: #222222;
+}
+.content {
+    padding: 50px;
+}
+.card-grid {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.card {
+    background-color: rgb(90, 90, 90);
+    box-shadow: 2px 2px 12px 1px rgba(114, 114, 114, 0.5);
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #999999
+}
+.reading {
+    font-size: 1.2rem;
+    color: #1282A2;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
+  }
+
+  .one {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+  .two {
+    grid-column: 2 / 4;
+    grid-row: 1 / 3;
+  }
+  .three {
+    grid-column: 1;
+    grid-row: 2 / 5;
+  }
+  .four {
+    grid-column: 3;
+    grid-row: 3;
+  }
+  .five {
+    grid-column: 2;
+    grid-row: 4;
+  }
+  .six {
+    grid-column: 3;
+    grid-row: 4;
+  }

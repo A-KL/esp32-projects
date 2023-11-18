@@ -2,8 +2,11 @@
 #include <DNSServer.h>
 #include <WiFi.h>
 
+#include <types.h>
+
 #include <driver.h>
 #include <server.h>
+#include <settings.h>
 
 // Replace with your network credentials
 const char* ssid = "REPLACE_WITH_YOUR_SSID";

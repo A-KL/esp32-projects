@@ -7,6 +7,7 @@
 
 #include <config_esp32.h>
 #include <config_esp32_c3.h>
+#include <config.h>
 
 #include <driver_pwm.h>
 
@@ -23,7 +24,7 @@
 
 const int MAX_DUTY_CYCLE = (int)(pow(2, MOTOR_RES) - 1);
 
-bfs::SbusRx sbus(&Serial1, INPUT_RX_SBUS, INPUT_TX_SBUS, true);
+bfs::SbusRx sbus_rx(&Serial1, INPUT_RX_SBUS, INPUT_TX_SBUS, true);
 bfs::SbusTx sbus_tx(&Serial1, INPUT_RX_SBUS, INPUT_TX_SBUS, true);
 bfs::SbusData sbus_data;
 
@@ -133,7 +134,7 @@ void driver_init()
   pinMode(INPUT_0_PWM, INPUT);
   pinMode(INPUT_1_PWM, INPUT);
   
-  sbus.Begin();
+  sbus_rx.Begin();
 
   INIT_MOTORS();
 
@@ -141,14 +142,35 @@ void driver_init()
   attachInterrupt(digitalPinToInterrupt(INPUT_1_PWM), TimerInput1, CHANGE);
 }
 
+int driver_read(const motor_config_t& config)
+{
+  int output = 0;
+
+  switch (config.input_type)
+  {
+    case input_type_t::pwm:
+      output = config.input_channel == 0 ? input_0_pwm.Result() : input_1_pwm.Result();
+      return map(constrain(output, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+
+    case input_type_t::adc:
+      output = analogRead(config.input_channel == 0 ? INPUT_0_ADC : INPUT_1_ADC);
+      return map(constrain(output, INPUT_ADC_MIN, INPUT_ADC_MAX), INPUT_ADC_MIN, INPUT_ADC_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+
+    case input_type_t::sbus:
+      return map(sbus_data.ch[config.input_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+  }
+
+  return output;
+}
+
 void driver_loop()
 {
   int output0 = 0;
   int output1 = 0;
 
-  if (sbus.Read())
+  if (sbus_rx.Read())
   {
-    sbus_data = sbus.data();
+    sbus_data = sbus_rx.data();
     sbus_tx.data(sbus_data);
     sbus_tx.Write();
 

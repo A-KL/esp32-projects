@@ -14,8 +14,6 @@ enum input_type_t {
 };
 
 typedef struct {
-    //const short undefined = -1;
-
     short a;
     short b;
     short en;
@@ -23,10 +21,10 @@ typedef struct {
 } motor_pins_t;
 
 typedef struct {
-    motor_drive_mode_t mode = a_b_en;
-    bool inverted = false;
-    input_type_t input_type = input_type_t::pwm;
-    int input_channel = 0;
+    motor_drive_mode_t mode;
+    bool inverted;
+    input_type_t input_type;
+    int input_channel;
     
 } motor_config_t;
 

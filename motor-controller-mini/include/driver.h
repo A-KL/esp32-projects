@@ -5,10 +5,6 @@
 #include <Arduino.h>
 #include <sbus.h>
 
-#include <config_esp32.h>
-#include <config_esp32_c3.h>
-#include <config.h>
-
 #include <driver_pwm.h>
 
 #if CONTROL_MODE == 0

@@ -6,6 +6,10 @@
 #include "SPIFFS.h"
 #include <ArduinoJson.h>
 
+#include <types.h>
+#include <config_esp32.h>
+#include <config_esp32_c3.h>
+
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
@@ -20,32 +24,63 @@ StaticJsonDocument<size> readings;
 unsigned long lastTime = 0;
 unsigned long timerDelay = 30000;
 
-// Get Sensor Readings and return JSON object
-void getSensorReadings(String& json) {
-  readings["temperature"] = String(12);
-  readings["humidity"] =  String(12);
-  readings["pressure"] = String(23/100.0F);
-  // String jsonString = JSON.stringify(readings);
-  serializeJson(readings, json);
+void serialize(const motor_config_t* configs, const int config_size, String& result)
+{
+  StaticJsonDocument<200> doc;
+
+  for(auto i = 0; i<config_size; ++i)
+  {
+    JsonObject motor = doc.createNestedObject();
+
+    motor["mode"] = configs[i].mode;
+    motor["inverted"] = configs[i].inverted;
+    motor["input_type"] = configs[i].input_type;
+    motor["input_channel"] = configs[i].input_channel;
+  }
+
+  serializeJson(doc, result);
 }
 
-void notifyClients(String sensorReadings) {
-  ws.textAll(sensorReadings);
+// void serialize(JsonDocument doc, const motor_config_t config, String& result)
+// {
+//   JsonObject motor = doc.createNestedObject();
+
+//   motor["mode"] = config.mode;
+//   motor["inverted"] = config.inverted;
+//   motor["input_type"] = config.input_type;
+//   motor["input_channel"] = config.input_channel;
+
+//   serializeJson(doc, result);
+// }
+
+void on_configuration(String& data)
+{
+  serialize(motors, sizeof(motors), data);
 }
 
-void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
+void notifyClients(const String& data) {
+  Serial.println(data);
+  ws.textAll(data);
+}
+
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
+{
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
-  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
-    //data[len] = 0;
-    //String message = (char*)data;
-    // Check if the message is "getReadings"
-    //if (strcmp((char*)data, "getReadings") == 0) {
-      //if it is, send current sensor readings
-      String readings;
-      getSensorReadings(readings);
-      Serial.print(readings);
-      notifyClients(readings);
-    //}
+
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) 
+  {
+    data[len] = 0;
+    String message = (char*)data;
+
+    Serial.print("->");
+    Serial.println(message);
+
+    if (strcmp((char*)data, "config") == 0) 
+    {
+      String data;
+      on_configuration(data);   
+      notifyClients(data);
+    }
   }
 }
 
@@ -91,16 +126,16 @@ void SPIFFS_init() {
 }
 
 void ws_loop() {
-  if ((millis() - lastTime) > timerDelay) {
-    String sensorReadings;
-    getSensorReadings(sensorReadings);
-    Serial.print(sensorReadings);
-    notifyClients(sensorReadings);
+  // if ((millis() - lastTime) > timerDelay) {
+  //   String sensorReadings;
+  //   getSensorReadings(sensorReadings);
+  //   Serial.print(sensorReadings);
+  //   notifyClients(sensorReadings);
 
-  lastTime = millis();
-  }
+  //   lastTime = millis();
+  // }
 
-  ws.cleanupClients();
+  // ws.cleanupClients();
 }
 
 #endif

@@ -12,8 +12,8 @@ const int sbus_tx_rx_pins[] = { 20, 21 };
 const int motor_modes[] = { motor_drive_mode_t::a_b_en };
 
 const motor_pins_t motor_pins[2] = {
-    { 7, 6, 5 },
-    { 8, 10, 2 }
+    { 7,  6, 5 }, //a, b, en
+    { 8, 10, 2 }  //b, b, en
 };
 
 #endif

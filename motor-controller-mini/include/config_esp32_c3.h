@@ -28,3 +28,9 @@
 #define INPUT_SBUS_CHANNELS 8
 #define INPUT_PWM_CHANNELS MOTORS_COUNT
 #define INPUT_ADC_CHANNELS MOTORS_COUNT
+
+const motor_config_t motors[MOTORS_COUNT] = 
+{
+    { a_b_en, false, sbus, 2 }, 
+    { a_b_en, false, sbus, 4 }
+};

@@ -2,19 +2,16 @@
 #include <DNSServer.h>
 #include <WiFi.h>
 
-#include <types.h>
-
 #include <driver.h>
 #include <server.h>
 #include <settings.h>
 
-// Replace with your network credentials
 const char* ssid = "REPLACE_WITH_YOUR_SSID";
 const char* password = "REPLACE_WITH_YOUR_PASSWORD";
 
 DNSServer dnsServer;
 
-void initWiFi() 
+void wifi_init() 
 {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -31,7 +28,7 @@ void initWiFi()
 void setup() {
   Serial.begin(115200);
 
-  initWiFi();
+  wifi_init();
   SPIFFS_init();
 
   ws_init();

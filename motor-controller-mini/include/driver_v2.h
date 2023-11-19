@@ -20,30 +20,6 @@ bool near_zero(const int value) {
   return (abs(value) < 30);
 }
 
-void init_motors()
-{
-  for(auto i=0; i<motors_count; ++i)
-  {
-     switch (motors_config[i].mode)
-     {
-     case a_b_en:
-        init_motors_a_b_en(motor_pins[i]);
-        break;
-
-      case a_b:
-        init_motors_a_b(motor_pins[i]);
-        break;
-
-      case dir_en:
-        init_motors_a_en(motor_pins[i]);
-        break;
-     
-     default:
-      break;
-     }
-  }
-}
-
 /*
   Control motors via DIR and EN signals.
   Output A is Used as DIR.
@@ -80,7 +56,31 @@ void init_motors_a_b(const motor_pins_t& pins)
   ledcAttachPin(pins.b, pins.b_channel);
 }
 
-void run_motor_a_b(const byte channel_a, const byte channel_b, const byte channel_en, const int speed) {
+void init_motors()
+{
+  for(auto i=0; i<motors_count; ++i)
+  {
+     switch (motors_config[i].mode)
+     {
+     case a_b_en:
+        init_motors_a_b_en(motor_pins[i]);
+        break;
+
+      case a_b:
+        init_motors_a_b(motor_pins[i]);
+        break;
+
+      case dir_en:
+        init_motors_a_en(motor_pins[i]);
+        break;
+     
+     default:
+      break;
+     }
+  }
+}
+
+void run_motor_a_b(const byte channel_a, const byte channel_b, const int speed) {
 
   if (near_zero(speed)) {
     ledcWrite(channel_a, 0);
@@ -96,7 +96,7 @@ void run_motor_a_b(const byte channel_a, const byte channel_b, const byte channe
   }
 }
 
-void run_motor_a_en(const byte pin_a, const byte pin_b, const byte channel_en, const int speed) {
+void run_motor_a_en(const byte pin_a, const byte channel_en, const int speed) {
 
   if (near_zero(speed)) {
     ledcWrite(channel_en, 0);
@@ -124,14 +124,35 @@ void run_motor_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en,
   }
 }
 
+void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int speed) 
+{
+     switch (config.mode)
+     {
+     case a_b_en:
+        run_motor_a_b_en(pins.a, pins.b, pins.en_channel, speed);
+        break;
+
+      case a_b:
+        run_motor_a_b(pins.a_channel, pins.b_channel, speed);
+        break;
+
+      case dir_en:
+        run_motor_a_en(pins.a, pins.en_channel, speed);
+        break;
+     
+     default:
+      break;
+     }
+}
+
 void driver_init()
 {
-  for (auto i = 0; i < sizeof(adc_pins); i++)
+  for (auto i = 0; i < sizeof(adc_pins) / sizeof(int); i++)
   {
     pinMode(adc_pins[i], INPUT);
   }
   
-  for (auto i = 0; i < sizeof(pwm_pins); i++)
+  for (auto i = 0; i < sizeof(pwm_pins) / sizeof(int); i++)
   {
     pinMode(pwm_pins[i], INPUT);
   }
@@ -191,7 +212,7 @@ void driver_loop()
 
   for (auto i = 0; i < sizeof(outputs); i++)
   {
-    RUN_MOTOR(motor_pins[i].a, motor_pins[i].b, motor_pins[i].en, outputs[i]);
+    run_motor(motor_pins[i], motors_config[i], outputs[i]);
   }
 
   delay(50);

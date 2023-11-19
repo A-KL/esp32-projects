@@ -2,9 +2,9 @@
 #include <DNSServer.h>
 #include <WiFi.h>
 
-//#include <driver.h>
 #include <driver_v2.h>
 #include <server.h>
+#include <api.h>
 #include <settings.h>
 
 const char* ssid = "REPLACE_WITH_YOUR_SSID";
@@ -29,8 +29,10 @@ void wifi_init()
 void setup() {
   Serial.begin(115200);
 
-  //wifi_init();
-  //SPIFFS_init();
+  wifi_init();
+  SPIFFS_init();
+
+  api_init();
 
  // ws_init();
   //web_init();

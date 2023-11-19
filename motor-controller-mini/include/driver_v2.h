@@ -8,7 +8,7 @@
 #include <driver_pwm.h>
 
 #include <config_esp32.h>
-#include <config_esp32c3_v2.h>
+#include <config_esp32_c3_v2.h>
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
@@ -137,12 +137,12 @@ void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int
 
 void driver_init()
 {
-  for (auto i = 0; i < motors_count; i++) //sizeof(adc_pins) / sizeof(int)
+  for (auto i = 0; i < motors_count; i++)
   {
     pinMode(adc_pins[i], INPUT);
   }
   
-  for (auto i = 0; i < motors_count; i++) //sizeof(pwm_pins) / sizeof(int)
+  for (auto i = 0; i < motors_count; i++)
   {
     pinMode(pwm_pins[i], INPUT);
   }

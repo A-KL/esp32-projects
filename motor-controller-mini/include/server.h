@@ -3,7 +3,7 @@
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include "SPIFFS.h"
+#include <SPIFFS.h>
 #include <ArduinoJson.h>
 
 #include <types.h>
@@ -40,18 +40,6 @@ void serialize(const motor_config_t* configs, const int config_size, String& res
 
   serializeJson(doc, result);
 }
-
-// void serialize(JsonDocument doc, const motor_config_t config, String& result)
-// {
-//   JsonObject motor = doc.createNestedObject();
-
-//   motor["mode"] = config.mode;
-//   motor["inverted"] = config.inverted;
-//   motor["input_type"] = config.input_type;
-//   motor["input_channel"] = config.input_channel;
-
-//   serializeJson(doc, result);
-// }
 
 void on_configuration(String& data)
 {

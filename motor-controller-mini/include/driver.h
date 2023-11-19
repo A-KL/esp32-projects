@@ -138,27 +138,6 @@ void driver_init()
   attachInterrupt(digitalPinToInterrupt(INPUT_1_PWM), TimerInput1, CHANGE);
 }
 
-int driver_read(const motor_config_t& config)
-{
-  int output = 0;
-
-  switch (config.input_type)
-  {
-    case input_type_t::pwm:
-      output = config.input_channel == 0 ? input_0_pwm.Result() : input_1_pwm.Result();
-      return map(constrain(output, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
-
-    case input_type_t::adc:
-      output = analogRead(config.input_channel == 0 ? INPUT_0_ADC : INPUT_1_ADC);
-      return map(constrain(output, INPUT_ADC_MIN, INPUT_ADC_MAX), INPUT_ADC_MIN, INPUT_ADC_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
-
-    case input_type_t::sbus:
-      return map(sbus_data.ch[config.input_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
-  }
-
-  return output;
-}
-
 void driver_loop()
 {
   int output0 = 0;

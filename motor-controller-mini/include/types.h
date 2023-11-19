@@ -17,6 +17,13 @@ typedef struct {
     short a;
     short b;
     short en;
+
+    short a_channel;
+    short b_channel;
+    short en_channel;
+
+    // short freq;
+    // short res;
     
 } motor_pins_t;
 

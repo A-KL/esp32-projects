@@ -10,10 +10,9 @@
 #define MOTOR_FREQ      100
 #define MOTOR_RES       10
 
-#define MOTOR_0_CHANNEL_EN  0
-#define MOTOR_0_CHANNEL_A   1
-#define MOTOR_0_CHANNEL_B   2
+#ifndef config_esp32_h
+#define config_esp32_h
 
-#define MOTOR_1_CHANNEL_EN  3
-#define MOTOR_1_CHANNEL_A   4
-#define MOTOR_1_CHANNEL_B   5
+const int MAX_DUTY_CYCLE = (int)(pow(2, MOTOR_RES) - 1);
+
+#endif

@@ -10,20 +10,14 @@
 #include <config_esp32.h>
 #include <config_esp32c3_v2.h>
 
-const int MAX_DUTY_CYCLE = (int)(pow(2, MOTOR_RES) - 1);
-
-bfs::SbusRx sbus_rx(&Serial1, sbus_tx_rx_pins[1], sbus_tx_rx_pins[0], true);
-bfs::SbusTx sbus_tx(&Serial1, sbus_tx_rx_pins[1], sbus_tx_rx_pins[0], true);
+bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
+bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
 
 bool near_zero(const int value) {
   return (abs(value) < 30);
 }
 
-/*
-  Control motors via DIR and EN signals.
-  Output A is Used as DIR.
-*/
 void init_motors_a_en(const motor_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
@@ -32,9 +26,7 @@ void init_motors_a_en(const motor_pins_t& pins)
 
   ledcAttachPin(pins.en, pins.en_channel);
 }
-/*
-  Control motors via two PWM signals.
-*/
+
 void init_motors_a_b_en(const motor_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
@@ -44,9 +36,7 @@ void init_motors_a_b_en(const motor_pins_t& pins)
 
   ledcAttachPin(pins.en, pins.en_channel);
 }
-/*
-  Control motors via two pwm and EN signal.
-*/
+
 void init_motors_a_b(const motor_pins_t& pins)
 {
   ledcSetup(pins.a_channel, MOTOR_FREQ, MOTOR_RES);
@@ -147,12 +137,12 @@ void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int
 
 void driver_init()
 {
-  for (auto i = 0; i < sizeof(adc_pins) / sizeof(int); i++)
+  for (auto i = 0; i < motors_count; i++) //sizeof(adc_pins) / sizeof(int)
   {
     pinMode(adc_pins[i], INPUT);
   }
   
-  for (auto i = 0; i < sizeof(pwm_pins) / sizeof(int); i++)
+  for (auto i = 0; i < motors_count; i++) //sizeof(pwm_pins) / sizeof(int)
   {
     pinMode(pwm_pins[i], INPUT);
   }
@@ -175,7 +165,7 @@ void driver_loop()
     sbus_tx.data(sbus_data);
     sbus_tx.Write();
 
-    for (auto i=0; i<sizeof(motors_count); ++i)
+    for (auto i=0; i<motors_count; ++i)
     {
       if (motors_config[i].input_type == sbus)
       {
@@ -190,7 +180,7 @@ void driver_loop()
     input_1_pwm.Result()
   };
 
-  for (auto i=0; i<sizeof(motors_count); ++i)
+  for (auto i=0; i<motors_count; ++i)
   {
     if (motors_config[i].input_type == pwm)
     {
@@ -210,7 +200,7 @@ void driver_loop()
     }
   }
 
-  for (auto i = 0; i < sizeof(outputs); i++)
+  for (auto i = 0; i < motors_count; i++)
   {
     run_motor(motor_pins[i], motors_config[i], outputs[i]);
   }

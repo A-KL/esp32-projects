@@ -2,7 +2,8 @@
 #include <DNSServer.h>
 #include <WiFi.h>
 
-#include <driver.h>
+//#include <driver.h>
+#include <driver_v2.h>
 #include <server.h>
 #include <settings.h>
 
@@ -28,16 +29,16 @@ void wifi_init()
 void setup() {
   Serial.begin(115200);
 
-  wifi_init();
-  SPIFFS_init();
+  //wifi_init();
+  //SPIFFS_init();
 
-  ws_init();
-  web_init();
+ // ws_init();
+  //web_init();
 
   driver_init();
 }
 
 void loop() {
-  ws_loop();
+  //ws_loop();
   driver_loop();
 }

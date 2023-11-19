@@ -29,6 +29,14 @@
 #define INPUT_PWM_CHANNELS MOTORS_COUNT
 #define INPUT_ADC_CHANNELS MOTORS_COUNT
 
+#define MOTOR_0_CHANNEL_EN  0
+#define MOTOR_0_CHANNEL_A   1
+#define MOTOR_0_CHANNEL_B   2
+
+#define MOTOR_1_CHANNEL_EN  3
+#define MOTOR_1_CHANNEL_A   4
+#define MOTOR_1_CHANNEL_B   5
+
 const motor_config_t motors[MOTORS_COUNT] = 
 {
     { a_b_en, false, sbus, 2 }, 

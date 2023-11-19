@@ -7,6 +7,9 @@
 
 #include <driver_pwm.h>
 
+#include <config_esp32.h>
+#include <config_esp32_c3.h>
+
 #if CONTROL_MODE == 0
   #define INIT_MOTORS init_motors_a_b
   #define RUN_MOTOR run_motor_a_b
@@ -17,8 +20,6 @@
   #define INIT_MOTORS init_motors_a_b_en
   #define RUN_MOTOR run_motor_a_b_en
 #endif
-
-const int MAX_DUTY_CYCLE = (int)(pow(2, MOTOR_RES) - 1);
 
 bfs::SbusRx sbus_rx(&Serial1, INPUT_RX_SBUS, INPUT_TX_SBUS, true);
 bfs::SbusTx sbus_tx(&Serial1, INPUT_RX_SBUS, INPUT_TX_SBUS, true);
@@ -60,9 +61,7 @@ void init_motors_a_b_en()
   ledcAttachPin(MOTOR_0_OUTPUT_EN, MOTOR_0_CHANNEL_EN);
   ledcAttachPin(MOTOR_1_OUTPUT_EN, MOTOR_1_CHANNEL_EN);
 }
-/*
-  Control motors via two pwm and EN signal.
-*/
+
 void init_motors_a_b()
 {
   ledcSetup(MOTOR_0_CHANNEL_A, MOTOR_FREQ, MOTOR_RES);

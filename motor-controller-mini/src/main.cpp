@@ -6,8 +6,8 @@
 #include <server.h>
 #include <settings.h>
 
-const char* ssid = "kl-home";
-const char* password = "sunnycoconut971";
+const char* ssid = "REPLACE_WITH_YOUR_SSID";
+const char* password = "REPLACE_WITH_YOUR_PASSWORD";
 
 DNSServer dnsServer;
 

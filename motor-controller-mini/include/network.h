@@ -8,12 +8,12 @@ const char* password = "";
 
 void wifi_init() 
 {
-  WiFi.setHostname("esp32_motor_ctrl_mini");
+  WiFi.setHostname("esp32-motor-ctrl-mini");
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+    delay(500);
   }
 }
 

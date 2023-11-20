@@ -16,6 +16,35 @@ void storage_init()
   Serial.println("SPIFFS mounted successfully");
 }
 
+String setting_read(const String& key)
+{
+    File file = SPIFFS.open("/default.json", FILE_READ);
+
+    if (!file)
+    {
+        Serial.println("There was an error opening default.json file");
+        file.close();
+        return "";
+    }
+    
+    StaticJsonDocument<512> doc;
+    DeserializationError error = deserializeJson(doc, file);
+
+    if (error) {       
+        doc.clear();
+        file.close();
+        return "";
+    }
+
+    auto root = doc.as<JsonObject>();
+    auto result = root[key].as<String>();
+
+    doc.clear();
+    file.close();
+
+    return result;
+}
+
 bool settings_load(motor_config_t motors[], const int count)
 {
     File file = SPIFFS.open("/default.json", FILE_READ);

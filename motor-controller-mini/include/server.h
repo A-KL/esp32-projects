@@ -8,7 +8,7 @@
 
 #include <types.h>
 #include <config_esp32.h>
-#include <config_esp32_c3.h>
+#include <config_esp32_c3_v2.h>
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -24,7 +24,7 @@ StaticJsonDocument<size> readings;
 unsigned long lastTime = 0;
 unsigned long timerDelay = 30000;
 
-void serialize(const motor_config_t* configs, const int config_size, String& result)
+void Serialize(const motor_config_t* configs, const int config_size, String& result)
 {
   StaticJsonDocument<200> doc;
 
@@ -41,17 +41,17 @@ void serialize(const motor_config_t* configs, const int config_size, String& res
   serializeJson(doc, result);
 }
 
-void on_configuration(String& data)
+void OnConfiguration(String& data)
 {
-  serialize(motors, sizeof(motors), data);
+  Serialize(motors_config, motors_count, data);
 }
 
-void notifyClients(const String& data) {
+void NotifyClients(const String& data) {
   Serial.println(data);
   ws.textAll(data);
 }
 
-void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
+void HandleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
 {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
 
@@ -66,13 +66,13 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
     if (strcmp((char*)data, "config") == 0) 
     {
       String data;
-      on_configuration(data);   
-      notifyClients(data);
+      OnConfiguration(data);   
+      NotifyClients(data);
     }
   }
 }
 
-void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
+void OnSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
@@ -81,7 +81,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       break;
     case WS_EVT_DATA:
-      handleWebSocketMessage(arg, data, len);
+      HandleWebSocketMessage(arg, data, len);
       break;
     case WS_EVT_PONG:
     case WS_EVT_ERROR:
@@ -89,25 +89,22 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   }
 }
 
-void ws_init() {
-  ws.onEvent(onEvent);
-  server.addHandler(&ws);
-}
-
 void web_init() {
-    // Web Server Root URL
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/index.html", "text/html");
   });
 
   server.serveStatic("/", SPIFFS, "/");
-      //api.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
-  // Start server
+  ws.onEvent(OnSocketEvent);
+
+  server.addHandler(&ws);
+
+  //api.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+  //server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
+
   server.begin();
 }
-
-
 
 void ws_loop() {
   // if ((millis() - lastTime) > timerDelay) {

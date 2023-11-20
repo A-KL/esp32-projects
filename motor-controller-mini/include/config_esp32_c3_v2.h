@@ -1,5 +1,5 @@
-#ifndef test_h
-#define test_h
+#ifndef config_esp32_c3_h
+#define config_esp32_c3_h
 
 #include <types.h>
 
@@ -8,8 +8,6 @@ const int pwm_pins[] = { 0, 1 };
 const int adc_pins[] = { 4, 3 };
 
 const int sbus_rx_tx_pins[] = { 20, 21 };
-
-const int sbus_channels[] = { 1, 1 }; // { 1, 2 };
 
 const motor_drive_mode_t motor_modes[] = { motor_drive_mode_t::a_b_en };
 
@@ -22,11 +20,8 @@ const motor_pins_t motor_pins[motors_count] = {
 
 motor_config_t motors_config[motors_count] = 
 {
-    { motor_modes[0], false, adc, 0 }, // a_b_en, false, sbus input, channel 1
-    { motor_modes[0], false, adc, 1 }  // a_b_en, false, sbus input, channel 2
-
-    // { motor_modes[0], false, sbus, sbus_channels[0] }, // a_b_en, false, sbus input, channel 1
-    // { motor_modes[0], false, sbus, sbus_channels[1] }  // a_b_en, false, sbus input, channel 2
+    { motor_modes[0], false, pwm, 0 }, // a_b_en, false, sbus input, channel 1
+    { motor_modes[0], false, pwm, 1 }  // a_b_en, false, sbus input, channel 2
 };
 
 #endif

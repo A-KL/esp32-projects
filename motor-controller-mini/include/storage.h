@@ -61,6 +61,7 @@ bool settings_load(motor_config_t motors[], const int count)
         {
             Serial.print("Unable to map value: ");
             Serial.println(input_type_str);
+            //log_e("Netif Get IP Failed!");
             file.close();
             return false;
         }

@@ -1,5 +1,7 @@
 #ifndef types_h
 #define types_h
+	
+#include <map>
 
 enum motor_drive_mode_t {
   a_b_en  = 0,
@@ -13,6 +15,20 @@ enum input_type_t {
   sbus = 2
 };
 
+const std::map<String, motor_drive_mode_t> drive_modes_map = 
+{ 
+  {"a_b_en", a_b_en}, 
+  {"a_b", a_b}, 
+  {"dir_en", dir_en} 
+};
+
+const std::map<String, input_type_t> drive_input_map = 
+{ 
+  {"pwm", pwm}, 
+  {"adc", adc}, 
+  {"sbus", sbus} 
+};
+
 typedef struct {
     short a;
     short b;
@@ -22,9 +38,6 @@ typedef struct {
     short b_channel;
     short en_channel;
 
-    // short freq;
-    // short res;
-    
 } motor_pins_t;
 
 typedef struct {

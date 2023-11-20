@@ -1,39 +1,23 @@
 #include <Arduino.h>
 #include <DNSServer.h>
+
+#include <network.h>
+#include <driver_v2.h>
+#include <storage.h>
+#include <api.h>
 #include <WiFi.h>
 
-#include <driver_v2.h>
-#include <server.h>
-#include <api.h>
-#include <settings.h>
-
-const char* ssid = "REPLACE_WITH_YOUR_SSID";
-const char* password = "REPLACE_WITH_YOUR_PASSWORD";
-
-DNSServer dnsServer;
-
-void wifi_init() 
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  Serial.print("Connecting to WiFi ..");
-
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
-    delay(1000);
-  }
-  Serial.println(WiFi.localIP());
-}
+//DNSServer dnsServer;
 
 void setup() {
   Serial.begin(115200);
+  sleep(3);
 
+  storage_init();
   wifi_init();
-  SPIFFS_init();
-
   api_init();
 
+  settings_load(motors, motors_count);
  // ws_init();
   //web_init();
 

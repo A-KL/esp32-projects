@@ -37,7 +37,7 @@
 #define MOTOR_1_CHANNEL_A   4
 #define MOTOR_1_CHANNEL_B   5
 
-const motor_config_t motors[MOTORS_COUNT] = 
+motor_config_t motors[MOTORS_COUNT] = 
 {
     { a_b_en, false, sbus, 2 }, 
     { a_b_en, false, sbus, 4 }

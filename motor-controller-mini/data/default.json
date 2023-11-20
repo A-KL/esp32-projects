@@ -1,6 +1,6 @@
 {
     "motors": [
-        { "mode": 0, "inverted": false, "input_mode": "adc", "input_channel": 0 },
-        { "mode": 0, "inverted": false, "input_mode": "adc", "input_channel": 0 }
+        { "mode": 0, "inverted": false, "input_type": "adc", "input_channel": 0 },
+        { "mode": 0, "inverted": false, "input_type": "adc", "input_channel": 0 }
     ]
 }

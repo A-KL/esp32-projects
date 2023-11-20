@@ -101,17 +101,13 @@ void web_init() {
   });
 
   server.serveStatic("/", SPIFFS, "/");
+      //api.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   // Start server
   server.begin();
 }
 
-void SPIFFS_init() {
-  if (!SPIFFS.begin(true)) {
-    Serial.println("An error has occurred while mounting SPIFFS");
-  }
-  Serial.println("SPIFFS mounted successfully");
-}
+
 
 void ws_loop() {
   // if ((millis() - lastTime) > timerDelay) {

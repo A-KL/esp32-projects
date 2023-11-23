@@ -1,5 +1,8 @@
 {
     "api_key": "",
+    "ps3" :{
+        "mac":""
+    },
     "motors": [
         { "mode": 0, "inverted": false, "input_type": "pwm", "input_channel": 0 },
         { "mode": 0, "inverted": false, "input_type": "pwm", "input_channel": 1 }

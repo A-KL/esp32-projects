@@ -10,16 +10,13 @@ void setup() {
   sleep(3);
 
   storage_init();
+  //settings_load(motors_config, motors_count);
+  
   wifi_init();
-  api_init();
   now_init();
 
-  //settings_load(motors_config, motors_count);
-
-  //driver_init();
+  //api_init();
 }
 
 void loop() {
-  //ws_loop();
-  //driver_loop();
 }

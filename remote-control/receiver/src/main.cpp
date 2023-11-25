@@ -7,6 +7,7 @@
 
 void setup() {
   Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
   sleep(3);
 
   storage_init();
@@ -19,4 +20,5 @@ void setup() {
 }
 
 void loop() {
+  now_loop();
 }

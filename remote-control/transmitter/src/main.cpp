@@ -1,11 +1,12 @@
 #include <SPI.h>
+#include <WiFi.h>
 #include "printf.h"
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <esp_now.h>
 
-#define CHANNELS_COUNT 10
+#define CHANNELS_COUNT 6
 #define RF_CHANNEL 115
-#define DEBUG 1
 
 #ifdef ARDUINO_AVR_NANO
   #define RF_CE_PIN 7
@@ -21,12 +22,24 @@
 
   int input_pins[CHANNELS_COUNT] = { 
       36, 39, // Left, Right Knobs
-      2, 4,   // Left Joystick - Y, X
-      14, 12, // Right Joystick - Y, X
+      32, 33, //  2, 4,   // Left Joystick - Y, X
+     // 14, 12, // Right Joystick - Y, X
       34, 35, // Left, Right Switches
-      15,     // Left Joystick - Button
-      13,     // Right Joystick - Button
+    //  15,     // Left Joystick - Button
+    //  13,     // Right Joystick - Button
   };
+
+  #define CHANNELS_COUNT_T 16
+
+  struct channel_t {
+    unsigned short value;
+  };
+
+  struct data_message_t {
+    channel_t channels[CHANNELS_COUNT_T];
+  };
+
+  data_message_t data_message;
 #endif
 
 // Radio
@@ -96,11 +109,21 @@ SmoothingFilter inputs[CHANNELS_COUNT]
   SmoothingFilter(input_pins[4], 0),
 
   SmoothingFilter(input_pins[5], 0),
-  SmoothingFilter(input_pins[6], 0),
-  SmoothingFilter(input_pins[7], 0),
-  SmoothingFilter(input_pins[8], 0),
-  SmoothingFilter(input_pins[9], 0)
+  // SmoothingFilter(input_pins[6], 0),
+  // SmoothingFilter(input_pins[7], 0),
+  // SmoothingFilter(input_pins[8], 0),
+  // SmoothingFilter(input_pins[9], 0)
 };
+
+const uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+const uint8_t receiveAddress[] = {0x84, 0xFC, 0xE6, 0x00, 0x27, 0x9C };
+
+esp_now_peer_info_t peerInfo;
+
+void EspNowOnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) 
+{
+  log_d("Last Packet Send Status:%s", status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
 
 void setupRadio() {
   radio.begin();
@@ -118,6 +141,37 @@ void setupRadio() {
   Serial.println(radio.isChipConnected() == 1 ? "Yes" : "No");
 }
 
+void setupEspNow() {
+  WiFi.mode(WIFI_STA);
+
+  if (esp_now_init() != ESP_OK) {
+    log_e("Error initializing ESP-NOW");
+    return;
+  }
+
+  log_i("ESP-NOW initialized");
+
+  esp_now_register_send_cb(EspNowOnDataSent);
+
+  memcpy(peerInfo.peer_addr, receiveAddress, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    log_e("Failed to add peer");
+    return;
+  }
+}
+
+void sendEspNow(const data_message_t& data)
+{
+  esp_err_t result = esp_now_send(receiveAddress, (uint8_t *) &data, sizeof(data_message_t));
+   
+  if (result != ESP_OK) {
+    log_e("Error sending the data");
+  }
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -125,6 +179,7 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);
 
   setupRadio();
+  setupEspNow();
 
   delay(5000);
 }
@@ -144,23 +199,21 @@ int mapAnalogValues(int val, int lower, int middle, int upper, bool reverse)
 void loop() {
   for (auto i=0; i< CHANNELS_COUNT; i++) {
     auto raw = inputs[i].read();
-    Serial.print("CH");
-    Serial.print(i);
-    Serial.print(':');
-    Serial.print(raw);
-    Serial.print(',');
     message.channels[i].value = raw;
+    data_message.channels[i].value = raw;
   }
-  Serial.println();
 
-  // for (auto i=0; i< CHANNELS_COUNT; i++) {
-  //   Serial.print("CH");
-  //   Serial.print(i);
-  //   Serial.print(':');
-  //   Serial.print(message.channels[i]);
-  //   Serial.print(',');
-  // }
-  // Serial.println();
+  log_d("%d\t%d\t%d\t%d\t%d\t%d\t%d",
+    data_message.channels[0].value,
+    data_message.channels[1].value,
+    data_message.channels[2].value,
+    data_message.channels[3].value,
+    data_message.channels[4].value,
+    data_message.channels[5].value);
+
+  sendEspNow(data_message);
+
+  return;
 
   auto res = radio.write(&message, sizeof(Signal));
 

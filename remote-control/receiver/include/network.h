@@ -11,6 +11,7 @@ void wifi_init()
   WiFi.setHostname("esp-now-receiver-v1");
   
   WiFi.mode(WIFI_MODE_STA);
+  
   Serial.println(WiFi.macAddress());
 
   // WiFi.begin(ssid, password);

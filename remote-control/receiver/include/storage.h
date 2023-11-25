@@ -11,9 +11,9 @@
 void storage_init() 
 {
   if (!SPIFFS.begin(true)) {
-    Serial.println("An error has occurred while mounting SPIFFS");
+    log_e("An error has occurred while mounting SPIFFS");
   }
-  Serial.println("SPIFFS mounted successfully");
+  log_i("SPIFFS mounted successfully");
 }
 
 String setting_read(const String& key)
@@ -22,7 +22,7 @@ String setting_read(const String& key)
 
     if (!file)
     {
-        Serial.println("There was an error opening default.json file");
+        log_e("There was an error opening default.json file");
         file.close();
         return "";
     }

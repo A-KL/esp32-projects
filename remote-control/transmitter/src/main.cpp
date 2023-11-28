@@ -17,26 +17,25 @@
 #define CHANNELS_COUNT ADC_CHANNELS_COUNT + SW_TWO_CHANNELS_COUNT + SW_THREE_CHANNELS_COUNT
 
 #ifdef ESP32
-
   int adc_input_pins[] = { 
       36, 39, // Left, Right Knobs
-      32, 33, //  2, 4,  // Left Joystick - Y, X
-      34, 35, // 14, 12, // Right Joystick - Y, X
+      34, 35, // Right Joystick - Y, X
+      32, 33  // Left Joystick - Y, X  
   };
 
   int sw_three_input_pins[SW_THREE_CHANNELS_COUNT * 2] = { 
-      13, 12, // Right Joystick - Button
-      25, 26  // Left, Right Switches
+      2, 0, // Left Switch
+      25, 26  // Right Switch
   };
 
   int sw_two_input_pins[SW_TWO_CHANNELS_COUNT] = { 
-      15,  2, // Left Joystick - Button
+      15, // Left Joystick - Button
+      13, // Right Joystick - Button
   };
-
 #endif
 
 // Radio
-RF24 radio(RF_CE_PIN, RF_CSN_PIN); // select CE,CSN pin
+RF24 radio(RF_CE_PIN, RF_CSN_PIN);
 
 // Protocol
 struct Channel {
@@ -119,19 +118,10 @@ void setup() {
   delay(3000);
 }
 
-// int mapAnalogValues(int val, int lower, int middle, int upper, bool reverse)
-// {
-//   val = constrain(val, lower, upper);
-
-//   if (val < middle)
-//     val = map(val, lower, middle, 0, 128);
-//   else
-//     val = map(val, middle, upper, 128, 255);
-
-//   return (reverse ? 255 - val : val);
-// }
-
 void loop() {
+
+  digitalWrite(LED_BUILTIN, HIGH);
+
   for (auto i=0; i< CHANNELS_COUNT; i++) {
     auto raw = inputs[i]->read();
 
@@ -139,27 +129,33 @@ void loop() {
     data_message.channels[i].value = raw;
   }
 
-  log_d("%d\t%d\t%d\t%d\t%d\t%d\t%d",
+  log_d("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",
     data_message.channels[0].value,
     data_message.channels[1].value,
     data_message.channels[2].value,
     data_message.channels[3].value,
     data_message.channels[4].value,
-    data_message.channels[5].value);
+    data_message.channels[5].value,
+    data_message.channels[6].value,
+    data_message.channels[7].value,
+    data_message.channels[8].value,
+    data_message.channels[9].value);
 
-  sendEspNow(data_message);
+  auto res = sendEspNow(data_message);
+
+  if (!res) {
+    //log_e("ESP_NOW: Error sending the data");
+  }
+
+  digitalWrite(LED_BUILTIN, LOW);
+
+  delay(10);
 
   return;
 
-  auto res = radio.write(&message, sizeof(Signal));
+  res = radio.write(&message, sizeof(Signal));
 
   if (!res){
-      Serial.println("Tx failed");
-      digitalWrite(LED_BUILTIN, HIGH);
+      log_d("RF24: Error sending the data"); 
   }
-  else {
-      digitalWrite(LED_BUILTIN, LOW);
-  }
-  
-  delay(10);
 }

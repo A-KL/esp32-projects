@@ -51,13 +51,11 @@ void setupEspNow() {
   }
 }
 
-void sendEspNow(const data_message_t& data)
+bool sendEspNow(const data_message_t& data)
 {
   esp_err_t result = esp_now_send(receiveAddress, (uint8_t *) &data, sizeof(data_message_t));
-   
-  if (result != ESP_OK) {
-    log_e("Error sending the data");
-  }
+
+  return result == ESP_OK;
 }
 
 #ifdef __cplusplus

@@ -23,7 +23,7 @@ class TwoWaySwitchFilter : public InputFilter
 
     int read()
     {
-      return digitalRead(_pin) == LOW ? ADC_MIN : ADC_MAX;
+      return digitalRead(_pin) == LOW ? ADC_MAX : ADC_MIN;
     }
 
   private:

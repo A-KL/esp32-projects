@@ -46,8 +46,15 @@ void pwm_write(const int values[], int size) {
         if (servos[i].attached()) {
             servos[i].attach(pwm_pins[i], INPUT_PWM_MIN, INPUT_PWM_MAX);
         }
-        servos[i].write(values[i]);
+        servos[i].write(map(values[i],INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180));
     }
+}
+
+void pwm_write(const int ch, const int value) {
+    if (servos[ch].attached()) {
+        servos[ch].attach(pwm_pins[ch], INPUT_PWM_MIN, INPUT_PWM_MAX);
+    }
+    servos[ch].write(map(value,INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180));
 }
 
 #endif

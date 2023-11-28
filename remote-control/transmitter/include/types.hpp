@@ -1,7 +1,10 @@
-#ifndef types_h
-#define types_h
+#pragma once
 	
 #include <map>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define CHANNELS_COUNT 16
 
@@ -15,4 +18,6 @@ struct data_message_t {
 
 data_message_t message;
 
+#ifdef __cplusplus
+}
 #endif

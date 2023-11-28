@@ -7,32 +7,11 @@
 #include <filters.hpp>
 #include <esp32_now.hpp>
 
-#define RF_CHANNEL 115
-#define RF_PIPE_OUT 0xE9E8F0F0E1LL
-
-#define ADC_CHANNELS_COUNT 6
-#define SW_TWO_CHANNELS_COUNT 2
-#define SW_THREE_CHANNELS_COUNT 2
-
 #define CHANNELS_COUNT ADC_CHANNELS_COUNT + SW_TWO_CHANNELS_COUNT + SW_THREE_CHANNELS_COUNT
 
-#ifdef ESP32
-  int adc_input_pins[] = { 
-      36, 39, // Left, Right Knobs
-      34, 35, // Right Joystick - Y, X
-      32, 33  // Left Joystick - Y, X  
-  };
+#define RF_CHANNEL 115
 
-  int sw_three_input_pins[SW_THREE_CHANNELS_COUNT * 2] = { 
-      2, 0, // Left Switch
-      25, 26  // Right Switch
-  };
-
-  int sw_two_input_pins[SW_TWO_CHANNELS_COUNT] = { 
-      15, // Left Joystick - Button
-      13, // Right Joystick - Button
-  };
-#endif
+#define RF_PIPE_OUT 0xE9E8F0F0E1LL
 
 // Radio
 RF24 radio(RF_CE_PIN, RF_CSN_PIN);

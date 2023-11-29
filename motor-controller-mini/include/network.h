@@ -1,20 +1,20 @@
-#ifndef network_h
-#define network_h
+#pragma once
 
 #include <WiFi.h>
 
 const char* ssid = "";
 const char* password = "";
 
-void wifi_init() 
+void wifi_init(const char* hostname = NULL) 
 {
-  WiFi.setHostname("esp32-motor-ctrl-mini");
+  WiFi.setHostname(hostname);
   WiFi.mode(WIFI_STA);
+
+  Serial.println(WiFi.macAddress());
+
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
 }
-
-#endif

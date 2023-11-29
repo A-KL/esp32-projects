@@ -1,4 +1,6 @@
 
+#pragma once
+
 #define INPUT_SBUS_MIN  200
 #define INPUT_SBUS_MAX  1800
 
@@ -10,9 +12,4 @@
 #define MOTOR_FREQ      100
 #define MOTOR_RES       10
 
-#ifndef config_esp32_h
-#define config_esp32_h
-
 const int MAX_DUTY_CYCLE = (int)(pow(2, MOTOR_RES) - 1);
-
-#endif

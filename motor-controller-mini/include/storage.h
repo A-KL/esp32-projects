@@ -1,5 +1,4 @@
-#ifndef storage_h
-#define storage_h
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -133,5 +132,3 @@ bool settings_apply(uint8_t *data, size_t len, size_t index, size_t total)
 
     return true;
 }
-
-#endif

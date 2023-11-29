@@ -1,5 +1,4 @@
-#ifndef rc_driver_h
-#define rc_driver_h
+#pragma once
 
 #include <math.h>
 #include <Arduino.h>
@@ -8,7 +7,7 @@
 #include <driver_pwm.h>
 
 #include <config_esp32.h>
-#include <config_esp32_c3_v2.h>
+#include <config_esp32_c3.h>
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
@@ -176,8 +175,8 @@ void driver_loop()
   }
 
   int pwm_inputs[] = { 
-    input_0_pwm.Result(),
-    input_1_pwm.Result()
+    input_pwm[0].Result(),
+    input_pwm[1].Result()
   };
 
   for (auto i=0; i<motors_count; ++i)
@@ -207,5 +206,3 @@ void driver_loop()
 
   delay(50);
 }
-
-#endif

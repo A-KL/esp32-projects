@@ -1,5 +1,4 @@
-#ifndef web_h
-#define web_h
+#pragma once
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -8,7 +7,7 @@
 
 #include <types.h>
 #include <config_esp32.h>
-#include <config_esp32_c3_v2.h>
+#include <config_esp32_c3.h>
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -118,5 +117,3 @@ void ws_loop() {
 
   // ws.cleanupClients();
 }
-
-#endif

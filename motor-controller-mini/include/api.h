@@ -1,5 +1,4 @@
-#ifndef api_h
-#define api_h
+#pragma once
 
 #include <SPIFFS.h>
 #include <AsyncTCP.h>
@@ -55,8 +54,3 @@ void api_init()  {
 
     api.begin();
 }
-
-void api_loop()
-{ }
-
-#endif

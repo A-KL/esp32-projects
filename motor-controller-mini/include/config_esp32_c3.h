@@ -1,5 +1,4 @@
-#ifndef config_esp32_c3_h
-#define config_esp32_c3_h
+#pragma once
 
 #include <types.h>
 
@@ -23,5 +22,3 @@ motor_config_t motors_config[motors_count] =
     { motor_modes[0], false, pwm, 0 }, // a_b_en, false, sbus input, channel 1
     { motor_modes[0], false, pwm, 1 }  // a_b_en, false, sbus input, channel 2
 };
-
-#endif

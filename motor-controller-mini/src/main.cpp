@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include <network.h>
-#include <driver_v2.h>
+#include <driver.h>
 #include <storage.h>
 #include <api.h>
 
@@ -10,7 +10,7 @@ void setup() {
   sleep(3);
 
   storage_init();
-  wifi_init();
+  wifi_init("esp32-motor-ctrl-mini");
   api_init();
 
   settings_load(motors_config, motors_count);

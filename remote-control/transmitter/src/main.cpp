@@ -10,7 +10,6 @@
 #define CHANNELS_COUNT ADC_CHANNELS_COUNT + SW_TWO_CHANNELS_COUNT + SW_THREE_CHANNELS_COUNT
 
 #define RF_CHANNEL 115
-
 #define RF_PIPE_OUT 0xE9E8F0F0E1LL
 
 // Radio
@@ -98,7 +97,6 @@ void setup() {
 }
 
 void loop() {
-
   digitalWrite(LED_BUILTIN, HIGH);
 
   for (auto i=0; i< CHANNELS_COUNT; i++) {
@@ -126,15 +124,11 @@ void loop() {
     //log_e("ESP_NOW: Error sending the data");
   }
 
-  digitalWrite(LED_BUILTIN, LOW);
-
-  delay(10);
-
-  return;
-
   res = radio.write(&message, sizeof(Signal));
 
   if (!res){
-      log_d("RF24: Error sending the data"); 
+     // log_d("RF24: Error sending the data"); 
   }
+
+  digitalWrite(LED_BUILTIN, LOW);
 }

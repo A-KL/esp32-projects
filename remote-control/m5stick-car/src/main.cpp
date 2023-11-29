@@ -5,32 +5,33 @@
 
 CBACK_DRIVER driver;
 
-void init_lcd() {
-    M5.Lcd.setTextColor(TFT_GREEN);
-    M5.Lcd.setRotation(1);
-    M5.Lcd.drawCentreString("C BACK Driver", 120, 30, 4);
-    M5.Lcd.drawCentreString("Click Btn A Start", 120, 65, 4);
+void lcd_init() {
+  M5.Lcd.setTextColor(TFT_GREEN);
+  M5.Lcd.setRotation(1);
+  M5.Lcd.drawCentreString("C BACK Driver", 120, 30, 4);
+  M5.Lcd.drawCentreString("Click Btn A Start", 120, 65, 4);
+}
+
+void driver_init() {
+  driver.Init();
+  driver.SetServoAngle(1, 90);
+  driver.SetServoAngle(2, 90);
+  driver.SetServoAngle(3, 90);
+  driver.SetServoAngle(4, 90);
 }
 
 void setup() {
   Serial.begin(115200);
 
   M5.begin();
-  driver.Init();
+
+  driver_init();
+  lcd_init();
+
   auto x = M5.IMU.Init();
 
   wifi_init("m5stick-car");
   now_init();
-
-  M5.Lcd.setTextColor(TFT_GREEN);
-  M5.Lcd.setRotation(1);
-  M5.Lcd.drawCentreString("C BACK Driver", 120, 30, 4);
-  M5.Lcd.drawCentreString("Click Btn A Start", 120, 65, 4);
-
-  driver.SetServoAngle(1, 90);
-  driver.SetServoAngle(2, 90);
-  driver.SetServoAngle(3, 90);
-  driver.SetServoAngle(4, 90);
 }
 
 float pitch, roll, yaw;

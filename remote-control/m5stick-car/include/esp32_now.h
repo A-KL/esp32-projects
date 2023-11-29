@@ -60,7 +60,7 @@ void on_esp_now_data_received(const uint8_t * mac, const uint8_t *data, int len)
     message.channels[8].value,
     message.channels[9].value);
 
-    on_esp_now_data_received(message);
+    on_esp_now_message_received(message);
     
     measure_latency();
 }

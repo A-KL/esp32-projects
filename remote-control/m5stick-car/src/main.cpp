@@ -22,6 +22,7 @@ void driver_init() {
 
 void setup() {
   Serial.begin(115200);
+  delay(3000);
 
   M5.begin();
 

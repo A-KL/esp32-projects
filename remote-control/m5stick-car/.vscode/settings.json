@@ -7,5 +7,6 @@
         "regex": "cpp",
         "utility": "cpp",
         "*.tcc": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

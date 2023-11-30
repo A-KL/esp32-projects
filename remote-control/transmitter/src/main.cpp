@@ -1,3 +1,5 @@
+#define ESP_NOW_JSON_SETTINGS
+
 #include <SPI.h>
 #include "printf.h"
 #include <nRF24L01.h>
@@ -5,7 +7,7 @@
 
 #include <config_esp32.hpp>
 #include <filters.hpp>
-#include <esp32_now.hpp>
+#include <esp32_now.h>
 
 #define CHANNELS_COUNT ADC_CHANNELS_COUNT + SW_TWO_CHANNELS_COUNT + SW_THREE_CHANNELS_COUNT
 
@@ -66,7 +68,7 @@ void setupInputs() {
   }
 }
 
-void setupRadio() {
+void radio_init() {
   radio.begin();
   radio.setChannel(RF_CHANNEL);
   radio.setPALevel(RF24_PA_MAX);
@@ -90,10 +92,13 @@ void setup() {
 
   setupInputs();
 
-  setupRadio();
-  setupEspNow();
+  radio_init();
+  now_init();
 
-  delay(3000);
+  storage_init();
+  now_add_peers_json();
+
+  delay(2000);
 }
 
 void loop() {
@@ -118,7 +123,7 @@ void loop() {
     data_message.channels[8].value,
     data_message.channels[9].value);
 
-  auto res = sendEspNow(data_message);
+  auto res = now_send(data_message);
 
   if (!res) {
     //log_e("ESP_NOW: Error sending the data");

@@ -6,9 +6,9 @@
 const char* ssid = "";
 const char* password = "";
 
-void wifi_init() 
+void wifi_init(const char * hostname = NULL) 
 {
-  WiFi.setHostname("esp-now-receiver-v1");
+  WiFi.setHostname(hostname); //"esp-now-receiver-v1"
   
   WiFi.mode(WIFI_MODE_STA);
   Serial.println(WiFi.macAddress());

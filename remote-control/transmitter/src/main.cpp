@@ -96,9 +96,15 @@ void setup() {
   now_init();
 
   storage_init();
-  now_add_peers_json();
+  
+  //now_add_peers_json();
+  // const uint8_t receiveAddress[] = {0x84, 0xFC, 0xE6, 0x00, 0x27, 0x9C }; 
+  // const uint8_t receiveAddress2[] = {0x94, 0xB9, 0x7E, 0xAD, 0xBD, 0xA4 };
 
-  delay(2000);
+  now_add_peer(broadcastAddress);
+  //now_add_peer(receiveAddress2);
+
+  delay(1000);
 }
 
 void loop() {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <WiFi.h>
 #include <esp32-hal-log.h>
 #include <esp_now.h>
@@ -16,7 +17,6 @@ extern "C" {
 #define ESP_NOW_CHANNELS_COUNT 10
 
 const uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-const uint8_t receiveAddress[] = {0x84, 0xFC, 0xE6, 0x00, 0x27, 0x9C };
 
 struct channel_t {
 unsigned short value;
@@ -28,7 +28,7 @@ struct data_message_t {
 
 data_message_t data_message;
 
-esp_now_peer_info_t peerInfo;
+esp_now_peer_info_t peer_info = {};
 
 void init_peer_info(esp_now_peer_info& info, const String& mac, uint8_t channel = 0, bool encrypted = false)
 {
@@ -40,8 +40,8 @@ void init_peer_info(esp_now_peer_info& info, const String& mac, uint8_t channel 
       &info.peer_addr[4], 
       &info.peer_addr[5]);
 
-    peerInfo.channel = channel;  
-    peerInfo.encrypt = encrypted;
+    info.channel = channel;  
+    info.encrypt = encrypted;
 }
 
 void on_esp_now_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) 
@@ -60,31 +60,22 @@ void now_init() {
   log_i("ESP-NOW initialized");
 
   esp_now_register_send_cb(on_esp_now_data_sent);
-
- //?
-  // memcpy(peerInfo.peer_addr, receiveAddress, 6);
-  // peerInfo.channel = 0;  
-  // peerInfo.encrypt = false;
-
-  // if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-  //   log_e("Failed to add peer");
-  // }
 }
 
 void now_add_peer(const uint8_t* receiveAddress) {
-  memcpy(peerInfo.peer_addr, receiveAddress, 6);
-  peerInfo.channel = 0;  
-  peerInfo.encrypt = false;
+  memcpy(peer_info.peer_addr, receiveAddress, 6);
+  peer_info.channel = 0;  
+  peer_info.encrypt = false;
 
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+  if (esp_now_add_peer(&peer_info) != ESP_OK) {
     log_e("Failed to pair client");
   }
 }
 
 void now_add_peer_str(const String address) {
-  init_peer_info(peerInfo, address);
+  init_peer_info(peer_info, address);
 
-  auto res = esp_now_add_peer(&peerInfo);
+  auto res = esp_now_add_peer(&peer_info);
 
   if (res == ESP_OK) {
     log_i("Client paired (%s)", address.c_str());
@@ -94,9 +85,12 @@ void now_add_peer_str(const String address) {
   log_e("Failed to pair client (%s): %d", address.c_str(), res);
 }
 
-bool now_send(const data_message_t& data)
-{
-  esp_err_t result = esp_now_send(receiveAddress, (uint8_t *) &data, sizeof(data_message_t));
+bool now_send(const data_message_t& data) {
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &data, sizeof(data_message_t));
+  
+  if(result != ESP_OK) {
+    log_e("Failed data sending: %d", result);
+  }
 
   return result == ESP_OK;
 }

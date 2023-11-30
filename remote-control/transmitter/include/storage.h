@@ -5,15 +5,16 @@
 #include <string>
 #include <ArduinoJson.h>
 #include <SPIFFS.h>
+#include <esp32-hal-log.h>
 
 const String Empty("");
 
 void storage_init() 
 {
   if (!SPIFFS.begin(true)) {
-    Serial.println("An error has occurred while mounting SPIFFS");
+    log_i("An error has occurred while mounting SPIFFS");
   }
-  Serial.println("SPIFFS mounted successfully");
+  log_i("SPIFFS mounted successfully");
 }
 
 String setting_read(const String& key, const char* filePath = "/default.json")

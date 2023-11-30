@@ -4,17 +4,15 @@
 #define INPUT_ESP_NOW_MIN   0
 #define INPUT_ESP_NOW_MAX   4095
 
-#define CHANNELS_COUNT 16
+#define ESP_NOW_CHANNELS_COUNT 10
 
 struct channel_t {
-  unsigned short value;
+unsigned short value;
 };
 
 struct data_message_t {
-  channel_t channels[CHANNELS_COUNT];
+    channel_t channels[ESP_NOW_CHANNELS_COUNT];
 };
-
-data_message_t message;
 
 unsigned long lastUpdated = 0;
 unsigned long lastTime = 0;
@@ -51,6 +49,8 @@ void measure_latency()
 
 void on_esp_now_data_received(const uint8_t * mac, const uint8_t *data, int len) 
 {
+  data_message_t message;
+
   memcpy(&message, data, sizeof(message));
 
   log_d("%d %d %d %d %d %d %d %d %d %d ", 

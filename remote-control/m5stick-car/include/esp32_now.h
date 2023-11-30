@@ -16,6 +16,7 @@ struct data_message_t {
 
 data_message_t message;
 
+unsigned long lastUpdated = 0;
 unsigned long lastTime = 0;
 unsigned long elapsedTime = 0;
 unsigned long receiveDelay = 500;
@@ -24,6 +25,8 @@ unsigned long receives_count = 0;
 unsigned long receives_count_max = 64;
 
 void on_esp_now_message_received(const data_message_t& data);
+
+void on_esp_now_disconnected();
 
 void measure_latency()
 {
@@ -42,6 +45,8 @@ void measure_latency()
 
     elapsedTime += (millis() - lastTime);
     receives_count++;
+
+    lastUpdated = millis();
 }
 
 void on_esp_now_data_received(const uint8_t * mac, const uint8_t *data, int len) 
@@ -66,7 +71,6 @@ void on_esp_now_data_received(const uint8_t * mac, const uint8_t *data, int len)
 }
 
 void now_init() {
-
   if (esp_now_init() != ESP_OK) {
     log_e("Error initializing ESP-NOW");
     return;
@@ -75,4 +79,12 @@ void now_init() {
   log_i("ESP-NOW initialized");
   
   esp_now_register_recv_cb(on_esp_now_data_received);
+
+  lastUpdated = millis();
+}
+
+void now_loop() {
+  if (millis() - lastUpdated > receiveDelay){
+    on_esp_now_disconnected();
+  }
 }

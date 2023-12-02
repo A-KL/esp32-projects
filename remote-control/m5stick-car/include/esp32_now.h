@@ -2,7 +2,7 @@
 #include <esp32-hal-log.h>
 
 #define INPUT_ESP_NOW_MIN   0
-#define INPUT_ESP_NOW_MAX   4095
+#define INPUT_ESP_NOW_MAX   4000
 
 #define ESP_NOW_CHANNELS_COUNT 10
 

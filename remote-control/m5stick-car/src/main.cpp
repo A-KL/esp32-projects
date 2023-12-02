@@ -62,11 +62,13 @@ void on_esp_now_disconnected() {
 
 void on_esp_now_message_received(const data_message_t& data)
 {
-  auto left = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
-  auto right = map(data.channels[1].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
+  auto grab = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
+  auto left = map(data.channels[3].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
+  auto right = map(data.channels[5].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 170, 0);
 
   driver.SetServoAngle(1, left);
   driver.SetServoAngle(2, right);
+  driver.SetServoAngle(4, grab);
 
   log_w("Commands: %d\t %d", left, right);
 }

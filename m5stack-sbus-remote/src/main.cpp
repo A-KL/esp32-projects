@@ -1,13 +1,14 @@
-#include "NotoSansBold15.h"
-
-#include "sbus.h"
 //#include <M5Stack.h>
 #include <Wire.h>
+#include <sbus.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+#include "NotoSansBold15.h"
 #include "lego_plus_driver.h"
 #include "radio.h"
-#include "widgets.h"
+#include "gui.h"
+
+#include <esp32_now.h>
 
 #if defined(PS3)
   #include <Ps3Controller.h>
@@ -27,11 +28,6 @@
   #define CONTROLLER_CONNECTED xboxController.isConnected()
 #endif
 
-//#define GFXFF 1
-//#define FF18  &FreeSans12pt7b
-//#define CF_OL24 &FreeMonoBold9pt7b
-#define AA_FONT_SMALL NotoSansBold15
-
 Adafruit_INA219 ina219_output(INA219_ADDRESS);
 Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
 
@@ -44,34 +40,7 @@ std::array<int16_t, bfs::SbusRx::NUM_CH()> sbus_data;
 
 const int ch_min_value = 200;
 const int ch_max_value = 1800;
-
-const int max_ch = 8;
-
-TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite spr = TFT_eSprite(&tft);
-
-// GUI
-const int margin = 5;
-
-WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus", COLOR_DARK_GRAY);
-WidgetPanel ps3_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_DARKGREEN, TFT_BLUE);
-
-WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
-WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
-WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_panel.Height + nrf42_panel.Height, WidgetPanel::Small, "motors", COLOR_DARK_GREEN, COLOR_GREEN);
-
-WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
-
-WidgetList<8> sbus_values(sbus_panel, 0, widget_title_height, COLOR_DARK_GRAY);
-WidgetList<2> ps3_values(ps3_panel, 0, widget_title_height, TFT_DARKGREEN);
-
-WidgetList<2> nrf42_values(nrf42_panel, 0, widget_title_height, COLOR_DARK_RED);
-WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height, COLOR_DARK_MAGENTA);
-WidgetList<2> motors_values(motors_panel, 0, widget_title_height, COLOR_DARK_GREEN);
-
-WidgetList<3> power_values(power_panel, 0, widget_title_height, COLOR_DARK_YELLOW);
-
-//WidgetListPanel<3> power(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
+const int ch_max_count = 8;
 
 int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value)
 {
@@ -83,7 +52,23 @@ int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_va
   return map(value, min, max, -255, 255);
 }
 
+void on_esp_now_disconnected() {
+}
+
+void on_esp_now_message_received(const data_message_t& data) {
+  // auto grab = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
+  // auto left = map(data.channels[3].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 180, 0);
+  // auto right = map(data.channels[5].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 10, 180);
+
+  // driver.SetServoAngle(2, left);
+  // driver.SetServoAngle(1, right);
+  // driver.SetServoAngle(4, grab);
+
+  // log_w("Commands: %d\t %d", left, right);
+}
+
 void setup() {
+
   Wire.begin();
   Serial.begin(115200);
 
@@ -93,7 +78,7 @@ void setup() {
   // {
   //   Serial.println("Failed to start Controller Host");
   // }
-
+  now_init();
   setupRadio();
 
   if (!ina219_output.begin()) {
@@ -110,28 +95,9 @@ void setup() {
   motor_driver_connected = version != 0;
   Serial.printf("Motor Driver ver: %d\r\n", version);
 
-  //Serial.print("BT MAC: ");
-  //Serial.println(PS4.Cross .getAddress());
-
   sbus_rx.Begin(16, 17);
 
-  tft.init();
-  tft.setRotation(TFT_ROTATE);
-  tft.fillScreen(TFT_BLACK);
-
-  // spr.setTextSize(2);
-  // spr.setFreeFont(CF_OL24);
-  // spr.setColorDepth(8);
-
-  spr.setColorDepth(16); // 16 bit colour needed to show antialiased fonts
-  spr.loadFont(AA_FONT_SMALL);
-
-  sbus_panel.render(spr);
-  ps3_panel.render(spr);
-  nrf42_panel.render(spr);
-  encoders_panel.render(spr);
-  motors_panel.render(spr);
-  power_panel.render(spr);
+  gui_init();
 }
 
 void loop() {
@@ -139,6 +105,7 @@ void loop() {
   auto right_speed = 0;
 
   xboxController.onLoop();
+  now_loop();
 
   if (CONTROLLER_CONNECTED) {
 
@@ -162,7 +129,7 @@ void loop() {
 
     //spr.setTextColor(WHITE); 
 
-    for (int8_t i = 0; i < max_ch; i++)
+    for (int8_t i = 0; i < ch_max_count; i++)
     {
       sbus_values.setText(i, "ch%d %d%", i, percentage(sbus_data[i]));
 
@@ -179,7 +146,7 @@ void loop() {
   }
   else
   {
-    for (int8_t i = 0; i < max_ch; i++) {
+    for (int8_t i = 0; i < ch_max_count; i++) {
       sbus_values.setText(i, "ch%d ---", i);
     } 
   }

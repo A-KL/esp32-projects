@@ -19,7 +19,7 @@
 #define PIN_CLK     0
 #define PIN_DATA    34
 #define READ_LEN    (2 * 256)
-#define GAIN_FACTOR 3
+#define GAIN_FACTOR 3 //30?
 
 uint8_t BUFFER[READ_LEN] = {0};
 
@@ -57,6 +57,8 @@ void i2sInit()  // Init I2S.  初始化I2S
     pin_config.ws_io_num    = PIN_CLK;
     pin_config.data_out_num = I2S_PIN_NO_CHANGE;
     pin_config.data_in_num  = PIN_DATA;
+
+    //pin_config.mck_io_num = GPIO_NUM_0;
 
     i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
 

@@ -53,9 +53,15 @@ int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_va
 }
 
 void on_esp_now_disconnected() {
+    for (int8_t i = 0; i < 6; i++) {
+        //esp_now_values.setText(i, "ch%d --", i);
+    }
 }
 
 void on_esp_now_message_received(const data_message_t& data) {
+    for (int8_t i = 0; i < 6; i++) {
+     // esp_now_values.setText(i, "ch%d %d%", i, data.channels[i].value);
+  }
   // auto grab = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
   // auto left = map(data.channels[3].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 180, 0);
   // auto right = map(data.channels[5].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 10, 180);
@@ -219,4 +225,5 @@ void loop() {
   encoder_values.render(spr);
   motors_values.render(spr);
   power_values.render(spr);
+  esp_now_values.render(spr);
 }

@@ -17,7 +17,8 @@ WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Smal
 WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
 WidgetPanel motors_panel(margin * 2 + sbus_panel.Width, margin * 3 + encoders_panel.Height + nrf42_panel.Height, WidgetPanel::Small, "motors", COLOR_DARK_GREEN, COLOR_GREEN);
 
-WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
+WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Medium, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
+WidgetPanel esp_now_panel(margin * 3 + sbus_panel.Width * 2, margin * 2 + + power_panel.Height, WidgetPanel::Large, "esp now", COLOR_DARK_GRAY);
 
 WidgetList<8> sbus_values(sbus_panel, 0, widget_title_height, COLOR_DARK_GRAY);
 WidgetList<2> ps3_values(ps3_panel, 0, widget_title_height, TFT_DARKGREEN);
@@ -27,6 +28,8 @@ WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height, COLOR_DARK_
 WidgetList<2> motors_values(motors_panel, 0, widget_title_height, COLOR_DARK_GREEN);
 
 WidgetList<3> power_values(power_panel, 0, widget_title_height, COLOR_DARK_YELLOW);
+
+WidgetList<6> esp_now_values(esp_now_panel, 0, widget_title_height, COLOR_DARK_GRAY);
 
 //WidgetListPanel<3> power(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
 
@@ -49,5 +52,6 @@ void gui_init() {
   nrf42_panel.render(spr);
   encoders_panel.render(spr);
   motors_panel.render(spr);
+  power_panel.render(spr);
   power_panel.render(spr);
 }

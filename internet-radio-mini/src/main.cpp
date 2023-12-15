@@ -1,270 +1,348 @@
-#include "Final_Frontier_28.h"
+#define USER_SETUP_LOADED 1
+#include "User_Setups/Setup25_TTGO_T_Display.h"
 
-#include "NotoSans_Bold.h"
-#include "NotoSansBold15.h"
-#include "NotoSansBold36.h"
+#include <WiFi.h>
+#include <AudioFileSource.h>
+#include <AudioFileSourceBuffer.h>
+#include <AudioFileSourceICYStream.h>
+#include <AudioGeneratorTalkie.h>
+#include <AudioGeneratorMP3.h>
+#include <AudioOutputI2S.h>
+#include <AudioOutputI2SNoDAC.h>
+#include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
+#include <SPI.h>
+#include <spiram-fast.h>
 
-#include "NotoSansMonoSCB20.h"
+//#include "frame.h"
+#include "background.h"
+#include "Orbitron_Medium_20.h"
 
-// The font names are arrays references, thus must NOT be in quotes ""
-#define AA_FONT_SMALL NotoSansBold15
-#define AA_FONT_LARGE NotoSansBold36
-#define AA_FONT_MONO  NotoSansMonoSCB20 // NotoSansMono-SemiCondensedBold 20pt
+TFT_eSPI tft = TFT_eSPI(); // Invoke library, pins defined in User_Setup.h
 
-#include <TFT_eSPI.h>
+#define TFT_GREY 0x5AEB // New colour
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library
-TFT_eSprite spr = TFT_eSprite(&tft); // Sprite class needs to be invoked
+const int pwmFreq = 5000;
+const int pwmResolution = 8;
+const int pwmLedChannelTFT = 0;
 
-void button(int x, int y, int num );
+const char *SSID = "";
+const char *PASSWORD = "";
+const int bufferSize = 16 * 1024; // buffer in byte, default 16 * 1024 = 16kb
+char *arrayURL[8] = {
+    "http://jenny.torontocast.com:8134/stream",
 
-void setup() {
-  Serial.begin(115200); // Used for messages
+    "http://188.165.212.154:8478/stream",
+    "https://igor.torontocast.com:1025/;.mp3",
+    "http://streamer.radio.co/s06b196587/listen",
 
+    "http://media-ice.musicradio.com:80/ClassicFMMP3",
+    "http://naxos.cdnstream.com:80/1255_128",
+    "http://149.56.195.94:8015/steam",
+    "http://ice2.somafm.com/christmas-128-mp3"};
+
+String arrayStation[8] = {
+    "Mega Shuffle",
+
+    "WayUp Radio",
+    "Asia Dream",
+    "KPop Radio",
+
+    "Classic FM",
+    "Lite Favorites",
+    "MAXXED Out",
+    "SomaFM Xmas"};
+
+const int LED = 10; // GPIO LED
+const int BTNA = 0; // GPIO Play and Pause
+const int BTNB = 35;
+const int BTNC = 12;
+const int BTND = 17;
+// GPIO Switch Channel / Volume
+
+AudioGeneratorTalkie *talkie;
+AudioGeneratorMP3 *mp3;
+AudioFileSourceICYStream *file;
+AudioFileSourceBuffer *buff;
+AudioOutputI2S *out;
+
+const int numCh = sizeof(arrayURL) / sizeof(char *);
+bool TestMode = false;
+uint32_t LastTime = 0;
+int playflag = 0;
+int ledflag = 0;
+// int btnaflag = 0;
+// int btnbflag = 0;
+float fgain = 4.0;
+int sflag = 4;
+char *URL = arrayURL[sflag];
+String station = arrayStation[sflag];
+
+int backlight[5] = {10, 30, 60, 120, 220};
+byte b = 2;
+int press1 = 0;
+int press2 = 0;
+bool inv = 0;
+
+void initwifi();
+void StartPlaying();
+void StopPlaying();
+void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string);
+void StatusCallback(void *cbData, int code, const char *string);
+
+void setup()
+{
   tft.init();
-  tft.setRotation(TFT_ROTATE);
-  tft.fillScreen(TFT_YELLOW);
-
-  spr.setColorDepth(16); // 16 bit colour needed to show antialiased fonts
-}
-
-void draw_tile(TFT_eSprite& spr, int32_t w, int32_t h, int32_t color_title, int32_t color_tile, const char * title)
-{
-  int32_t radius = 15;
-
-  int32_t x = 0;
-  int32_t y = 0;
-
-  int32_t title_padding = radius / 2;
-
-  spr.setTextColor(TFT_BLACK, color_title);
-
-  spr.fillSmoothCircle(x + radius, y + radius, radius, color_title);
-
-  spr.fillSmoothCircle(x + w - radius - 1, y + radius, radius, color_title);
-
-  spr.fillRect(x + radius, y, w - radius * 2, radius, color_title);
-
-  spr.fillRect(x, y + radius, w, title_padding, color_title);
-
-  spr.drawString(title, radius, 4);
-
-  spr.fillRect(x, y + radius + title_padding, w, h - radius * 2 - title_padding, color_tile);
-
-  spr.fillSmoothCircle(x + radius, y + h - radius, radius, color_tile);
-
-  spr.fillSmoothCircle(x + w - radius - 1, y + h - radius, radius, color_tile);
-
-  spr.fillRect(x + radius, y + h - radius, w - radius * 2, radius, color_tile);
-}
-
-void draw_ui(TFT_eSprite& spr, int32_t x, int32_t y, int32_t w, int32_t h, int32_t color_title, int32_t color_tile, const char * title)
-{
-  spr.createSprite(w, h);
-
-  draw_tile(spr, w, h, color_title, color_tile, title);
-
-  spr.pushSprite(x, y);
-  
-  spr.deleteSprite();
-}
-
-void draw_gradient(TFT_eSprite& spr, int32_t x, int32_t y, int32_t w, int32_t h)
-{
-  spr.createSprite(w, h);
-
-  for(auto i=0; i<255; i++)
-  {
-    spr.fillRect(i, 0, 2, 239, tft.color565(i,0,0));
-  }
-
-  spr.fillRect(10, 10, 4, 239, tft.color565(100,0,0));
-
-  spr.pushSprite(0, 0);
-  
-  spr.deleteSprite();
-}
-
-void loop() {
-  spr.loadFont(AA_FONT_SMALL);
-
+  tft.setRotation(0);
+  tft.setSwapBytes(true);
+  tft.setFreeFont(&Orbitron_Medium_20);
   tft.fillScreen(TFT_BLACK);
+  tft.pushImage(0, 0, 135, 240, background);
 
-  auto margin = 5;
-  auto width = 100;
-  auto height = 110;
+  ledcSetup(pwmLedChannelTFT, pwmFreq, pwmResolution);
+  ledcAttachPin(TFT_BL, pwmLedChannelTFT);
+  ledcWrite(pwmLedChannelTFT, backlight[b]);
 
-  //draw_gradient(spr, 0, 0, 255, 240);
+  Serial.begin(115200);
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
+  pinMode(BTNA, INPUT);
+  pinMode(BTNB, INPUT);
+  pinMode(BTNC, INPUT_PULLUP);
+  pinMode(BTND, INPUT_PULLUP);
 
-  draw_ui(spr, margin, margin, width, height, TFT_GREEN, TFT_DARKGREEN, "Motors");
+  tft.setCursor(14, 20);
+  tft.println("Radio");
 
-  draw_ui(spr, margin, height + margin * 2, width, height, TFT_RED, TFT_MAROON, "Power");
-
-
-  draw_ui(spr, width + margin * 2, margin, width, height, TFT_ORANGE, tft.color565(205, 145, 0), "Xbox");
-
-  draw_ui(spr, width + margin * 2, height + margin * 2, width, height, tft.color565(125, 145, 100), tft.color565(50, 50, 50), "Encoder");
-
-
-  draw_ui(spr, width * 2 + margin * 3, margin, width, height, TFT_MAGENTA, tft.color565(185, 0, 185), "Motors");
-
-  draw_ui(spr, width * 2 + margin * 3, height + margin * 2, width, height, TFT_DARKGREY, tft.color565(70, 70, 70), "Power");
-
-  delay(4000);
-
-  return;
-
-  int xpos = tft.width() / 2; // Half the screen width
-  int ypos = 50;
-
-
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Small font
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-  spr.loadFont(AA_FONT_SMALL); // Must load the font first into the sprite class
-
-  spr.createSprite(100, 50);   // Create a sprite 100 pixels wide and 50 high
-
-  spr.fillSprite(TFT_BLUE);
-
-  spr.drawRect(0, 0, 100, 50, TFT_WHITE); // Draw sprite border outline (so we see extent)
-
-  spr.setTextColor(TFT_YELLOW, TFT_DARKGREY); // Set the sprite font colour and the background colour
-
-  spr.setTextDatum(MC_DATUM); // Middle Centre datum
-  
-  spr.drawString("15pt font", 50, 25 ); // Coords of middle of 100 x 50 Sprite
-
-  spr.pushSprite(10, 10); // Push to TFT screen coord 10, 10
-
-  spr.pushSprite(10, 70, TFT_BLUE); // Push to TFT screen, TFT_BLUE is transparent
- 
-  spr.unloadFont(); // Remove the font from sprite class to recover memory used
-
-  delay(4000);
-
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Large font
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-  tft.fillScreen(TFT_BLACK);
-
-  // Beware: Sprites are a differerent "class" to TFT, so different fonts can be loaded
-  // in the tft and sprite instances, so load the font in the class instance you use!
-  // In this example this means the spr. instance.
-
-  spr.loadFont(AA_FONT_LARGE); // Load another different font into the sprite instance
-
-  // 100 x 50 sprite was created above and still exists...
-
-  spr.fillSprite(TFT_GREEN);
-
-  spr.setTextColor(TFT_BLACK, TFT_GREEN); // Set the font colour and the background colour
-
-  spr.setTextDatum(MC_DATUM); // Middle Centre datum
-
-  spr.drawString("Fits", 50, 25); // Make sure text fits in the Sprite!
-  spr.pushSprite(10, 10);         // Push to TFT screen coord 10, 10
-
-  spr.fillSprite(TFT_RED);
-  spr.setTextColor(TFT_WHITE, TFT_RED); // Set the font colour and the background colour
-
-  spr.drawString("Too big", 50, 25); // Text is too big to all fit in the Sprite!
-  spr.pushSprite(10, 70);            // Push to TFT screen coord 10, 70
-
-  // Draw changing numbers - no flicker using this plot method!
-
-  // >>>> Note: it is best to use drawNumber() and drawFloat() for numeric values <<<<
-  // >>>> this reduces digit position movement when the value changes             <<<<
-  // >>>> drawNumber() and drawFloat() functions behave like drawString() and are <<<<
-  // >>>> supported by setTextDatum() and setTextPadding()                        <<<<
-
-  spr.setTextDatum(TC_DATUM); // Top Centre datum
-
-  spr.setTextColor(TFT_WHITE, TFT_BLUE); // Set the font colour and the background colour
-
-  for (int i = 0; i <= 200; i++) {
-    spr.fillSprite(TFT_BLUE);
-    spr.drawFloat(i / 100.0, 2, 50, 10); // draw with 2 decimal places at 50,10 in sprite
-    spr.pushSprite(10, 130); // Push to TFT screen coord 10, 130
-    delay (20);
-  }
-
-  spr.unloadFont(); // Remove the font to recover memory used
-
-  spr.deleteSprite(); // Recover memory
-  
+  tft.drawLine(0, 28, 135, 28, TFT_GREY);
+  delay(500);
   delay(1000);
+  initwifi();
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Mono spaced font
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  
-  spr.loadFont(AA_FONT_MONO); // Mono spaced fonts have fixed inter-character gaps to
-                              // aid formatting
-  int bnum = 1;
+  for (int i = 0; i < b + 1; i++)
+    tft.fillRect(108 + (i * 4), 18, 2, 6, TFT_GREEN);
 
-  // Example of drawing buttons
-  for (int j = 0; j < 4; j++)
+  tft.drawString("Ready   ", 78, 44, 2);
+  tft.drawString(String(fgain), 78, 66, 2);
+  tft.drawString(String(arrayStation[sflag]), 12, 108, 2);
+  tft.setTextFont(1);
+  tft.setCursor(8, 211, 1);
+  tft.println(WiFi.localIP());
+
+  Serial.printf("STATUS(System) Ready \n\n");
+  //out = new AudioOutputI2S(0, 1); // Output to builtInDAC
+    out = new AudioOutputI2S(0, 0);
+  //out->SetOutputModeMono(true);
+  //out->SetGain(fgain * 0.05);
+}
+
+float n = 0;
+
+void loop()
+{
+
+  // if (playflag == 1)
+  // {
+  //   tft.pushImage(50, 126, animation_width, animation_height, frame[int(n)]);
+  //   n = n + 0.05;
+  //   if (int(n) == frames)
+  //     n = 0;
+  // }
+  // else
+  // {
+  //   tft.pushImage(50, 126, animation_width, animation_height, frame[frames - 1]);
+  // }
+
+  static int lastms = 0;
+  if (playflag == 0)
   {
-    for (int k = 0; k < 4; k++)
+    if (digitalRead(BTNA) == LOW)
     {
-      int x = 120 + k * 45;
-      int y = 40  + j * 30;
-      button(x, y, bnum++);
+      StartPlaying();
+      tft.drawString("Playing!   ", 78, 44, 2);
+      playflag = 1;
+    }
+
+    if (digitalRead(BTNB) == LOW)
+    {
+      sflag = (sflag + 1) % numCh;
+      URL = arrayURL[sflag];
+      station = arrayStation[sflag];
+
+      tft.setTextSize(1);
+
+      tft.drawString(String(station), 12, 108, 2);
+      delay(300);
     }
   }
 
-  for (int i = 0; i < 100; i++)
+  if (playflag == 1)
   {
-    button(120, 160, i);
-    delay(50);
-  }
-  
-  spr.unloadFont();
+    if (mp3->isRunning())
+    {
+      if (millis() - lastms > 1000)
+      {
+        lastms = millis();
+        Serial.printf("STATUS(Streaming) %d ms...\n", lastms);
 
-  delay(8000);
+        ledflag = ledflag + 1;
+        if (ledflag > 1)
+        {
+          ledflag = 0;
+          digitalWrite(LED, HIGH);
+        }
+        else
+        {
+          digitalWrite(LED, LOW);
+        }
+      }
+      if (!mp3->loop())
+        mp3->stop();
+    }
+    else
+    {
+      Serial.printf("MP3 done\n");
+      playflag = 0;
+
+      digitalWrite(LED, HIGH);
+    }
+    if (digitalRead(BTNA) == LOW)
+    {
+      StopPlaying();
+      playflag = 0;
+      tft.drawString("Stoped!   ", 78, 44, 2);
+      digitalWrite(LED, HIGH);
+
+      delay(200);
+    }
+    if (digitalRead(BTNB) == LOW)
+    {
+      fgain = fgain + 1.0;
+      if (fgain > 10.0)
+      {
+        fgain = 1.0;
+      }
+      out->SetGain(fgain * 0.05);
+      tft.drawString(String(fgain), 78, 66, 2);
+      Serial.printf("STATUS(Gain) %f \n", fgain * 0.05);
+      delay(200);
+    }
+  }
+
+  if (digitalRead(BTNC) == 0)
+  {
+    if (press2 == 0)
+    {
+      press2 = 1;
+      tft.fillRect(108, 18, 25, 6, TFT_BLACK);
+
+      b++;
+      if (b > 4)
+        b = 0;
+
+      for (int i = 0; i < b + 1; i++)
+        tft.fillRect(108 + (i * 4), 18, 2, 6, TFT_GREEN);
+      ledcWrite(pwmLedChannelTFT, backlight[b]);
+    }
+  }
+  else
+    press2 = 0;
+
+  if (digitalRead(BTND) == 0)
+  {
+    if (press1 == 0)
+    {
+      press1 = 1;
+      inv = !inv;
+      tft.invertDisplay(inv);
+    }
+  }
+  else
+    press1 = 0;
 }
 
-
-// #########################################################################
-// Draw a number in a rounded rectangle with some transparent pixels
-// Load the font before calling
-// #########################################################################
-void button(int x, int y, int num )
+void StartPlaying()
 {
+  file = new AudioFileSourceICYStream(URL);
+  file->RegisterMetadataCB(MDCallback, (void *)"ICY");
+  buff = new AudioFileSourceBuffer(file, bufferSize);
+  buff->RegisterStatusCB(StatusCallback, (void *)"buffer");
+  out = new AudioOutputI2S(0, 0); // Output to builtInDAC
+  //out->SetOutputModeMono(true);
+  //out->SetGain(fgain * 0.05);
+  mp3 = new AudioGeneratorMP3();
+  mp3->RegisterStatusCB(StatusCallback, (void *)"mp3");
+  mp3->begin(buff, out);
+  Serial.printf("STATUS(URL) %s \n", URL);
+  Serial.flush();
+}
 
-  // Size of sprite
-  #define IWIDTH  40
-  #define IHEIGHT 25
+void StopPlaying()
+{
+  if (mp3)
+  {
+    mp3->stop();
+    delete mp3;
+    mp3 = NULL;
+  }
+  if (buff)
+  {
+    buff->close();
+    delete buff;
+    buff = NULL;
+  }
+  if (file)
+  {
+    file->close();
+    delete file;
+    file = NULL;
+  }
+  Serial.printf("STATUS(Stopped)\n");
+  Serial.flush();
+}
 
-  // Create a 16 bit sprite 40 pixels wide, 25 high (2000 bytes of RAM needed)
-  spr.setColorDepth(16);
-  spr.createSprite(IWIDTH, IHEIGHT);
+void initwifi()
+{
+  WiFi.disconnect();
+  WiFi.softAPdisconnect(true);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWORD);
 
-  // Fill it with black (this will be the transparent colour this time)
-  spr.fillSprite(TFT_BLACK);
+  int i = 0;
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("STATUS(Connecting to WiFi) ");
+    delay(1000);
+    i = i + 1;
+    if (i > 10)
+    {
+      ESP.restart();
+    }
+  }
+  Serial.println("OK");
+}
 
-  // Draw a background for the numbers
-  spr.fillRoundRect(  0, 0,  IWIDTH, IHEIGHT, 8, TFT_RED);
-  spr.drawRoundRect(  0, 0,  IWIDTH, IHEIGHT, 8, TFT_WHITE);
+void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string)
+{
+  const char *ptr = reinterpret_cast<const char *>(cbData);
+  (void)isUnicode; // Punt this ball for now
+  // Note that the type and string may be in PROGMEM, so copy them to RAM for printf
+  char s1[32], s2[64];
+  strncpy_P(s1, type, sizeof(s1));
+  s1[sizeof(s1) - 1] = 0;
+  strncpy_P(s2, string, sizeof(s2));
+  s2[sizeof(s2) - 1] = 0;
+  Serial.printf("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
 
-  // Set the font parameters
+  Serial.flush();
+}
 
-  // Set text coordinate datum to middle centre
-  spr.setTextDatum(MC_DATUM);
-
-  // Set the font colour and the background colour
-  spr.setTextColor(TFT_WHITE, TFT_RED);
-
-  // Draw the number
-  spr.drawNumber(num, IWIDTH/2, 1 + IHEIGHT/2);
-
-  // Push sprite to TFT screen CGRAM at coordinate x,y (top left corner)
-  // All black pixels will not be drawn hence will show as "transparent"
-  spr.pushSprite(x, y, TFT_BLACK);
-
-  // Delete sprite to free up the RAM
-  spr.deleteSprite();
+void StatusCallback(void *cbData, int code, const char *string)
+{
+  const char *ptr = reinterpret_cast<const char *>(cbData);
+  // Note that the string may be in PROGMEM, so copy it to RAM for printf
+  char s1[64];
+  strncpy_P(s1, string, sizeof(s1));
+  s1[sizeof(s1) - 1] = 0;
+  Serial.printf("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
+  Serial.flush();
 }

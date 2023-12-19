@@ -5,6 +5,9 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
+#include "gui_progressbar.h"
+#include "Orbitron_Medium_20.h"
+
 // Connections to INMP441 I2S microphone
 #define I2S_WS 25
 #define I2S_SD 33
@@ -22,8 +25,21 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-uint8_t bar_value = 0;
+TFT_eSprite left_pb = TFT_eSprite(&tft); 
+TFT_eSprite right_pb = TFT_eSprite(&tft);
 
+gui_progressbar_t gui_left_pb;
+gui_progressbar_t gui_right_pb;
+
+float EnvelopeOut;
+float envIn;
+float attack = 0.996879878;
+float release = 0.9996879878;
+float DC_Filter = 0;
+float X_Prev = 0;
+float X= 0;
+
+uint8_t bar_value = 0;
 uint8_t BUFFER[READ_LEN] = {0};
 uint16_t oldy[160];
 int16_t *adcBuffer = NULL;
@@ -61,14 +77,6 @@ void i2s_init() {
     i2s_set_pin(I2S_NUM_0, &pin_config);
     //i2s_set_clk(I2S_NUM_0, I2S_SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
 }
-
-float EnvelopeOut;
-float envIn;
-float attack = 0.996879878;
-float release = 0.9996879878;
-float DC_Filter = 0;
-float X_Prev = 0;
-float X= 0;
 
 void showSignal() {
     int y;
@@ -120,22 +128,53 @@ void mic_record_task(void *arg)  {
     		 }
         }
 
-        showSignal();
+       // showSignal();
 
         vTaskDelay(100 / portTICK_RATE_MS);
     }
 }
 
-/* 
-  After M5StickC is started or reset
-  the program in the setUp () function will be run, and this part will only be run once. 在 M5StickC
-  */
+void gui_init() { 
+    gui_left_pb.top = 10;
+    gui_left_pb.left = 15;
+    gui_left_pb.width = 200;
+    gui_left_pb.background_color = right_pb.color24to16(0x141414); // DARK_DARK_GRAY
+    gui_left_pb.value_normal_color_from = TFT_RED;
+    gui_left_pb.value_normal_color = right_pb.color24to16(0xDD0000); // DARK_RED
+    gui_left_pb.max = 4095;
+
+    gui_right_pb.top = 40;
+    gui_right_pb.left = 15;
+    gui_right_pb.width = 200;
+
+    gui_right_pb.background_color = TFT_DARKGREEN;
+    gui_right_pb.borders_thickness[0] = 1;
+    gui_right_pb.borders_thickness[1] = 1;
+    gui_right_pb.borders_thickness[2] = 1;
+    gui_right_pb.borders_thickness[3] = 1;
+
+    gui_right_pb.max = 4095;
+
+    gui_progressbar_init(left_pb, gui_left_pb);
+    gui_progressbar_init(right_pb, gui_right_pb);
+
+    gui_progressbar_begin(left_pb, gui_left_pb);
+    gui_progressbar_begin(right_pb, gui_right_pb);
+}
+
 void setup() {
     tft.init();
-    tft.setRotation(0);
+    tft.setRotation(1);
     tft.setSwapBytes(true);
-    //tft.setFreeFont(&Orbitron_Medium_20);
-    tft.fillScreen(TFT_WHITE);
+    tft.setFreeFont(&Orbitron_Medium_20);
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(15, 80);
+    tft.printf("Value: %d", 200);
+
+    gui_init();
+
 
     attack = expf(-1.0/((float)I2S_SAMPLE_RATE * .050)); //50mS Attack
     release = expf(-1.0/((float)I2S_SAMPLE_RATE * .100)); //100mS Release
@@ -143,14 +182,21 @@ void setup() {
     i2s_init();
     i2s_start(I2S_PORT);
 
-    xTaskCreate(mic_record_task, "mic_record_task", 2048, NULL, 1, NULL);
+   // xTaskCreate(mic_record_task, "mic_record_task", 2048, NULL, 1, NULL);
 }
 
-/* 
-After the program in setup() runs, it runs the program in loop()
-The loop() function is an infinite loop in which the program runs repeatedly
-*/
 void loop() {
-    printf("loop cycling\n");
-    vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
+    // printf("loop cycling\n");
+    // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
+
+    auto left = analogRead(12);
+    auto right = analogRead(13);
+
+    gui_left_pb.value = left;
+    gui_right_pb.value = right;
+
+    gui_progressbar_update(left_pb, gui_left_pb);
+    gui_progressbar_update(right_pb, gui_right_pb);
+
+    delay(100);
 }

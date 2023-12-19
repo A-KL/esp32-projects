@@ -6,6 +6,7 @@
 #include <TFT_eSPI.h>
 
 #include "gui_progressbar.h"
+#include "gui_led.h"
 #include "Orbitron_Medium_20.h"
 
 // Connections to INMP441 I2S microphone
@@ -27,9 +28,14 @@ TFT_eSPI tft = TFT_eSPI();
 
 TFT_eSprite left_pb = TFT_eSprite(&tft); 
 TFT_eSprite right_pb = TFT_eSprite(&tft);
+TFT_eSprite main_led_sprite = TFT_eSprite(&tft);
+TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
 
 gui_progressbar_t gui_left_pb;
 gui_progressbar_t gui_right_pb;
+
+gui_led_t main_led;
+gui_led_t second_led;
 
 float EnvelopeOut;
 float envIn;
@@ -134,7 +140,18 @@ void mic_record_task(void *arg)  {
     }
 }
 
-void gui_init() { 
+void gui_init() {
+    main_led.left = 15;
+    main_led.top = 100;
+    main_led.value = true;
+
+    second_led.left = 40;
+    second_led.top = 100;
+    second_led.value = true;
+    second_led.on_color = TFT_RED;
+    second_led.on_color_to = right_pb.color24to16(0xCC0000);
+    second_led.off_color = right_pb.color24to16(0x880000); // DARK_RED
+
     gui_left_pb.top = 10;
     gui_left_pb.left = 15;
     gui_left_pb.width = 200;
@@ -155,11 +172,15 @@ void gui_init() {
 
     gui_right_pb.max = 4095;
 
+    gui_led_init(main_led_sprite, main_led);
+    gui_led_init(second_led_sprite, second_led);
     gui_progressbar_init(left_pb, gui_left_pb);
     gui_progressbar_init(right_pb, gui_right_pb);
 
+    gui_led_begin(main_led_sprite, main_led);
+    gui_led_begin(second_led_sprite, second_led);
     gui_progressbar_begin(left_pb, gui_left_pb);
-    gui_progressbar_begin(right_pb, gui_right_pb);
+    gui_progressbar_begin(right_pb, gui_right_pb); 
 }
 
 void setup() {
@@ -195,8 +216,14 @@ void loop() {
     gui_left_pb.value = left;
     gui_right_pb.value = right;
 
+    main_led.value = left > 2000;
+    second_led.value = right > 500;
+
     gui_progressbar_update(left_pb, gui_left_pb);
     gui_progressbar_update(right_pb, gui_right_pb);
+
+    gui_led_update(main_led_sprite, main_led);
+    gui_led_update(second_led_sprite, second_led);
 
     delay(100);
 }

@@ -1,26 +1,7 @@
 #pragma once
 
 #include <TFT_eSPI.h> 
-
-typedef struct {
-    int top;
-    int left;
-    int width;
-    int height;
-} rect_t;
-
-rect_t resize(const rect_t& rect, int left, int top, int right, int bottom) {
-    return { 
-        .top = rect.top + top, 
-        .left = rect.left + left, 
-        .width = rect.width - left - right, 
-        .height = rect.height - top - bottom
-    };
-}
-
-void fillRect(TFT_eSprite& sprite, const rect_t& rect, int color) {
-    sprite.fillRect(rect.left, rect.top, rect.width, rect.height, color);
-}
+#include <TFT_eSPI_Ex.h> 
 
 class progressbar_value_style_t {
     public:
@@ -68,7 +49,7 @@ typedef struct {
     int border_color = TFT_WHITE;
 
     int value_normal_color = TFT_GREEN;
-    int value_normal_color_from = TFT_GREENYELLOW;
+    int value_normal_color_from = TFT_GREEN;// TFT_GREENYELLOW;
 
     int value_hight_from = 90;
     int value_hight_color = TFT_RED;
@@ -79,7 +60,6 @@ typedef struct {
 const int gui_progressbar_border_padding = 1;
 
 void gui_progressbar_init(TFT_eSprite& sprite, const gui_progressbar_t& progressbar) {
-
     sprite.setColorDepth(16);
     sprite.createSprite(progressbar.width, progressbar.height);
     sprite.setSwapBytes(true);

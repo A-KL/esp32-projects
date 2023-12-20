@@ -3,7 +3,8 @@
 #include <TFT_eSPI.h> 
 #include <TFT_eSPI_Ex.h> 
 
-typedef struct {
+struct gui_led_t 
+{
     int left = 0;
     int top = 0;
     int width = 20;
@@ -20,16 +21,19 @@ typedef struct {
     int bg_color = TFT_WHITE;
     int bg_color_to = TFT_DARKGREY;
 
-} gui_led_t;
+    TFT_eSprite* canvas = NULL;
 
-void gui_led_init(TFT_eSprite& sprite, const gui_led_t& led) {
-    sprite.setColorDepth(16);
-    sprite.createSprite(led.width, led.width);
-    sprite.setSwapBytes(true);
+};
+
+void gui_led_init(const gui_led_t& led) 
+{
+    led.canvas->setColorDepth(16);
+    led.canvas->createSprite(led.width, led.width);
+    led.canvas->setSwapBytes(true);
 }
 
-void gui_led_round_update(TFT_eSprite& sprite, const gui_led_t& led) {
-
+void gui_led_round_update(const gui_led_t& led) 
+{
     auto padding = led.width / 10;
     auto center = led.width / 2;
 
@@ -38,14 +42,15 @@ void gui_led_round_update(TFT_eSprite& sprite, const gui_led_t& led) {
 
     auto r = (led.width - padding) / 2 - 1;
 
-    sprite.fillCircle(center, center, r, led.value ? led.on_color : led.off_color);
-
-    sprite.pushSprite(led.left, led.top);
+    led.canvas->fillCircle(center, center, r, led.value ? led.on_color : led.off_color);
+    led.canvas->pushSprite(led.left, led.top);
 }
 
-void gui_led_update(TFT_eSprite& sprite, const gui_led_t& led) {
-    if (led.round) {
-        gui_led_round_update(sprite, led);
+void gui_led_update(const gui_led_t& led) 
+{
+    if (led.round) 
+    {
+        gui_led_round_update(led);
         return;
     }
 
@@ -56,30 +61,34 @@ void gui_led_update(TFT_eSprite& sprite, const gui_led_t& led) {
 
     auto led_size = led.width - padding * 2;
 
-    if (led.bg_color == led.bg_color_to) {
-        sprite.fillRect(padding, padding, led_size, led_size, 
+    if (led.bg_color == led.bg_color_to) 
+    {
+        led.canvas->fillRect(padding, padding, led_size, led_size, 
         led.value ? led.on_color : led.off_color);
-    } else {
-        sprite.fillRectVGradient(padding, padding, led_size, led_size, 
+    } 
+    else 
+    {
+        led.canvas->fillRectVGradient(padding, padding, led_size, led_size, 
         led.value ? led.on_color : led.off_color,
         led.value ? led.on_color_to : led.off_color);
     }
 
-    sprite.pushSprite(led.left, led.top);
+    led.canvas->pushSprite(led.left, led.top);
 }
 
-void gui_led_begin(TFT_eSprite& sprite, const gui_led_t& led) {
-
-    if (led.round) {
+void gui_led_begin(const gui_led_t& led) 
+{
+    if (led.round) 
+    {
         auto center = led.width / 2;
-        sprite.fillSmoothCircle(center, center, led.width / 2 - 1, led.bg_color);
+        led.canvas->fillSmoothCircle(center, center, led.width / 2 - 1, led.bg_color);
     } 
     else 
     {
         if (led.bg_color == led.bg_color_to)
-            sprite.fillRect(0, 0, led.width, led.width, led.bg_color);
+            led.canvas->fillRect(0, 0, led.width, led.width, led.bg_color);
         else
-            sprite.fillRectVGradient(0, 0, led.width, led.width, led.bg_color, led.bg_color_to);
+            led.canvas->fillRectVGradient(0, 0, led.width, led.width, led.bg_color, led.bg_color_to);
     }
-    gui_led_update(sprite, led);
+    gui_led_update(led);
 }

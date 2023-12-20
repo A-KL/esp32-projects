@@ -44,9 +44,7 @@ void gui_led_round_update(TFT_eSprite& sprite, const gui_led_t& led) {
 }
 
 void gui_led_update(TFT_eSprite& sprite, const gui_led_t& led) {
-
-    if (led.round)
-    {
+    if (led.round) {
         gui_led_round_update(sprite, led);
         return;
     }
@@ -71,20 +69,17 @@ void gui_led_update(TFT_eSprite& sprite, const gui_led_t& led) {
 }
 
 void gui_led_begin(TFT_eSprite& sprite, const gui_led_t& led) {
-    if (led.round)
-    {
+
+    if (led.round) {
         auto center = led.width / 2;
-
         sprite.fillSmoothCircle(center, center, led.width / 2 - 1, led.bg_color);
-    }
-    else
+    } 
+    else 
     {
-        if (led.bg_color == led.bg_color_to) {
+        if (led.bg_color == led.bg_color_to)
             sprite.fillRect(0, 0, led.width, led.width, led.bg_color);
-        } else {
+        else
             sprite.fillRectVGradient(0, 0, led.width, led.width, led.bg_color, led.bg_color_to);
-        }
     }
-
     gui_led_update(sprite, led);
 }

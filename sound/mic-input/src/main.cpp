@@ -141,12 +141,12 @@ void mic_record_task(void *arg)  {
 }
 
 void gui_init() {
-    main_led.left = 15;
     main_led.top = 100;
+    main_led.left = 15;
     main_led.value = true;
 
-    second_led.left = 40;
     second_led.top = 100;
+    second_led.left = 40;
     second_led.value = true;
     second_led.on_color = TFT_RED;
     second_led.on_color_to = right_pb.color24to16(0xCC0000);
@@ -155,22 +155,19 @@ void gui_init() {
     gui_left_pb.top = 10;
     gui_left_pb.left = 15;
     gui_left_pb.width = 200;
-    gui_left_pb.background_color = right_pb.color24to16(0x141414); // DARK_DARK_GRAY
-    gui_left_pb.value_normal_color_from = TFT_RED;
-    gui_left_pb.value_normal_color = right_pb.color24to16(0xDD0000); // DARK_RED
     gui_left_pb.max = 4095;
+    gui_left_pb.background_color = TFT_DARK_DARK_GRAY;
+    gui_left_pb.value_style = &pb_lime_segmented_style;
 
     gui_right_pb.top = 40;
     gui_right_pb.left = 15;
     gui_right_pb.width = 200;
-
+    gui_right_pb.max = 4095;
     gui_right_pb.background_color = TFT_DARKGREEN;
     gui_right_pb.borders_thickness[0] = 1;
     gui_right_pb.borders_thickness[1] = 1;
     gui_right_pb.borders_thickness[2] = 1;
-    gui_right_pb.borders_thickness[3] = 1;
-
-    gui_right_pb.max = 4095;
+    gui_right_pb.borders_thickness[3] = 1;  
 
     gui_led_init(main_led_sprite, main_led);
     gui_led_init(second_led_sprite, second_led);

@@ -37,6 +37,9 @@ gui_progressbar_t gui_right_pb;
 gui_led_t main_led;
 gui_led_t second_led;
 
+#define I2S_BUFFER_SIZE 128
+int16_t samples[I2S_BUFFER_SIZE];
+
 float EnvelopeOut;
 float envIn;
 float attack = 0.996879878;
@@ -51,10 +54,10 @@ uint16_t oldy[160];
 int16_t *adcBuffer = NULL;
 
 i2s_config_t i2s_config = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),  // Set the I2S operating mode.
-    .sample_rate = I2S_SAMPLE_RATE,                // Set the I2S sampling rate.
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,  // Fixed 12-bit stereo MSB.
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,   // Set the channel format.
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),  // | I2S_MODE_PDM
+    .sample_rate = I2S_SAMPLE_RATE,
+    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
 #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
     .communication_format =
         I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.
@@ -62,14 +65,16 @@ i2s_config_t i2s_config = {
     .communication_format = I2S_COMM_FORMAT_I2S,
 #endif
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,  // Set the interrupt flag.
-    .dma_buf_count = 2,        // DMA buffer count.
-    .dma_buf_len   = 128,      // DMA buffer length.
-    .use_apll = false
+    .dma_buf_count = 8,        // DMA buffer count.
+    .dma_buf_len   = I2S_BUFFER_SIZE,      // DMA buffer length.
+    .use_apll      = false
 };
 
-void i2s_init() {
+void i2s_install() {
     i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
+}
 
+void i2s_setpin() {
     const i2s_pin_config_t pin_config = {
     #if (ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 3, 0))
         .mck_io_num = I2S_PIN_NO_CHANGE,
@@ -180,7 +185,34 @@ void gui_init() {
     gui_progressbar_begin(right_pb, gui_right_pb); 
 }
 
+void gui_task(void *arg)  {
+
+    while (1) {
+        auto left = analogRead(12);
+        auto right = analogRead(13);
+
+        gui_left_pb.value = left;
+        gui_right_pb.value = right;
+
+        main_led.value = left > 2000;
+        second_led.value = right > 500;
+
+        gui_progressbar_update(left_pb, gui_left_pb);
+        gui_progressbar_update(right_pb, gui_right_pb);
+
+        gui_led_update(main_led_sprite, main_led);
+        gui_led_update(second_led_sprite, second_led);
+
+        vTaskDelay(100 / portTICK_RATE_MS);
+    }
+}
+
 void setup() {
+    Serial.begin(115200);
+    Serial.println(" ");
+
+    delay(1000);
+
     tft.init();
     tft.setRotation(1);
     tft.setSwapBytes(true);
@@ -193,34 +225,63 @@ void setup() {
 
     gui_init();
 
-
-    attack = expf(-1.0/((float)I2S_SAMPLE_RATE * .050)); //50mS Attack
-    release = expf(-1.0/((float)I2S_SAMPLE_RATE * .100)); //100mS Release
-
-    i2s_init();
+    i2s_install();
+    i2s_setpin();
     i2s_start(I2S_PORT);
 
-   // xTaskCreate(mic_record_task, "mic_record_task", 2048, NULL, 1, NULL);
+    // attack = expf(-1.0/((float)I2S_SAMPLE_RATE * .050)); //50mS Attack
+    // release = expf(-1.0/((float)I2S_SAMPLE_RATE * .100)); //100mS Release
+    // xTaskCreate(mic_record_task, "mic_record_task", 2048, NULL, 1, NULL);
+
+    xTaskCreate(gui_task, "gui_task", 2048, NULL, 1, NULL);
 }
 
 void loop() {
+    int rangelimit = 3000;
+    Serial.print(rangelimit * -1);
+    Serial.print(" ");
+    Serial.print(rangelimit);
+    Serial.print(" ");
+
+    size_t bytes_read = 0;
+
+    esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
+
+    if (result == ESP_OK)
+    {
+        int16_t samples_read = bytes_read / 2; //8
+        
+        if (samples_read > 0) {
+            float mean = 0;
+
+            for (int16_t i = 0; i < samples_read; ++i) {
+                mean += (samples[i]);
+            }
+    
+            // Average the data reading
+            mean /= samples_read;
+        
+            Serial.println(mean);
+        }
+    }
+
     // printf("loop cycling\n");
     // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
 
-    auto left = analogRead(12);
-    auto right = analogRead(13);
+    // auto left = analogRead(12);
+    // auto right = analogRead(13);
 
-    gui_left_pb.value = left;
-    gui_right_pb.value = right;
+    // gui_left_pb.value = left;
+    // gui_right_pb.value = right;
 
-    main_led.value = left > 2000;
-    second_led.value = right > 500;
+    // main_led.value = left > 2000;
+    // second_led.value = right > 500;
 
-    gui_progressbar_update(left_pb, gui_left_pb);
-    gui_progressbar_update(right_pb, gui_right_pb);
+    // gui_progressbar_update(left_pb, gui_left_pb);
+    // gui_progressbar_update(right_pb, gui_right_pb);
 
-    gui_led_update(main_led_sprite, main_led);
-    gui_led_update(second_led_sprite, second_led);
+    // gui_led_update(main_led_sprite, main_led);
+    // gui_led_update(second_led_sprite, second_led);
 
-    delay(100);
+    // delay(100);
 }

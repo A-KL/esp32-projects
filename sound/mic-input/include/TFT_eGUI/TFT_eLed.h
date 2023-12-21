@@ -1,9 +1,9 @@
 #pragma once
 
 #include <TFT_eSPI.h> 
-#include <TFT_eSPI_Ex.h> 
+#include "TFT_eSPI_Ex.h"
 
-struct gui_led_t 
+struct TFT_eLed 
 {
     int left = 0;
     int top = 0;
@@ -22,17 +22,16 @@ struct gui_led_t
     int bg_color_to = TFT_DARKGREY;
 
     TFT_eSprite* canvas = NULL;
-
 };
 
-void gui_led_init(const gui_led_t& led) 
+void gui_led_init(const TFT_eLed& led) 
 {
     led.canvas->setColorDepth(16);
     led.canvas->createSprite(led.width, led.width);
     led.canvas->setSwapBytes(true);
 }
 
-void gui_led_round_update(const gui_led_t& led) 
+void gui_led_round_update(const TFT_eLed& led) 
 {
     auto padding = led.width / 10;
     auto center = led.width / 2;
@@ -46,7 +45,7 @@ void gui_led_round_update(const gui_led_t& led)
     led.canvas->pushSprite(led.left, led.top);
 }
 
-void gui_led_update(const gui_led_t& led) 
+void gui_led_update(const TFT_eLed& led) 
 {
     if (led.round) 
     {
@@ -76,7 +75,7 @@ void gui_led_update(const gui_led_t& led)
     led.canvas->pushSprite(led.left, led.top);
 }
 
-void gui_led_begin(const gui_led_t& led) 
+void gui_led_begin(const TFT_eLed& led) 
 {
     if (led.round) 
     {

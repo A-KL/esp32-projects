@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TFT_eSPI.h> 
-#include <TFT_eSPI_Ex.h> 
+#include "TFT_eSPI_Ex.h"
 
 class visual_style_t {
     public:
@@ -61,11 +61,7 @@ class progressbar_segmented_style_t : public visual_style_t {
 
 const int gui_progressbar_border_padding = 1;
 
-const progressbar_gradient_style_t pb_lime_gradient_style(TFT_GREENYELLOW, TFT_GREEN, true);
-const progressbar_gradient_style_t red_gradient_pb_style(TFT_RED, TFT_DARK_RED_12, true);
-const progressbar_segmented_style_t pb_lime_segmented_style(3, 16, TFT_GREEN, tft_luminance(TFT_DARKGREEN, 100));
-
-struct gui_progressbar_t
+struct TFT_eProgressBar
 {
     int left = 0;
     int top = 0;
@@ -81,7 +77,7 @@ struct gui_progressbar_t
     int background_color = 0x39C7;
     int border_color = TFT_WHITE;
 
-    const visual_style_t* value_style = &pb_lime_gradient_style;
+    const visual_style_t* value_style;
 
     TFT_eSprite* canvas = NULL;
 };
@@ -91,68 +87,64 @@ inline int border_with_padding(int border, int padding = gui_progressbar_border_
     return border + (border > 0 ? padding : 0);
 }
 
-void gui_pb_init(const gui_progressbar_t& progressbar) 
+void gui_pb_init(const TFT_eProgressBar& pb) 
 {
-    not_null(progressbar.canvas);
+    not_null(pb.canvas);
 
-    auto sprite = progressbar.canvas;
-    sprite->setColorDepth(16);
-    sprite->createSprite(progressbar.width, progressbar.height);
-    sprite->setSwapBytes(true);
-
-    sprite->fillSprite(progressbar.background_color);
+    pb.canvas->setColorDepth(16);
+    pb.canvas->createSprite(pb.width, pb.height);
+    pb.canvas->setSwapBytes(true);
+    pb.canvas->fillSprite(pb.background_color);
 }
 
-void gui_pb_update(const gui_progressbar_t& progressbar) 
+void gui_pb_update(const TFT_eProgressBar& pb) 
 {
-    not_null(progressbar.canvas);
-    auto sprite = progressbar.canvas;
+    not_null(pb.canvas);
 
-    auto left = border_with_padding(progressbar.borders_thickness[0]);
-    auto top = border_with_padding(progressbar.borders_thickness[1]);
-    auto right = border_with_padding(progressbar.borders_thickness[2]);
-    auto bottom = border_with_padding(progressbar.borders_thickness[3]);
+    auto left = border_with_padding(pb.borders_thickness[0]);
+    auto top = border_with_padding(pb.borders_thickness[1]);
+    auto right = border_with_padding(pb.borders_thickness[2]);
+    auto bottom = border_with_padding(pb.borders_thickness[3]);
 
-    auto w = progressbar.width - left - right;
-    auto h = progressbar.height - top - bottom;
+    auto w = pb.width - left - right;
+    auto h = pb.height - top - bottom;
 
-    sprite->fillRect(left, top, w, h, progressbar.background_color);
+    pb.canvas->fillRect(left, top, w, h, pb.background_color);
 
-    int value_w = map(progressbar.value, progressbar.min, progressbar.max, 0, w);
+    int value_w = map(pb.value, pb.min, pb.max, 0, w);
 
-    progressbar.value_style->render(sprite, left, top, w, h, value_w);
+    pb.value_style->render(pb.canvas, left, top, w, h, value_w);
     
-    sprite->pushSprite(progressbar.left, progressbar.top);
+    pb.canvas->pushSprite(pb.left, pb.top);
 }
 
-void gui_pb_begin(const gui_progressbar_t& progressbar) 
+void gui_pb_begin(const TFT_eProgressBar& pb) 
 {
-    not_null(progressbar.canvas);
-    auto sprite = progressbar.canvas;
+    not_null(pb.canvas);
 
-    if (progressbar.borders_thickness[0] > 0) {
-        sprite->drawWideLine(0, 0, 0, 0 + progressbar.height, 
-            progressbar.borders_thickness[0], 
-            progressbar.border_color);
+    if (pb.borders_thickness[0] > 0) {
+        pb.canvas->drawWideLine(0, 0, 0, 0 + pb.height, 
+            pb.borders_thickness[0], 
+            pb.border_color);
     }
 
-    if (progressbar.borders_thickness[1] > 0) {
-        sprite->drawWideLine(0, 0, 0 + progressbar.width, 0, 
-            progressbar.borders_thickness[1], 
-            progressbar.border_color);
+    if (pb.borders_thickness[1] > 0) {
+        pb.canvas->drawWideLine(0, 0, 0 + pb.width, 0, 
+            pb.borders_thickness[1], 
+            pb.border_color);
     }
 
-    if (progressbar.borders_thickness[2] > 0) {
-        sprite->drawWideLine(0 + progressbar.width - 1, 0, 0 + progressbar.width - 1, 0 + progressbar.height, 
-            progressbar.borders_thickness[2], 
-            progressbar.border_color);
+    if (pb.borders_thickness[2] > 0) {
+        pb.canvas->drawWideLine(0 + pb.width - 1, 0, 0 + pb.width - 1, 0 + pb.height, 
+            pb.borders_thickness[2], 
+            pb.border_color);
     }
 
-    if (progressbar.borders_thickness[3] > 0) {
-        sprite->drawWideLine(0, 0 + progressbar.height - 1, 1 + progressbar.width, 0 + progressbar.height - 1, 
-            progressbar.borders_thickness[3], 
-            progressbar.border_color);
+    if (pb.borders_thickness[3] > 0) {
+        pb.canvas->drawWideLine(0, 0 + pb.height - 1, 1 + pb.width, 0 + pb.height - 1, 
+            pb.borders_thickness[3], 
+            pb.border_color);
     }
 
-    gui_pb_update(progressbar);
+    gui_pb_update(pb);
 }

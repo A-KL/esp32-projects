@@ -1,16 +1,7 @@
 #include <math.h>
 #include <driver/i2s.h>
 
-#include <SPI.h>
-#include <TFT_eSPI.h>
-
-#include "Orbitron_Medium_20.h"
-#include "Orbitron_Bold_12.h"
-#include "NotoSansBold15.h"
-
-#include "gui_progressbar.h"
-#include "gui_led.h"
-
+#include "gui.h"
 #include "audio.h"
 
 #define I2S_WS 25
@@ -21,20 +12,6 @@
 #define I2S_SAMPLE_RATE 44100
 
 #define I2S_SAMPLES_PER_MS 44100 / 1000
-
-TFT_eSPI tft = TFT_eSPI();
-
-TFT_eSprite left_pb_canvas = TFT_eSprite(&tft); 
-TFT_eSprite right_pb_canvas = TFT_eSprite(&tft); 
-
-TFT_eSprite main_led_sprite = TFT_eSprite(&tft);
-TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
-
-gui_progressbar_t left_pb;
-gui_progressbar_t right_pb;
-
-gui_led_t main_led;
-gui_led_t second_led;
 
 audio_envelope_context_t envelope_context;
 
@@ -58,6 +35,27 @@ i2s_config_t i2s_config = {
     .dma_buf_len   = I2S_BUFFER_SIZE,      // DMA buffer length.
     .use_apll      = false
 };
+
+const i2s_config_t i2s_rx_config(i2s_mode_t mode = (i2s_mode_t)0, uint16_t sample_rate = 44100, uint16_t buffer_size = 128)
+{
+    return i2s_config_t
+    {
+        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | mode),  // I2S_MODE_PDM
+        .sample_rate = sample_rate,
+        .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+        .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+    #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
+        .communication_format =
+            I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.
+    #else
+        .communication_format = I2S_COMM_FORMAT_I2S,
+    #endif
+        .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,  // Set the interrupt flag.
+        .dma_buf_count = 8,                        // DMA buffer count.
+        .dma_buf_len   = buffer_size,              // DMA buffer length.
+        .use_apll      = false
+    };
+}
 
 void i2s_install() {
     i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
@@ -134,73 +132,6 @@ void mic_record_task(void *arg)  {
     }
 }
 
-void gui_init() {
-    main_led.top = 100;
-    main_led.left = 15;
-    main_led.value = true;
-    main_led.canvas = &main_led_sprite;
-
-    second_led.top = 100;
-    second_led.left = 40;
-    second_led.value = true;
-    second_led.canvas = &second_led_sprite;
-    second_led.on_color = TFT_RED;
-    second_led.on_color_to = TFT_DARK_RED_12;
-    second_led.off_color = TFT_DARK_RED_8;
-
-    left_pb.top = 10;
-    left_pb.left = 15;
-    left_pb.width = 200;
-    left_pb.max = 1200;// 4095;
-    left_pb.canvas = &left_pb_canvas;
-    left_pb.background_color = TFT_BLACK; //TFT_DARK_DARK_GRAY;
-    left_pb.value_style = &pb_lime_segmented_style;
-
-    right_pb.top = 40;
-    right_pb.left = 15;
-    right_pb.width = 200;
-    right_pb.max = 4095;
-    right_pb.canvas = &right_pb_canvas;
-    right_pb.background_color = TFT_DARKGREEN;
-    right_pb.borders_thickness[0] = 1;
-    right_pb.borders_thickness[1] = 1;
-    right_pb.borders_thickness[2] = 1;
-    right_pb.borders_thickness[3] = 1;  
-
-    gui_led_init(main_led);
-    gui_led_init(second_led);
-    gui_pb_init(left_pb);
-    gui_pb_init(right_pb);
-
-    gui_led_begin(main_led);
-    gui_led_begin(second_led);
-    gui_pb_begin(left_pb);
-    gui_pb_begin(right_pb);
-}
-
-void gui_analogread_task(void *arg)  
-{
-    while (1) 
-    {
-        auto left = analogRead(12);
-        auto right = analogRead(13);
-
-        //left_pb.value = left;
-        right_pb.value = right;
-
-        main_led.value = left > 2000;
-        second_led.value = right > 500;
-
-        gui_pb_update(left_pb);
-        gui_pb_update(right_pb);
-
-        gui_led_update(main_led);
-        gui_led_update(second_led);
-
-        vTaskDelay(100 / portTICK_RATE_MS);
-    }
-}
-
 void setup() 
 {
     Serial.begin(115200);
@@ -211,16 +142,15 @@ void setup()
     tft.init();
     tft.setRotation(1);
     tft.setSwapBytes(true);
+
     //tft.setFreeFont(&Orbitron_Medium_20);
-    //tft.setFreeFont(&NotoSansBold15);
     tft.loadFont(NotoSansBold15);
-    tft.setTextColor(TFT_GREEN, TFT_BLACK);
 
     tft.fillScreen(TFT_BLACK);
-    tft.setCursor(15, 80);
 
-    String test = "Value:";
-    tft.printf("Value: %d, %d", tft.fontHeight(), tft.textWidth(test));
+    // tft.setCursor(15, 80);
+    // String test = "Value:";
+    // tft.printf("Value: %d, %d", tft.fontHeight(), tft.textWidth(test));
 
     gui_init();
 

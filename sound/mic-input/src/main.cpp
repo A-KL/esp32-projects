@@ -73,63 +73,6 @@ void i2s_setpin() {
     };
 
     i2s_set_pin(I2S_NUM_0, &pin_config);
-    //i2s_set_clk(I2S_NUM_0, I2S_SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
-}
-
-void showSignal() {
-    // int y;
-
-    // auto value =  map(EnvelopeOut, 0, INT16_MAX, 0, BAR_H);
-    // auto bx = TFT_WIDTH - BAR_W;
-    // auto by = TFT_HEIGHT - value;
-
-    // tft.fillRect(bx, 0, BAR_W, BAR_H, TFT_WHITE);
-    // tft.fillRect(bx, by, BAR_W, value, TFT_BLACK);
-
-    // for (int n = 0; n < 160; n++) {
-    //     y = adcBuffer[n] * GAIN_FACTOR;
-    //     y = map(y, INT16_MIN, INT16_MAX, 10, 70);
-
-    //     tft.drawPixel(n, oldy[n], TFT_WHITE);
-    //     tft.drawPixel(n, y, TFT_BLACK);
-
-    //     oldy[n] = y;
-    // }
-}
-
-void mic_record_task(void *arg)  {
-    size_t bytesread;
-
-    while (1) {
-       // i2s_read(I2S_PORT, (char *)BUFFER, READ_LEN, &bytesread, (100 / portTICK_RATE_MS));
-
-       // adcBuffer = (int16_t *)BUFFER;
-
-        // for (auto i=0; i<bytesread/2; i++) {
-        //     X = adcBuffer[i];
-
-        //     X = X * 300;
-
-	    // 	DC_Filter = X - X_Prev + (.99 * DC_Filter);
-
-	    // 	X_Prev = X;
-
-	    // 	envIn = fabs(DC_Filter);
-
-    	// 	 if(EnvelopeOut < envIn)
-    	// 	 {
-    	// 		 EnvelopeOut = envIn + attack * (EnvelopeOut - envIn);
-    	// 	 }
-    	// 	 else
-    	// 	 {
-    	// 		 EnvelopeOut = envIn + release * (EnvelopeOut - envIn);
-    	// 	 }
-        // }
-
-       // showSignal();
-
-        vTaskDelay(100 / portTICK_RATE_MS);
-    }
 }
 
 void setup() 
@@ -148,10 +91,6 @@ void setup()
 
     tft.fillScreen(TFT_BLACK);
 
-    // tft.setCursor(15, 80);
-    // String test = "Value:";
-    // tft.printf("Value: %d, %d", tft.fontHeight(), tft.textWidth(test));
-
     gui_init();
 
     envelope_init(envelope_context, I2S_SAMPLE_RATE);
@@ -159,8 +98,6 @@ void setup()
     i2s_install();
     i2s_setpin();
     i2s_start(I2S_PORT);
-
-    // xTaskCreate(mic_record_task, "mic_record_task", 2048, NULL, 1, NULL);
 
     xTaskCreate(gui_analogread_task, "gui_task", 2048, NULL, 1, NULL);
 }

@@ -1,34 +1,35 @@
 #pragma once
 
-#include <TFT_eSPI.h> 
+#include <TFT_eSPI.h>
+
 #include "TFT_eSPI_Ex.h"
+#include "TFT_eColorBrush.h"
+
+struct TFT_eProgressBar_SegmentStyle
+{
+    const TFT_eColorBrush* colorBrush;
+    const int value = 0;
+};
 
 class visual_style_t {
     public:
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const = 0;
 };
 
-class progressbar_gradient_style_t : public visual_style_t {
+class TFT_eProgressBar_SimpleStyle : public visual_style_t 
+{
     public:
-        progressbar_gradient_style_t(int color_from, int color_to, bool sharp = true) 
-            : _color_from(color_from), _color_to(color_to), _sharp(sharp)
+        TFT_eProgressBar_SimpleStyle(const TFT_eColorBrush* color_brush) 
+            : _color_brush(color_brush)
             { } 
 
-        virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const {
-
-            if (_sharp) {
-                sprite->fillRect(left, top, value_w, h/2, _color_from);
-                sprite->fillRect(left, top + h/2, value_w, h/2, _color_to);
-            }
-            else {
-                sprite->fillRectVGradient(left, top, value_w, h, _color_from, _color_to);
-            }
+        virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
+        {
+            _color_brush->fillRect(sprite, left, top, value_w, h);
         };
 
     private:      
-        const int _color_from;
-        const int _color_to;
-        const bool _sharp;
+        const TFT_eColorBrush* _color_brush;
 };
 
 class progressbar_segmented_style_t : public visual_style_t {

@@ -23,6 +23,10 @@ class TFT_eSolidColorBrush : public TFT_eColorBrush
             : _color(color)
             { }
 
+        TFT_eSolidColorBrush(uint32_t color, uint8_t luminance) 
+            : _color(tft_luminance(color, luminance))
+            { }
+
         void fillRect(TFT_eSprite* sprite, int32_t x, int32_t y, int32_t w, int32_t h) const
         {
             sprite->fillRect(x, y, w, h, _color);
@@ -40,7 +44,7 @@ class TFT_eGradientColorBrush : public TFT_eColorBrush
             { }
 
         TFT_eGradientColorBrush(uint32_t color, bool fast = true) 
-            : _color1(color), _color2(tft_luminance(color, 50)), _fast(fast)
+            : _color1(color), _color2(tft_luminance(color, 100)), _fast(fast)
             { }
 
         void fillRect(TFT_eSprite* sprite, int32_t x, int32_t y, int32_t w, int32_t h) const

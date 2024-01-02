@@ -2,7 +2,7 @@
 #include <driver/i2s.h>
 
 #include "gui.h"
-#include "audio.h"
+#include "envelope_detector.h"
 
 #define I2S_WS 25
 #define I2S_SD 33
@@ -11,19 +11,20 @@
 #define I2S_PORT I2S_NUM_0
 #define I2S_SAMPLE_RATE 44100
 
-#define I2S_SAMPLES_PER_MS 44100 / 1000
+#define I2S_SAMPLES_PER_MS I2S_SAMPLE_RATE / 1000
 
 audio_envelope_context_t envelope_context;
 
 #define I2S_BUFFER_SIZE 128
 
 int16_t samples[I2S_BUFFER_SIZE];
+//int32_t samples[I2S_BUFFER_SIZE];
 
 i2s_config_t i2s_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),  // | I2S_MODE_PDM
     .sample_rate = I2S_SAMPLE_RATE,
     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT, //I2S_CHANNEL_FMT_ONLY_LEFT
 #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
     .communication_format =
         I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.
@@ -116,7 +117,7 @@ void loop()
 
     if (result == ESP_OK)
     {
-        int16_t samples_read = bytes_read / 2; //8
+        int16_t samples_read = bytes_read / 4; //8
         
         if (samples_read > 0) 
         {

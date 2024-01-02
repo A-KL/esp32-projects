@@ -62,16 +62,24 @@ class TFT_eProgressBar_ChevronStyle : public visual_style_t
     private:      
         const uint16_t _segment_color;
         const uint16_t _background_color;
-        
-        // const int _segment_padding;
-        // const int _segments_count;
 };
 
-class progressbar_segmented_style_t : public visual_style_t {
+class progressbar_segmented_style_t : public visual_style_t 
+{
     public:
-        progressbar_segmented_style_t(const TFT_eColorBrush* segment_color, const TFT_eColorBrush* segment_bg_color, int padding = 2, int segments_count = 10) 
-            : _segment_color(segment_color), _segment_bg_color(segment_bg_color), _segment_padding(padding), _segments_count(segments_count)
-            { } 
+        progressbar_segmented_style_t(int padding, int segments_count, const TFT_eColorBrush* segment_color, const TFT_eColorBrush* segment_bg_color)
+            : _segment_padding(padding), 
+            _segments_count(segments_count), 
+            _segment_color(segment_color), 
+            _segment_bg_color(segment_bg_color)
+        { }
+
+        progressbar_segmented_style_t(int padding, int segments_count, const TFT_eColorBrush& segment_color, const TFT_eColorBrush& segment_bg_color)
+            : _segment_padding(padding), 
+            _segments_count(segments_count), 
+            _segment_color(&segment_color), 
+            _segment_bg_color(&segment_bg_color)
+        { } 
 
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const {
             auto segment_w = w / _segments_count - _segment_padding;

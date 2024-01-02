@@ -31,6 +31,7 @@ void envelope_calculate(const int16_t* samples, const int16_t samples_count, aud
         context.x_prev = x;
 
         context.envelope_in = fabs(context.dc_filter);
+        
 
         auto diff = context.envelope_out - context.envelope_in;
 

@@ -29,12 +29,15 @@ TFT_eLed second_led;
 
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
+const static TFT_eSolidColorBrush GreenBrush(TFT_GREEN);
+const static TFT_eSolidColorBrush DarkGreenBrush(TFT_DARKGREEN, 100);
+
 const static TFT_eGradientColorBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientColorBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
 
 const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(&GreenGradientBrush);
 const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(&RedGradientBrush);
-const progressbar_segmented_style_t lime_segmented_pb_style(3, 16, TFT_GREEN, tft_luminance(TFT_DARKGREEN, 100));
+const static progressbar_segmented_style_t lime_segmented_pb_style(3, 16, GreenBrush, DarkGreenBrush);
 
 void gui_init() {
     main_led.top = 100;

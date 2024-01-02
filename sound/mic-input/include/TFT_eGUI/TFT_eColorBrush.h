@@ -36,6 +36,47 @@ class TFT_eSolidColorBrush : public TFT_eColorBrush
         uint32_t _color;
 };
 
+class TFT_eChevronBrush : public TFT_eColorBrush
+{
+    public:
+        TFT_eChevronBrush(uint32_t chevron_color, uint32_t backgrount_color) 
+            : _chevron_color(chevron_color), _backgrount_color(backgrount_color)
+            { }
+
+        void fillRect(TFT_eSprite* sprite, int32_t x, int32_t y, int32_t w, int32_t h) const
+        {
+            sprite->fillRect(x, y, w, h, _backgrount_color);
+
+            auto ch_w = h;
+            auto left_x = -ch_w/2 + left; 
+
+            while (left_x < w)
+            {
+                sprite->fillTriangle(
+                    x + left_x, y, 
+                    x + ch_w + left_x, y,
+                    x + ch_w + left_x, y + ch_w,
+                    _chevron_color);
+
+                left_x += ch_w;
+
+                sprite->fillTriangle(
+                    x + left_x, y,
+                    x + left_x + ch_w, y + ch_w,
+                    x + left_x, y + ch_w, 
+                    _chevron_color);
+
+                left_x += ch_w;
+            }
+        }
+
+        int16_t left = 0;
+
+    private:
+        uint32_t _chevron_color;
+        uint32_t _backgrount_color;
+};
+
 class TFT_eGradientColorBrush : public TFT_eColorBrush
 {
     public:

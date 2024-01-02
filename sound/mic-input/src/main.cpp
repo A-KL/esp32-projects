@@ -32,8 +32,8 @@ i2s_config_t i2s_config = {
     .communication_format = I2S_COMM_FORMAT_I2S,
 #endif
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,  // Set the interrupt flag.
-    .dma_buf_count = 8,        // DMA buffer count.
-    .dma_buf_len   = I2S_BUFFER_SIZE,      // DMA buffer length.
+    .dma_buf_count = 8,                        // DMA buffer count.
+    .dma_buf_len   = I2S_BUFFER_SIZE,          // DMA buffer length.
     .use_apll      = false
 };
 
@@ -117,7 +117,7 @@ void loop()
 
     if (result == ESP_OK)
     {
-        int16_t samples_read = bytes_read / 4; //8
+        int16_t samples_read = bytes_read / 2;
         
         if (samples_read > 0) 
         {

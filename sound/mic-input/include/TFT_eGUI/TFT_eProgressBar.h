@@ -41,21 +41,27 @@ class TFT_eProgressBar_ChevronStyle : public visual_style_t
 
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
         {
-            for (auto i = 0; i<4; i++) {
-                auto x = w * (i);
+            auto ch_w = h;
+            auto x = -ch_w/2;
 
-                sprite->drawTriangle(
+            //for (auto i = 0; i < 6; i++)
+            while (x < w)
+            {
+                sprite->fillTriangle(
                     left + x, top, 
-                    left + w + x, top, 
-                    left + w + x, top + h,
+                    left + ch_w + x, top,
+                    left + ch_w + x, top + ch_w,
                     _segment_color);
 
-                sprite->drawTriangle(
-                    left + w + x, top + h, 
-                    left + w + x, top, 
-                    left + w * 2 + x, 
-                    top + h, 
+                x += ch_w;
+
+                sprite->fillTriangle(
+                    left + x, top,
+                    left + x + ch_w, top + ch_w,
+                    left + x, top + ch_w, 
                     _segment_color);
+
+                x += ch_w;
             }
         };
 

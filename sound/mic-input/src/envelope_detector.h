@@ -18,6 +18,51 @@ void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate
     context.release = expf(-1.0/((float)sample_rate * .100)); //100mS Release
 }
 
+void envelope_calculate_stereo(const int32_t* samples, const int16_t samples_count, audio_envelope_context_t& left, audio_envelope_context_t& right)
+{
+    float left_x = 0;
+    float right_x = 0;
+
+    for (auto i=0; i<samples_count; i++)
+    {
+        left_x = (int16_t) samples[i];
+        left_x = (int16_t) samples[i] << 16;
+
+        left_x = left_x * 10;
+        right_x = right_x * 10;
+
+        left.dc_filter = left_x - left.x_prev + (.99 * left.dc_filter);
+        left.x_prev = left_x;
+
+        right.dc_filter = right_x - right.x_prev + (.99 * right.dc_filter);
+        right.x_prev = right_x;
+
+        left.envelope_in = fabs(left.dc_filter);
+        right.envelope_in = fabs(right.dc_filter);
+
+        auto diff_left = left.envelope_out - left.envelope_in;
+        auto diff_right = right.envelope_out - right.envelope_in;
+
+        if (left.envelope_out < left.envelope_in) 
+        {
+            left.envelope_out = left.envelope_in + left.attack * diff_left;
+        }
+        else 
+        {
+            left.envelope_out = left.envelope_in + left.release * diff_left;
+        }
+
+        if (right.envelope_out < right.envelope_in) 
+        {
+            right.envelope_out = right.envelope_in + right.attack * diff_right;
+        }
+        else 
+        {
+            right.envelope_out = right.envelope_in + right.release * diff_right;
+        }
+    }
+}
+
 void envelope_calculate(const int16_t* samples, const int16_t samples_count, audio_envelope_context_t& context)
 {
     float x = 0;

@@ -19,6 +19,9 @@ struct TFT_ePanel
 
 void gui_panel_init(const TFT_ePanel& panel) 
 {
+    not_null(panel.canvas);
+    not_null(panel.background);
+
     panel.canvas->setColorDepth(16);
     panel.canvas->createSprite(panel.width, panel.height);
     panel.canvas->setSwapBytes(true);

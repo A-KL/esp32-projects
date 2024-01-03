@@ -23,6 +23,10 @@ class TFT_eProgressBar_SimpleStyle : public visual_style_t
             : _color_brush(color_brush)
             { } 
 
+        TFT_eProgressBar_SimpleStyle(const TFT_eColorBrush& color_brush) 
+            : TFT_eProgressBar_SimpleStyle(&color_brush)
+            { } 
+
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
         {
             _color_brush->fillRect(sprite, left, top, value_w, h);
@@ -36,38 +40,40 @@ class TFT_eProgressBar_ChevronStyle : public visual_style_t
 {
     public:
         TFT_eProgressBar_ChevronStyle(const uint16_t segment_color, const uint16_t background_color)
-            : _segment_color(segment_color), _background_color(background_color)
+            : _segment_color(segment_color), _background_color(background_color), _brush(segment_color, background_color)
         { } 
 
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
         {
-            auto ch_w = h;
-            auto x = -ch_w/2;
+            // auto ch_w = h;
+            // auto x = -ch_w/2;
 
-            //for (auto i = 0; i < 6; i++)
-            while (x < w)
-            {
-                sprite->fillTriangle(
-                    left + x, top, 
-                    left + ch_w + x, top,
-                    left + ch_w + x, top + ch_w,
-                    _segment_color);
+            _brush.fillRect(sprite, left, top, value_w, h);
 
-                x += ch_w;
+            // while (x < w)
+            // {
+            //     sprite->fillTriangle(
+            //         left + x, top, 
+            //         left + ch_w + x, top,
+            //         left + ch_w + x, top + ch_w,
+            //         _segment_color);
 
-                sprite->fillTriangle(
-                    left + x, top,
-                    left + x + ch_w, top + ch_w,
-                    left + x, top + ch_w, 
-                    _segment_color);
+            //     x += ch_w;
 
-                x += ch_w;
-            }
+            //     sprite->fillTriangle(
+            //         left + x, top,
+            //         left + x + ch_w, top + ch_w,
+            //         left + x, top + ch_w, 
+            //         _segment_color);
+
+            //     x += ch_w;
+            // }
         };
 
     private:      
         const uint16_t _segment_color;
         const uint16_t _background_color;
+        const TFT_eChevronBrush _brush;
 };
 
 class progressbar_segmented_style_t : public visual_style_t 

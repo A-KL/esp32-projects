@@ -10,6 +10,7 @@
 #include "TFT_eGUI/TFT_eProgressBar.h"
 #include "TFT_eGUI/TFT_eLed.h"
 #include "TFT_eGUI/TFT_eScale.h"
+#include "TFT_eGUI/TFT_ePanel.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -20,6 +21,7 @@ TFT_eSprite main_led_sprite = TFT_eSprite(&tft);
 TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
 
 TFT_eSprite scale_sprite = TFT_eSprite(&tft);
+TFT_eSprite panel_sprite = TFT_eSprite(&tft);
 
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;
@@ -27,19 +29,23 @@ TFT_eProgressBar right_pb;
 TFT_eLed main_led;
 TFT_eLed second_led;
 
+TFT_ePanel main_panel;
+
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
-const static TFT_eSolidColorBrush GreenBrush(TFT_GREEN);
-const static TFT_eSolidColorBrush DarkGreenBrush(TFT_DARKGREEN, 100);
+const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
+const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 100);
 
-const static TFT_eGradientColorBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
-const static TFT_eGradientColorBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
+const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
+const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
 
-const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(&GreenGradientBrush);
-const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(&RedGradientBrush);
+const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
+
+const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(GreenGradientBrush);
+const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(RedGradientBrush);
+const static TFT_eProgressBar_SimpleStyle chevron_pb_style(YellowChevronBrush);
+
 const static progressbar_segmented_style_t lime_segmented_pb_style(3, 16, GreenBrush, DarkGreenBrush);
-
-const static TFT_eProgressBar_ChevronStyle chevron_pb_style(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 
 void gui_init() {
     main_led.top = 100;
@@ -70,8 +76,8 @@ void gui_init() {
     right_pb.max = 4095;
 
     right_pb.canvas = &right_pb_canvas;
-    right_pb.value_style = &chevron_pb_style;// &lime_segmented_pb_style;
-    right_pb.background_color = TFT_DARK_DARK_GRAY;
+    right_pb.value_style = &lime_segmented_pb_style;
+    right_pb.background_color = TFT_BLACK;
 
     // right_pb.borders_thickness[0] = 1;
     // right_pb.borders_thickness[1] = 1;
@@ -88,18 +94,30 @@ void gui_init() {
 
     scale_sprite.loadFont(NotoSansBold15);
 
-    gui_led_init(main_led);
-    gui_led_init(second_led);
+    main_panel.left = 0;
+    main_panel.top = 100;
+    main_panel.width = TFT_HEIGHT;
+    main_panel.height = 20;
+    main_panel.canvas = &panel_sprite;
+    main_panel.background = &YellowChevronBrush;
+
+    // gui_led_init(main_led);
+    // gui_led_init(second_led);
+
     gui_pb_init(left_pb);
     gui_pb_init(right_pb);
 
-    gui_led_begin(main_led);
-    gui_led_begin(second_led);
+    // gui_led_begin(main_led);
+    // gui_led_begin(second_led);
+
     gui_pb_begin(left_pb);
     gui_pb_begin(right_pb);
 
     gui_scale_init(scale);
     gui_scale_begin(scale);
+
+    gui_panel_init(main_panel);
+    gui_panel_begin(main_panel);
 }
 
 void gui_analogread_task(void *arg)  
@@ -118,8 +136,8 @@ void gui_analogread_task(void *arg)
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);
 
-        gui_led_update(main_led);
-        gui_led_update(second_led);
+        // gui_led_update(main_led);
+        // gui_led_update(second_led);
 
         vTaskDelay(100 / portTICK_RATE_MS);
     }

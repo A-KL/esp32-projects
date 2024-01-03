@@ -39,7 +39,7 @@ const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 100);
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
 
-const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
+static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 
 const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(RedGradientBrush);
@@ -120,6 +120,8 @@ void gui_init() {
     gui_panel_begin(main_panel);
 }
 
+long last_update_ms = millis();
+
 void gui_analogread_task(void *arg)  
 {
     while (1) 
@@ -135,6 +137,17 @@ void gui_analogread_task(void *arg)
 
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);
+
+        if (last_update_ms - millis() > 100) {
+            last_update_ms = millis();
+
+            if (YellowChevronBrush.left > 200) {
+                YellowChevronBrush.left = -10;
+            } else{
+                YellowChevronBrush.left--;
+            }
+            gui_panel_update(main_panel);
+        } 
 
         // gui_led_update(main_led);
         // gui_led_update(second_led);

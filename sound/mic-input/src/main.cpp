@@ -17,6 +17,8 @@ audio_envelope_context_t envelope_context;
 
 #define I2S_BUFFER_SIZE 128
 
+uint8_t sample_size = sizeof(int16_t);
+
 int16_t samples[I2S_BUFFER_SIZE];
 //int32_t samples[I2S_BUFFER_SIZE];
 
@@ -44,7 +46,7 @@ const i2s_config_t i2s_rx_config(i2s_mode_t mode = (i2s_mode_t)0, uint16_t sampl
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | mode),  // I2S_MODE_PDM
         .sample_rate = sample_rate,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-        .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+        .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
     #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
         .communication_format =
             I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.
@@ -117,7 +119,7 @@ void loop()
 
     if (result == ESP_OK)
     {
-        int16_t samples_read = bytes_read / 2;
+        int16_t samples_read = bytes_read / sample_size;
         
         if (samples_read > 0) 
         {

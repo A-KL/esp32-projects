@@ -33,6 +33,9 @@ TFT_ePanel main_panel;
 
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
+const static TFT_eSolidBrush RedBrush(TFT_RED);
+const static TFT_eSolidBrush DarkRedBrush(TFT_DARK_RED_8);
+
 const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
 const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 100);
 
@@ -41,11 +44,10 @@ const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true)
 
 static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 
-const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(GreenGradientBrush);
-const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(RedGradientBrush);
-const static TFT_eProgressBar_SimpleStyle chevron_pb_style(YellowChevronBrush);
-
-const static progressbar_segmented_style_t lime_segmented_pb_style(GreenBrush, DarkGreenBrush,3, 16);
+const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
+const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
+const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 16);
 
 void gui_init() {
     main_led.top = 100;

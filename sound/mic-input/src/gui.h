@@ -45,7 +45,7 @@ const static TFT_eProgressBar_SimpleStyle lime_gradient_pb_style(GreenGradientBr
 const static TFT_eProgressBar_SimpleStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleStyle chevron_pb_style(YellowChevronBrush);
 
-const static progressbar_segmented_style_t lime_segmented_pb_style(3, 16, GreenBrush, DarkGreenBrush);
+const static progressbar_segmented_style_t lime_segmented_pb_style(GreenBrush, DarkGreenBrush,3, 16);
 
 void gui_init() {
     main_led.top = 100;

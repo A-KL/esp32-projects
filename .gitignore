@@ -9,3 +9,5 @@ audio-a2dp/.vs/
 audio-visualizer/.vs/
 audio-visualizer/x64/
 audio-visualizer/src-sdl/x64/
+sound/mic-input/.vscode/
+sound/sound-analyzer/.vscode/

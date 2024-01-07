@@ -18,7 +18,7 @@ void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate
     context.release = expf(-1.0/((float)sample_rate * .100)); //100mS Release
 }
 
-void envelope_calculate_stereo(const int32_t* samples, const int16_t samples_count, audio_envelope_context_t& left, audio_envelope_context_t& right)
+void envelope_calculate_right_left(const int32_t* samples, const int16_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
 {
     float left_x = 0;
     float right_x = 0;
@@ -26,7 +26,7 @@ void envelope_calculate_stereo(const int32_t* samples, const int16_t samples_cou
     for (auto i=0; i<samples_count; i++)
     {
         left_x = (int16_t) samples[i];
-        left_x = (int16_t) samples[i] << 16;
+        right_x = (int16_t) (samples[i] >> 16);
 
         left_x = left_x * 10;
         right_x = right_x * 10;

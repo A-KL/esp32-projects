@@ -75,7 +75,7 @@ void gui_init() {
     right_pb.top = 40;
     right_pb.left = 15;
     right_pb.width = 205;
-    right_pb.max = 4095;
+    right_pb.max = 1200; // 4095;
 
     right_pb.canvas = &right_pb_canvas;
     right_pb.value_style = &lime_segmented_pb_style;
@@ -132,10 +132,10 @@ void gui_analogread_task(void *arg)
         auto right = analogRead(13);
 
         //left_pb.value = left;
-        right_pb.value = right;
+        // right_pb.value = right;
 
-        main_led.value = left > 2000;
-        second_led.value = right > 500;
+        // main_led.value = left > 2000;
+        // second_led.value = right > 500;
 
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);

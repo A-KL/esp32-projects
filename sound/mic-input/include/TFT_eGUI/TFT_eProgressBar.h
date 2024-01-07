@@ -77,6 +77,7 @@ class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle
             auto value_segments_count = value_w / segment_w;
 
             auto value_color = _thresholds.begin()->second;
+            auto background_color = _bg_thresholds.begin()->second;
 
             for (auto i=0; i<value_segments_count; i++) 
             {
@@ -89,14 +90,10 @@ class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle
                 }
             }
 
-            auto background_color = _bg_thresholds.begin()->second;
-
             for (auto i=value_segments_count; i<_segments_count + 1; i++) 
             {
                 auto segment_left = left + i * (segment_w + _segment_padding);
-
                 background_color->fillRect(sprite, segment_left, top, segment_w, h);
-                //_segment_bg_color->fillRect(sprite, segment_left, top, segment_w, h);
 
                 auto results = _bg_thresholds.find(i);
                 if (results != _bg_thresholds.end()) {

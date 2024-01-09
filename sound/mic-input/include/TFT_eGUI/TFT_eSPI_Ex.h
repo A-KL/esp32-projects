@@ -33,6 +33,11 @@ uint16_t tft_luminance(uint16_t color, uint8_t luminance)
   return (r << 8) | (g << 3) | (b >> 3);
 }
 
+inline int border_with_padding(int border, int padding) 
+{
+    return border + (border > 0 ? padding : 0);
+}
+
 #define TFT_DARK_RED_8 tft_color24to16(0x880000)
 #define TFT_DARK_RED_12 tft_color24to16(0xCC0000)
 #define TFT_DARK_RED_13 tft_color24to16(0xDD0000)

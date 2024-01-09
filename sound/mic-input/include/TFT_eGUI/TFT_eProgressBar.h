@@ -133,11 +133,6 @@ struct TFT_eProgressBar
     const int border_padding = 1;
 };
 
-inline int border_with_padding(int border, int padding) 
-{
-    return border + (border > 0 ? padding : 0);
-}
-
 void gui_pb_init(const TFT_eProgressBar& pb) 
 {
     not_null(pb.canvas);

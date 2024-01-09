@@ -105,7 +105,7 @@ void setup()
     i2s_setpin();
     i2s_start(I2S_PORT);
 
-    xTaskCreate(gui_analogread_task, "gui_task", 2048, NULL, 1, NULL);
+    xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 1, NULL);
 }
 
 void loop() 

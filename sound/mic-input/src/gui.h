@@ -11,6 +11,7 @@
 #include "TFT_eGUI/TFT_eLed.h"
 #include "TFT_eGUI/TFT_eScale.h"
 #include "TFT_eGUI/TFT_ePanel.h"
+#include "TFT_eGUI/TFT_eLabel.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -23,6 +24,8 @@ TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
 TFT_eSprite scale_sprite = TFT_eSprite(&tft);
 TFT_eSprite panel_sprite = TFT_eSprite(&tft);
 
+TFT_eSprite line_label_sprite = TFT_eSprite(&tft);
+
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;
 
@@ -30,6 +33,8 @@ TFT_eLed main_led;
 TFT_eLed second_led;
 
 TFT_ePanel main_panel;
+
+TFT_eLabel line_label(line_label_sprite, "Line", TFT_RED, TFT_GREEN);
 
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
@@ -49,7 +54,7 @@ const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradient
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 16);
 
-void gui_init() {
+void gui_led_init() {
     main_led.top = 100;
     main_led.left = 15;
     main_led.value = true;
@@ -63,6 +68,26 @@ void gui_init() {
     second_led.on_color_to = TFT_DARK_RED_12;
     second_led.off_color = TFT_DARK_RED_8;
 
+    gui_led_init(main_led);
+    gui_led_init(second_led);
+
+    gui_led_begin(main_led);
+    gui_led_begin(second_led);
+}
+
+void gui_notify_init() {
+    main_panel.left = 0;
+    main_panel.top = 100;
+    main_panel.width = TFT_HEIGHT;
+    main_panel.height = 20;
+    main_panel.canvas = &panel_sprite;
+    main_panel.background = &YellowChevronBrush;
+
+    gui_panel_init(main_panel);
+    gui_panel_begin(main_panel);
+}
+
+void gui_meter_init() {
     left_pb.top = 10;
     left_pb.left = 15;
     left_pb.width = 205;
@@ -75,7 +100,7 @@ void gui_init() {
     right_pb.top = 40;
     right_pb.left = 15;
     right_pb.width = 205;
-    right_pb.max = 1200; // 4095;
+    right_pb.max = 1200;
 
     right_pb.canvas = &right_pb_canvas;
     right_pb.value_style = &lime_segmented_pb_style;
@@ -96,63 +121,67 @@ void gui_init() {
 
     scale_sprite.loadFont(NotoSansBold15);
 
-    main_panel.left = 0;
-    main_panel.top = 100;
-    main_panel.width = TFT_HEIGHT;
-    main_panel.height = 20;
-    main_panel.canvas = &panel_sprite;
-    main_panel.background = &YellowChevronBrush;
-
-    // gui_led_init(main_led);
-    // gui_led_init(second_led);
-
     gui_pb_init(left_pb);
     gui_pb_init(right_pb);
-
-    // gui_led_begin(main_led);
-    // gui_led_begin(second_led);
 
     gui_pb_begin(left_pb);
     gui_pb_begin(right_pb);
 
     gui_scale_init(scale);
     gui_scale_begin(scale);
+}
 
-    gui_panel_init(main_panel);
-    gui_panel_begin(main_panel);
+void gui_init() {
+
+    line_label.left = 15;
+    line_label.top = 80;
+
+    line_label.borders_thickness[0] = 2;
+    line_label.borders_thickness[1] = 2;
+    line_label.borders_thickness[2] = 2;
+    line_label.borders_thickness[3] = 2;
+
+    line_label_sprite.loadFont(NotoSansBold15);
+
+    gui_label_init(line_label);
+    gui_label_update(line_label);
+
+    gui_meter_init();
+    //gui_notify_init();
 }
 
 long last_update_ms = millis();
 
-void gui_analogread_task(void *arg)  
+//void update_analog() {
+    // auto left = analogRead(12);
+    // auto right = analogRead(13);
+    // left_pb.value = left;
+    // right_pb.value = right;
+
+    // main_led.value = left > 2000;
+    // second_led.value = right > 500;
+
+    // gui_led_update(main_led);
+    // gui_led_update(second_led);
+//}
+
+void gui_update_task(void *arg)  
 {
     while (1) 
     {
-        auto left = analogRead(12);
-        auto right = analogRead(13);
-
-        //left_pb.value = left;
-        // right_pb.value = right;
-
-        // main_led.value = left > 2000;
-        // second_led.value = right > 500;
-
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);
 
-        if (last_update_ms - millis() > 100) {
-            last_update_ms = millis();
+        // if (last_update_ms - millis() > 100) {
+        //     last_update_ms = millis();
 
-            if (YellowChevronBrush.left > 200) {
-                YellowChevronBrush.left = -10;
-            } else{
-                YellowChevronBrush.left--;
-            }
-            gui_panel_update(main_panel);
-        } 
-
-        // gui_led_update(main_led);
-        // gui_led_update(second_led);
+        //     if (YellowChevronBrush.left > 200) {
+        //         YellowChevronBrush.left = -10;
+        //     } else{
+        //         YellowChevronBrush.left--;
+        //     }
+        //     gui_panel_update(main_panel);
+        // } 
 
         vTaskDelay(100 / portTICK_RATE_MS);
     }

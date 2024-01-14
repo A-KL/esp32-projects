@@ -3,9 +3,9 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
-#include "Orbitron_Medium_20.h"
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
+#include "NotoSansMonoSCB20.h"
 
 #include "TFT_eGUI/TFT_eProgressBar.h"
 #include "TFT_eGUI/TFT_eLed.h"
@@ -34,7 +34,10 @@ TFT_eLed second_led;
 
 TFT_ePanel main_panel;
 
-TFT_eLabel line_label(line_label_sprite, "Line", TFT_RED, TFT_GREEN);
+TFT_eLabel adc_label(line_label_sprite, "ADC", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel i2s_label(line_label_sprite, "I2S", 4, TFT_GREEN);
+TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
@@ -91,7 +94,7 @@ void gui_meter_init() {
     left_pb.top = 10;
     left_pb.left = 15;
     left_pb.width = 205;
-    left_pb.max = 1200;// 4095;
+    left_pb.max = 1200;
 
     left_pb.canvas = &left_pb_canvas;
     left_pb.value_style = &lime_segmented_pb_style;
@@ -118,7 +121,6 @@ void gui_meter_init() {
     scale.show_marks = true;
     scale.show_labels = false;
     scale.canvas = &scale_sprite;
-
     scale_sprite.loadFont(NotoSansBold15);
 
     gui_pb_init(left_pb);
@@ -131,26 +133,43 @@ void gui_meter_init() {
     gui_scale_begin(scale);
 }
 
+
+void gui_labels_init() {
+    line_label_sprite.loadFont(NotoSansMonoSCB20);
+    //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
+
+    adc_label.left = 15;
+    adc_label.top = 90;
+
+    gui_label_init(adc_label);
+    gui_label_begin(adc_label);
+
+    i2s_label.left = adc_label.left + adc_label.width + 5;
+    i2s_label.top = 90;
+
+    gui_label_init(i2s_label);
+    gui_label_begin(i2s_label);
+
+    disabled_label.left = i2s_label.left + i2s_label.width + 5;
+    disabled_label.top = 90;
+
+    gui_label_init(disabled_label);
+    gui_label_begin(disabled_label);
+
+    ovr_label.left = disabled_label.left + disabled_label.width + 5;
+    ovr_label.top = 90;
+
+    gui_label_init(ovr_label);
+    gui_label_begin(ovr_label);
+}
+
 void gui_init() {
-
-    line_label.left = 15;
-    line_label.top = 80;
-
-    line_label.borders_thickness[0] = 2;
-    line_label.borders_thickness[1] = 2;
-    line_label.borders_thickness[2] = 2;
-    line_label.borders_thickness[3] = 2;
-
-    line_label_sprite.loadFont(NotoSansBold15);
-
-    gui_label_init(line_label);
-    gui_label_update(line_label);
-
+    gui_labels_init();
     gui_meter_init();
     //gui_notify_init();
 }
 
-long last_update_ms = millis();
+//long last_update_ms = millis();
 
 //void update_analog() {
     // auto left = analogRead(12);
@@ -171,6 +190,10 @@ void gui_update_task(void *arg)
     {
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);
+
+        ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
+
+        gui_label_update(ovr_label);
 
         // if (last_update_ms - millis() > 100) {
         //     last_update_ms = millis();

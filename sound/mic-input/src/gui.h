@@ -55,7 +55,7 @@ static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
-const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 16);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 32);
 
 void gui_led_init() {
     main_led.top = 100;
@@ -93,7 +93,7 @@ void gui_notify_init() {
 void gui_meter_init() {
     left_pb.top = 10;
     left_pb.left = 15;
-    left_pb.width = 205;
+    left_pb.width = tft.width() - left_pb.left * 2;
     left_pb.max = 1200;
 
     left_pb.canvas = &left_pb_canvas;
@@ -102,7 +102,7 @@ void gui_meter_init() {
 
     right_pb.top = 40;
     right_pb.left = 15;
-    right_pb.width = 205;
+    right_pb.width = tft.width() - right_pb.left * 2;
     right_pb.max = 1200;
 
     right_pb.canvas = &right_pb_canvas;
@@ -116,7 +116,7 @@ void gui_meter_init() {
 
     scale.left = 0;
     scale.top = 65;
-    scale.width = 230;
+    scale.width = tft.width();
     scale.height = 25;
     scale.show_marks = true;
     scale.show_labels = false;
@@ -132,7 +132,6 @@ void gui_meter_init() {
     gui_scale_init(scale);
     gui_scale_begin(scale);
 }
-
 
 void gui_labels_init() {
     line_label_sprite.loadFont(NotoSansMonoSCB20);
@@ -163,26 +162,14 @@ void gui_labels_init() {
     gui_label_begin(ovr_label);
 }
 
-void gui_init() {
+void gui_init() 
+{
     gui_labels_init();
     gui_meter_init();
     //gui_notify_init();
 }
 
 //long last_update_ms = millis();
-
-//void update_analog() {
-    // auto left = analogRead(12);
-    // auto right = analogRead(13);
-    // left_pb.value = left;
-    // right_pb.value = right;
-
-    // main_led.value = left > 2000;
-    // second_led.value = right > 500;
-
-    // gui_led_update(main_led);
-    // gui_led_update(second_led);
-//}
 
 void gui_update_task(void *arg)  
 {

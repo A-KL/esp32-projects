@@ -108,50 +108,76 @@ void setup()
     xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 1, NULL);
 }
 
+void update_analog() {
+    auto left = analogRead(34);
+    auto right = analogRead(35);
+    
+    left_pb.value = map(left, 0, 4096, 0, 1200);
+    right_pb.value = map(right, 0, 4096, 0, 1200);
+
+    // main_led.value = left > 2000;
+    // second_led.value = right > 500;
+
+    // gui_led_update(main_led);
+    // gui_led_update(second_led);
+
+    Serial.print(left);
+
+    Serial.print(" ");
+
+    Serial.print(right);
+
+    Serial.println(" ");
+
+    vTaskDelay(100 / portTICK_RATE_MS); 
+}
+
 void loop() 
 {
-    auto rangelimit = 3000;
+    // auto rangelimit = 3000;
 
-    Serial.print(rangelimit * -1);
-    Serial.print(" ");
-    Serial.print(rangelimit);
-    Serial.print(" ");
+    // Serial.print(rangelimit * -1);
+    // Serial.print(" ");
+    // Serial.print(rangelimit);
+    // Serial.print(" ");
 
-    size_t bytes_read = 0;
-    esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
+    update_analog();
 
-    if (result == ESP_OK)
-    {
-        int16_t samples_read = bytes_read / sample_size;
+    // size_t bytes_read = 0;
+    // esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
+
+    // if (result == ESP_OK)
+    // {
+    //     int16_t samples_read = bytes_read / sample_size;
         
-        if (samples_read > 0) 
-        {
-            float mean = 0;
+    //     if (samples_read > 0) 
+    //     {
+    //         float mean = 0;
 
-            for (int16_t i = 0; i < samples_read; ++i) 
-            {
-                mean += ((int16_t)samples[i]);
-            }
+    //         for (int16_t i = 0; i < samples_read; ++i) 
+    //         {
+    //             mean += ((int16_t)samples[i]);
+    //         }
     
-            // Average the data reading
-            mean /= samples_read;
+    //         // Average the data reading
+    //         mean /= samples_read;
         
-            envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
+    //         envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
 
-            Serial.print(left_envelope_context.envelope_out);
+    //         Serial.print(left_envelope_context.envelope_out);
 
-            Serial.print(" ");
+    //         Serial.print(" ");
 
-            Serial.print(right_envelope_context.envelope_out);
+    //         Serial.print(right_envelope_context.envelope_out);
 
-            Serial.print(" ");
+    //         Serial.print(" ");
 
-            Serial.println(mean);
+    //         Serial.println(mean);
 
-            left_pb.value = left_envelope_context.envelope_out;
-            right_pb.value = right_envelope_context.envelope_out;
-        }  
-    }
+    //         left_pb.value = left_envelope_context.envelope_out;
+    //         right_pb.value = right_envelope_context.envelope_out;
+    //     }  
+    // }
     // printf("loop cycling\n");
     // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
 }

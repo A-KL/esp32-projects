@@ -49,12 +49,13 @@ void gui_label_init(TFT_eLabel& label)
     label.canvas->setColorDepth(16);
     label.canvas->createSprite(label.width, label.height);
     label.canvas->setSwapBytes(true);
-    label.canvas->fillSprite(label.background_color);
 }
 
 void gui_label_update(const TFT_eLabel& label) 
 {
     not_null(label.canvas);
+
+    label.canvas->fillSprite(label.background_color);
 
     if (label.borders_thickness[0] > 0) {
         label.canvas->drawWideLine(0, 0, 0, 0 + label.height, 

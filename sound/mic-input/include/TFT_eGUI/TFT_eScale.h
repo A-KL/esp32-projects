@@ -1,9 +1,7 @@
 #pragma once
 
 #include <vector>
-
 #include <TFT_eSPI.h> 
-
 #include "TFT_eSPI_Ex.h"
 
 struct TFT_eScale 
@@ -13,6 +11,8 @@ struct TFT_eScale
 
     int width = 100;
     int height = 20;
+
+    int start_padding = 15;
 
     int background_color = TFT_BLACK;
     int foreground_color = TFT_DARKGREY;
@@ -41,41 +41,46 @@ void gui_scale_begin(const TFT_eScale& scale)
 {
     not_null(scale.canvas);
 
-    int long_marks = scale._values.size();
-    int long_marks_padding = scale.width / long_marks;
-    int start_padding = long_marks_padding/2;
+    int mark_w = 2;
+    int marks_count = scale._values.size();
+
+    int long_marks_interval = (scale.width - scale.start_padding * 1 - (marks_count - 1) * mark_w) / (marks_count - 1);
+    
+    int long_start_padding = scale.start_padding;
+    int short_start_padding = long_start_padding + long_marks_interval / 2;
 
     int font_height = scale.show_labels ? scale.canvas->fontHeight() : 0;
-    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 1: 0;
+    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 1 : 0;
 
     if (scale.show_marks && long_marks_height > 0) {
-        for (auto i = 0; i < long_marks; i++)
+        for (auto i = 0; i < marks_count; i++)
         {
             scale.canvas->drawWideLine(
-                start_padding + long_marks_padding*i, 0, 
-                start_padding + long_marks_padding*i, long_marks_height,
-                2,
+                long_start_padding + long_marks_interval*i - mark_w/2, 0, 
+                long_start_padding + long_marks_interval*i - mark_w/2, long_marks_height,
+                mark_w,
                 scale.foreground_color);
+                //log_w("i: %d, x: %d ", i, scale.start_padding + long_marks_interval*i);
         }
     }
 
     if (scale.show_labels) {
         scale.canvas->setTextColor(scale.foreground_color, scale.background_color);
 
-        for (auto i = 0; i < long_marks; i++)
+        for (auto i = 0; i < marks_count; i++)
         {
-            auto label = String(scale._values[long_marks - i - 1]);
-            scale.canvas->drawCentreString(label, start_padding + long_marks_padding * i, long_marks_height + 3, 1);
+            auto label = String(scale._values[marks_count - i - 1]);
+            scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - 1, long_marks_height + 3, 1);
         }
     }
 
-    if (scale.show_marks)  {
-        for (auto i = 0; i < long_marks - 1; i++)
+    if (scale.show_marks) {
+        for (auto i = 0; i < marks_count - 1; i++)
         {
             scale.canvas->drawWideLine(
-                start_padding * 2 + long_marks_padding * i, 0, 
-                start_padding * 2 + long_marks_padding * i, long_marks_height / 2,
-                2,
+                short_start_padding + long_marks_interval * i - mark_w/2, 0, 
+                short_start_padding + long_marks_interval * i - mark_w/2, long_marks_height / 2,
+                mark_w,
                 scale.foreground_color);
         }
     }

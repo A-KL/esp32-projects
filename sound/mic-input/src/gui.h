@@ -42,10 +42,10 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
-const static TFT_eSolidBrush DarkRedBrush(TFT_DARK_RED_8);
+const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 50);
 
 const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
-const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 100);
+const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 50);
 
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);

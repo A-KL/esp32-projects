@@ -83,7 +83,6 @@ void i2s_setpin() {
 void setup() 
 {
     Serial.begin(115200);
-    Serial.println(" ");
 
     delay(1000);
 

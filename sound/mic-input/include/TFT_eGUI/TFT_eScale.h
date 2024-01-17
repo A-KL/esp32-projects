@@ -43,6 +43,7 @@ void gui_scale_init(const TFT_eScale& scale)
     scale.canvas->createSprite(scale.width, scale.height);
     scale.canvas->setSwapBytes(true);
     scale.canvas->fillSprite(scale.background_color);
+   // scale.canvas->fillSprite(TFT_BLUE);
 }
 
 void gui_scale_begin(const TFT_eScale& scale) 
@@ -58,7 +59,7 @@ void gui_scale_begin(const TFT_eScale& scale)
     int short_start_padding = long_start_padding + long_marks_interval / 2;
 
     int font_height = scale.show_labels ? scale.canvas->fontHeight() : 0;
-    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 10 : 0;
+    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 12 : 0;
 
     if (scale.show_marks && long_marks_height > 0) {
         for (auto i = 0; i < marks_count; i++)
@@ -81,16 +82,17 @@ void gui_scale_begin(const TFT_eScale& scale)
 
             if (!scale.horizontal_labels && scale.text_rotation != NULL)
             {
-                auto text_w = scale.canvas->textWidth(label);
-                auto text_h = scale.canvas->fontHeight();
+                auto text_w = scale.canvas->textWidth(label) + 1;
+                auto text_h = scale.canvas->fontHeight() + 1;
 
                 scale.text_rotation->setColorDepth(16);
                 scale.text_rotation->createSprite(text_w, text_h);
                 scale.text_rotation->setSwapBytes(true);
                 scale.text_rotation->setTextColor(scale.foreground_color, scale.background_color);
+                //scale.text_rotation->fillSprite(TFT_RED);
 
-                scale.text_rotation->drawCentreString(label, text_w/2, text_h/2, 1);
-                scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_height + text_w/2);
+                scale.text_rotation->drawString(label, 0, 0, 1);
+                scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_height + text_h);
 
                 scale.text_rotation->pushRotated(scale.canvas, 90);
                 scale.text_rotation->deleteSprite();

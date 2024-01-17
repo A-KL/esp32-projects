@@ -43,10 +43,10 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
-const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 50);
+const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
 
 const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
-const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 50);
+const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 20);
 
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
@@ -167,25 +167,25 @@ void gui_labels_init() {
     //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
 
     adc_label.left = 15;
-    adc_label.top = 105;
+    adc_label.top = 155;
 
     gui_label_init(adc_label);
     gui_label_begin(adc_label);
 
     i2s_label.left = adc_label.left + adc_label.width + 5;
-    i2s_label.top = 105;
+    i2s_label.top = 155;
 
     gui_label_init(i2s_label);
     gui_label_begin(i2s_label);
 
     disabled_label.left = i2s_label.left + i2s_label.width + 5;
-    disabled_label.top = 105;
+    disabled_label.top = 155;
 
     gui_label_init(disabled_label);
     gui_label_begin(disabled_label);
 
     ovr_label.left = disabled_label.left + disabled_label.width + 5;
-    ovr_label.top = 105;
+    ovr_label.top = 155;
 
     gui_label_init(ovr_label);
     gui_label_begin(ovr_label);

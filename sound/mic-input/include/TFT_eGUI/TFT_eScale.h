@@ -20,12 +20,20 @@ struct TFT_eScale
     bool show_marks = true;
     bool show_labels = true;
 
+    bool horizontal_labels = true;
+
     std::vector<int> _values;
 
     TFT_eSprite* canvas = NULL;
 
+    TFT_eSprite* text_rotation = NULL;
+
     TFT_eScale(TFT_eSprite& canvas, const std::vector<int>& values, const char* label = NULL) 
-        : canvas(&canvas), _values(values.begin(), values.end())
+        : canvas(&canvas), text_rotation(NULL), _values(values.begin(), values.end())
+    { }
+
+    TFT_eScale(TFT_eSprite& canvas, TFT_eSprite& text, const std::vector<int>& values, const char* label = NULL) 
+        : canvas(&canvas), text_rotation(&text), _values(values.begin(), values.end())
     { }
 };
 
@@ -50,7 +58,7 @@ void gui_scale_begin(const TFT_eScale& scale)
     int short_start_padding = long_start_padding + long_marks_interval / 2;
 
     int font_height = scale.show_labels ? scale.canvas->fontHeight() : 0;
-    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 1 : 0;
+    int long_marks_height = scale.show_marks ? scale.height - scale.canvas->fontHeight() - 10 : 0;
 
     if (scale.show_marks && long_marks_height > 0) {
         for (auto i = 0; i < marks_count; i++)
@@ -70,7 +78,27 @@ void gui_scale_begin(const TFT_eScale& scale)
         for (auto i = 0; i < marks_count; i++)
         {
             auto label = String(scale._values[marks_count - i - 1]);
-            scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - 1, long_marks_height + 3, 1);
+
+            if (!scale.horizontal_labels && scale.text_rotation != NULL)
+            {
+                auto text_w = scale.canvas->textWidth(label);
+                auto text_h = scale.canvas->fontHeight();
+
+                scale.text_rotation->setColorDepth(16);
+                scale.text_rotation->createSprite(text_w, text_h);
+                scale.text_rotation->setSwapBytes(true);
+                scale.text_rotation->setTextColor(scale.foreground_color, scale.background_color);
+
+                scale.text_rotation->drawCentreString(label, text_w/2, text_h/2, 1);
+                scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_height + text_w/2);
+
+                scale.text_rotation->pushRotated(scale.canvas, 90);
+                scale.text_rotation->deleteSprite();
+            }
+            else
+            {
+                scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_height + 4, 1);
+            }
         }
     }
 

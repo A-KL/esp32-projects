@@ -22,6 +22,7 @@ TFT_eSprite main_led_sprite = TFT_eSprite(&tft);
 TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
 
 TFT_eSprite scale_sprite = TFT_eSprite(&tft);
+TFT_eSprite scale_text_sprite = TFT_eSprite(&tft);
 TFT_eSprite panel_sprite = TFT_eSprite(&tft);
 
 TFT_eSprite line_label_sprite = TFT_eSprite(&tft);
@@ -39,7 +40,7 @@ TFT_eLabel i2s_label(line_label_sprite, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
-TFT_eScale scale(scale_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
+TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 50);
@@ -56,6 +57,32 @@ const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradi
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 32);
+
+void gui_set_input(int input)
+{
+    adc_label.foreground_color = TFT_DARK_DARK_GRAY;
+    i2s_label.foreground_color = TFT_DARK_DARK_GRAY;
+    disabled_label.foreground_color = TFT_DARK_DARK_GRAY;
+
+    switch (input)
+    {
+    case 0:
+        adc_label.foreground_color = TFT_CYAN;
+        break;
+     case 1:
+        i2s_label.foreground_color = TFT_GREEN;
+        break;
+    case 2:
+        disabled_label.foreground_color = TFT_YELLOW;
+        break;   
+    default:
+        break;
+    }
+
+    gui_label_update(adc_label);
+    gui_label_update(i2s_label);
+    gui_label_update(disabled_label);
+}
 
 void gui_led_init() {
     main_led.top = 100;
@@ -117,11 +144,13 @@ void gui_meter_init() {
     scale.left = 0;
     scale.top = 65;
     scale.width = tft.width();
-    scale.height = 25;
+    scale.height = 40;
     scale.show_marks = true;
-    scale.show_labels = false;
-    scale.canvas = &scale_sprite;
+    scale.show_labels = true;
+    scale.horizontal_labels = false;
+
     scale_sprite.loadFont(NotoSansBold15);
+    scale_text_sprite.loadFont(NotoSansBold15);
 
     gui_pb_init(left_pb);
     gui_pb_init(right_pb);
@@ -138,25 +167,25 @@ void gui_labels_init() {
     //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
 
     adc_label.left = 15;
-    adc_label.top = 90;
+    adc_label.top = 105;
 
     gui_label_init(adc_label);
     gui_label_begin(adc_label);
 
     i2s_label.left = adc_label.left + adc_label.width + 5;
-    i2s_label.top = 90;
+    i2s_label.top = 105;
 
     gui_label_init(i2s_label);
     gui_label_begin(i2s_label);
 
     disabled_label.left = i2s_label.left + i2s_label.width + 5;
-    disabled_label.top = 90;
+    disabled_label.top = 105;
 
     gui_label_init(disabled_label);
     gui_label_begin(disabled_label);
 
     ovr_label.left = disabled_label.left + disabled_label.width + 5;
-    ovr_label.top = 90;
+    ovr_label.top = 105;
 
     gui_label_init(ovr_label);
     gui_label_begin(ovr_label);
@@ -175,10 +204,10 @@ void gui_update_task(void *arg)
 {
     while (1) 
     {
+        ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
+
         gui_pb_update(left_pb);
         gui_pb_update(right_pb);
-
-        ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
         gui_label_update(ovr_label);
 

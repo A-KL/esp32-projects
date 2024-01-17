@@ -96,6 +96,7 @@ void setup()
     tft.fillScreen(TFT_BLACK);
 
     gui_init();
+    gui_set_input(0);
 
     envelope_init(right_envelope_context, I2S_SAMPLE_RATE);
     envelope_init(left_envelope_context, I2S_SAMPLE_RATE);

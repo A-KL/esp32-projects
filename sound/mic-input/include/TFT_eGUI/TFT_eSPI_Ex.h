@@ -42,6 +42,7 @@ inline int border_with_padding(int border, int padding)
 #define TFT_DARK_RED_12 tft_color24to16(0xCC0000)
 #define TFT_DARK_RED_13 tft_color24to16(0xDD0000)
 #define TFT_DARK_DARK_GRAY tft_color24to16(0x141414)
+#define TFT_DARK_GRAY tft_color24to16(0x404040)
 
 TFT_Rect resize(const TFT_Rect& rect, int left, int top, int right, int bottom) {
     return { 

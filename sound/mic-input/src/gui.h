@@ -12,6 +12,7 @@
 #include "TFT_eGUI/TFT_eScale.h"
 #include "TFT_eGUI/TFT_ePanel.h"
 #include "TFT_eGUI/TFT_eLabel.h"
+#include "TFT_eGUI/TFT_eSpectrum.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -27,6 +28,8 @@ TFT_eSprite panel_sprite = TFT_eSprite(&tft);
 
 TFT_eSprite line_label_sprite = TFT_eSprite(&tft);
 
+TFT_eSprite spectrum_sprite = TFT_eSprite(&tft);
+
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;
 
@@ -41,6 +44,8 @@ TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
+
+TFT_eSpectrum<10> spectrum(spectrum_sprite, 30);
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
@@ -191,11 +196,30 @@ void gui_labels_init() {
     gui_label_begin(ovr_label);
 }
 
+void gui_init_spectrum() {
+    spectrum.width = TFT_WIDTH;
+    spectrum.height = TFT_HEIGHT;
+    spectrum.values[0] = 100;
+    spectrum.values[1] = 100;
+    spectrum.values[2] = 100;
+    spectrum.values[3] = 100;
+    spectrum.values[4] = 50;
+    spectrum.values[5] = spectrum.max / 2;
+    spectrum.values[7] = spectrum.max / 3;
+    spectrum.values[8] = spectrum.max / 3;
+    spectrum.values[9] = spectrum.max;
+
+    gui_spectrum_init(spectrum);
+    gui_spectrum_begin(spectrum);
+}
+
 void gui_init() 
 {
-    gui_labels_init();
-    gui_meter_init();
+    //gui_labels_init();
+   // gui_meter_init();
     //gui_notify_init();
+
+    gui_init_spectrum();
 }
 
 //long last_update_ms = millis();
@@ -206,10 +230,10 @@ void gui_update_task(void *arg)
     {
         ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
-        gui_pb_update(left_pb);
-        gui_pb_update(right_pb);
+        // gui_pb_update(left_pb);
+        // gui_pb_update(right_pb);
 
-        gui_label_update(ovr_label);
+        // gui_label_update(ovr_label);
 
         // if (last_update_ms - millis() > 100) {
         //     last_update_ms = millis();

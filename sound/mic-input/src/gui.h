@@ -45,7 +45,7 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
-TFT_eSpectrum<10> spectrum(spectrum_sprite, 30);
+TFT_eSpectrum<10> spectrum(spectrum_sprite, 60);
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
@@ -150,7 +150,7 @@ void gui_meter_init() {
     scale.top = 65;
     scale.width = tft.width();
     scale.height = 40;
-    scale.show_marks = true;
+    scale.interval_layout = 1;
     scale.show_labels = true;
     scale.horizontal_labels = false;
 

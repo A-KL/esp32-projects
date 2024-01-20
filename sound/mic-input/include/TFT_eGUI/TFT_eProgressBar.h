@@ -73,6 +73,22 @@ class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle
 
         virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
         {
+            if (w > h) {
+                render_horizontal(sprite, left, top, w, h, value_w);
+            } else {
+                render_vertical(sprite, left, top, w, h, value_w);
+            }
+        }
+
+    private:
+        const int _segment_padding;
+        const int _segments_count;
+
+        std::map<int, const TFT_eColorBrush*> _thresholds;
+        std::map<int, const TFT_eColorBrush*> _bg_thresholds;
+
+        void render_horizontal(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
+        {
             auto segment_w = (w - _segment_padding * (_segments_count - 1)) / _segments_count;
             auto value_segments_count = value_w / (segment_w + _segment_padding);
 
@@ -102,12 +118,36 @@ class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle
             }
         };
 
-    private:
-        const int _segment_padding;
-        const int _segments_count;
+        void render_vertical(TFT_eSprite* sprite, int left, int top, int w, int h, int value_h) const 
+        {
+            auto segment_h = (h - _segment_padding * (_segments_count - 1)) / _segments_count;
+            auto value_segments_count = value_h / (segment_h + _segment_padding);
 
-        std::map<int, const TFT_eColorBrush*> _thresholds;
-        std::map<int, const TFT_eColorBrush*> _bg_thresholds;
+            auto value_color = _thresholds.begin()->second;
+            auto background_color = _bg_thresholds.begin()->second;
+
+            for (auto i=0; i < value_segments_count; i++) 
+            {
+                auto segment_top = h - top - i * (segment_h + _segment_padding);
+                value_color->fillRect(sprite, left, segment_top, w, segment_h);
+
+                auto results = _thresholds.find(i);
+                if (results != _thresholds.end()) {
+                    value_color = results->second;
+                }
+            }
+
+            for (auto i=value_segments_count; i<_segments_count; i++)
+            {
+            auto segment_top = h - top - i * (segment_h + _segment_padding);
+                background_color->fillRect(sprite, left, segment_top, w, segment_h);
+
+                auto results = _bg_thresholds.find(i);
+                if (results != _bg_thresholds.end()) {
+                    background_color = results->second;
+                }
+            }
+        };
 };
 
 struct TFT_eProgressBar

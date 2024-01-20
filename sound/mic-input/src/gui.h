@@ -171,26 +171,28 @@ void gui_labels_init() {
     line_label_sprite.loadFont(NotoSansMonoSCB20);
     //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
 
+    auto top = scale.top + scale.height + 10;
+
     adc_label.left = 15;
-    adc_label.top = 155;
+    adc_label.top = top;
 
     gui_label_init(adc_label);
     gui_label_begin(adc_label);
 
     i2s_label.left = adc_label.left + adc_label.width + 5;
-    i2s_label.top = 155;
+    i2s_label.top = top;
 
     gui_label_init(i2s_label);
     gui_label_begin(i2s_label);
 
     disabled_label.left = i2s_label.left + i2s_label.width + 5;
-    disabled_label.top = 155;
+    disabled_label.top = top;
 
     gui_label_init(disabled_label);
     gui_label_begin(disabled_label);
 
     ovr_label.left = disabled_label.left + disabled_label.width + 5;
-    ovr_label.top = 155;
+    ovr_label.top = top;
 
     gui_label_init(ovr_label);
     gui_label_begin(ovr_label);
@@ -215,11 +217,11 @@ void gui_init_spectrum() {
 
 void gui_init() 
 {
-    //gui_labels_init();
-   // gui_meter_init();
-    //gui_notify_init();
+    gui_meter_init();
+    gui_labels_init();
 
-    gui_init_spectrum();
+    //gui_notify_init();
+    //gui_init_spectrum();
 }
 
 //long last_update_ms = millis();
@@ -230,6 +232,11 @@ void gui_update_task(void *arg)
     {
         ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
+        gui_pb_update(left_pb);
+        gui_pb_update(right_pb);
+
+        gui_label_update(ovr_label);
+        
         // gui_pb_update(left_pb);
         // gui_pb_update(right_pb);
 

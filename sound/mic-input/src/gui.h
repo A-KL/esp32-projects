@@ -79,8 +79,6 @@ void gui_set_input(int input)
         break;
     case 2:
         disabled_label.foreground_color = TFT_YELLOW;
-        break;   
-    default:
         break;
     }
 
@@ -126,7 +124,7 @@ void gui_meter_init() {
     // Left progress bar
     left_pb.top = 10;
     left_pb.left = 15;
-    left_pb.width = tft.width() - left_pb.left * 2;
+    left_pb.width = tft.width() - left_pb.left;
     left_pb.max = 1200;
 
     left_pb.canvas = &left_pb_canvas;
@@ -137,7 +135,7 @@ void gui_meter_init() {
     scale.left = 0;
     scale.top = 35;
     scale.width = tft.width();
-    scale.height = 50;
+    scale.height = 60;
     scale.interval_layout = Both;
     scale.show_labels = true;
     scale.horizontal_labels = false;
@@ -146,9 +144,9 @@ void gui_meter_init() {
     scale_text_sprite.loadFont(NotoSansBold15);
 
     // Right progress bar
-    right_pb.top = 90;
+    right_pb.top = 100;
     right_pb.left = 15;
-    right_pb.width = tft.width() - right_pb.left * 2;
+    right_pb.width = tft.width() - right_pb.left;
     right_pb.max = 1200;
 
     right_pb.canvas = &right_pb_canvas;

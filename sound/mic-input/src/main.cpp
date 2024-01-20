@@ -11,14 +11,19 @@
 #define I2S_PORT I2S_NUM_0
 #define I2S_SAMPLE_RATE 44100
 
+#define I2S_BUFFER_SIZE 128
 #define I2S_SAMPLES_PER_MS I2S_SAMPLE_RATE / 1000
 
 audio_envelope_context_t right_envelope_context;
 audio_envelope_context_t left_envelope_context;
 
-//audio_envelope_context_t envelope_context;
+enum audio_input_t {
+    ADC = 0,
+    I2S = 1, 
+    Optical = 3
+};
 
-#define I2S_BUFFER_SIZE 128
+audio_input_t audio_input = I2S;
 
 uint8_t sample_size = sizeof(int32_t); // int16_t
 
@@ -80,6 +85,23 @@ void i2s_setpin() {
     i2s_set_pin(I2S_NUM_0, &pin_config);
 }
 
+void IRAM_ATTR OnLeftButtonPressed()
+{
+  //digitalWrite(LED_pin, !digitalRead(LED_pin));
+}
+
+void IRAM_ATTR OnRightButtonPressed()
+{
+  //digitalWrite(LED_pin, !digitalRead(LED_pin));
+}
+
+void buttons_init(){
+    pinMode(0, INPUT_PULLUP);
+    pinMode(35, INPUT_PULLUP);
+    attachInterrupt(0, OnLeftButtonPressed, RISING);
+    attachInterrupt(35, OnRightButtonPressed, RISING);
+}
+
 void setup() 
 {
     Serial.begin(115200);
@@ -96,7 +118,7 @@ void setup()
     tft.fillScreen(TFT_BLACK);
 
     gui_init();
-    gui_set_input(0);
+    gui_set_input((int)audio_input);
 
     envelope_init(right_envelope_context, I2S_SAMPLE_RATE);
     envelope_init(left_envelope_context, I2S_SAMPLE_RATE);
@@ -104,6 +126,8 @@ void setup()
     i2s_install();
     i2s_setpin();
     i2s_start(I2S_PORT);
+
+    buttons_init();
 
     xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 1, NULL);
 }
@@ -132,52 +156,66 @@ void update_analog() {
     vTaskDelay(100 / portTICK_RATE_MS); 
 }
 
+void update_i2s() {
+    size_t bytes_read = 0;
+    esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
+
+    if (result == ESP_OK)
+    {
+        int16_t samples_read = bytes_read / sample_size;
+        
+        if (samples_read > 0) 
+        {
+            float mean = 0;
+
+            for (int16_t i = 0; i < samples_read; ++i) 
+            {
+                mean += ((int16_t)samples[i]);
+            }
+    
+            // Average the data reading
+            mean /= samples_read;
+        
+            envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
+
+            Serial.print(left_envelope_context.envelope_out);
+
+            Serial.print(" ");
+
+            Serial.print(right_envelope_context.envelope_out);
+
+            Serial.print(" ");
+
+            Serial.println(mean);
+
+            left_pb.value = left_envelope_context.envelope_out;
+            right_pb.value = right_envelope_context.envelope_out;
+        }  
+    }
+}
+
 void loop() 
 {
-    // auto rangelimit = 3000;
+    auto rangelimit = 3000;
 
-    // Serial.print(rangelimit * -1);
-    // Serial.print(" ");
-    // Serial.print(rangelimit);
-    // Serial.print(" ");
+    Serial.print(rangelimit * -1);
+    Serial.print(" ");
+    Serial.print(rangelimit);
+    Serial.print(" ");
 
-    update_analog();
-
-    // size_t bytes_read = 0;
-    // esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
-
-    // if (result == ESP_OK)
-    // {
-    //     int16_t samples_read = bytes_read / sample_size;
+    switch (audio_input)
+    {
+        case ADC:
+            update_analog();
+            break;
         
-    //     if (samples_read > 0) 
-    //     {
-    //         float mean = 0;
-
-    //         for (int16_t i = 0; i < samples_read; ++i) 
-    //         {
-    //             mean += ((int16_t)samples[i]);
-    //         }
-    
-    //         // Average the data reading
-    //         mean /= samples_read;
+        case I2S:
+            update_i2s();
         
-    //         envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
+        default:
+            break;
+    }
 
-    //         Serial.print(left_envelope_context.envelope_out);
-
-    //         Serial.print(" ");
-
-    //         Serial.print(right_envelope_context.envelope_out);
-
-    //         Serial.print(" ");
-
-    //         Serial.println(mean);
-
-    //         left_pb.value = left_envelope_context.envelope_out;
-    //         right_pb.value = right_envelope_context.envelope_out;
-    //     }  
-    // }
     // printf("loop cycling\n");
     // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
 }

@@ -41,14 +41,14 @@ i2s_config_t i2s_config = {
     .use_apll      = false
 };
 
-const i2s_config_t i2s_rx_config(i2s_mode_t mode = (i2s_mode_t)0, uint16_t sample_rate = 44100, uint16_t buffer_size = 128)
+const i2s_config_t i2s_rx_config(i2s_mode_t mode = I2S_MODE_MASTER, uint16_t sample_rate = 44100, uint16_t buffer_size = 128)
 {
     return i2s_config_t
     {
-        .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | mode),  // I2S_MODE_PDM
+        .mode = (i2s_mode_t)(mode | I2S_MODE_RX),  // I2S_MODE_PDM
         .sample_rate = sample_rate,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-        .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
+        .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
     #if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
         .communication_format =
             I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.

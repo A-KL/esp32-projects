@@ -28,6 +28,9 @@ struct TFT_eScale
     TFT_eScale_Indicators interval_layout = Top;
 
     bool show_labels = true;
+    bool show_intervals = true;
+    bool show_sub_intervals = true;
+
     bool horizontal_labels = true;
 
     std::vector<int> _values;
@@ -115,6 +118,26 @@ int gui_scale_get_indicator_interval(const TFT_eScale& scale) {
     return (scale.height - scale.start_padding - (marks_count - 1) * scale.interval_width) / (marks_count - 1);
 }
 
+int gui_scale_get_text_center(const TFT_eScale& scale)
+{
+    if (!scale.show_intervals) {
+        return scale.height / 2;
+    }
+
+    auto length =  gui_scale_get_indicator_length_horizontal(scale);
+    auto padding = scale.height - length;
+
+    switch (scale.interval_layout)
+    {
+        case Top:
+            return (length + padding / 2);
+        case Bottom:
+            return (padding / 2);
+    }
+
+    return scale.height / 2;      
+}
+
 void gui_scale_begin(const TFT_eScale& scale) 
 {
     not_null(scale.canvas);
@@ -127,21 +150,34 @@ void gui_scale_begin(const TFT_eScale& scale)
 
     int long_start_padding = scale.start_padding;
     int short_start_padding = long_start_padding + long_marks_interval / 2;
-    int font_height = scale.show_labels ? scale.canvas->fontHeight() : 0;
 
-    if (long_marks_length > 0) {
+    if (long_marks_length > 0 & scale.show_intervals) {
         for (auto i = 0; i < marks_count; i++)
         {
-            scale.canvas->drawWideLine(
-                long_start_padding + long_marks_interval*i - mark_w/2, 0, 
-                long_start_padding + long_marks_interval*i - mark_w/2, long_marks_length,
-                mark_w,
-                scale.foreground_color);
+            if (scale.interval_layout == Top || scale.interval_layout == Both)
+            {
+                scale.canvas->drawWideLine(
+                    long_start_padding + long_marks_interval*i - mark_w/2, 0, 
+                    long_start_padding + long_marks_interval*i - mark_w/2, long_marks_length,
+                    mark_w,
+                    scale.foreground_color);
+            }
+            if (scale.interval_layout == Bottom || scale.interval_layout == Both)
+            {
+                scale.canvas->drawWideLine(
+                    long_start_padding + long_marks_interval*i - mark_w/2, scale.height - long_marks_length, 
+                    long_start_padding + long_marks_interval*i - mark_w/2, scale.height,
+                    mark_w,
+                    scale.foreground_color);
+            }
         }
     }
 
     if (scale.show_labels) {
+        
         scale.canvas->setTextColor(scale.foreground_color, scale.background_color);
+        auto text_center = gui_scale_get_text_center(scale);
+        auto text_h = scale.canvas->fontHeight() + 1;
 
         for (auto i = 0; i < marks_count; i++)
         {
@@ -150,34 +186,44 @@ void gui_scale_begin(const TFT_eScale& scale)
             if (!scale.horizontal_labels && scale.text_rotation != NULL)
             {
                 auto text_w = scale.canvas->textWidth(label) + 1;
-                auto text_h = scale.canvas->fontHeight() + 1;
 
                 scale.text_rotation->setColorDepth(16);
                 scale.text_rotation->createSprite(text_w, text_h);
                 scale.text_rotation->setSwapBytes(true);
-                scale.text_rotation->setTextColor(scale.foreground_color, scale.background_color);
 
                 scale.text_rotation->drawString(label, 0, 0, 1);
-                scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_length + text_h);
+                scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, text_center); //long_marks_length + text_h
 
                 scale.text_rotation->pushRotated(scale.canvas, 90);
                 scale.text_rotation->deleteSprite();
             }
             else
             {
-                scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_length + 4, 1);
+                scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2, 1);
             }
         }
     }
 
-    if (long_marks_length > 1) {
+    if (long_marks_length > 1 & scale.show_sub_intervals) 
+    {
         for (auto i = 0; i < marks_count - 1; i++)
         {
-            scale.canvas->drawWideLine(
-                short_start_padding + long_marks_interval * i - mark_w/2, 0, 
-                short_start_padding + long_marks_interval * i - mark_w/2, long_marks_length / 2,
-                mark_w,
-                scale.foreground_color);
+            if (scale.interval_layout == Top || scale.interval_layout == Both)
+            {
+                scale.canvas->drawWideLine(
+                    short_start_padding + long_marks_interval * i - mark_w/2, 0, 
+                    short_start_padding + long_marks_interval * i - mark_w/2, long_marks_length / 2,
+                    mark_w,
+                    scale.foreground_color);
+            }
+            if (scale.interval_layout == Bottom || scale.interval_layout == Both)
+            {
+                scale.canvas->drawWideLine(
+                    short_start_padding + long_marks_interval * i - mark_w/2, scale.height - long_marks_length / 2, 
+                    short_start_padding + long_marks_interval * i - mark_w/2, scale.height,
+                    mark_w,
+                    scale.foreground_color);
+            }
         }
     }
 

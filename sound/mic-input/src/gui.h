@@ -123,6 +123,7 @@ void gui_notify_init() {
 }
 
 void gui_meter_init() {
+    // Left progress bar
     left_pb.top = 10;
     left_pb.left = 15;
     left_pb.width = tft.width() - left_pb.left * 2;
@@ -132,7 +133,20 @@ void gui_meter_init() {
     left_pb.value_style = &lime_segmented_pb_style;
     left_pb.background_color = TFT_BLACK;
 
-    right_pb.top = 40;
+    // Scale
+    scale.left = 0;
+    scale.top = 35;
+    scale.width = tft.width();
+    scale.height = 50;
+    scale.interval_layout = Both;
+    scale.show_labels = true;
+    scale.horizontal_labels = false;
+
+    scale_sprite.loadFont(NotoSansBold15);
+    scale_text_sprite.loadFont(NotoSansBold15);
+
+    // Right progress bar
+    right_pb.top = 90;
     right_pb.left = 15;
     right_pb.width = tft.width() - right_pb.left * 2;
     right_pb.max = 1200;
@@ -145,17 +159,6 @@ void gui_meter_init() {
     // right_pb.borders_thickness[1] = 1;
     // right_pb.borders_thickness[2] = 1;
     // right_pb.borders_thickness[3] = 1; 
-
-    scale.left = 0;
-    scale.top = 65;
-    scale.width = tft.width();
-    scale.height = 60;
-    scale.interval_layout = 1;
-    scale.show_labels = true;
-    scale.horizontal_labels = false;
-
-    scale_sprite.loadFont(NotoSansBold15);
-    scale_text_sprite.loadFont(NotoSansBold15);
 
     gui_pb_init(left_pb);
     gui_pb_init(right_pb);
@@ -171,7 +174,7 @@ void gui_labels_init() {
     line_label_sprite.loadFont(NotoSansMonoSCB20);
     //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
 
-    auto top = scale.top + scale.height + 10;
+    auto top = TFT_HEIGHT - 40;
 
     adc_label.left = 15;
     adc_label.top = top;

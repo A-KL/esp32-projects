@@ -149,7 +149,7 @@ void gui_meter_init() {
     scale.left = 0;
     scale.top = 65;
     scale.width = tft.width();
-    scale.height = 40;
+    scale.height = 60;
     scale.interval_layout = 1;
     scale.show_labels = true;
     scale.horizontal_labels = false;
@@ -236,11 +236,6 @@ void gui_update_task(void *arg)
         gui_pb_update(right_pb);
 
         gui_label_update(ovr_label);
-        
-        // gui_pb_update(left_pb);
-        // gui_pb_update(right_pb);
-
-        // gui_label_update(ovr_label);
 
         // if (last_update_ms - millis() > 100) {
         //     last_update_ms = millis();

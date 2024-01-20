@@ -4,6 +4,13 @@
 #include <TFT_eSPI.h> 
 #include "TFT_eSPI_Ex.h"
 
+enum TFT_eScale_Indicators {
+    None = 0,
+    Top = 1,
+    Bottom = 2,
+    Both = 3
+};
+
 struct TFT_eScale 
 {
     int left = 0;
@@ -18,7 +25,7 @@ struct TFT_eScale
     int background_color = TFT_BLACK;
     int foreground_color = TFT_DARKGREY;
 
-    int interval_layout = 1; // 0: None, 1:Left, 2:Right, 3:Both
+    TFT_eScale_Indicators interval_layout = Top;
 
     bool show_labels = true;
     bool horizontal_labels = true;
@@ -48,10 +55,10 @@ void gui_scale_init(const TFT_eScale& scale)
 
 int gui_scale_get_indicator_length_horizontal(const TFT_eScale& scale) {
     switch (scale.interval_layout) {
-        case 1:
-        case 2:
+        case Top:
+        case Bottom:
             return scale.height - scale.canvas->fontHeight() - 12;
-        case 3:
+        case Both:
             return (scale.height - scale.canvas->fontHeight())/ 2 - 12;
         return 0;
     }
@@ -149,7 +156,6 @@ void gui_scale_begin(const TFT_eScale& scale)
                 scale.text_rotation->createSprite(text_w, text_h);
                 scale.text_rotation->setSwapBytes(true);
                 scale.text_rotation->setTextColor(scale.foreground_color, scale.background_color);
-                //scale.text_rotation->fillSprite(TFT_RED);
 
                 scale.text_rotation->drawString(label, 0, 0, 1);
                 scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, long_marks_length + text_h);

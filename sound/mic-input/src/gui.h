@@ -50,6 +50,7 @@ TFT_eSpectrum<10> spectrum(spectrum_sprite, 60);
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
 
+const static TFT_eSolidBrush YellowBrush(TFT_YELLOW);
 const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
 const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 20);
 
@@ -61,7 +62,13 @@ static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
-const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(GreenBrush, RedBrush, DarkGreenBrush, DarkRedBrush, 3, 32);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
+
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
+    { {0, &YellowBrush}, {1, &GreenBrush}, {10, &YellowBrush}, {11, &GreenBrush}},
+    { {0, &DarkGreenBrush} },
+    3, 
+    60);
 
 void gui_set_input(int input)
 {

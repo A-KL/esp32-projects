@@ -4,6 +4,8 @@
 #include "gui.h"
 #include "envelope_detector.h"
 
+//#define DEBUG_OUTPUT
+
 #define I2S_WS 25
 #define I2S_SD 33
 #define I2S_SCK 32
@@ -89,11 +91,13 @@ void i2s_setpin() {
 
 void IRAM_ATTR OnLeftButtonPressed()
 {
+    log_w("Left button Pressed!");
   //digitalWrite(LED_pin, !digitalRead(LED_pin));
 }
 
 void IRAM_ATTR OnRightButtonPressed()
 {
+    log_w("Right button Pressed!");
   //digitalWrite(LED_pin, !digitalRead(LED_pin));
 }
 
@@ -147,13 +151,13 @@ void update_analog() {
     // gui_led_update(main_led);
     // gui_led_update(second_led);
 
+#ifdef DEBUG_OUTPUT
     Serial.print(left);
-
     Serial.print(" ");
 
     Serial.print(right);
-
     Serial.println(" ");
+#endif
 
     vTaskDelay(100 / portTICK_RATE_MS); 
 }
@@ -180,16 +184,15 @@ void update_i2s() {
         
             envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
 
+#ifdef DEBUG_OUTPUT
             Serial.print(left_envelope_context.envelope_out);
-
             Serial.print(" ");
 
             Serial.print(right_envelope_context.envelope_out);
-
             Serial.print(" ");
 
             Serial.println(mean);
-
+#endif
             left_pb.value = left_envelope_context.envelope_out;
             right_pb.value = right_envelope_context.envelope_out;
         }  
@@ -198,12 +201,13 @@ void update_i2s() {
 
 void loop() 
 {
+#ifdef DEBUG_OUTPUT
     auto rangelimit = 3000;
-
     Serial.print(rangelimit * -1);
     Serial.print(" ");
     Serial.print(rangelimit);
     Serial.print(" ");
+#endif
 
     switch (audio_input)
     {

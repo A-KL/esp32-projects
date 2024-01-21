@@ -27,7 +27,7 @@ struct TFT_eLabel
     TFT_eSprite* canvas = NULL;
 
     TFT_eLabel(TFT_eSprite& canvas, const char* label_text, int border = 0, int color = TFT_WHITE, int bg_color = TFT_BLACK) 
-        : canvas(&canvas), text(label_text), foreground_color(color), background_color(bg_color), borders_thickness({border, border, border, border})
+        : canvas(&canvas), text(label_text), foreground_color(color), background_color(bg_color), borders_thickness{border, border, border, border}
     { }
 };
 

@@ -14,7 +14,7 @@ struct audio_envelope_context_t
 
 void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate) 
 {
-    context.attack = expf(-1.0/((float)sample_rate * .050)); //50mS Attack
+    context.attack = expf(-1.0/((float)sample_rate * .030)); //50mS Attack
     context.release = expf(-1.0/((float)sample_rate * .100)); //100mS Release
 }
 
@@ -28,8 +28,8 @@ void envelope_calculate_right_left(const int32_t* samples, const int16_t samples
         left_x = (int16_t) samples[i];
         right_x = (int16_t) (samples[i] >> 16);
 
-        left_x = left_x * 10;
-        right_x = right_x * 10;
+        left_x = left_x * 1;
+        right_x = right_x * 1;
 
         left.dc_filter = left_x - left.x_prev + (.99 * left.dc_filter);
         left.x_prev = left_x;

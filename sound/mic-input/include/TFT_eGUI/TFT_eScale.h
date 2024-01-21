@@ -63,8 +63,8 @@ int gui_scale_get_indicator_length_horizontal(const TFT_eScale& scale) {
             return scale.height - scale.canvas->fontHeight() - 12;
         case Both:
             return (scale.height - scale.canvas->fontHeight())/ 2 - 12;
-        return 0;
     }
+    return 0;
 }
 
 // int gui_scale_get_indicator_length_vertical(const TFT_eScale& scale, int text_index) {

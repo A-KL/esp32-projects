@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SPI.h>
 #include <TFT_eSPI.h>
 
 #include "Orbitron_Bold_12.h"

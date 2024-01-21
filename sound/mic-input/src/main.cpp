@@ -7,6 +7,7 @@
 #define I2S_WS 25
 #define I2S_SD 33
 #define I2S_SCK 32
+#define I2S_MCLK 39
  
 #define I2S_PORT I2S_NUM_0
 #define I2S_SAMPLE_RATE 44100
@@ -30,7 +31,7 @@ uint8_t sample_size = sizeof(int32_t); // int16_t
 int32_t samples[I2S_BUFFER_SIZE]; // int16_t
 
 i2s_config_t i2s_config = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),  // | I2S_MODE_PDM
+    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),  // | I2S_MODE_PDM // I2S_MODE_MASTER
     .sample_rate = I2S_SAMPLE_RATE,
     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
     .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT, //I2S_CHANNEL_FMT_ONLY_LEFT
@@ -76,6 +77,7 @@ void i2s_setpin() {
     #if (ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 3, 0))
         .mck_io_num = I2S_PIN_NO_CHANGE,
     #endif
+       // .mck_io_num   = I2S_MCLK,
         .bck_io_num   = I2S_SCK,
         .ws_io_num    = I2S_WS,
         .data_out_num = I2S_PIN_NO_CHANGE,

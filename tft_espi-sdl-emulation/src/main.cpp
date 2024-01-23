@@ -25,6 +25,19 @@ int main(void)
 
   tft.fillSmoothRoundRect(200, 100, 80, 30, 20, TFT_GOLD);
 
+  TFT_eSprite sprite(&tft);
+
+  sprite.setColorDepth(16);
+  sprite.createSprite(100, 120);
+  sprite.setSwapBytes(true);
+
+  sprite.fillRect(10, 10, 50, 100, TFT_MAGENTA);
+  //sprite.fillCircle(50, 160, 40, TFT_DARKGREEN);
+
+  sprite.pushSprite(100, 100);
+
+  sprite.deleteSprite();
+
   uint16_t x = 0, y = 0;
 
   bool pressed = tft.getTouch(&x, &y);

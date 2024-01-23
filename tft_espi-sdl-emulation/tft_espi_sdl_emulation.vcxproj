@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Sources\Private\SDL2-devel-2.28.5-mingw\SDL2-2.28.5\x86_64-w64-mingw32\include;C:\Users\Anatolii.Klots\OneDrive\Sources\tft_espi-sdl-emulation\lib\TFT_eSPI;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Sources\Private\SDL2-2.28.5\lib\x64;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\Users\Anatolii.Klots\OneDrive\Sources\tft_espi-sdl-emulation\lib\TFT_eSPI;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\SDL2-devel-2.28.5-mingw\SDL2-2.28.5\x86_64-w64-mingw32\include;lib\TFT_eSPI;lib\TFT_eGUI;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\SDL2-2.28.5\lib\x64;$(LibraryPath)</LibraryPath>
+    <SourcePath>lib\TFT_eSPI;lib\TFT_eGUI;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,10 +134,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lib\TFT_eSPI\TFT_eSPI.cpp" />
+    <ClCompile Include="lib\TFT_eSPI\TFT_eSprite.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gui.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_eColorBrush.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_eLed.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_ePanel.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_eProgressBar.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_eProgressBar_ValueStyle.h" />
+    <ClInclude Include="lib\TFT_eGUI\TFT_eSPI_Ex.h" />
     <ClInclude Include="lib\TFT_eSPI\TFT_eSPI.h" />
+    <ClInclude Include="lib\TFT_eSPI\TFT_eSprite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

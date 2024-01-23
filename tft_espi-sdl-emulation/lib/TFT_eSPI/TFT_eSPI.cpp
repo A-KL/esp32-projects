@@ -1477,6 +1477,36 @@ uint16_t TFT_eSPI::readPixel(int32_t x0, int32_t y0)
   return color565(data[0], data[1], data[2]);
 }
 
+/***************************************************************************************
+** Function name:           setPivot
+** Description:             Set the pivot point on the TFT
+*************************************************************************************x*/
+void TFT_eSPI::setPivot(int16_t x, int16_t y)
+{
+    _xPivot = x;
+    _yPivot = y;
+}
+
+
+/***************************************************************************************
+** Function name:           getPivotX
+** Description:             Get the x pivot position
+***************************************************************************************/
+int16_t TFT_eSPI::getPivotX(void)
+{
+    return _xPivot;
+}
+
+
+/***************************************************************************************
+** Function name:           getPivotY
+** Description:             Get the y pivot position
+***************************************************************************************/
+int16_t TFT_eSPI::getPivotY(void)
+{
+    return _yPivot;
+}
+
 void TFT_eSPI::setRenderColor(uint32_t color)
 {
   auto color24bpp = color16to24(color);

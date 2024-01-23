@@ -310,10 +310,10 @@ class TFT_eSPI { friend class TFT_eSprite; // Sprite class has access to protect
 //            drawXBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint16_t fgcolor, uint16_t bgcolor),
 //            setBitmapColor(uint16_t fgcolor, uint16_t bgcolor); // Define the 2 colours for 1bpp sprites
 
-//            // Set TFT pivot point (use when rendering rotated sprites)
-//   void     setPivot(int16_t x, int16_t y);
-//   int16_t  getPivotX(void), // Get pivot x
-//            getPivotY(void); // Get pivot y
+            // Set TFT pivot point (use when rendering rotated sprites)
+   void     setPivot(int16_t x, int16_t y);
+   int16_t  getPivotX(void), // Get pivot x
+            getPivotY(void); // Get pivot y
 
 //            // The next functions can be used as a pair to copy screen blocks (or horizontal/vertical lines) to another location
 //            // Read a block of pixels to a data buffer, buffer is 16-bit and the size must be at least w * h
@@ -546,5 +546,7 @@ fastBlend(A alpha, F fgc, B bgc)
 
 // Load the Sprite Class
 //#include "Extensions/Sprite.h"
+
+#include "TFT_eSprite.h"
 
 #endif // ends #ifndef _TFT_eSPIH_

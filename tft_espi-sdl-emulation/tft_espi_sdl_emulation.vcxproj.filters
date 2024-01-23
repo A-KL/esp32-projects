@@ -21,9 +21,36 @@
     <ClCompile Include="lib\TFT_eSPI\TFT_eSPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lib\TFT_eSPI\TFT_eSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\TFT_eSPI\TFT_eSPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_eSPI_Ex.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_eColorBrush.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_eLed.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_ePanel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_eProgressBar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eGUI\TFT_eProgressBar_ValueStyle.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\TFT_eSPI\TFT_eSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -164,6 +164,7 @@ void update_analog() {
 
 void update_i2s() {
     size_t bytes_read = 0;
+
     esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
 
     if (result == ESP_OK)
@@ -182,7 +183,7 @@ void update_i2s() {
             // Average the data reading
             mean /= samples_read;
         
-            envelope_calculate_right_left(samples, samples_read, right_envelope_context, left_envelope_context);
+            envelope_calculate_right_left((unsigned char*)samples, 2, samples_read, right_envelope_context, left_envelope_context);
 
 #ifdef DEBUG_OUTPUT
             Serial.print(left_envelope_context.envelope_out);

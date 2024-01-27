@@ -86,7 +86,10 @@ void i2s_setpin() {
         .data_in_num  = I2S_SD
     };
 
-    i2s_set_pin(I2S_NUM_0, &pin_config);
+    esp_err_t result = i2s_set_pin(I2S_NUM_0, &pin_config);
+    if(result != ESP_OK) {
+        log_e("i2s_set_pin error: %d", result);
+    }
 }
 
 void IRAM_ATTR OnLeftButtonPressed()
@@ -173,30 +176,33 @@ void update_i2s() {
         
         if (samples_read > 0) 
         {
+            envelope_calculate_right_left((unsigned char*)samples, 2, samples_read, right_envelope_context, left_envelope_context);
+
+#ifdef DEBUG_OUTPUT
             float mean = 0;
 
             for (int16_t i = 0; i < samples_read; ++i) 
             {
                 mean += ((int16_t)samples[i]);
             }
-    
-            // Average the data reading
-            mean /= samples_read;
-        
-            envelope_calculate_right_left((unsigned char*)samples, 2, samples_read, right_envelope_context, left_envelope_context);
 
-#ifdef DEBUG_OUTPUT
+            mean /= samples_read;
+
             Serial.print(left_envelope_context.envelope_out);
             Serial.print(" ");
 
             Serial.print(right_envelope_context.envelope_out);
             Serial.print(" ");
 
-            Serial.println(mean);
+            Serial.println();
 #endif
             left_pb.value = left_envelope_context.envelope_out;
             right_pb.value = right_envelope_context.envelope_out;
-        }  
+        }
+        else
+        {
+            log_e("i2s_read error: %d", result);
+        }
     }
 }
 
@@ -223,6 +229,5 @@ void loop()
             break;
     }
 
-    // printf("loop cycling\n");
     // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
 }

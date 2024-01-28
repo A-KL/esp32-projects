@@ -5,6 +5,7 @@
 #include <sbus.h>
 
 #include <driver_pwm.h>
+#include <esp32_now.h>
 
 #include <config_esp32.h>
 #include <config_esp32_c3.h>
@@ -152,6 +153,13 @@ void driver_init()
 
   attachInterrupt(digitalPinToInterrupt(pwm_pins[0]), TimerInput0, CHANGE);
   attachInterrupt(digitalPinToInterrupt(pwm_pins[1]), TimerInput1, CHANGE);
+}
+
+void on_esp_now(const channel_t* channels, int channels_count) 
+{
+    for (auto i=0; i<channels_count; i++) {
+        sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
+    }
 }
 
 void driver_loop()

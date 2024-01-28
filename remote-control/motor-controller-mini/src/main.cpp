@@ -4,6 +4,7 @@
 #include <driver.h>
 #include <storage.h>
 #include <api.h>
+#include <esp32_now.h>
 
 void setup() {
   Serial.begin(115200);
@@ -12,6 +13,7 @@ void setup() {
   storage_init();
   wifi_init("esp32-motor-ctrl-mini");
   api_init();
+  now_init();
 
   settings_load(motors_config, motors_count);
  // web_init();

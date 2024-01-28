@@ -20,8 +20,8 @@ const uint8_t size = JSON_OBJECT_SIZE(3);
 StaticJsonDocument<size> readings;
 
 // Timer variables
-unsigned long lastTime = 0;
-unsigned long timerDelay = 30000;
+// unsigned long lastTime = 0;
+// unsigned long timerDelay = 30000;
 
 void Serialize(const motor_config_t* configs, const int config_size, String& result)
 {

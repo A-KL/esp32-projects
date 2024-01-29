@@ -1,5 +1,4 @@
-#ifndef types_h
-#define types_h
+#pragma once
 	
 #include <map>
 
@@ -23,14 +22,15 @@ namespace inputs {
     sbus = 2,
     now = 3
   };
-  const std::map<String, input_type_t> drive_input_map = 
-  { 
-    { "pwm", pwm }, 
-    { "adc", adc }, 
-    { "sbus", sbus },
-    { "now", now }
-  };
 }
+
+const std::map<String, inputs::input_type_t> drive_input_map = 
+{ 
+  { "pwm", inputs::input_type_t::pwm }, 
+  { "adc", inputs::input_type_t::adc }, 
+  { "sbus", inputs::input_type_t::sbus },
+  { "now", inputs::input_type_t::now }
+};
 
 typedef struct {
     short a;
@@ -56,35 +56,34 @@ namespace outputs {
     motor = 1,
     sbus  = 2
   };
-  const std::map<String, output_type_t> drive_input_map = 
-  { 
-    {"pwm", pwm},
-    {"motors", motor}, 
-    {"sbus", sbus} 
-  };
 }
 
+const std::map<String, outputs::output_type_t> drive_output_map = 
+{ 
+  { "pwm", outputs::output_type_t::pwm },
+  { "motors", outputs::output_type_t::motor }, 
+  { "sbus", outputs::output_type_t::sbus } 
+};
+
 typedef struct {
-    uint8_t type;
-    uint8_t size;
+  uint8_t type;
+  uint8_t size;
 } node_config_t;
 
 const node_config_t input_configs[] = {
-  { inputs::pwm, 2 },
-  { inputs::adc, 2 },
-  { inputs::sbus, 16 },
-  { inputs::now, 16 }
+  { inputs::input_type_t::pwm, 2 },
+  { inputs::input_type_t::adc, 2 },
+  { inputs::input_type_t::sbus, 16 },
+  { inputs::input_type_t::now, 16 }
 };
 
 const node_config_t outputs_configs[] = {
-  { outputs::pwm, 2 },
-  { outputs::motor, 2 },
-  { outputs::sbus, 16 }
+  { outputs::output_type_t::pwm, 2 },
+  { outputs::output_type_t::motor, 2 },
+  { outputs::output_type_t::sbus, 16 }
 };
 
 typedef struct {
     const node_config_t& input;
     const node_config_t& output;
 } mapping_config_t;
-
-#endif

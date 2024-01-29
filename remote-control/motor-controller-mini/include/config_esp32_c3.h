@@ -8,9 +8,12 @@ const int adc_pins[] = { 4, 3 };
 
 const int sbus_rx_tx_pins[] = { 20, 21 };
 
-const motor_drive_mode_t motor_modes[] = { motor_drive_mode_t::a_b_en };
-
 const int motors_count = 2;
+
+const motor_drive_mode_t motor_modes[motors_count] = {
+     motor_drive_mode_t::a_b_en,
+     motor_drive_mode_t::a_b_en
+};
 
 const motor_pins_t motor_pins[motors_count] = {
     { 7,  6, 5, 1, 2, 0 }, //a, b, en, pwm_a, pwm_b, pwm_en
@@ -19,6 +22,6 @@ const motor_pins_t motor_pins[motors_count] = {
 
 motor_config_t motors_config[motors_count] = 
 {
-    { motor_modes[0], false, inputs::pwm, 0 }, // a_b_en, false, sbus input, channel 1
-    { motor_modes[0], false, inputs::pwm, 1 }  // a_b_en, false, sbus input, channel 2
+    { motor_modes[0], false, inputs::input_type_t::pwm, 0 }, // a_b_en, false, sbus input, channel 1
+    { motor_modes[1], false, inputs::input_type_t::pwm, 1 }  // a_b_en, false, sbus input, channel 2
 };

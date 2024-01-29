@@ -170,7 +170,7 @@ void driver_loop()
     sbus_data = sbus_rx.data();
     for (auto i=0; i<motors_count; ++i)
     {
-      if (motors_config[i].input_type == inputs::sbus)
+      if (motors_config[i].input_type == inputs::input_type_t::sbus)
       {
         auto sbus_index = motors_config[i].input_channel;
         outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
@@ -187,7 +187,7 @@ void driver_loop()
 
   for (auto i=0; i<motors_count; ++i)
   {
-    if (motors_config[i].input_type == inputs::pwm)
+    if (motors_config[i].input_type == inputs::input_type_t::pwm)
     {
       auto pwm_index = motors_config[i].input_channel;
       auto pwm_value = pwm_inputs[pwm_index];
@@ -197,7 +197,7 @@ void driver_loop()
       else
         outputs[i] = 0;
     }
-    else if (motors_config[i].input_type == inputs::adc)
+    else if (motors_config[i].input_type == inputs::input_type_t::adc)
     {
       auto adc_index = motors_config[i].input_channel;
       auto adc_value = analogRead(adc_pins[adc_index]);

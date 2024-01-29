@@ -83,9 +83,9 @@ bool settings_load(motor_config_t motors[], const int count)
         motors[i].input_channel =  motor_json["input_channel"].as<int>();
 
         auto input_type_str = motor_json["input_type"].as<String>();
-        auto input_type_iter = drive_input_map.find(input_type_str);
+        auto input_type_iter = inputs::drive_input_map.find(input_type_str);
 
-        if (input_type_iter == drive_input_map.end())
+        if (input_type_iter == inputs::drive_input_map.end())
         {
             Serial.print("Unable to map value: ");
             Serial.println(input_type_str);

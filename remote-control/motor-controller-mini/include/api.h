@@ -11,7 +11,8 @@ void OnNotFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
-void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) 
+{
     try
     {
         if (!settings_apply(data, len, index, total))
@@ -38,7 +39,8 @@ void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t
     }
 }
 
-void api_init()  {
+void api_init() 
+{
     api.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send(SPIFFS, "/default.json", "application/json");
     });

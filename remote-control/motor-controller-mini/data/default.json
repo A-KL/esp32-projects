@@ -6,5 +6,36 @@
     "motors": [
         { "mode": 0, "inverted": false, "input_type": "pwm", "input_channel": 0 },
         { "mode": 0, "inverted": false, "input_type": "pwm", "input_channel": 1 }
+    ],
+    "inputs":[
+        { "type" : "pwm", "size": 2 },
+        { "type" : "adc", "size": 2 },
+        { "type" : "now", "size": 16 },
+        { "type" : "sbus", "size": 16 }
+    ],
+    "outputs":[
+        { "type" : "motors", "size": 2 },
+        { "type" : "pwm", "size": 2 },
+        { "type" : "sbus", "size": 16 }
+    ],
+    "mappings": [
+        { "out_typ": 0, "out_ch": 0, "in_typ" : 0, "in_ch": 0 },
+        { "out_typ": 0, "out_ch": 1, "in_typ" : 0, "in_ch": 1 },
+
+        { "out_typ": 2, "out_ch": 0, "in_typ" : 2, "in_ch": 0 },
+        { "out_typ": 2, "out_ch": 1, "in_typ" : 2, "in_ch": 1 },
+        { "out_typ": 2, "out_ch": 2, "in_typ" : 2, "in_ch": 2 },
+        { "out_typ": 2, "out_ch": 3, "in_typ" : 2, "in_ch": 3 },
+        { "out_typ": 2, "out_ch": 4, "in_typ" : 2, "in_ch": 4 },
+        { "out_typ": 2, "out_ch": 5, "in_typ" : 2, "in_ch": 5 },
+        { "out_typ": 2, "out_ch": 6, "in_typ" : 2, "in_ch": 6 },
+        { "out_typ": 2, "out_ch": 7, "in_typ" : 2, "in_ch": 7 },
+
+        { "out_typ": 1, "out_ch": 0, "in_typ" : 2, "in_ch": 0 },
+        { "out_typ": 1, "out_ch": 1, "in_typ" : 2, "in_ch": 1 },
+        { "out_typ": 1, "out_ch": 2, "in_typ" : 2, "in_ch": 2 },
+        { "out_typ": 1, "out_ch": 3, "in_typ" : 2, "in_ch": 3 },
+        { "out_typ": 1, "out_ch": 4, "in_typ" : 2, "in_ch": 4 },
+        { "out_typ": 1, "out_ch": 5, "in_typ" : 2, "in_ch": 5 }
     ]
 }

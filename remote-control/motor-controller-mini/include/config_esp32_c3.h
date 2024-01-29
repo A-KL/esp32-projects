@@ -19,6 +19,6 @@ const motor_pins_t motor_pins[motors_count] = {
 
 motor_config_t motors_config[motors_count] = 
 {
-    { motor_modes[0], false, pwm, 0 }, // a_b_en, false, sbus input, channel 1
-    { motor_modes[0], false, pwm, 1 }  // a_b_en, false, sbus input, channel 2
+    { motor_modes[0], false, inputs::pwm, 0 }, // a_b_en, false, sbus input, channel 1
+    { motor_modes[0], false, inputs::pwm, 1 }  // a_b_en, false, sbus input, channel 2
 };

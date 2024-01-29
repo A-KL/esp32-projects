@@ -26,10 +26,10 @@ namespace inputs {
 
 const std::map<String, inputs::input_type_t> drive_input_map = 
 { 
-  { "pwm", inputs::input_type_t::pwm }, 
-  { "adc", inputs::input_type_t::adc }, 
-  { "sbus", inputs::input_type_t::sbus },
-  { "now", inputs::input_type_t::now }
+  { "pwm", inputs::pwm }, 
+  { "adc", inputs::adc }, 
+  { "sbus", inputs::sbus },
+  { "now", inputs::now }
 };
 
 typedef struct {
@@ -60,9 +60,9 @@ namespace outputs {
 
 const std::map<String, outputs::output_type_t> drive_output_map = 
 { 
-  { "pwm", outputs::output_type_t::pwm },
-  { "motors", outputs::output_type_t::motor }, 
-  { "sbus", outputs::output_type_t::sbus } 
+  { "pwm", outputs::pwm },
+  { "motors", outputs::motor }, 
+  { "sbus", outputs::sbus } 
 };
 
 typedef struct {
@@ -71,19 +71,27 @@ typedef struct {
 } node_config_t;
 
 const node_config_t input_configs[] = {
-  { inputs::input_type_t::pwm, 2 },
-  { inputs::input_type_t::adc, 2 },
-  { inputs::input_type_t::sbus, 16 },
-  { inputs::input_type_t::now, 16 }
+  { inputs::pwm, 2 },
+  { inputs::adc, 2 },
+  { inputs::sbus, 16 },
+  { inputs::now, 16 }
 };
 
 const node_config_t outputs_configs[] = {
-  { outputs::output_type_t::pwm, 2 },
-  { outputs::output_type_t::motor, 2 },
-  { outputs::output_type_t::sbus, 16 }
+  { outputs::pwm, 2 },
+  { outputs::motor, 2 },
+  { outputs::sbus, 16 }
 };
 
 typedef struct {
-    const node_config_t& input;
-    const node_config_t& output;
+    const node_config_t input;
+    const node_config_t output;
 } mapping_config_t;
+
+std::vector<mapping_config_t> mappings = {
+  { {inputs::sbus, 0}, {outputs::motor, 0} },
+  { {inputs::sbus, 1}, {outputs::motor, 1} },
+
+  { {inputs::now, 0}, {outputs::motor, 0} },
+  { {inputs::now, 1}, {outputs::motor, 1} },
+};

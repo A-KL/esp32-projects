@@ -12,9 +12,9 @@ void wifi_init(const char* hostname = NULL)
 
   Serial.println(WiFi.macAddress());
 
-  WiFi.begin(ssid, password);
+  // WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-  }
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   delay(500);
+  // }
 }

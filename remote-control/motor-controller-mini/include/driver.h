@@ -33,7 +33,6 @@ void init_motors_a_b_en(const motor_pins_t& pins)
   pinMode(pins.b, OUTPUT);
 
   ledcSetup(pins.en_channel, MOTOR_FREQ, MOTOR_RES);
-
   ledcAttachPin(pins.en, pins.en_channel);
 }
 
@@ -93,7 +92,6 @@ void run_motor_a_en(const byte pin_a, const byte channel_en, const int speed) {
   }
   else {
     digitalWrite(pin_a, speed > 0 ? HIGH : LOW);
-
     ledcWrite(channel_en, abs(speed));
   }
 }
@@ -137,17 +135,16 @@ void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int
 
 void driver_init()
 {
-  for (auto i = 0; i < motors_count; i++)
-  {
+  for (auto i = 0; i < motors_count; i++) {
     pinMode(adc_pins[i], INPUT);
   }
   
-  for (auto i = 0; i < motors_count; i++)
-  {
+  for (auto i = 0; i < motors_count; i++) {
     pinMode(pwm_pins[i], INPUT);
   }
   
   sbus_rx.Begin();
+  sbus_tx.Begin();
 
   init_motors();
 
@@ -157,9 +154,11 @@ void driver_init()
 
 void on_esp_now(const channel_t* channels, int channels_count) 
 {
-    for (auto i=0; i<channels_count; i++) {
-        sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
-    }
+  for (auto i=0; i<channels_count; i++) {
+      sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
+  }
+  sbus_tx.data(sbus_data);
+  sbus_tx.Write();
 }
 
 void driver_loop()
@@ -169,9 +168,6 @@ void driver_loop()
   if (sbus_rx.Read())
   {
     sbus_data = sbus_rx.data();
-    sbus_tx.data(sbus_data);
-    sbus_tx.Write();
-
     for (auto i=0; i<motors_count; ++i)
     {
       if (motors_config[i].input_type == sbus)
@@ -180,6 +176,8 @@ void driver_loop()
         outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
       }
     }
+    sbus_tx.data(sbus_data);
+    sbus_tx.Write();
   }
 
   int pwm_inputs[] = { 

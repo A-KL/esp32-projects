@@ -12,7 +12,7 @@ void setup() {
 
   storage_init();
   wifi_init("esp32-motor-ctrl-mini");
-  api_init();
+  //api_init();
   now_init();
 
   settings_load(motors_config, motors_count);

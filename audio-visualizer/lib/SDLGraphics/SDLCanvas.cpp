@@ -65,6 +65,11 @@ void SDLCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
 	SDL_DestroyTexture(Message);
 }
 
+void SDLCanvas::SetFont(int index, unsigned char size)
+{
+
+}
+
 void SDLCanvas::Clear(const Color& color)
 {
 	SDL_SetRenderDrawColor(_sdl, color._r, color._g, color._b, color._a);

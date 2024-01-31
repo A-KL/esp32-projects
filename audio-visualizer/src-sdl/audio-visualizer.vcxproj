@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Sources\SDL2-2.0.10\include;C:\Sources\SDL2-2.0.20\include;C:\Sources\SDL2_ttf-2.0.18\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Sources\SDL2-2.0.10\lib\x64;C:\Sources\SDL2-2.0.20\lib\x64;C:\Sources\SDL2_ttf-2.0.18\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\Sources\SDL2-2.28.5\include;E:\Sources\SDL2_ttf-2.0.18\include;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\Sources\SDL2-2.28.5\lib\x64;E:\Sources\SDL2_ttf-2.0.18\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

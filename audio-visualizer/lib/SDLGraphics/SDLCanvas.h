@@ -2,8 +2,7 @@
 
 #include "../BaseGraphics/Canvas.h"
 
-class SDLCanvas :
-	public Canvas<Color>
+class SDLCanvas : public Canvas<Color>
 {
 public:
 	SDLCanvas(SDL_Window*);
@@ -17,6 +16,8 @@ public:
 	void DrawRect(int x0, int y0, int w, int h, const Color& color);
 
 	void DrawText(int x, int y, int w, int h, const char* text, const Color& color);
+
+	void SetFont(int index, unsigned char size);
 
 	inline int Height() const
 	{

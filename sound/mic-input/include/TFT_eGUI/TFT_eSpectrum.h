@@ -34,7 +34,6 @@ struct TFT_eSpectrum
     float min = 0;
     float max = 255;
 
-
     TFT_eSpectrum(TFT_eSprite& canvas, const int band_resolution) 
         : canvas(&canvas), bands(TSize), band_segments(band_resolution)
     { }    

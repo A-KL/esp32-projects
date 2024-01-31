@@ -31,6 +31,49 @@ class TFT_eProgressBar_SimpleValueStyle : public TFT_eProgressBar_ValueStyle
         const TFT_eColorBrush* _value_color;
 };
 
+class TFT_eProgressBar_SlimSegmentsValueStyle : public TFT_eProgressBar_ValueStyle 
+{
+    public:
+        TFT_eProgressBar_SlimSegmentsValueStyle(
+            const TFT_eColorBrush* segment_color,
+            const TFT_eColorBrush* segment_bg_color,
+            const int padding,
+            const int segments_count)
+            : _segment_color(segment_color), _segment_bg_color(segment_bg_color)
+            { } 
+
+        TFT_eProgressBar_SlimSegmentsValueStyle(
+            const TFT_eColorBrush &segment_color,
+            const TFT_eColorBrush &segment_bg_color,
+            const int padding,
+            const int segments_count)
+            : TFT_eProgressBar_SlimSegmentsValueStyle(&segment_color, &segment_bg_color, padding, segments_count)
+            { } 
+
+        virtual void render(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
+        {
+            if (w > h) {
+                render_horizontal(sprite, left, top, w, h, value_w);
+            } else {
+                render_vertical(sprite, left, top, w, h, value_w);
+            }
+        };
+
+    private:      
+        const TFT_eColorBrush* _segment_color;
+        const TFT_eColorBrush* _segment_bg_color;
+
+        void render_horizontal(TFT_eSprite* sprite, int left, int top, int w, int h, int value_w) const 
+        {
+            
+        }
+
+        void render_vertical(TFT_eSprite* sprite, int left, int top, int w, int h, int value_h) const 
+        {
+
+        }
+};
+
 class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle 
 {
     public:

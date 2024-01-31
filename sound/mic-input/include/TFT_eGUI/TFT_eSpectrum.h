@@ -6,6 +6,12 @@
 
 #include "TFT_eSPI_Ex.h"
 
+#define TFT_DARK_YELLOW tft_color24to16(0x23230F)
+#define TFT_YELLOW tft_color24to16(0xF3E835)
+
+#define TFT_DARK_GREEN tft_color24to16(0x090E07)
+#define TFT_GREEN tft_color24to16(0x64C749)
+
 template <int TSize>
 struct TFT_eSpectrum
 {

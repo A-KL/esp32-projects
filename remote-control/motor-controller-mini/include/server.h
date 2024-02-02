@@ -2,8 +2,10 @@
 
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <SPIFFS.h>
 #include <ArduinoJson.h>
+
+#include "FS.h"
+#include <LittleFS.h>
 
 #include <types.h>
 #include <config_esp32.h>
@@ -90,16 +92,16 @@ void OnSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEven
 
 void web_init() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/index.html", "text/html");
+    request->send(LittleFS, "/index.html", "text/html");
   });
 
-  server.serveStatic("/", SPIFFS, "/");
+  server.serveStatic("/", LittleFS, "/");
 
   ws.onEvent(OnSocketEvent);
 
   server.addHandler(&ws);
 
-  //api.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+  //api.serveStatic("/", LittleFS, "/").setDefaultFile("index.htm");
   //server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
 
   server.begin();

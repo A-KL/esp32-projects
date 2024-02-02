@@ -5,19 +5,20 @@
 #include <ArduinoJson.h>
 
 #include <types.h>
-#include <SPIFFS.h>
+#include "FS.h"
+#include <LittleFS.h>
 
 void storage_init() 
 {
-  if (!SPIFFS.begin(true)) {
-    Serial.println("An error has occurred while mounting SPIFFS");
+  if (!LittleFS.begin(true)) {
+    Serial.println("An error has occurred while mounting LittleFS");
   }
-  Serial.println("SPIFFS mounted successfully");
+  Serial.println("LittleFS mounted successfully");
 }
 
 String setting_read(const String& key)
 {
-    File file = SPIFFS.open("/default.json", FILE_READ);
+    File file = LittleFS.open("/default.json", FILE_READ);
 
     if (!file)
     {
@@ -46,7 +47,7 @@ String setting_read(const String& key)
 
 bool settings_load(motor_config_t motors[], const int count)
 {
-    File file = SPIFFS.open("/default.json", FILE_READ);
+    File file = LittleFS.open("/default.json", FILE_READ);
     if (!file)
     {
         Serial.println("There was an error opening default.json file");
@@ -105,7 +106,7 @@ bool settings_load(motor_config_t motors[], const int count)
 
 void settings_save(uint8_t *data, size_t len, size_t index, size_t total)
 {
-    File file = SPIFFS.open("/default.json", "w+");
+    File file = LittleFS.open("/default.json", "w+");
     file.write(data, total);
     file.close();
 }

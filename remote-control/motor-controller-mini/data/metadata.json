@@ -1,0 +1,13 @@
+{
+    "inputs":[
+        { "type" : "pwm", "size": 2 },
+        { "type" : "adc", "size": 2 },
+        { "type" : "now", "size": 16 },
+        { "type" : "sbus", "size": 16 }
+    ],
+    "outputs":[
+        { "type" : "motors", "size": 2 },
+        { "type" : "pwm", "size": 2 },
+        { "type" : "sbus", "size": 16 }
+    ]
+}

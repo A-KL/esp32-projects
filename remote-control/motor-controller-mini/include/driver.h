@@ -10,11 +10,15 @@
 #include <config_esp32.h>
 #include <config_esp32_c3.h>
 
+#include <button_input.h>
+
+static button_input_t switch_input { 9, HIGH, 2000, 0, 2 };
+
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
 
-bool near_zero(const int value) {
+inline bool near_zero(const int value) {
   return (abs(value) < 30);
 }
 
@@ -135,6 +139,8 @@ void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int
 
 void driver_init()
 {
+  button_input_init(switch_input);
+
   for (auto i = 0; i < motors_count; i++) {
     pinMode(adc_pins[i], INPUT);
   }
@@ -163,6 +169,10 @@ void on_esp_now(const channel_t* channels, int channels_count)
 
 void driver_loop()
 {
+  button_input_update(switch_input);
+
+  log_w("Button value: %d", switch_input.value);
+
   int outputs[motors_count];
 
   if (sbus_rx.Read())

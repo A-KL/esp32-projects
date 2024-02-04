@@ -12,7 +12,11 @@
 
 #include <button_input.h>
 
-static button_input_t switch_input { 9, HIGH, 2000, 0, 2 };
+void on_switch_input(short input) {
+    log_w("Button value: %d", input);
+}
+
+static button_input_t switch_input { 9, HIGH, 2000, 0, 2, 0,  &on_switch_input};
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
@@ -170,8 +174,6 @@ void on_esp_now(const channel_t* channels, int channels_count)
 void driver_loop()
 {
   button_input_update(switch_input);
-
-  log_w("Button value: %d", switch_input.value);
 
   int outputs[motors_count];
 

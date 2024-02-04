@@ -8,7 +8,7 @@ struct button_input_state_t {
 
 struct button_counter_input_t {
     bool count_back = false;
-    bool d = 1;
+    short d = 1;
 };
 
 struct button_input_t {
@@ -18,6 +18,7 @@ struct button_input_t {
     const short start;
     const short end;
     short value;
+    void (*value_changed_callback)(short);
     button_input_state_t state;
     button_counter_input_t counter;
 };
@@ -45,20 +46,28 @@ void button_input_update(button_input_t& input)
         if (input.state.last_press_ticks == 0) {
             input.state.last_press_ticks = ticks;
         } 
-        else if(is_active(input, ticks)){
-            input.state.last_press_ticks = ticks;
-            
+        else if (is_active(input, ticks)) {
+
+            input.state.last_press_ticks = ticks;     
             input.value += input.counter.d;
 
-            if (input.value == input.end) {
-                if (input.counter.count_back) {
+            if (input.value == input.end) 
+            {
+                if (input.counter.count_back) 
+                {
                     input.counter.d = -1;
-                } else {
+                } 
+                else 
+                {
                     input.value = input.start;
                 }
-            } else if (input.value == input.start) {
+            } 
+            else if (input.value == input.start) 
+            {
                 input.counter.d = 1;
             }
+
+            input.value_changed_callback(input.value);
         }
     } else {
         input.state.last_press_ticks = 0;

@@ -32,6 +32,23 @@ inline void map_sample(unsigned char* samples, const int16_t bps, const int16_t 
     *result = (samples + sample_pair_position * bps * 2);
 }
 
+void envelope_calculate_average(unsigned char* samples, int16_t bps, const int16_t samples_count, audio_sample_16bit& result) 
+{
+    unsigned long  left_x = 0;
+    unsigned long right_x = 0;
+    audio_sample_16bit* sample = NULL;
+
+    for (auto i=0; i<samples_count; i++) {
+        map_sample(samples, bps, i, (unsigned char**)&sample);
+
+        left_x += sample->left;
+        right_x += sample->right;
+    }
+
+    result.left = left_x / samples_count;
+    result.right = right_x / samples_count;
+}
+
 void envelope_calculate_right_left(unsigned char* samples, int16_t bps, const int16_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
 {
     float left_x = 0;

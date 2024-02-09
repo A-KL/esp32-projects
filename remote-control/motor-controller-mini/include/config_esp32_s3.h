@@ -3,14 +3,16 @@
 #include <types.h>
 
 const int pwm_pins[] = { 0, 1 };
-
 const int adc_pins[] = { 4, 3 };
-
-const int sbus_rx_tx_pins[] = { 20, 21 };
-
-const int motors_count = 2;
+const int sbus_rx_tx_pins[] = { 20, 21 }; //RX 03, TX 01, uart0
 
 const int input_button = 9;
+const int led_button = -1;
+const int rgb_button = 21;
+
+const bool enable_lcd = true; // i2c 8 and 9
+
+const int motors_count = 2;
 
 const motor_drive_mode_t motor_modes[motors_count] = {
      motor_drive_mode_t::a_b_en,

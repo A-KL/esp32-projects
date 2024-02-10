@@ -4,9 +4,12 @@
 #include <string>
 #include <ArduinoJson.h>
 
-#include <types.h>
 #include "FS.h"
 #include <LittleFS.h>
+
+#include <types.h>
+
+motor_config_t motors_config[motors_count];
 
 void storage_init() 
 {

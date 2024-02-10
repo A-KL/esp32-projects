@@ -2,28 +2,44 @@
 
 #include <types.h>
 
-const int pwm_pins[] = { 0, 1 };
+/* PWM Outputs */
 
-const int adc_pins[] = { 4, 3 };
+const short pwm_output_pins[] = { };
+const short pwm_outputs_count = sizeof(pwm_output_pins) / sizeof(short);
 
-const int sbus_rx_tx_pins[] = { 20, 21 };
+/* PWM Inputs */
 
-const int motors_count = 2;
+const short pwm_input_pins[] = { 0, 1 };
+const short pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(short);
 
-const int input_button = 9;
+/* ADC Inputs */
 
-const motor_drive_mode_t motor_modes[motors_count] = {
+const short adc_input_pins[] = { 4, 3 };
+const short adc_inputs_count = sizeof(adc_input_pins) / sizeof(short);
+
+/* SBUS */
+
+const short sbus_rx_tx_pins[] = { 20, 21 };
+
+/* Motors */
+
+const static short motors_count = 2;
+
+const motor_drive_mode_t motor_modes[] = {
      motor_drive_mode_t::a_b_en,
      motor_drive_mode_t::a_b_en
 };
 
-const motor_pins_t motor_pins[motors_count] = {
+const motor_pins_t motor_pins[] = {
     { 7,  6, 5, 1, 2, 0 }, //a, b, en, pwm_a, pwm_b, pwm_en
     { 8, 10, 2, 4, 5, 3 }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
-motor_config_t motors_config[motors_count] = 
-{
-    { motor_modes[0], false, inputs::input_type_t::pwm, 0 }, // a_b_en, false, sbus input, channel 1
-    { motor_modes[1], false, inputs::input_type_t::pwm, 1 }  // a_b_en, false, sbus input, channel 2
-};
+/* Misc */
+
+const short switch_input_button = 9;
+
+const short led_output = 8;
+const short rgb_output = -1;
+
+const bool enable_lcd = true; // i2c 8 and 9

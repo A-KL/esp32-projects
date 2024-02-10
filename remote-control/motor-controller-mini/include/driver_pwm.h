@@ -23,7 +23,7 @@ typedef struct {
   }
 } pwm_input_t;
 
-pwm_input_t input_pwm[2];
+pwm_input_t input_pwm[pwm_inputs_count];
 
 void IRAM_ATTR TimerInput0() {
   input_pwm[0].Capture();

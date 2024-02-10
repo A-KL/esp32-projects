@@ -8,7 +8,6 @@
 #include <esp32_now.h>
 
 #include <config_esp32.h>
-#include <config_esp32_c3.h>
 
 #include <button_input.h>
 
@@ -16,7 +15,7 @@ void on_switch_input(short input) {
     log_w("Button value: %d", input);
 }
 
-static button_input_t switch_input { 9, HIGH, 2000, 0, 2, 0,  &on_switch_input};
+static button_input_t switch_input { switch_input_button, HIGH, 2000, 0, 2, 0,  &on_switch_input};
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
@@ -145,12 +144,12 @@ void driver_init()
 {
   button_input_init(switch_input);
 
-  for (auto i = 0; i < motors_count; i++) {
-    pinMode(adc_pins[i], INPUT);
+  for (auto i = 0; i < adc_inputs_count; i++) {
+    pinMode(adc_input_pins[i], INPUT);
   }
   
-  for (auto i = 0; i < motors_count; i++) {
-    pinMode(pwm_pins[i], INPUT);
+  for (auto i = 0; i < pwm_inputs_count; i++) {
+    pinMode(pwm_input_pins[i], INPUT);
   }
   
   sbus_rx.Begin();
@@ -158,8 +157,8 @@ void driver_init()
 
   init_motors();
 
-  attachInterrupt(digitalPinToInterrupt(pwm_pins[0]), TimerInput0, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(pwm_pins[1]), TimerInput1, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pwm_input_pins[0]), TimerInput0, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pwm_input_pins[1]), TimerInput1, CHANGE);
 }
 
 void on_esp_now(const channel_t* channels, int channels_count) 
@@ -182,7 +181,7 @@ void driver_loop()
     sbus_data = sbus_rx.data();
     for (auto i=0; i<motors_count; ++i)
     {
-      if (motors_config[i].input_type == inputs::sbus)
+      if (motors_config[i].input_type == sbus)
       {
         auto sbus_index = motors_config[i].input_channel;
         outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
@@ -199,7 +198,7 @@ void driver_loop()
 
   for (auto i=0; i<motors_count; ++i)
   {
-    if (motors_config[i].input_type == inputs::pwm)
+    if (motors_config[i].input_type == pwm)
     {
       auto pwm_index = motors_config[i].input_channel;
       auto pwm_value = pwm_inputs[pwm_index];
@@ -209,10 +208,10 @@ void driver_loop()
       else
         outputs[i] = 0;
     }
-    else if (motors_config[i].input_type == inputs::adc)
+    else if (motors_config[i].input_type == adc)
     {
       auto adc_index = motors_config[i].input_channel;
-      auto adc_value = analogRead(adc_pins[adc_index]);
+      auto adc_value = analogRead(adc_input_pins[adc_index]);
       outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
     }
   }

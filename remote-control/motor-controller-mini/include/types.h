@@ -1,12 +1,38 @@
 #pragma once
-	
+
 #include <map>
+#include <vector>
+#include <Arduino.h>
 
 enum motor_drive_mode_t {
   a_b_en  = 0,
   a_b     = 1,
   dir_en  = 2
 };
+
+enum input_type_t {
+  pwm  = 0,
+  adc  = 1,
+  sbus = 2,
+  now = 3
+};
+
+typedef struct {
+  short a;
+  short b;
+  short en;
+
+  short a_channel;
+  short b_channel;
+  short en_channel;
+} motor_pins_t;
+
+typedef struct {
+  enum motor_drive_mode_t mode;
+  bool inverted;
+  enum input_type_t input_type;
+  int input_channel;
+} motor_config_t;
 
 const std::map<String, motor_drive_mode_t> drive_modes_map = 
 { 
@@ -15,83 +41,10 @@ const std::map<String, motor_drive_mode_t> drive_modes_map =
   {"dir_en", dir_en} 
 };
 
-namespace inputs {
-  enum input_type_t : uint8_t {
-    pwm  = 0,
-    adc  = 1,
-    sbus = 2,
-    now = 3
-  };
-}
-
-const std::map<String, inputs::input_type_t> drive_input_map = 
+const std::map<String, input_type_t> drive_input_map = 
 { 
-  { "pwm", inputs::pwm }, 
-  { "adc", inputs::adc }, 
-  { "sbus", inputs::sbus },
-  { "now", inputs::now }
-};
-
-typedef struct {
-    short a;
-    short b;
-    short en;
-
-    short a_channel;
-    short b_channel;
-    short en_channel;
-} motor_pins_t;
-
-typedef struct {
-    motor_drive_mode_t mode;
-    bool inverted;
-    inputs::input_type_t input_type;
-    int input_channel;
-} motor_config_t;
-
-// concept
-namespace outputs {
-  enum output_type_t : uint8_t {
-    pwm   = 0,
-    motor = 1,
-    sbus  = 2
-  };
-}
-
-const std::map<String, outputs::output_type_t> drive_output_map = 
-{ 
-  { "pwm", outputs::pwm },
-  { "motors", outputs::motor }, 
-  { "sbus", outputs::sbus } 
-};
-
-typedef struct {
-  uint8_t type;
-  uint8_t size;
-} node_config_t;
-
-const node_config_t input_configs[] = {
-  { inputs::pwm, 2 },
-  { inputs::adc, 2 },
-  { inputs::sbus, 16 },
-  { inputs::now, 16 }
-};
-
-const node_config_t outputs_configs[] = {
-  { outputs::pwm, 2 },
-  { outputs::motor, 2 },
-  { outputs::sbus, 16 }
-};
-
-typedef struct {
-    const node_config_t input;
-    const node_config_t output;
-} mapping_config_t;
-
-std::vector<mapping_config_t> mappings = {
-  { {inputs::sbus, 0}, {outputs::motor, 0} },
-  { {inputs::sbus, 1}, {outputs::motor, 1} },
-
-  { {inputs::now, 0}, {outputs::motor, 0} },
-  { {inputs::now, 1}, {outputs::motor, 1} },
+  { "pwm", pwm }, 
+  { "adc", adc }, 
+  { "sbus", sbus },
+  { "now", now }
 };

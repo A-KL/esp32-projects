@@ -9,7 +9,6 @@
 
 #include <types.h>
 #include <config_esp32.h>
-#include <config_esp32_c3.h>
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -18,8 +17,8 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // Json Variable to Hold Sensor Readings
-const uint8_t size = JSON_OBJECT_SIZE(3);
-StaticJsonDocument<size> readings;
+// const uint8_t size = JSON_OBJECT_SIZE(3);
+// StaticJsonDocument<size> readings;
 
 // Timer variables
 // unsigned long lastTime = 0;
@@ -44,7 +43,7 @@ void Serialize(const motor_config_t* configs, const int config_size, String& res
 
 void OnConfiguration(String& data)
 {
-  Serialize(motors_config, motors_count, data);
+  //Serialize(motors_config, motors_count, data);
 }
 
 void NotifyClients(const String& data) {

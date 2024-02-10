@@ -1,14 +1,10 @@
 #pragma once
 
-#include <types.h>
 #include <sbus.h>
 #include <esp_now.h>
 #include <esp32-hal-log.h>
 
-#include <config_esp32_c3.h>
-
-#define INPUT_ESP_NOW_MIN   0
-#define INPUT_ESP_NOW_MAX   4095
+#include "config_esp32.h"
 
 #define CHANNELS_COUNT 16
 

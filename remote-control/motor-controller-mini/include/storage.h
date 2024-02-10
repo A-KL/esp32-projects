@@ -19,7 +19,7 @@ void storage_init()
   Serial.println("LittleFS mounted successfully");
 }
 
-String setting_read(const String& key)
+String setting_read_key(const String& key)
 {
     File file = LittleFS.open("/default.json", FILE_READ);
 

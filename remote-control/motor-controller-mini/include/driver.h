@@ -4,18 +4,9 @@
 #include <Arduino.h>
 #include <sbus.h>
 
+#include <config_esp32.h>
 #include <driver_pwm.h>
 #include <esp32_now.h>
-
-#include <config_esp32.h>
-
-#include <button_input.h>
-
-void on_switch_input(short input) {
-    log_w("Button value: %d", input);
-}
-
-static button_input_t switch_input { switch_input_button, HIGH, 2000, 0, 2, 0,  &on_switch_input};
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
@@ -140,9 +131,7 @@ void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int
      }
 }
 
-void driver_init()
-{
-  button_input_init(switch_input);
+void driver_init() {
 
   for (auto i = 0; i < adc_inputs_count; i++) {
     pinMode(adc_input_pins[i], INPUT);
@@ -150,6 +139,11 @@ void driver_init()
   
   for (auto i = 0; i < pwm_inputs_count; i++) {
     pinMode(pwm_input_pins[i], INPUT);
+  }
+
+  for (auto i = 0; i < pwm_outputs_count; i++) {
+      ledcSetup(i, 50, 12);
+      ledcAttachPin(pwm_output_pins[i], i);
   }
   
   sbus_rx.Begin();
@@ -161,8 +155,8 @@ void driver_init()
   attachInterrupt(digitalPinToInterrupt(pwm_input_pins[1]), TimerInput1, CHANGE);
 }
 
-void on_esp_now(const channel_t* channels, int channels_count) 
-{
+void on_esp_now(const channel_t* channels, int channels_count) {
+
   for (auto i=0; i<channels_count; i++) {
       sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
   }
@@ -172,8 +166,6 @@ void on_esp_now(const channel_t* channels, int channels_count)
 
 void driver_loop()
 {
-  button_input_update(switch_input);
-
   int outputs[motors_count];
 
   if (sbus_rx.Read())

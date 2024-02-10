@@ -28,11 +28,17 @@ inline bool is_active(const button_input_t& input, unsigned long ticks) {
 }
 
 inline void button_input_init(const button_input_t& input) {
+    if (input.gpio == 0) {
+        return;
+    }
     pinMode(input.gpio, INPUT);
 }
 
-void button_input_update(button_input_t& input) 
-{
+void button_input_update(button_input_t& input) {
+    
+    if (input.gpio == 0) {
+        return;
+    }
     auto state = digitalRead(input.gpio);
 
     if (state) {

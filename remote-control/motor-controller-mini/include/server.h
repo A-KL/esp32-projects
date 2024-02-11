@@ -51,6 +51,22 @@ void NotifyClients(const String& data) {
   ws.textAll(data);
 }
 
+void send_sbus_data(const short values[], const short size) 
+{
+  StaticJsonDocument<200> doc;
+
+  auto json = doc.createNestedArray("sbus_data");
+
+  for (auto i = 0; i<size; ++i) {  
+    json.add(values[i]);
+  }
+
+  String output;
+  serializeJson(doc, output);
+  ws.textAll(output);
+}
+
+
 void HandleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
 {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;

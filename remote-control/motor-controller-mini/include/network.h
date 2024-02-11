@@ -8,7 +8,7 @@ void wifi_init(const char* hostname = NULL, const char* ssid = NULL, const char*
   WiFi.setHostname(hostname);
   WiFi.mode(WIFI_STA);
 
-  log_i("Client address: %s", WiFi.macAddress().c_str());
+  log_i("MAC: %s", WiFi.macAddress().c_str());
 
   if (ssid == NULL || password == NULL) {
     return;

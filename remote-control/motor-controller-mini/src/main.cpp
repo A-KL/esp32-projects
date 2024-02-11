@@ -11,11 +11,14 @@
 #include <esp32_now.h>
 #include <button_input.h>
 
-void on_switch_input(short input) {
+static void on_switch_input(short input) {
     log_w("Button value: %d", input);
+    short data[16];
+
+    send_sbus_data(data, 16);
 }
 
-static button_input_t switch_input { switch_input_button, HIGH, 2000, 0, 2, 0,  &on_switch_input};
+static button_input_t switch_input { switch_input_button, LOW, 2000, 0, 3, 0,  &on_switch_input};
 
 void setup() {
   Serial.begin(115200);
@@ -27,10 +30,11 @@ void setup() {
   driver_init();
   button_input_init(switch_input);
 
-  wifi_init("esp32-motor-ctrl-mini");
+  wifi_init(HOSTNAME);
   api_init();
+  web_init();
   //now_init();
- // web_init();
+
 }
 
 void loop() {

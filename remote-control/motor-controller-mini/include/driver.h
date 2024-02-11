@@ -171,6 +171,7 @@ void driver_loop()
   if (sbus_rx.Read())
   {
     sbus_data = sbus_rx.data();
+    
     for (auto i=0; i<motors_count; ++i)
     {
       if (motors_config[i].input_type == sbus)

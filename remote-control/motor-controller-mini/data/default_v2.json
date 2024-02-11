@@ -1,0 +1,18 @@
+{
+    "motors": [
+        { "type": "pwm", "ch": 0, "mode": 0, "inv": false },
+        { "type": "pwm", "ch": 1, "mode": 0, "inv": false }
+    ],
+    "servo": [
+        { "type": "sbus", "ch": 0 },
+        { "type": "sbus", "ch": 1 },
+        { "type": "sbus", "ch": 2 },
+        { "type": "sbus", "ch": 3 },
+        { "type": "sbus", "ch": 4 },
+        { "type": "sbus", "ch": 5 }
+    ],
+    "lego_servo": [
+        { "type": "sbus", "ch": 0 },
+        { "type": "sbus", "ch": 1 }
+    ] 
+}

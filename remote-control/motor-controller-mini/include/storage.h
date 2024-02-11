@@ -83,10 +83,10 @@ bool settings_load(motor_config_t motors[], const int count)
     for (JsonVariant motor_json : motors_json) 
     {
         motors[i].mode = motor_json["mode"].as<motor_drive_mode_t>();
-        motors[i].inverted = motor_json["inverted"].as<bool>();
-        motors[i].input_channel =  motor_json["input_channel"].as<int>();
+        motors[i].inverted = motor_json["inv"].as<bool>();
+        motors[i].input_channel =  motor_json["ch"].as<int>();
 
-        auto input_type_str = motor_json["input_type"].as<String>();
+        auto input_type_str = motor_json["type"].as<String>();
         auto input_type_iter = drive_input_map.find(input_type_str);
 
         if (input_type_iter == drive_input_map.end())

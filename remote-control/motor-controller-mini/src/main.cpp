@@ -28,8 +28,8 @@ void setup() {
   button_input_init(switch_input);
 
   wifi_init("esp32-motor-ctrl-mini");
-  //api_init();
-  now_init();
+  api_init();
+  //now_init();
  // web_init();
 }
 

@@ -1,20 +1,21 @@
 #pragma once
 
 #include <WiFi.h>
+#include <esp32-hal-log.h>
 
-const char* ssid = "";
-const char* password = "";
-
-void wifi_init(const char* hostname = NULL) 
+void wifi_init(const char* hostname = NULL, const char* ssid = NULL, const char* password = NULL) 
 {
   WiFi.setHostname(hostname);
   WiFi.mode(WIFI_STA);
 
-  Serial.println(WiFi.macAddress());
+  log_i("Client address: %s", WiFi.macAddress().c_str());
 
-  // WiFi.begin(ssid, password);
+  if (ssid == NULL || password == NULL) {
+    return;
+  }
+  WiFi.begin(ssid, password);
 
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(500);
-  // }
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+  }
 }

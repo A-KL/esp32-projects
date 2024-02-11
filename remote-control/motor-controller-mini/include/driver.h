@@ -142,7 +142,7 @@ void driver_init() {
   }
 
   for (auto i = 0; i < pwm_outputs_count; i++) {
-      ledcSetup(i, 50, 12);
+      ledcSetup(i, SERVO_FREQ, SERVO_RES);
       ledcAttachPin(pwm_output_pins[i], i);
   }
   
@@ -176,7 +176,7 @@ void driver_loop()
       if (motors_config[i].input_type == sbus)
       {
         auto sbus_index = motors_config[i].input_channel;
-        outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+        outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
       }
     }
     sbus_tx.data(sbus_data);
@@ -196,7 +196,7 @@ void driver_loop()
       auto pwm_value = pwm_inputs[pwm_index];
 
       if (pwm_value > 1020)
-        outputs[i] = map(constrain(pwm_value, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+        outputs[i] = map(constrain(pwm_value, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
       else
         outputs[i] = 0;
     }
@@ -204,7 +204,7 @@ void driver_loop()
     {
       auto adc_index = motors_config[i].input_channel;
       auto adc_value = analogRead(adc_input_pins[adc_index]);
-      outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MAX_DUTY_CYCLE, MAX_DUTY_CYCLE);
+      outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
     }
   }
 

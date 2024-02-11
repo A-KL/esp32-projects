@@ -51,7 +51,7 @@ void NotifyClients(const String& data) {
   ws.textAll(data);
 }
 
-void send_sbus_data(const short values[], const short size) 
+void send_sbus_data(const int16_t values[], const short size) 
 {
   StaticJsonDocument<200> doc;
 

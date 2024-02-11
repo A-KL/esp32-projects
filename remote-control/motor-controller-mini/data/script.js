@@ -32,14 +32,14 @@ function onOpen(event) {
 function onMessage(event) {
     console.log(event.data);   
     var message = JSON.parse(event.data);
-    var keys = Object.keys(message);
 
     if (message.hasOwnProperty('sbus_data')) 
     {
-      for (var i = 0; i < keys.length; i++)
+      var sbus_data = message["sbus_data"];
+      for (var i = 0; i < sbus_data.length; i++)
       {
         var cell = document.getElementById("sbus_table_row" + i.toString() + "_value");
-        cell.innerHTML = message["sbus_data"][i];
+        cell.innerHTML = sbus_data[i];
       }
     }
 

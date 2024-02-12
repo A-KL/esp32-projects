@@ -56,9 +56,9 @@ function init_sbus_table()
   var table = document.getElementById('sbus_table');
 
   // Clear existing table
-  while (table.firstChild) {
-    table.removeChild(table.firstChild);
-  }
+  // while (table.firstChild) {
+  //   table.removeChild(table.firstChild);
+  // }
   
   for (var i = 0; i < 16; i++) 
   {

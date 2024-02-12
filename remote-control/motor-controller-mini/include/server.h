@@ -66,7 +66,6 @@ void send_sbus_data(const int16_t values[], const short size)
   ws.textAll(output);
 }
 
-
 void HandleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
 {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
@@ -120,6 +119,8 @@ void web_init() {
   //server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
 
   server.begin();
+
+  log_i("Web server is running on port 80");
 }
 
 void ws_loop() {

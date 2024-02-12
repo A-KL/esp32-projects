@@ -38,8 +38,10 @@ function onMessage(event) {
       var sbus_data = message["sbus_data"];
       for (var i = 0; i < sbus_data.length; i++)
       {
-        var cell = document.getElementById("sbus_table_row" + i.toString() + "_value");
+        var cell = document.getElementById("sbus_table_row_" + i.toString() + "_value");
         cell.innerHTML = sbus_data[i];
+        var meter = document.getElementById("sbus_table_row_" + i.toString() + "_progress");
+        meter.setAttribute("value", sbus_data[i].toString());
       }
     }
 
@@ -61,16 +63,24 @@ function init_sbus_table()
   for (var i = 0; i < 16; i++) 
   {
     let newRow = document.createElement("tr");
+
+    let statusCell = document.createElement("td");
     let numberCell = document.createElement("td");
     let valueCell = document.createElement("td");
     let progressCell = document.createElement("td");
 
-    valueCell.setAttribute("id", "sbus_table_row" + i.toString() + "_value");
-    progressCell.setAttribute("id", "sbus_table_row" + i.toString() + "_progress");
+    let meter = document.createElement("meter");
+    meter.setAttribute("min", "200");
+    meter.setAttribute("max", "1800");
+    meter.setAttribute("id", "sbus_table_row_" + i.toString() + "_progress");
+
+    statusCell.setAttribute("id", "sbus_table_row_" + i.toString() + "_status");
+    valueCell.setAttribute("id", "sbus_table_row_" + i.toString() + "_value");
+
+    progressCell.appendChild(meter);
 
     numberCell.innerText = (i+1);
     valueCell.innerText = 0;
-    progressCell.innerText = 0;
 
     newRow.appendChild(numberCell);
     newRow.appendChild(valueCell);

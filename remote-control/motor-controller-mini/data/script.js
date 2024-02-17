@@ -4,7 +4,6 @@ var websocket;
 $(function () {
     initWebSocket();
     initUI();
-    init_sbus_table();
 });
 
 // Init web socket when the page loads
@@ -16,9 +15,9 @@ $(function () {
 //    init_sbus_table();
 //}
 
-function getReadings() {
-    websocket.send("getReadings");
-}
+// function getReadings() {
+//     websocket.send("getReadings");
+// }
 
 function initWebSocket() {
     console.log('Trying to open a WebSocket connection…');
@@ -31,7 +30,7 @@ function initWebSocket() {
 // When websocket is established, call the getReadings() function
 function onOpen(event) {
     console.log('Connection opened');
-    getReadings();
+   // getReadings();
 }
 
 // Function that receives the message from the ESP32 with the readings
@@ -73,6 +72,7 @@ function initUI() {
     // document
     //   .getElementById('button')
     //   .addEventListener('click', toggle);
+    init_sbus_table();
 }
 
 //var red = document.getElementById("red");

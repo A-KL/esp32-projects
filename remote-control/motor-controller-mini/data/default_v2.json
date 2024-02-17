@@ -1,18 +1,28 @@
 {
-    "motors": [
-        { "type": "pwm", "ch": 0, "mode": 0, "inv": false },
-        { "type": "pwm", "ch": 1, "mode": 0, "inv": false }
+    "adc": [
+        { "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_ch": 1, "out_type": "motor", "out_ch": 1 }
     ],
-    "servo": [
-        { "type": "sbus", "ch": 0 },
-        { "type": "sbus", "ch": 1 },
-        { "type": "sbus", "ch": 2 },
-        { "type": "sbus", "ch": 3 },
-        { "type": "sbus", "ch": 4 },
-        { "type": "sbus", "ch": 5 }
+    "pwm": [
+        { "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_ch": 1, "out_type": "motor", "out_ch": 1 }
     ],
-    "lego_servo": [
-        { "type": "sbus", "ch": 0 },
-        { "type": "sbus", "ch": 1 }
-    ] 
+    "sbus": [
+        { "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_ch": 1, "out_type": "motor", "out_ch": 1 },
+
+        { "in_ch": 0 , "out_type": "servo", "out_ch": 0 },
+        { "in_ch": 1 , "out_type": "servo", "out_ch": 1 },
+        { "in_ch": 2 , "out_type": "servo", "out_ch": 2 },
+        { "in_ch": 3 , "out_type": "servo", "out_ch": 3 },
+        { "in_ch": 4 , "out_type": "servo", "out_ch": 4 },
+        { "in_ch": 5 , "out_type": "servo", "out_ch": 5 },
+
+        { "in_ch": 4 , "out_type": "servo_lego", "out_ch": 0 },
+        { "in_ch": 3 , "out_type": "servo_lego", "out_ch": 1 }
+    ],
+    "esp_now": [
+        { "motor": 0, "ch": 2 },
+        { "motor": 1, "ch": 3 }
+    ]
 }

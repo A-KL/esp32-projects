@@ -5,6 +5,7 @@
 
 #include <network.h>
 #include <storage.h>
+#include <motors.h>
 #include <driver.h>
 #include <api.h>
 #include <esp32_now.h>

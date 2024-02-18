@@ -82,5 +82,5 @@ void now_init()
   esp_now_register_recv_cb(OnEspNowReceived);
 }
 
-void now_loop() {
+inline void now_loop() {
 }

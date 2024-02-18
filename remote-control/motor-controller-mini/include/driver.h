@@ -148,6 +148,5 @@ void driver_loop()
     run_motor(motor_pins[i], motors_config[i], outputs[i]);
   }
 
-  send_sbus_data(sbus_data.ch, sbus_data.NUM_CH);
   delay(50);
 }

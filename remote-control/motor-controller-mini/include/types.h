@@ -1,7 +1,6 @@
 #pragma once
 
 #include <map>
-#include <vector>
 #include <Arduino.h>
 
 enum motor_drive_mode_t {

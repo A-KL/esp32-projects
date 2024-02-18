@@ -113,12 +113,39 @@ void OnNotFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
+void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total)  {
+    try
+    {
+        if (!settings_apply(data, len, index, total))
+        {
+            request->send(400, "text/plain", "Failed to parse json");
+            return;
+        }
+        request->send(200); 
+    }
+    catch(const std::exception& e)
+    {
+        request->send(500, "Failed to parse json");
+    }
+
+    try
+    {
+        settings_save(data, len, index, total);
+        request->send(200);
+    }
+    catch(const std::exception& e)
+    {
+        request->send(500, "Failed to save json");
+        return;
+    }
+}
+
 void wifi_init(const char* hostname = NULL) {
 
   wifiManager.autoConnect(hostname);
 }
 
-void web_init() {
+void server_init() {
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
@@ -134,9 +161,11 @@ void web_init() {
     request->send(200);
   });
 
-  server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/ç/config", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/default.json", "application/json");
   });
+
+  server.on("/api/config", HTTP_PUT, [](AsyncWebServerRequest *request) {}, NULL, OnConfig);
 
   server.on("/api/v2/config", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/default_v2.json", "application/json");
@@ -155,7 +184,7 @@ void web_init() {
   log_i("Web server is running on port 80");
 }
 
-void ws_loop() {
+void server_loop() {
   // if ((millis() - lastTime) > timerDelay) {
   //   String sensorReadings;
   //   getSensorReadings(sensorReadings);
@@ -165,5 +194,5 @@ void ws_loop() {
   //   lastTime = millis();
   // }
 
-  // ws.cleanupClients();
+  ws.cleanupClients();
 }

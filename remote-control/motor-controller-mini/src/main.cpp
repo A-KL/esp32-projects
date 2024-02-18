@@ -3,12 +3,11 @@
 #endif
 #include CONFIG_FILE
 
-//#include <network.h>
+#include <scheduler.h>
 #include <storage.h>
 #include <motors.h>
 #include <server.h>
 #include <driver.h>
-//#include <api.h>
 #include <esp32_now.h>
 #include <button_input.h>
 
@@ -25,6 +24,8 @@ void setup() {
   Serial.begin(115200);
   sleep(3);
 
+  scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
+
   storage_init();
   settings_load(motors_config, motors_count);
   settings_load_v2(global_config);
@@ -33,14 +34,12 @@ void setup() {
   button_input_init(switch_input);
 
   wifi_init(HOSTNAME);
-  //api_init();
-  web_init();
+  server_init();
   //now_init();
-
 }
 
 void loop() {
-  //ws_loop();
+  server_loop();
   driver_loop();
   button_input_update(switch_input);
 }

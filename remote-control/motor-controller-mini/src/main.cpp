@@ -41,5 +41,7 @@ void setup() {
 void loop() {
   server_loop();
   driver_loop();
+  scheduler_loop();
+  
   button_input_update(switch_input);
 }

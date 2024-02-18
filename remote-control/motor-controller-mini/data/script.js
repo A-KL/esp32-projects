@@ -43,6 +43,7 @@ function onMessage(event) {
         for (var i = 0; i < sbus_data.length; i++) {
             $("#sbus_table_row_" + i + "_value").html(sbus_data[i]);
             $("#sbus_table_row_" + i + "_progress").val(sbus_data[i]);
+            $("#sbus_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 200 ? "offline" : "available");
         }
     }
 
@@ -61,7 +62,7 @@ function init_sbus_table() {
 function createRow(i) {
     return `
         <tr>
-            <td><span class="available"></span></td>
+            <td><span id="sbus_table_row_${i}_status" class="offline"></span></td>
             <td>${(i+1)}</td>
             <td id="sbus_table_row_${i}_value"></td>
             <td><meter id="sbus_table_row_${i}_progress" min="200" max="1800"></meter></td>

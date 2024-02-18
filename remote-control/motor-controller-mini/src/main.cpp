@@ -7,7 +7,7 @@
 #include <storage.h>
 #include <motors.h>
 #include <driver.h>
-#include <api.h>
+//#include <api.h>
 #include <esp32_now.h>
 #include <button_input.h>
 
@@ -32,7 +32,7 @@ void setup() {
   button_input_init(switch_input);
 
   wifi_init(HOSTNAME);
-  api_init();
+  //api_init();
   web_init();
   //now_init();
 

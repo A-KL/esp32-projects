@@ -41,15 +41,15 @@ void Serialize(const motor_config_t* configs, const int config_size, String& res
   serializeJson(doc, result);
 }
 
-void OnConfiguration(String& data)
-{
-  //Serialize(motors_config, motors_count, data);
-}
+// void OnConfiguration(String& data)
+// {
+//   Serialize(motors_config, motors_count, data);
+// }
 
-void NotifyClients(const String& data) {
-  Serial.println(data);
-  ws.textAll(data);
-}
+// void NotifyClients(const String& data) {
+//   Serial.println(data);
+//   ws.textAll(data);
+// }
 
 void send_sbus_data(const int16_t values[], const short size) 
 {
@@ -66,14 +66,9 @@ void send_sbus_data(const int16_t values[], const short size)
   ws.textAll(output);
 }
 
-void HandleWebSocketMessage(void *arg, uint8_t *data, size_t len) 
+void on_web_socket_data(const char* data, const size_t len)
 {
-  AwsFrameInfo *info = (AwsFrameInfo*)arg;
-
-  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) 
-  {
-    data[len] = 0;
-    String message = (char*)data;
+    String message = data;
 
     Serial.print("->");
     Serial.println(message);
@@ -81,9 +76,19 @@ void HandleWebSocketMessage(void *arg, uint8_t *data, size_t len)
     if (strcmp((char*)data, "config") == 0) 
     {
       String data;
-      OnConfiguration(data);   
-      NotifyClients(data);
+      //OnConfiguration(data);   
+      //NotifyClients(data);
     }
+}
+
+void OnWebSocketMessage(void *arg, uint8_t *data, size_t len) 
+{
+  AwsFrameInfo *info = (AwsFrameInfo*)arg;
+
+  if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) 
+  {
+    data[len] = 0;
+    on_web_socket_data((const char*)data, len);
   }
 }
 
@@ -96,7 +101,7 @@ void OnSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEven
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       break;
     case WS_EVT_DATA:
-      HandleWebSocketMessage(arg, data, len);
+      OnWebSocketMessage(arg, data, len);
       break;
     case WS_EVT_PONG:
     case WS_EVT_ERROR:
@@ -104,19 +109,36 @@ void OnSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEven
   }
 }
 
-void web_init() {
+void OnNotFound(AsyncWebServerRequest *request) {
+    request->send(404, "text/plain", "Not found");
+}
+
+void web_init() 
+{
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
   });
 
-  server.serveStatic("/", LittleFS, "/");
+  server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request) {
+    request->send(200);
+    ESP.restart();
+  });
+
+  server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/default.json", "application/json");
+  });
+
+  server.on("/api/v2/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(LittleFS, "/default_v2.json", "application/json");
+  });
+
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 
   ws.onEvent(OnSocketEvent);
 
   server.addHandler(&ws);
 
-  //api.serveStatic("/", LittleFS, "/").setDefaultFile("index.htm");
-  //server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
+  server.onNotFound(OnNotFound);
 
   server.begin();
 

@@ -26,6 +26,7 @@ void setup() {
 
   storage_init();
   settings_load(motors_config, motors_count);
+  settings_load_v2(global_config);
 
   driver_init();
   button_input_init(switch_input);

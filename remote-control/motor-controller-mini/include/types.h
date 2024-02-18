@@ -48,3 +48,37 @@ const std::map<String, input_type_t> drive_input_map =
   { "sbus", sbus },
   { "now", now }
 };
+
+// v2
+
+enum output_type_t {
+  motor  = 0,
+  servo  = 1,
+  servo_lego = 2
+};
+
+const std::map<const String, const output_type_t> outputs_map = 
+{ 
+  { "dc motor", motor }, 
+  { "servo", servo }, 
+  { "lego servo", servo_lego }
+};
+
+typedef struct {
+
+  int input_channel;
+  int output_channel;
+  output_type_t output_type;
+
+}  input_config_t;
+
+typedef std::map<const String, const input_config_t[]> global_config_t;
+
+// const String* output_to_string(const output_type_t type) 
+// {
+//     auto iter = outputs_map.find(type);
+
+//         if (input_type_iter == drive_input_map.end())
+//         {
+//   return outputs_map
+// }

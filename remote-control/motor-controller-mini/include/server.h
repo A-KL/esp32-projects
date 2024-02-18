@@ -1,8 +1,10 @@
 #pragma once
 
+#include <ArduinoJson.h>
+
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <ArduinoJson.h>
+#include <ESPAsyncWiFiManager.h>
 
 #include "FS.h"
 #include <LittleFS.h>
@@ -10,15 +12,13 @@
 #include <types.h>
 #include <config_esp32.h>
 
-// Create AsyncWebServer object on port 80
+DNSServer dns;
+
 AsyncWebServer server(80);
 
-// Create a WebSocket object
 AsyncWebSocket ws("/ws");
 
-// Json Variable to Hold Sensor Readings
-// const uint8_t size = JSON_OBJECT_SIZE(3);
-// StaticJsonDocument<size> readings;
+AsyncWiFiManager wifiManager(&server, &dns);
 
 // Timer variables
 // unsigned long lastTime = 0;
@@ -113,8 +113,13 @@ void OnNotFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
-void web_init() 
-{
+void wifi_init(const char* hostname = NULL) {
+
+  wifiManager.autoConnect(hostname);
+}
+
+void web_init() {
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
   });
@@ -122,6 +127,11 @@ void web_init()
   server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request) {
     request->send(200);
     ESP.restart();
+  });
+
+  server.on("/wifi", HTTP_DELETE, [](AsyncWebServerRequest *request) {
+    wifiManager.resetSettings();
+    request->send(200);
   });
 
   server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request) {

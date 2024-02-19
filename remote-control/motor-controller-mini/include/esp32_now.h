@@ -73,6 +73,20 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
 
 void now_init() 
 {
+  // if (WiFi.status() == WL_CONNECTED) {
+  //   WiFi.setSleep(false);
+  // } else {
+  //   WiFi.mode(WIFI_MODE_STA);
+  // }
+
+  auto mode = WiFi.getMode();
+  if (mode != WIFI_MODE_STA && mode != WIFI_MODE_NULL) {
+    WiFi.setSleep(false);
+    log_i("Looks like WiFi is being used, setting sleep to false.");
+  } else {
+    WiFi.mode(WIFI_MODE_STA);
+  }
+
   if (esp_now_init() != ESP_OK) {
     log_e("Error initializing ESP-NOW");
     return;

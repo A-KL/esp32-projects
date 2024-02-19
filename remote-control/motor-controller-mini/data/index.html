@@ -15,86 +15,86 @@
     <body>
         <div class="datatable-container">
             <table id="config_table" class="datatable">
-              <thead>
-                <tr>
-                  <th>Motors</th>
-                  <th>Connection</th>
-                  <th>Inputs</th>
-                  <th>Invert</th>
-                  <th>Output</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>A</td>
-                  <td>                 
-                    <select disabled>
-                      <option value="0">A_B</option>
-                      <option selected value="1">A_B_EN</option>
-                      <option value="2">DIR_EN</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select">
-                      <option selected value="0">PWM0</option>
-                      <option value="1">PWM1</option>
-                      <option value="2">ADC0</option>
-                      <option value="3">ADC1</option>
-                      <option value="4">SBUS0</option>
-                      <option value="5">SBUS1</option>
-                      <option value="6">SBUS2</option>
-                      <option value="7">SBUS3</option>
-                      <option value="8">SBUS4</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="checkbox">        
-                  </td>
-                  <td>
-                    <meter></meter>
-                  </td>
-              </tr>
-              <tr>
-                <td>B</td>
-                <td>                 
-                  <select class="form-select" disabled>
-                    <option value="0">A_B</option>
-                    <option selected value="1">A_B_EN</option>
-                    <option value="2">DIR_EN</option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select">
-                    <option value="0">PWM0</option>
-                    <option selected value="1">PWM1</option>
-                    <option value="2">ADC0</option>
-                    <option value="3">ADC1</option>
-                    <option value="4">SBUS0</option>
-                    <option value="5">SBUS1</option>
-                    <option value="6">SBUS2</option>
-                    <option value="7">SBUS3</option>
-                    <option value="8">SBUS4</option>
-                    <option value="10">Motor A</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="checkbox">
-                </td>
-                <td>
-                  <meter></meter>
-                </td>
-            </tr>
-            </tbody>
-         </table>
-        <!-- ======= Footer tools ======= -->
-        <div class="footer-tools">
-            <div class="pages">
-            <ul>
-                <li><button>Save</button></li>
-                <li><button>Load</button></li>
-            </ul>
+                <thead>
+                    <tr>
+                        <th>Motors</th>
+                        <th>Connection</th>
+                        <th>Inputs</th>
+                        <th>Invert</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>
+                            <select disabled>
+                                <option value="0">A_B</option>
+                                <option selected value="1">A_B_EN</option>
+                                <option value="2">DIR_EN</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select">
+                                <option selected value="0">PWM0</option>
+                                <option value="1">PWM1</option>
+                                <option value="2">ADC0</option>
+                                <option value="3">ADC1</option>
+                                <option value="4">SBUS0</option>
+                                <option value="5">SBUS1</option>
+                                <option value="6">SBUS2</option>
+                                <option value="7">SBUS3</option>
+                                <option value="8">SBUS4</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="checkbox">
+                        </td>
+                        <td>
+                            <meter></meter>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>
+                            <select class="form-select" disabled>
+                                <option value="0">A_B</option>
+                                <option selected value="1">A_B_EN</option>
+                                <option value="2">DIR_EN</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select">
+                                <option value="0">PWM0</option>
+                                <option selected value="1">PWM1</option>
+                                <option value="2">ADC0</option>
+                                <option value="3">ADC1</option>
+                                <option value="4">SBUS0</option>
+                                <option value="5">SBUS1</option>
+                                <option value="6">SBUS2</option>
+                                <option value="7">SBUS3</option>
+                                <option value="8">SBUS4</option>
+                                <option value="10">Motor A</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="checkbox">
+                        </td>
+                        <td>
+                            <meter></meter>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- ======= Footer tools ======= -->
+            <div class="footer-tools">
+                <div class="pages">
+                    <ul>
+                        <li><button>Save</button></li>
+                        <li><button>Load</button></li>
+                    </ul>
+                </div>
             </div>
-        </div>
         </div>
 
         <br>
@@ -111,6 +111,34 @@
                 </thead>
                 <tbody id="sbus_table"></tbody>
             </table>
+        </div>
+
+        <div class="datatable-container">
+            <table class="datatable">
+                <thead>
+                <tr>
+	                <th>Channel</th>
+	                <th>Pin</th>
+	                <th>Value</th>
+	                <th>Progress</th>
+                </tr>
+                </thead>
+                <tbody id="pwm_in_table"></tbody>
+            </table>
+        </div>
+
+        <div class="datatable-container">
+	        <table class="datatable">
+		        <thead>
+		        <tr>
+			        <th>Channel</th>
+			        <th>Pin</th>
+			        <th>Value</th>
+			        <th>Progress</th>
+		        </tr>
+		        </thead>
+		        <tbody id="adc_in_table"></tbody>
+	        </table>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>

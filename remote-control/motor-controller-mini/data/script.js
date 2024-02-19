@@ -47,6 +47,24 @@ function onMessage(event) {
         }
     }
 
+    if (message.hasOwnProperty('adc_data')) {
+        var adc_data = message["adc_data"];
+        for (var i = 0; i < adc_data.length; i++) {
+            $("#adc_in_table_row_" + i + "_value").html(sbus_data[i]);
+            $("#adc_in_table_row_" + i + "_progress").val(sbus_data[i]);
+          //  $("#adc_in_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 200 ? "offline" : "available");
+        }
+    }
+
+    if (message.hasOwnProperty('pwm_data')) {
+        var pwm_data = message["pwm_data"];
+        for (var i = 0; i < pwm_data.length; i++) {
+            $("#pwm_in_table_row_" + i + "_value").html(pwm_data[i]);
+            $("#pwm_in_table_row_" + i + "_progress").val(pwm_data[i]);
+            //  $("#adc_in_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 200 ? "offline" : "available");
+        }
+    }
+
     // for (var i = 0; i < keys.length; i++){
     //     var key = keys[i];
     //     document.getElementById(key).innerHTML = message[key];
@@ -55,11 +73,23 @@ function onMessage(event) {
 
 function init_sbus_table() {
     for (var i = 0; i < 16; i++) {
-        $("#sbus_table").append(createRow(i));
+        $("#sbus_table").append(createRadioRow(i));
     }
 }
 
-function createRow(i) {
+function init_pwm_table() {
+    for (var i = 0; i < 2; i++) {
+        $("#pwm_in_table").append(createRow(i, "pwm_in", 200, 1500));
+    }
+}
+
+function init_adc_table() {
+    for (var i = 0; i < 2; i++) {
+        $("#adc_in_table").append(createRow(i, "adc_in", 0, 4048));
+    }
+}
+
+function createRadioRow(i) {
     return `
         <tr>
             <td><span id="sbus_table_row_${i}_status" class="offline"></span></td>
@@ -69,11 +99,23 @@ function createRow(i) {
         </tr>`;
 }
 
+function createRow(i, prefix, min, max) {
+    return `
+        <tr>
+           <td>${(i + 1)}</td>
+           <td id="${prefix}_table_row_${i}_pin"></td>
+           <td id="${prefix}_table_row_${i}_value"></td>
+           <td><meter id="${prefix}_table_row_${i}_progress" min="${min}" max="${max}"></meter></td>
+        </tr>`;
+}
+
 function initUI() {
     // document
     //   .getElementById('button')
     //   .addEventListener('click', toggle);
     init_sbus_table();
+    init_adc_table();
+    init_pwm_table();
 }
 
 //var red = document.getElementById("red");

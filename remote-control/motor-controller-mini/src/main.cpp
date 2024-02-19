@@ -6,8 +6,9 @@
 #include <scheduler.h>
 #include <storage.h>
 #include <motors.h>
-#include <server.h>
+
 #include <driver.h>
+#include <server.h>
 #include <esp32_now.h>
 #include <button_input.h>
 
@@ -42,6 +43,6 @@ void loop() {
   server_loop();
   driver_loop();
   scheduler_loop();
-  
+
   button_input_update(switch_input);
 }

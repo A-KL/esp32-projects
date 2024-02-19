@@ -43,15 +43,15 @@ function onMessage(event) {
         for (var i = 0; i < sbus_data.length; i++) {
             $("#sbus_table_row_" + i + "_value").html(sbus_data[i]);
             $("#sbus_table_row_" + i + "_progress").val(sbus_data[i]);
-            $("#sbus_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 200 ? "offline" : "available");
+            $("#sbus_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 172 ? "offline" : "available");
         }
     }
 
     if (message.hasOwnProperty('adc_data')) {
         var adc_data = message["adc_data"];
         for (var i = 0; i < adc_data.length; i++) {
-            $("#adc_in_table_row_" + i + "_value").html(sbus_data[i]);
-            $("#adc_in_table_row_" + i + "_progress").val(sbus_data[i]);
+            $("#adc_in_table_row_" + i + "_value").html(adc_data[i]);
+            $("#adc_in_table_row_" + i + "_progress").val(adc_data[i]);
           //  $("#adc_in_table_row_" + i + "_status").removeClass("offline").addClass(sbus_data[i] < 200 ? "offline" : "available");
         }
     }
@@ -73,7 +73,7 @@ function onMessage(event) {
 
 function init_sbus_table() {
     for (var i = 0; i < 16; i++) {
-        $("#sbus_table").append(createRadioRow(i));
+        $("#sbus_table").append(createRadioRow(i, "sbus", 172, 1809));
     }
 }
 
@@ -89,13 +89,13 @@ function init_adc_table() {
     }
 }
 
-function createRadioRow(i) {
+function createRadioRow(i, prefix, min, max) {
     return `
         <tr>
-            <td><span id="sbus_table_row_${i}_status" class="offline"></span></td>
+            <td><span id="${prefix}_table_row_${i}_status" class="offline"></span></td>
             <td>${(i+1)}</td>
-            <td id="sbus_table_row_${i}_value"></td>
-            <td><meter id="sbus_table_row_${i}_progress" min="200" max="1800"></meter></td>
+            <td id="${prefix}_table_row_${i}_value"></td>
+            <td><meter id="${prefix}_table_row_${i}_progress" min="${min}" max="${max}"></meter></td>
         </tr>`;
 }
 

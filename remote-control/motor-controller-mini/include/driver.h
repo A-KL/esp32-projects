@@ -148,5 +148,5 @@ void driver_loop()
     run_motor(motor_pins[i], motors_config[i], outputs[i]);
   }
 
-  delay(50);
+  //delay(50);
 }

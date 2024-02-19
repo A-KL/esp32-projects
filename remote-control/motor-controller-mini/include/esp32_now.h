@@ -1,5 +1,7 @@
 #pragma once
 
+#include <WiFi.h>
+
 #include <sbus.h>
 #include <esp_now.h>
 #include <esp32-hal-log.h>

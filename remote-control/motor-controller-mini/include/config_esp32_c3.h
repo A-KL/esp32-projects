@@ -23,8 +23,6 @@ const short sbus_rx_tx_pins[] = { 20, 21 };
 
 /* Motors */
 
-const static short motors_count = 2;
-
 const motor_drive_mode_t motor_modes[] = {
      motor_drive_mode_t::a_b_en,
      motor_drive_mode_t::a_b_en
@@ -34,6 +32,15 @@ const motor_pins_t motor_pins[] = {
     { 7,  6, 5, 1, 2, 0 }, //a, b, en, pwm_a, pwm_b, pwm_en
     { 8, 10, 2, 4, 5, 3 }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
+
+const static short motors_count = sizeof(motor_modes) / sizeof(motor_drive_mode_t);
+
+/* LEGO */
+
+const lego_servo_t lego_servos[] = {
+};
+
+const int lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
 
 /* Misc */
 

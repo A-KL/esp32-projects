@@ -79,7 +79,7 @@ function init_sbus_table() {
 
 function init_pwm_table() {
     for (var i = 0; i < 2; i++) {
-        $("#pwm_in_table").append(createRow(i, "pwm_in", 200, 1500));
+        $("#pwm_in_table").append(createRow(i, "pwm_in", 980, 2000));
     }
 }
 

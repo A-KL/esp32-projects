@@ -81,3 +81,16 @@ typedef std::map<const String, const input_config_t[]> global_config_t;
 //         {
 //   return outputs_map
 // }
+
+enum lego_servo_dir_t {
+    left = -1,
+    center = 0,
+    right = 1
+};
+
+struct lego_servo_t {
+    short pin_a;
+    short pin_b;
+    short channel;
+    lego_servo_dir_t direction;
+};

@@ -33,7 +33,16 @@ const motor_pins_t motor_pins[] = {
     { 8, 10, 2, 4, 5, 3 }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
-const int motors_count = sizeof(motor_modes) / sizeof(motor_drive_mode_t);
+const static short motors_count = sizeof(motor_modes) / sizeof(motor_drive_mode_t);
+
+/* LEGO */
+
+const lego_servo_t lego_servos[] = {
+    { 7,  6, 4 }, //a, b, channel
+    { 8, 10, 5 }  //a, b, channel
+};
+
+const int lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
 
 /* Misc */
 

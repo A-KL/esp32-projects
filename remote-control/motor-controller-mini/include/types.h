@@ -77,11 +77,9 @@ const std::map<const String, const output_type_t> outputs_map =
 };
 
 typedef struct {
-
   int input_channel;
   int output_channel;
   output_type_t output_type;
-
 }  input_config_t;
 
 typedef std::map<const String, const input_config_t[]> global_config_t;

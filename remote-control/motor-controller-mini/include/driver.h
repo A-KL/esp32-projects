@@ -70,7 +70,7 @@ inline bool read_sbus(int outputs[], const int count)
   return true;
 }
 
-inline bool read_pwm(short index, int outputs[]) 
+inline bool read_pwm(const short index, int outputs[]) 
 { 
   auto pwm_index = motors_config[index].input_channel;
   auto pwm_value = input_pwm[pwm_index].Result();
@@ -87,7 +87,7 @@ inline bool read_pwm(short index, int outputs[])
   return pwm_detected;
 }
 
-inline bool read_adc(short index, int outputs[]) 
+inline bool read_adc(const short index, int outputs[]) 
 {
   auto adc_index = motors_config[index].input_channel;
   auto adc_value = analogRead(adc_input_pins[adc_index]);
@@ -102,6 +102,7 @@ inline bool read_adc(short index, int outputs[])
 void write_motors(short index, int outputs[])
 {
   run_motor(motor_pins[index], motors_config[index], outputs[index]);
+  
   log_d("MOTOR OUT %d: %d", index, outputs[index]);
 }
 

@@ -6,6 +6,7 @@
 #include <scheduler.h>
 #include <storage.h>
 #include <motors.h>
+#include <lego_servo.h>
 
 #include <driver.h>
 #include <server.h>

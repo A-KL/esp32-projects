@@ -1,0 +1,37 @@
+{
+    "name": "default",
+    "target": "config_esp32_s3",
+    "map": [
+        { "in_type": "adc", "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_type": "adc", "in_ch": 1, "out_type": "motor", "out_ch": 1 },
+
+        { "in_type": "pwm", "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_type": "pwm", "in_ch": 1, "out_type": "motor", "out_ch": 1 },
+
+        { "in_type": "now", "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_type": "now", "in_ch": 1, "out_type": "motor", "out_ch": 1 },
+
+        { "in_type": "sbus", "in_ch": 0, "out_type": "motor", "out_ch": 0 },
+        { "in_type": "sbus", "in_ch": 1, "out_type": "motor", "out_ch": 1 },
+
+        { "in_type": "sbus", "in_ch": 0 , "out_type": "servo", "out_ch": 0 },
+        { "in_type": "sbus", "in_ch": 1 , "out_type": "servo", "out_ch": 1 },
+        { "in_type": "sbus", "in_ch": 2 , "out_type": "servo", "out_ch": 2 },
+        { "in_type": "sbus", "in_ch": 3 , "out_type": "servo", "out_ch": 3 },
+        { "in_type": "sbus", "in_ch": 4 , "out_type": "servo", "out_ch": 4 },
+        { "in_type": "sbus", "in_ch": 5 , "out_type": "servo", "out_ch": 5 },
+
+        { "in_type": "esp_now", "in_ch": 0 , "out_type": "servo", "out_ch": 0 },
+        { "in_type": "esp_now", "in_ch": 1 , "out_type": "servo", "out_ch": 1 },
+        { "in_type": "esp_now", "in_ch": 2 , "out_type": "servo", "out_ch": 2 },
+        { "in_type": "esp_now", "in_ch": 3 , "out_type": "servo", "out_ch": 3 },
+        { "in_type": "esp_now", "in_ch": 4 , "out_type": "servo", "out_ch": 4 },
+        { "in_type": "esp_now", "in_ch": 5 , "out_type": "servo", "out_ch": 5 },
+
+        { "in_type": "adc", "in_ch": 2, "out_type": "servo_lego", "out_ch": 0 },
+        { "in_type": "adc", "in_ch": 3, "out_type": "servo_lego", "out_ch": 1 },
+
+        { "in_type": "pwm", "in_ch": 0, "out_type": "servo_lego", "out_ch": 0 },
+        { "in_type": "pwm", "in_ch": 1, "out_type": "servo_lego", "out_ch": 1 }
+    ]
+}

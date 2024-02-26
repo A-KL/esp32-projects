@@ -48,6 +48,19 @@ const std::map<String, input_type_t> drive_input_map =
   { "now", now }
 };
 
+enum lego_servo_dir_t {
+    left = -1,
+    center = 0,
+    right = 1
+};
+
+struct lego_servo_t {
+    short pin_a;
+    short pin_b;
+    short channel;
+    lego_servo_dir_t direction;
+};
+
 // v2
 
 enum output_type_t {
@@ -81,16 +94,3 @@ typedef std::map<const String, const input_config_t[]> global_config_t;
 //         {
 //   return outputs_map
 // }
-
-enum lego_servo_dir_t {
-    left = -1,
-    center = 0,
-    right = 1
-};
-
-struct lego_servo_t {
-    short pin_a;
-    short pin_b;
-    short channel;
-    lego_servo_dir_t direction;
-};

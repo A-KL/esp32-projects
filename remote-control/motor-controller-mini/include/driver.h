@@ -24,16 +24,20 @@ void on_esp_now(const channel_t* channels, int channels_count) {
 void driver_init() {
 
   for (auto i = 0; i < adc_inputs_count; i++) {
-    pinMode(adc_input_pins[i], INPUT);
+      pinMode(adc_input_pins[i], INPUT);
   }
   
   for (auto i = 0; i < pwm_inputs_count; i++) {
-    pinMode(pwm_input_pins[i], INPUT);
+      pinMode(pwm_input_pins[i], INPUT);
   }
 
   for (auto i = 0; i < pwm_outputs_count; i++) {
       ledcSetup(i, SERVO_FREQ, SERVO_RES);
       ledcAttachPin(pwm_output_pins[i], i);
+  }
+
+  for (auto& servo : lego_servos) {
+      lego_servo_init(servo);
   }
 
   attachInterrupt(digitalPinToInterrupt(pwm_input_pins[0]), TimerInput0, CHANGE);
@@ -132,6 +136,4 @@ void driver_loop()
     write_motors(outputs, motors_count);
     return;
   }
-
-  //delay(50);
 }

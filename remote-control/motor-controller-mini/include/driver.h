@@ -60,8 +60,8 @@ inline bool read_sbus(int outputs[], const int count)
   
   for (auto i=0; i<count; ++i)
   {
-      auto sbus_index = motors_config[i].input_channel;
-      outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
+    auto sbus_index = motors_config[i].input_channel;
+    outputs[i] = map(sbus_data.ch[sbus_index], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
   }
 
   sbus_tx.data(sbus_data);
@@ -70,49 +70,39 @@ inline bool read_sbus(int outputs[], const int count)
   return true;
 }
 
-inline bool read_pwm(int outputs[], const int count) 
+inline bool read_pwm(short index, int outputs[]) 
 { 
-  int pwm_inputs[] = { 
-    input_pwm[0].Result(),
-    input_pwm[1].Result()
-  };
+  auto pwm_index = motors_config[index].input_channel;
+  auto pwm_value = input_pwm[pwm_index].Result();
+
+  // log_d("PWM IN: %d  %d", pwm_inputs[0], pwm_inputs[1]);
+
+  auto pwm_detected = pwm_value > INPUT_PWM_ZERO;
+
+  if (pwm_detected)
+  {
+    outputs[index] = map(constrain(pwm_value, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
+  }
+
+  return pwm_detected;
+}
+
+inline bool read_adc(short index, int outputs[]) 
+{
+  auto adc_index = motors_config[index].input_channel;
+  auto adc_value = analogRead(adc_input_pins[adc_index]);
+
+  log_d("ADC IN %d: %d", index, adc_value);
+
+  outputs[index] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
   
-  for (auto i=0; i<count; ++i)
-  {
-    auto pwm_index = motors_config[i].input_channel;
-    auto pwm_value = pwm_inputs[pwm_index];
-
-    //log_d("PWM IN: %d  %d", pwm_inputs[0], pwm_inputs[1]);
-
-    if (pwm_value > INPUT_PWM_ZERO)
-      outputs[i] = map(constrain(pwm_value, INPUT_PWM_MIN, INPUT_PWM_MAX), INPUT_PWM_MIN, INPUT_PWM_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-    else
-      outputs[i] = 0;
-  }
   return true;
 }
 
-inline bool read_adc(int outputs[], const int count) 
+void write_motors(short index, int outputs[])
 {
-  for (auto i=0; i<count; ++i)
-  {
-      auto adc_index = motors_config[i].input_channel;
-      auto adc_value = analogRead(adc_input_pins[adc_index]);
-
-      log_d("ADC IN %d: %d", i, adc_value);
-
-      outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-  }
-  return true;
-}
-
-void write_motors(int outputs[], const int count)
-{
-  for (auto i = 0; i < count; i++)
-  {
-    run_motor(motor_pins[i], motors_config[i], outputs[i]);
-    log_d("MOTOR OUT %d: %d", i, outputs[i]);
-  }
+  run_motor(motor_pins[index], motors_config[index], outputs[index]);
+  log_d("MOTOR OUT %d: %d", index, outputs[index]);
 }
 
 void driver_loop()
@@ -121,19 +111,23 @@ void driver_loop()
 
   if (read_sbus(outputs, motors_count))
   {
-    write_motors(outputs, motors_count);
+    write_motors(0, outputs);
+    write_motors(1, outputs);
     return;
   }
 
-  if (read_pwm(outputs, motors_count))
+  for (short i=0; i<motors_count; i++)
   {
-    write_motors(outputs, motors_count);
-    return;
-  }
-
-  if (read_adc(outputs, motors_count))
-  {
-    write_motors(outputs, motors_count);
-    return;
+    if (read_pwm(i, outputs))
+    {
+      write_motors(i, outputs);
+      continue;
+    }
+    if (read_adc(i, outputs))
+    {
+      write_motors(i, outputs);
+      continue;
+    }
+    delay(50);
   }
 }

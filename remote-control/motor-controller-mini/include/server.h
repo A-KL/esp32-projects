@@ -10,7 +10,6 @@
 #include <LittleFS.h>
 
 #include <types.h>
-#include <config_esp32.h>
 
 DNSServer dns;
 

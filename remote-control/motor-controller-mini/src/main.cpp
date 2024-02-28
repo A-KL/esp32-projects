@@ -1,3 +1,8 @@
+#include <Arduino.h>
+#include <math.h>
+#include <sbus.h>
+#include <config_esp32.h>
+
 #ifndef CONFIG_FILE
 #error "Config file was not defined"
 #endif
@@ -7,10 +12,12 @@
 #include <storage.h>
 #include <motors.h>
 #include <lego_servo.h>
+#include <pwm_input.h>
+#include <pwm_output.h>
 
+#include <esp32_now.h>
 #include <driver.h>
 #include <server.h>
-#include <esp32_now.h>
 #include <button_input.h>
 
 static void on_switch_input(short input) {

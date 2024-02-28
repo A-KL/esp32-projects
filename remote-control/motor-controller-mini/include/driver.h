@@ -112,8 +112,10 @@ void driver_loop()
 
   if (read_sbus(outputs, motors_count))
   {
-    write_motors(0, outputs);
-    write_motors(1, outputs);
+    for (short i=0; i<motors_count; i++)
+    {
+      write_motors(i, outputs);
+    }
     return;
   }
 
@@ -129,6 +131,6 @@ void driver_loop()
       write_motors(i, outputs);
       continue;
     }
-    delay(50);
   }
+  delay(50);
 }

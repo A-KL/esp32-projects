@@ -5,7 +5,7 @@
 #include <sbus.h>
 
 #include <config_esp32.h>
-#include <driver_pwm.h>
+#include <pwm_input.h>
 #include <esp32_now.h>
 
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);

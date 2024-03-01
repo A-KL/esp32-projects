@@ -33,8 +33,7 @@ void driver_init() {
       lego_servo_init(servo);
   }
 
-  attachInterrupt(digitalPinToInterrupt(pwm_input_pins[0]), TimerInput0, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(pwm_input_pins[1]), TimerInput1, CHANGE);
+  pwm_in_init();
   
   sbus_rx.Begin();
   sbus_tx.Begin();

@@ -98,15 +98,15 @@ void write_motors(short index, int outputs[])
   log_d("MOTOR OUT %d: %d", index, outputs[index]);
 }
 
-// template<const int TMin, const int TMax>
-// void write_motors(short index, int outputs[])
-// {
-//   auto mapped_value = map(outputs[i], TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
+template<const int TMin, const int TMax>
+void write_motors(short index, int outputs[])
+{
+  auto mapped_value = map(outputs[index], TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
 
-//   run_motor(motor_pins[index], motors_config[index], mapped_value);
+  run_motor(motor_pins[index], motors_config[index], mapped_value);
   
-//   log_d("MOTOR OUT %d: %d", index, mapped_value);
-// }
+  log_d("MOTOR OUT %d: %d", index, mapped_value);
+}
 
 void driver_loop()
 {
@@ -118,6 +118,7 @@ void driver_loop()
     {
       write_motors(i, outputs);
     }
+    pwm_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(sbus_data.ch, pwm_outputs_count);
     return;
   }
 
@@ -134,5 +135,16 @@ void driver_loop()
       continue;
     }
   }
+
+  for (auto i = 0; i < lego_servos_count; i++)
+  {
+    /* code */
+  }
+
+  for (auto i = 2; i < pwm_outputs_count; i++)
+  {
+    /* code */
+  }
+
   delay(50);
 }

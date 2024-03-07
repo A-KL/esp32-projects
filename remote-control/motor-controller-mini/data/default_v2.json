@@ -22,7 +22,7 @@
         { "in_ch": 3 , "out_type": "servo_lego", "out_ch": 1 }
     ],
     "esp_now": [
-        { "motor": 0, "ch": 2 },
-        { "motor": 1, "ch": 3 }
+        { "in_ch": 2, "out_type": "motor", "out_ch": 0 },
+        { "in_ch": 3, "out_type": "motor", "out_ch": 1 }
     ]
 }

@@ -16,7 +16,8 @@ enum input_type_t {
   now = 3
 };
 
-typedef struct {
+struct motor_pins_t 
+{
   short a;
   short b;
   short en;
@@ -24,23 +25,24 @@ typedef struct {
   short a_channel;
   short b_channel;
   short en_channel;
-} motor_pins_t;
+};
 
-typedef struct {
+struct motor_config_t
+{
   enum motor_drive_mode_t mode;
   bool inverted;
   enum input_type_t input_type;
   int input_channel;
-} motor_config_t;
+};
 
-const std::map<String, motor_drive_mode_t> drive_modes_map = 
+const std::map<const String, const motor_drive_mode_t> drive_modes_map = 
 { 
   {"a_b_en", a_b_en}, 
   {"a_b", a_b}, 
   {"dir_en", dir_en} 
 };
 
-const std::map<String, input_type_t> drive_input_map = 
+const std::map<const String, const input_type_t> drive_input_map = 
 { 
   { "pwm", pwm }, 
   { "adc", adc }, 
@@ -76,13 +78,19 @@ const std::map<const String, const output_type_t> outputs_map =
   { "lego servo", servo_lego }
 };
 
-typedef struct {
-  int input_channel;
-  int output_channel;
-  output_type_t output_type;
-}  input_config_t;
+struct output_config_t
+{
+  output_type_t type;
+  int channel;
+};
 
-typedef std::map<const String, const input_config_t[]> global_config_t;
+struct input_config_t
+{
+  input_type_t type;
+  int channel;
+};
+
+typedef std::map<const output_config_t, const input_config_t[]> global_config_t;
 
 // const String* output_to_string(const output_type_t type) 
 // {

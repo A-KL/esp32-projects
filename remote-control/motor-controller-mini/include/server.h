@@ -150,12 +150,11 @@ void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t
 }
 
 void wifi_init(const char* hostname = NULL) {
-
   wifiManager.autoConnect(hostname);
 }
 
-void server_init() {
-
+void server_init() 
+{
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
   });

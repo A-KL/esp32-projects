@@ -37,9 +37,9 @@ static pwm_input_t input_pwm[pwm_inputs_count];
 //   input_pwm[2].Capture();
 // }
 
-void IRAM_ATTR TimerInput3() {
-  input_pwm[3].Capture();
-}
+// void IRAM_ATTR TimerInput3() {
+//   input_pwm[3].Capture();
+// }
 
 void IRAM_ATTR TimerInputHandler(void* arg) {
   // auto index = *(short*)arg;

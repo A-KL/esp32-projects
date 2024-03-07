@@ -141,10 +141,5 @@ void driver_loop()
     /* code */
   }
 
-  for (auto i = 2; i < pwm_outputs_count; i++)
-  {
-    /* code */
-  }
-
   delay(50);
 }

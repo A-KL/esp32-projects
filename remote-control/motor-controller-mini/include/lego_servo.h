@@ -12,7 +12,7 @@ void lego_servo_init(const lego_servo_t& servo)
     pinMode(servo.pin_b, OUTPUT);
 }
 
-void lego_servo_drive(lego_servo_t& servo, int value)
+void lego_servo_write(lego_servo_t& servo, int value)
 {
     if (value == 0) 
     {
@@ -43,4 +43,10 @@ void lego_servo_drive(lego_servo_t& servo, int value)
 
         ledcWrite(servo.channel, abs(value));                 
     }
+}
+
+template<short TMin, short TMax>
+void lego_servo_write(lego_servo_t& servo, int value)
+{
+    lego_servo_write(servo, map(value, TMin, TMax, INPUT_PWM_MIN, INPUT_PWM_MAX));
 }

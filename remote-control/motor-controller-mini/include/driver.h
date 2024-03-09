@@ -81,6 +81,10 @@ inline bool read_pwm(const short index, int outputs[])
 
 inline bool read_adc(const short index, int outputs[]) 
 {
+  outputs[index] = 0;
+  
+  return true;
+
   auto adc_index = motors_config[index].input_channel;
   auto adc_value = analogRead(adc_input_pins[adc_index]);
 

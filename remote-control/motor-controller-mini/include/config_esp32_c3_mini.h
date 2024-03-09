@@ -9,7 +9,7 @@ const short pwm_outputs_count = sizeof(pwm_output_pins) / sizeof(short);
 
 /* PWM Inputs */
 
-const short pwm_input_pins[] = { 0, 1 };
+const short pwm_input_pins[] = { 1, 0 };
 const short pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(short);
 
 /* ADC Inputs */

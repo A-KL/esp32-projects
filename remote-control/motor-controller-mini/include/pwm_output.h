@@ -1,12 +1,12 @@
 #pragma once
 
-inline void pwm_init() {
+inline void servos_init() {
     for (int i = 0; i < servos_count; i++) {
         ledcSetup(i, SERVO_FREQ, SERVO_RES);
     }
 }
 
-inline void pwm_start() {
+inline void servos_start() {
     for (short i = 0; i < servos_count; i++) {
         ledcAttachPin(servos_pins[i], i);
     }

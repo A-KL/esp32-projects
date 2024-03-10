@@ -24,21 +24,10 @@ void on_esp_now(const channel_t* channels, int channels_count) {
   pwm_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(sbus_data.ch, channels_count);
 }
 
-void driver_init() {
-
+void driver_init() 
+{
   for (auto i = 0; i < adc_inputs_count; i++) {
       pinMode(adc_input_pins[i], INPUT);
-  }
-  
-  for (auto i = 0; i < pwm_inputs_count; i++) {
-      pinMode(pwm_input_pins[i], INPUT);
-  }
-
-  pwm_init();
-  pwm_start();
-
-  for (auto& servo : lego_servos) {
-      lego_servo_init(servo);
   }
 
   pwm_in_init();
@@ -46,7 +35,10 @@ void driver_init() {
   sbus_rx.Begin();
   sbus_tx.Begin();
 
-  init_motors();
+  motors_init();
+  servos_init();
+  servos_start();
+  lego_servos_init();
 }
 
 inline bool read_pwm(const short index, int outputs[]) 
@@ -84,7 +76,7 @@ inline bool read_adc(const short index, int outputs[])
 
 void write_motor(short index, int output)
 {
-  run_motor(motors[index].pins, motors[index], output);
+  motor_run(motors[index].pins, motors[index], output);
   
   log_d("MOTOR OUT %d: %d", index, output);
 }

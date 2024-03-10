@@ -31,7 +31,7 @@ void init_motors_a_b(const motor_pins_t& pins)
   ledcAttachPin(pins.b, pins.b_channel);
 }
 
-void init_motor(const motor_config_t& config)
+void motor_init(const motor_config_t& config)
 {
      switch (config.mode)
      {
@@ -52,16 +52,15 @@ void init_motor(const motor_config_t& config)
      }
 }
 
-void init_motors()
+void motors_init() 
 {
-  for (auto i=0; i<motors_count; ++i)
-  {
-      init_motor(motors[i]);
+  for (auto i=0; i<motors_count; ++i) {
+      motor_init(motors[i]);
   }
 }
 
-void run_motor_a_b(const byte channel_a, const byte channel_b, const int speed) {
-
+void motor_run_a_b(const byte channel_a, const byte channel_b, const int speed) 
+{
   if (near_zero(speed)) {
     ledcWrite(channel_a, 0);
     ledcWrite(channel_b, 0);
@@ -76,8 +75,8 @@ void run_motor_a_b(const byte channel_a, const byte channel_b, const int speed) 
   }
 }
 
-void run_motor_a_en(const byte pin_a, const byte channel_en, const int speed) {
-
+void motor_run_a_en(const byte pin_a, const byte channel_en, const int speed) 
+{
   if (near_zero(speed)) {
     ledcWrite(channel_en, 0);
   }
@@ -87,8 +86,8 @@ void run_motor_a_en(const byte pin_a, const byte channel_en, const int speed) {
   }
 }
 
-void run_motor_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en, const int speed) {
-
+void motor_run_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en, const int speed) 
+{
   if (near_zero(speed)) {
     digitalWrite(pin_a, LOW);
     digitalWrite(pin_b, LOW);
@@ -103,23 +102,23 @@ void run_motor_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en,
   }
 }
 
-void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int speed)
+void motor_run(const motor_pins_t& pins, const motor_config_t& config, const int speed)
 {
-     switch (config.mode)
-     {
-     case a_b_en:
-        run_motor_a_b_en(pins.a, pins.b, pins.en_channel, speed);
+    switch (config.mode)
+    {
+      case a_b_en:
+        motor_run_a_b_en(pins.a, pins.b, pins.en_channel, speed);
         break;
 
       case a_b:
-        run_motor_a_b(pins.a_channel, pins.b_channel, speed);
+        motor_run_a_b(pins.a_channel, pins.b_channel, speed);
         break;
 
       case dir_en:
-        run_motor_a_en(pins.a, pins.en_channel, speed);
+        motor_run_a_en(pins.a, pins.en_channel, speed);
         break;
-     
-     default:
-      break;
-     }
+      
+      default:
+        break;
+    }
 }

@@ -6,10 +6,17 @@
 #include <types.h>
 #include <config_esp32.h>
 
-void lego_servo_init(const lego_servo_t& servo)
+inline void lego_servo_init(const lego_servo_t& servo)
 {
     pinMode(servo.pin_a, OUTPUT);
     pinMode(servo.pin_b, OUTPUT);
+}
+
+inline void lego_servos_init()
+{
+    for (auto& servo : lego_servos) {
+        lego_servo_init(servo);
+    }
 }
 
 void lego_servo_write(lego_servo_t& servo, int value)
@@ -46,7 +53,7 @@ void lego_servo_write(lego_servo_t& servo, int value)
 }
 
 template<short TMin, short TMax>
-void lego_servo_write(lego_servo_t& servo, int value)
+inline void lego_servo_write(lego_servo_t& servo, int value)
 {
     lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
 }

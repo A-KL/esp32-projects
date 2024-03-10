@@ -1,11 +1,5 @@
 #pragma once
 
-#include <math.h>
-#include <Arduino.h>
-
-#include <types.h>
-#include <config_esp32.h>
-
 inline bool near_zero(const int value) {
   return (abs(value) < 30);
 }
@@ -37,27 +31,32 @@ void init_motors_a_b(const motor_pins_t& pins)
   ledcAttachPin(pins.b, pins.b_channel);
 }
 
-void init_motors()
+void init_motor(const motor_config_t& config)
 {
-  for(auto i=0; i<motors_count; ++i)
-  {
-     switch (motors_config[i].mode)
+     switch (config.mode)
      {
-     case a_b_en:
-        init_motors_a_b_en(motor_pins[i]);
-        break;
+      case a_b_en:
+          init_motors_a_b_en(config.pins);
+          break;
 
       case a_b:
-        init_motors_a_b(motor_pins[i]);
-        break;
+          init_motors_a_b(config.pins);
+          break;
 
       case dir_en:
-        init_motors_a_en(motor_pins[i]);
-        break;
+          init_motors_a_en(config.pins);
+          break;
      
-     default:
-      break;
+      default:
+          break;
      }
+}
+
+void init_motors()
+{
+  for (auto i=0; i<motors_count; ++i)
+  {
+      init_motor(motors[i]);
   }
 }
 
@@ -104,7 +103,7 @@ void run_motor_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en,
   }
 }
 
-void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int speed) 
+void run_motor(const motor_pins_t& pins, const motor_config_t& config, const int speed)
 {
      switch (config.mode)
      {

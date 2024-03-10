@@ -7,18 +7,13 @@
 #include "FS.h"
 #include <LittleFS.h>
 
-#include <types.h>
-
-motor_config_t motors_config[motors_count];
-
-global_config_t global_config;
-
-void storage_init() 
+inline void storage_init() 
 {
   if (!LittleFS.begin(true)) {
-    Serial.println("An error has occurred while mounting LittleFS");
+    log_e("An error has occurred while mounting LittleFS");
+  } else {
+    log_i("LittleFS mounted successfully");
   }
-  Serial.println("LittleFS mounted successfully");
 }
 
 String setting_read_key(const String& key)
@@ -27,7 +22,8 @@ String setting_read_key(const String& key)
 
     if (!file)
     {
-        Serial.println("There was an error opening default.json file");
+        //Serial.println("There was an error opening default.json file");
+        log_e("There was an error opening %sfile", "/default_v2.json");
         file.close();
         return "";
     }
@@ -50,20 +46,20 @@ String setting_read_key(const String& key)
     return result;
 }
 
-bool settings_load_v2(global_config_t& config)
+bool settings_load(global_config_t& config, const char* file_name = "/default_v2.json")
 {
-    File file = LittleFS.open("/default_v2.json", FILE_READ);
-    if (!file)
-    {
-        Serial.println("There was an error opening default_v2.json file");
+    File file = LittleFS.open(file_name, FILE_READ);
+    if (!file) {
+        log_e("There was an error opening %s file", file_name);
         file.close();
         return false;
     }
     
-    StaticJsonDocument<512> doc;
+    StaticJsonDocument<2048> doc;
     DeserializationError error = deserializeJson(doc, file);
 
-    if (error) {       
+    if (error) {
+        log_e("There was an error deserializing json from %s", file_name);
         doc.clear();
         file.close();
         return false;
@@ -72,111 +68,92 @@ bool settings_load_v2(global_config_t& config)
     auto root = doc.as<JsonObject>();
 
     for (JsonPair kv : root) {
-        Serial.println(kv.key().c_str());
-        Serial.println(kv.value().as<JsonArray>().size());
-    }
+        auto& input_configs = config[kv.key().c_str()];
+        auto values = kv.value().as<JsonArray>();
 
-    // auto motors_json = root["motors"].as<JsonArray>();
+        log_i("Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
 
-    // if (count > motors_json.size())
-    // {
-    //     Serial.print("Configuration doesn't cover all motors: ");
-    //     Serial.println(motors_json.size());
-    //     file.close();
-    //     return false;
-    // }
+        for (auto value : values) {
+            input_config_t config;
+            config.in_channel = value["in_ch"].as<short>();
+            config.out_channel = value["out_ch"].as<short>();
+            config.out_type = string_to_output_type(value["out_type"].as<String>());
+            input_configs.push_back(config);
 
-    // auto i = 0;
-
-    // for (JsonVariant motor_json : motors_json) 
-    // {
-    //     motors[i].mode = motor_json["mode"].as<motor_drive_mode_t>();
-    //     motors[i].inverted = motor_json["inv"].as<bool>();
-    //     motors[i].input_channel =  motor_json["ch"].as<int>();
-
-    //     auto input_type_str = motor_json["type"].as<String>();
-    //     auto input_type_iter = drive_input_map.find(input_type_str);
-
-    //     if (input_type_iter == drive_input_map.end())
-    //     {
-    //         Serial.print("Unable to map value: ");
-    //         Serial.println(input_type_str);
-    //         //log_e("Netif Get IP Failed!");
-    //         file.close();
-    //         return false;
-    //     }
-
-    //     motors[i].input_type = input_type_iter->second;
-
-    //     i++;
-    // }
-
-    file.close();
-    return true;
-}
-
-bool settings_load(motor_config_t motors[], const int count)
-{
-    File file = LittleFS.open("/default.json", FILE_READ);
-    if (!file)
-    {
-        Serial.println("There was an error opening default.json file");
-        file.close();
-        return false;
-    }
-    
-    StaticJsonDocument<512> doc;
-    DeserializationError error = deserializeJson(doc, file);
-
-    if (error) {       
-        doc.clear();
-        file.close();
-        return false;
-    }
-
-    auto root = doc.as<JsonObject>();
-    auto motors_json = root["motors"].as<JsonArray>();
-
-    if (count > motors_json.size())
-    {
-        Serial.print("Configuration doesn't cover all motors: ");
-        Serial.println(motors_json.size());
-        file.close();
-        return false;
-    }
-
-    auto i = 0;
-
-    for (JsonVariant motor_json : motors_json) 
-    {
-        motors[i].mode = motor_json["mode"].as<motor_drive_mode_t>();
-        motors[i].inverted = motor_json["inv"].as<bool>();
-        motors[i].input_channel =  motor_json["ch"].as<int>();
-
-        auto input_type_str = motor_json["type"].as<String>();
-        auto input_type_iter = drive_input_map.find(input_type_str);
-
-        if (input_type_iter == drive_input_map.end())
-        {
-            Serial.print("Unable to map value: ");
-            Serial.println(input_type_str);
-            //log_e("Netif Get IP Failed!");
-            file.close();
-            return false;
+            log_i("\tin:%d out:%d type:%d", config.in_channel, config.out_channel, config.out_type);
         }
-
-        motors[i].input_type = input_type_iter->second;
-
-        i++;
     }
 
+    log_i("Configuration was loaded");
+
+    doc.clear();
     file.close();
+
     return true;
 }
 
-void settings_save(uint8_t *data, size_t len, size_t index, size_t total)
+// bool settings_load(motor_config_t motors[], const int count)
+// {
+//     File file = LittleFS.open("/default.json", FILE_READ);
+//     if (!file)
+//     {
+//         Serial.println("There was an error opening default.json file");
+//         file.close();
+//         return false;
+//     }
+    
+//     StaticJsonDocument<512> doc;
+//     DeserializationError error = deserializeJson(doc, file);
+
+//     if (error) {       
+//         doc.clear();
+//         file.close();
+//         return false;
+//     }
+
+//     auto root = doc.as<JsonObject>();
+//     auto motors_json = root["motors"].as<JsonArray>();
+
+//     if (count > motors_json.size())
+//     {
+//         Serial.print("Configuration doesn't cover all motors: ");
+//         Serial.println(motors_json.size());
+//         file.close();
+//         return false;
+//     }
+
+//     auto i = 0;
+
+//     for (JsonVariant motor_json : motors_json) 
+//     {
+//         motors[i].mode = motor_json["mode"].as<motor_mode_t>();
+//         motors[i].inverted = motor_json["inv"].as<bool>();
+//         motors[i].input_channel =  motor_json["ch"].as<int>();
+
+//         auto input_type_str = motor_json["type"].as<String>();
+//         auto input_type_iter = drive_input_map.find(input_type_str);
+
+//         if (input_type_iter == drive_input_map.end())
+//         {
+//             Serial.print("Unable to map value: ");
+//             Serial.println(input_type_str);
+//             //log_e("Netif Get IP Failed!");
+//             file.close();
+//             return false;
+//         }
+
+//         motors[i].input_type = input_type_iter->second;
+
+//         i++;
+//     }
+
+//     file.close();
+//     return true;
+// }
+
+void settings_save(const char* fileName, uint8_t *data, size_t len, size_t index, size_t total)
 {
-    File file = LittleFS.open("/default.json", "w+");
+    File file = LittleFS.open(fileName, "w+");
     file.write(data, total);
     file.close();
 }

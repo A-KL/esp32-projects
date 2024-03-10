@@ -25,19 +25,19 @@ AsyncWiFiManager wifiManager(&server, &dns);
 
 void Serialize(const motor_config_t* configs, const int config_size, String& result)
 {
-  StaticJsonDocument<200> doc;
+  // StaticJsonDocument<200> doc;
 
-  for(auto i = 0; i<config_size; ++i)
-  {
-    JsonObject motor = doc.createNestedObject();
+  // for(auto i = 0; i<config_size; ++i)
+  // {
+  //   JsonObject motor = doc.createNestedObject();
 
-    motor["mode"] = configs[i].mode;
-    motor["inverted"] = configs[i].inverted;
-    motor["input_type"] = configs[i].input_type;
-    motor["input_channel"] = configs[i].input_channel;
-  }
+  //   motor["mode"] = configs[i].mode;
+  //   motor["inverted"] = configs[i].inverted;
+  //   motor["input_type"] = configs[i].input_type;
+  //   motor["input_channel"] = configs[i].input_channel;
+  // }
 
-  serializeJson(doc, result);
+  // serializeJson(doc, result);
 }
 
 // void OnConfiguration(String& data)
@@ -139,7 +139,34 @@ void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t
 
     try
     {
-        settings_save(data, len, index, total);
+        settings_save("/default.json", data, len, index, total);
+        request->send(200);
+    }
+    catch(const std::exception& e)
+    {
+        request->send(500, "Failed to save json");
+        return;
+    }
+}
+
+void OnConfigV2(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total)  {
+    // try
+    // {
+    //     if (!settings_apply(data, len, index, total))
+    //     {
+    //         request->send(400, "text/plain", "Failed to parse json");
+    //         return;
+    //     }
+    //     request->send(200); 
+    // }
+    // catch(const std::exception& e)
+    // {
+    //     request->send(500, "Failed to parse json");
+    // }
+
+    try
+    {
+        settings_save("/default_v2.json", data, len, index, total);
         request->send(200);
     }
     catch(const std::exception& e)
@@ -169,7 +196,7 @@ void server_init()
     request->send(200);
   });
 
-  server.on("/ç/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/default.json", "application/json");
   });
 
@@ -178,6 +205,8 @@ void server_init()
   server.on("/api/v2/config", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/default_v2.json", "application/json");
   });
+
+  server.on("/api/v2/config", HTTP_PUT, [](AsyncWebServerRequest *request) {}, NULL, OnConfigV2);
 
   server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
 

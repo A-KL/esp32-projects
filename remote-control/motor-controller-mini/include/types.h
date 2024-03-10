@@ -1,19 +1,20 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include <Arduino.h>
 
-enum motor_drive_mode_t {
+enum motor_mode_t {
   a_b_en  = 0,
   a_b     = 1,
   dir_en  = 2
 };
 
-enum input_type_t {
-  pwm  = 0,
-  adc  = 1,
-  sbus = 2,
-  now = 3
+const std::map<const String, const motor_mode_t> drive_modes_map = 
+{ 
+  {"a_b_en", a_b_en}, 
+  {"a_b", a_b},
+  {"dir_en", dir_en} 
 };
 
 struct motor_pins_t 
@@ -29,25 +30,8 @@ struct motor_pins_t
 
 struct motor_config_t
 {
-  enum motor_drive_mode_t mode;
-  bool inverted;
-  enum input_type_t input_type;
-  int input_channel;
-};
-
-const std::map<const String, const motor_drive_mode_t> drive_modes_map = 
-{ 
-  {"a_b_en", a_b_en}, 
-  {"a_b", a_b}, 
-  {"dir_en", dir_en} 
-};
-
-const std::map<const String, const input_type_t> drive_input_map = 
-{ 
-  { "pwm", pwm }, 
-  { "adc", adc }, 
-  { "sbus", sbus },
-  { "now", now }
+  motor_mode_t mode;
+  motor_pins_t pins;
 };
 
 enum lego_servo_dir_t {
@@ -63,7 +47,7 @@ struct lego_servo_t {
     lego_servo_dir_t direction;
 };
 
-// v2
+// Input config
 
 enum output_type_t {
   motor  = 0,
@@ -73,24 +57,10 @@ enum output_type_t {
 
 const std::map<const String, const output_type_t> outputs_map = 
 { 
-  { "dc motor", motor }, 
+  { "motor", motor }, 
   { "servo", servo }, 
-  { "lego servo", servo_lego }
+  { "servo_lego", servo_lego }
 };
-
-struct output_config_t
-{
-  output_type_t type;
-  int channel;
-};
-
-struct input_config_t
-{
-  input_type_t type;
-  int channel;
-};
-
-typedef std::map<const output_config_t, const input_config_t[]> global_config_t;
 
 // const String* output_to_string(const output_type_t type) 
 // {
@@ -100,3 +70,46 @@ typedef std::map<const output_config_t, const input_config_t[]> global_config_t;
 //         {
 //   return outputs_map
 // }
+
+inline const output_type_t string_to_output_type(const String value) 
+{
+    auto iter = outputs_map.find(value);
+
+    return (iter == outputs_map.end() ? (output_type_t)-1 : iter->second);
+}
+
+struct input_config_t
+{
+  output_type_t out_type;
+  int in_channel;
+  int out_channel;
+};
+
+typedef std::map<const String, std::vector<input_config_t>> global_config_t;
+
+// Vars
+global_config_t global_config;
+
+// v2
+
+//global_config_t global_config;
+
+// const std::map<const String, const input_type_t> drive_input_map = 
+// { 
+//   { "pwm", pwm }, 
+//   { "adc", adc }, 
+//   { "sbus", sbus },
+//   { "now", now }
+// };
+
+// struct output_config_t
+// {
+//   output_type_t type;
+//   int channel;
+// };
+
+// struct input_config_t
+// {
+//   input_type_t type;
+//   int channel;
+// };

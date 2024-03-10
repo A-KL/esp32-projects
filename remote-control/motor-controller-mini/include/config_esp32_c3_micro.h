@@ -4,8 +4,8 @@
 
 /* PWM Outputs */
 
-const short pwm_output_pins[] = { 0, 1, 2, 3, 4, 5 };
-const short pwm_outputs_count = sizeof(pwm_output_pins) / sizeof(short);
+const short servos_pins[] = { 0, 1, 2, 3, 4, 5 };
+const short servos_count = sizeof(servos_pins) / sizeof(short);
 
 /* PWM Inputs */
 
@@ -23,16 +23,12 @@ const short sbus_rx_tx_pins[] = { 20, 21 };
 
 /* Motors */
 
-const motor_drive_mode_t motor_modes[] = { };
-
-const motor_pins_t motor_pins[] = { };
-
-const static short motors_count = sizeof(motor_modes) / sizeof(motor_drive_mode_t);
+motor_config_t motors [] = { };
+const static short motors_count = sizeof(motors) / sizeof(motor_config_t);
 
 /* LEGO */
 
-const lego_servo_t lego_servos[] = { };
-
+lego_servo_t lego_servos[] = { };
 const int lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
 
 /* Misc */

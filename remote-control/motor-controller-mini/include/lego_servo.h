@@ -48,5 +48,5 @@ void lego_servo_write(lego_servo_t& servo, int value)
 template<short TMin, short TMax>
 void lego_servo_write(lego_servo_t& servo, int value)
 {
-    lego_servo_write(servo, map(value, TMin, TMax, INPUT_PWM_MIN, INPUT_PWM_MAX));
+    lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
 }

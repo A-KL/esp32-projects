@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <sbus.h>
+#include <types.h>
 #include <config_esp32.h>
 
 #ifndef CONFIG_FILE
@@ -9,8 +10,8 @@
 #include CONFIG_FILE
 
 #include <scheduler.h>
-#include <storage.h>
 #include <motors.h>
+#include <storage.h>
 #include <lego_servo.h>
 #include <pwm_input.h>
 #include <pwm_output.h>
@@ -36,8 +37,7 @@ void setup() {
   scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
 
   storage_init();
-  settings_load(motors_config, motors_count);
-  settings_load_v2(global_config);
+  settings_load(global_config);
 
   driver_init();
   button_input_init(switch_input);

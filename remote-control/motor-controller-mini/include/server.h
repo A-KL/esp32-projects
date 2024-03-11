@@ -182,9 +182,9 @@ void wifi_init(const char* hostname = NULL) {
 
 void server_init() 
 {
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(LittleFS, "/index.html", "text/html");
-  });
+  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //   request->send(LittleFS, "/index.html", "text/html");
+  // });
 
   server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request) {
     request->send(200);
@@ -208,7 +208,7 @@ void server_init()
 
   server.on("/api/v2/config", HTTP_PUT, [](AsyncWebServerRequest *request) {}, NULL, OnConfigV2);
 
-  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html");
+  server.serveStatic("/", LittleFS, "/web").setDefaultFile("index.html");
 
   ws.onEvent(OnSocketEvent);
 

@@ -9,9 +9,9 @@
 #endif
 #include CONFIG_FILE
 
-#include <scheduler.h>
-#include <motors.h>
 #include <storage.h>
+#include <scheduler.h>
+#include <motor.h>
 #include <lego_servo.h>
 #include <pwm_input.h>
 #include <pwm_output.h>
@@ -34,14 +34,14 @@ void setup() {
   Serial.begin(115200);
   sleep(3);
 
-  scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
-
   storage_init();
   settings_load(global_config);
 
-  driver_init();
   button_input_init(switch_input);
+  scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
 
+  driver_init();
+  
   wifi_init(HOSTNAME);
   server_init();
   //now_init();

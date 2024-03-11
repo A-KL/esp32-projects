@@ -16,9 +16,9 @@ inline void storage_init()
   }
 }
 
-String setting_read_key(const String& key)
+String setting_read_key(const String& key, const char* fileName = "/default.json")
 {
-    File file = LittleFS.open("/default.json", FILE_READ);
+    File file = LittleFS.open(fileName, FILE_READ);
 
     if (!file)
     {

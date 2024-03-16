@@ -7,6 +7,7 @@
 #ifndef CONFIG_FILE
 #error "Config file was not defined"
 #endif
+
 #include CONFIG_FILE
 
 #include <storage.h>
@@ -15,6 +16,7 @@
 #include <lego_servo.h>
 #include <pwm_input.h>
 #include <pwm_output.h>
+#include <gamepad.h>
 
 #include <esp32_now.h>
 #include <driver.h>

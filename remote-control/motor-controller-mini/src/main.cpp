@@ -15,6 +15,7 @@
 #include <lego_servo.h>
 #include <pwm_input.h>
 #include <pwm_output.h>
+#include <gamepad.h>
 
 #include <esp32_now.h>
 #include <driver.h>

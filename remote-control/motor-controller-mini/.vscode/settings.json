@@ -50,7 +50,8 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "list": "cpp"
     },
     "cmake.configureOnOpen": false,
     "cSpell.words": [

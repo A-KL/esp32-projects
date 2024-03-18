@@ -61,7 +61,7 @@ inline bool read_adc(const short index, int outputs[])
 {
   outputs[index] = 0;
   
-  return true;
+  //return true;
 
  // TODO: Update this
   auto adc_index = index;// motors_config[index].input_channel;

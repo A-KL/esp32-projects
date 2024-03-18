@@ -12,7 +12,7 @@
 #define INPUT_PWM_ZERO  800 //1020
 
 #define INPUT_ADC_MAX   4095
-#define INPUT_ADC_MIN   1
+#define INPUT_ADC_MIN   0
 
 #define MOTOR_FREQ      100
 #define MOTOR_RES       10

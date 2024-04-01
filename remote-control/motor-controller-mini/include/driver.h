@@ -74,20 +74,6 @@ inline bool read_adc(const short index, int outputs[])
   return true;
 }
 
-void write_motor(short index, int output)
-{
-  motor_run(motors[index].pins, motors[index], output);
-  
-  log_d("MOTOR OUT %d: %d", index, output);
-}
-
-void write_motors(int outputs[], short count)
-{
-  for (short i = 0; i<count; ++i) {
-    write_motor(i, outputs[i]);
-  }
-}
-
 inline void write_lego_servo(short index, int output)
 {
   lego_servo_write(lego_servos[index], output);
@@ -153,11 +139,17 @@ void driver_loop()
       write_motor(i, outputs[i]);
       continue;
     }
-    if (read_adc(i, outputs))
-    {
-      write_motor(i, outputs[i]);
-      continue;
-    }
+
+    auto adc_value = analogRead(adc_input_pins[i]);
+    log_d("ADC IN %d: %d", index, adc_value);
+    outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
+    write_motor(i, outputs[i]);
+    
+    // if (read_adc(i, outputs))
+    // {
+    //   write_motor(i, outputs[i]);
+    //   continue;
+    // }
   }
 
   for (auto i = 0; i < lego_servos_count; i++)

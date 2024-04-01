@@ -122,3 +122,17 @@ void motor_run(const motor_pins_t& pins, const motor_config_t& config, const int
         break;
     }
 }
+
+void write_motor(short index, int output)
+{
+  motor_run(motors[index].pins, motors[index], output);
+  
+  log_d("MOTOR OUT %d: %d", index, output);
+}
+
+void write_motors(int outputs[], short count)
+{
+  for (short i = 0; i<count; ++i) {
+    write_motor(i, outputs[i]);
+  }
+}

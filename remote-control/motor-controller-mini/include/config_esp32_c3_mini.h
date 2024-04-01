@@ -9,12 +9,12 @@ const short servos_count = sizeof(servos_pins) / sizeof(short);
 
 /* PWM Inputs */
 
-const short pwm_input_pins[] = { 1, 0 };
+const short pwm_input_pins[] = { 4, 3 };
 const short pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(short);
 
 /* ADC Inputs */
 
-const short adc_input_pins[] = { 4, 3 };
+const short adc_input_pins[] = { 1, 0 };
 const short adc_inputs_count = sizeof(adc_input_pins) / sizeof(short);
 
 /* SBUS */

@@ -140,7 +140,7 @@ void driver_loop()
       continue;
     }
 
-    auto adc_value = analogRead(adc_input_pins[i]);
+    auto adc_value = analogRead(pwm_input_pins[i]);
     log_d("ADC IN %d: %d", index, adc_value);
     outputs[i] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
     write_motor(i, outputs[i]);

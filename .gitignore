@@ -13,3 +13,5 @@ sound/mic-input/.vscode/
 sound/sound-analyzer/.vscode/
 tft_espi-sdl-emulation/.vs/
 tft_espi-sdl-emulation/x64/
+remote-control/motor-controller-mini/.vscode/
+sound/audio-tools-adc/.vscode/

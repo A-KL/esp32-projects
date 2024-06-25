@@ -4,7 +4,7 @@
 
 /* PWM Outputs */
 
-const short servos_pins[] = { 7, 14, 15, 16, 17, 19 };
+const short servos_pins[] = { 7, 14, 15, 16, 17, 18 };
 const short servos_count = sizeof(servos_pins) / sizeof(short);
 
 /* PWM Inputs */
@@ -24,15 +24,15 @@ const short sbus_rx_tx_pins[] = { 20, 21 }; //RX 03, TX 01, uart0
 /* Motors */
 
 motor_config_t motors[] = {
-    { motor_mode_t::a_b_en, { 0, 0, 6, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
-    { motor_mode_t::a_b_en, { 0, 0, 39, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
+    { motor_mode_t::a_b_en, { 40, 39, 41, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
+    { motor_mode_t::a_b_en, { 42, 45,  6, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 const static short motors_count = sizeof(motors) / sizeof(motor_config_t);
 
 /* LEGO */
 
 lego_servo_t lego_servos[] = {
-    { 1,  2, 8 }, //a, b, channel
+    { 1, 2, 8 }, //a, b, channel
     { 3, 4, 9 }  //a, b, channel
 };
 

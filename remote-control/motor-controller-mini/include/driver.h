@@ -122,8 +122,7 @@ void driver_loop()
   if (sbus_rx.Read()) {
     sbus_data = sbus_rx.data();
 
-    for (auto input_config : global_config["sbus"]) 
-    {
+    for (auto input_config : global_config["sbus"]) {
       if (input_config.out_type == motor) {
          outputs[input_config.out_channel] = map(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
       }

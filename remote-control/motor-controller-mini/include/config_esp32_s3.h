@@ -19,7 +19,7 @@ const short adc_inputs_count = sizeof(adc_input_pins) / sizeof(short);
 
 /* SBUS */
 
-const short sbus_rx_tx_pins[] = { 20, 21 }; //RX 03, TX 01, uart0
+const short sbus_rx_tx_pins[] = { 44, 43 }; //RX 03, TX 01, uart0
 
 /* Motors */
 

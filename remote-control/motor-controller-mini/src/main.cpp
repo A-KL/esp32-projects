@@ -42,8 +42,8 @@ void setup() {
 
   driver_init();
   
-  wifi_init(HOSTNAME);
-  server_init();
+  // wifi_init(HOSTNAME);
+  // server_init();
   //now_init();
 }
 
@@ -52,5 +52,5 @@ void loop() {
   driver_loop();
   scheduler_loop();
 
-  button_input_update(switch_input);
+  //button_input_update(switch_input);
 }

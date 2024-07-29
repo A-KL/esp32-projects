@@ -40,7 +40,7 @@ const int lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
 
 /* Misc */
 
-const int switch_input_button = 9;
+const int switch_input_button = 13;
 
 const int led_output = -1;
 const int rgb_output = 21;

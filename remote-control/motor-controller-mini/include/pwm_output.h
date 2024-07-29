@@ -2,7 +2,7 @@
 
 inline void servos_init() {
     for (int i = 0; i < servos_count; i++) {
-        ledcSetup(i, SERVO_FREQ, SERVO_RES);
+        assert(ledcSetup(i, SERVO_FREQ, SERVO_RES));
     }
 }
 

@@ -43,11 +43,17 @@ void driver_init()
 
 inline bool read_pwm(const short index, int outputs[]) 
 { 
+  if (pwm_inputs_count <= index) 
+  {
+    return false;
+  }
+
   // TODO: Update this
   auto pwm_index = index; // motors[index].input_channel;
   auto pwm_value = input_pwm[pwm_index].Result();
-
   auto pwm_detected = pwm_value > INPUT_PWM_ZERO;
+
+  //log_d("PWM IN %d: %d", index, pwm_value);
 
   if (pwm_detected)
   {
@@ -59,9 +65,10 @@ inline bool read_pwm(const short index, int outputs[])
 
 inline bool read_adc(const short index, int outputs[]) 
 {
-  outputs[index] = 0;
-  
-  //return true;
+  if (adc_inputs_count <= index) 
+  {
+    return false;
+  }
 
  // TODO: Update this
   auto adc_index = index;// motors_config[index].input_channel;
@@ -77,22 +84,20 @@ inline bool read_adc(const short index, int outputs[])
 void write_motor(short index, int output)
 {
   motor_run(motors[index].pins, motors[index], output);
-  
-  log_d("MOTOR OUT %d: %d", index, output);
 }
 
 void write_motors(int outputs[], short count)
 {
   for (short i = 0; i<count; ++i) {
     write_motor(i, outputs[i]);
+    delay(10);
+    //log_d("MOTOR OUT %d: %d", i, outputs[i]);
   }
 }
 
 inline void write_lego_servo(short index, int output)
 {
   lego_servo_write(lego_servos[index], output);
-
-  log_d("LEGO SERVO OUT %d: %d", index, output);
 }
 
 inline void write_lego_servos(int outputs[], short count)
@@ -100,6 +105,15 @@ inline void write_lego_servos(int outputs[], short count)
   for (short i = 0; i<count; ++i) {
     write_lego_servo(i, outputs[i]);
   }
+}
+
+inline void trace_values(short outputs[], short count)
+{
+  char trace[100];
+  for (short i = 0; i<count; ++i) {
+    sprintf(trace, "%s\t%d", trace, outputs[i]);
+  }
+  log_d("%s", trace);
 }
 
 // template<const int TMin, const int TMax>
@@ -118,19 +132,28 @@ void driver_loop()
   short outputs_servo[servos_count];
   int outputs_servo_lego[lego_servos_count];
 
+  // write_motor(0, 1023);
+  // delay(100);
+  // return;
+
   /* SBUS */
   if (sbus_rx.Read()) {
     sbus_data = sbus_rx.data();
 
-    for (auto input_config : global_config["sbus"]) {
-      if (input_config.out_type == motor) {
-         outputs[input_config.out_channel] = map(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-      }
-      if (input_config.out_type == servo) {
-          outputs_servo[input_config.out_channel] = map(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, SERVO_LOW, SERVO_HIGH);
-      }
-      if (input_config.out_type == servo_lego) {
-          outputs_servo_lego[input_config.out_channel] = map(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX, LEGO_SERVO_LOW, LEGO_SERVO_HIGH);
+    for (auto input_config : global_config["sbus"]) 
+    {
+      auto sbus_value = constrain(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX);
+      switch (input_config.out_type)
+      {
+        case motor:
+          outputs[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
+          break;
+        case servo:
+          outputs_servo[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, SERVO_LOW, SERVO_HIGH);
+          break;
+        case servo_lego:
+          outputs_servo_lego[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, LEGO_SERVO_LOW, LEGO_SERVO_HIGH);
+          break;              
       }
     }
 
@@ -139,29 +162,40 @@ void driver_loop()
 
     write_motors(outputs, motors_count);
     pwm_write(outputs_servo, servos_count);
+    delay(70);
     write_lego_servos(outputs_servo_lego, lego_servos_count);
+
+    trace_values(outputs_servo, servos_count);
 
     return;
   }
 
   /* PWM */
-  for (short i=0; i<motors_count; i++)
+  for (auto i=0; i<motors_count; i++)
   {
-    if (read_pwm(i, outputs))
+    if (read_pwm(i, outputs) || read_adc(i, outputs))
     {
       write_motor(i, outputs[i]);
-      continue;
     }
-    if (read_adc(i, outputs))
+    else
     {
-      write_motor(i, outputs[i]);
-      continue;
+      write_motor(i, 0);
     }
   }
 
   for (auto i = 0; i < lego_servos_count; i++)
   {
-    /* code */
+    // if (read_pwm(i, outputs_servo_lego))
+    // {
+    //   write_motor(i, outputs[i]);
+    //   continue;
+    // }
+    // if (read_adc(i, outputs))
+    // {
+    //   write_motor(i, outputs[i]);
+    //   continue;
+    // }
+    lego_servo_write(lego_servos[i], 0);
   }
 
   delay(50);

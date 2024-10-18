@@ -5,11 +5,11 @@
 
 #include <AudioFileSourceBuffer.h>
 #include <AudioFileSourceICYStream.h>
-#include <AudioGeneratorTalkie.h>
+// #include <AudioGeneratorTalkie.h>
 #include <AudioGeneratorMP3.h>
 #include <AudioOutputI2S.h>
 #include <AudioOutputI2SNoDAC.h>
-#include "BluetoothA2DPSource.h"
+// //#include "BluetoothA2DPSource.h"
 #include "AudioOutputWithCallback.h"
 
 // #include "AudioConfig.h"

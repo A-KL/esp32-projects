@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Adafruit_ILI9341.h"
-
 //#include "TFT_eSPI.h"
 
 #include "../BaseGraphics/Canvas.h"

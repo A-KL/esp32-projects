@@ -46,7 +46,7 @@ i2s_config_t i2s_config = {
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,  // Set the interrupt flag. ESP_INTR_FLAG_LEVEL2
     .dma_buf_count = 8,                        // DMA buffer count.
     .dma_buf_len   = I2S_BUFFER_SIZE,          // DMA buffer length.
-    .use_apll      = false,
+    //.use_apll      = false,
     //.fixed_mclk    =  256 * I2S_SAMPLE_RATE //12288000 // 11 289 600
 };
 

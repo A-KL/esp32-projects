@@ -32,3 +32,5 @@ LV_FONT_DECLARE( ui_font_conthraxfont26);
 LV_FONT_DECLARE( ui_font_conthraxfont48);
 
 void ui_init(void);
+
+void ui_set_altitude(int value);

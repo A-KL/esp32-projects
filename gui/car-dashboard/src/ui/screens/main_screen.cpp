@@ -5,6 +5,8 @@
 
 #include "../ui.h"
 
+#include <string>
+
 const int separator_size = 4;
 const int separator_width = 170;
 
@@ -15,7 +17,28 @@ const int primary_color = 0xFFFFFF;
 const int secondary_color = 0x969696;
 const int hi_color = 0xED001E;
 
-void ui_set_alt(int value)
+static int altitude_max = 0;
+static int pitch_max = 0;
+
+void ui_set_altitude(int value)
+{
+    auto string_value = std::to_string(value);
+    lv_label_set_text(ui_alt, string_value.c_str());
+
+    if (value > altitude_max) {
+        lv_obj_set_style_bg_color(ui_alt_background, lv_color_hex(background_light_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+        lv_obj_set_style_text_color(ui_alt_unit, lv_color_hex(primary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+
+        lv_label_set_text(ui_alt_max, string_value.c_str());
+        altitude_max = value;
+    }
+    else {
+        lv_obj_set_style_bg_color(ui_alt_background, lv_color_hex(background_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+        lv_obj_set_style_text_color(ui_alt_unit, lv_color_hex(secondary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+    }
+}
+
+void ui_set_pitch(int value)
 {
 
 }

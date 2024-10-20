@@ -21,6 +21,14 @@ int main(void)
 
   ui_init();
 
+  //delay(3000);
+
+  ui_set_altitude(4300);
+
+ // delay(3000);
+
+ // ui_set_altitude(2300);
+
   hal_loop();
 
   /* Change the active screen's background color */
@@ -112,5 +120,5 @@ int main(void)
   // lv_obj_center(bar);
   // lv_bar_set_value(bar, 100, LV_ANIM_ON);
 
-	hal_loop();
+	//hal_loop();
 }

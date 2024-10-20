@@ -72,3 +72,10 @@ void hal_loop(void)
         lv_task_handler();
     }
 }
+
+void delay(unsigned long miliseconds)
+{
+    SDL_Delay(miliseconds);
+    // lv_tick_inc(miliseconds);
+    // lv_task_handler();
+}

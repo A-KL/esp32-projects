@@ -8,6 +8,7 @@ extern "C" {
 
 void hal_setup(void);
 void hal_loop(void);
+void delay(unsigned long);
 
 
 #ifdef __cplusplus

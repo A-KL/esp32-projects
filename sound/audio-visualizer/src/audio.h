@@ -90,7 +90,7 @@ void loopControls()
 
 void setupAudio()
 { 
-    initDac();
+    //initDac();
 }
 
 void selectAudio(int dest, int src)

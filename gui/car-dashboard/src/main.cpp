@@ -11,11 +11,17 @@
 #include "lvgl.h"
 #include "app_hal.h"
 
+#include "ui/ui.h"
+
 int main(void)
 {
 	lv_init();
 
 	hal_setup();
+
+  ui_init();
+
+  hal_loop();
 
   /* Change the active screen's background color */
   lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), LV_PART_MAIN);

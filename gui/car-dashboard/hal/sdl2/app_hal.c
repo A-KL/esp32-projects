@@ -7,6 +7,8 @@
 #include "indev/keyboard.h"
 #include "sdl/sdl.h"
 
+typedef int (*update_callback) (void *data);
+
 /**
  * A task to measure the elapsed time for LittlevGL
  * @param data unused
@@ -22,6 +24,11 @@ static int tick_thread(void * data)
     }
 
     return 0;
+}
+
+void updates(update_callback fn) 
+{
+    SDL_CreateThread(fn, "ui_updates", NULL);
 }
 
 void hal_setup(void)

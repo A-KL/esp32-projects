@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <config_esp32.hpp>
+#include <ResponsiveAnalogRead.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,6 +100,23 @@ class SmoothingFilter : public InputFilter
     int _total = 0;
     int _index = 0;
     int _readings[_size];
+};
+
+class ResponsiveFilter : public InputFilter
+{
+  public:
+    ResponsiveFilter(const short channel) : _analog_channel(channel, true)
+    { }
+
+    int read() {
+      // analog.hasChanged()
+      _analog_channel.update();
+
+      return _analog_channel.getValue();
+    }
+  
+  private:
+    ResponsiveAnalogRead _analog_channel;
 };
 
 #ifdef __cplusplus

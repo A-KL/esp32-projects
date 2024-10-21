@@ -34,7 +34,7 @@ int main(void)
 
   ui_init();
 
-  updates(ui_update_thread);
+  //updates(ui_update_thread);
 
   hal_loop();
 

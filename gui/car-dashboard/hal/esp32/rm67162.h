@@ -2,6 +2,7 @@
 
 #include "stdint.h"
 //#include "pins_config.h"
+#define TFT_SPI_HOST SPI2_HOST
 
 #define TFT_MADCTL 0x36
 #define TFT_MAD_MY 0x80

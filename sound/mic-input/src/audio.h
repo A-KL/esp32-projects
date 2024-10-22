@@ -17,7 +17,7 @@ uint8_t sample_size = sizeof(int32_t); // int16_t
 
 int32_t samples[I2S_BUFFER_SIZE]; // int16_t
 
-i2s_config_t i2s_config = {
+i2s_config_t i2s_mic_config = {
     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),  // | I2S_MODE_PDM // I2S_MODE_MASTER //I2S_MODE_SLAVE
     .sample_rate = I2S_SAMPLE_RATE,
     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
@@ -57,7 +57,7 @@ const i2s_config_t i2s_rx_config(i2s_mode_t mode = I2S_MODE_MASTER, uint16_t sam
 }
 
 void i2s_install() {
-    i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
+    i2s_driver_install(I2S_NUM_0, &i2s_mic_config, 0, NULL);
 }
 
 void i2s_setpin() {

@@ -3,6 +3,7 @@
 #include "stdint.h"
 //#include "pins_config.h"
 #define TFT_SPI_HOST SPI2_HOST
+#define SEND_BUF_SIZE ((LVGL_LCD_BUF_SIZE+8)/10)
 
 #define TFT_MADCTL 0x36
 #define TFT_MAD_MY 0x80

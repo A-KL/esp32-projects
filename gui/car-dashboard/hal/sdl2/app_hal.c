@@ -80,6 +80,8 @@ void hal_setup(void)
      * You have to call 'lv_tick_inc()' in periodically to inform LittelvGL about how much time were elapsed
      * Create an SDL thread to do this*/
     SDL_CreateThread(tick_thread, "tick", NULL);
+
+    //lv_tick_set_cb(SDL_GetTicks)
 }
 
 void hal_loop(void)

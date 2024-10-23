@@ -50,6 +50,7 @@ void hal_setup(void)
 
 void updates(update_callback fn) 
 {
+
    // SDL_CreateThread(fn, "ui_updates", NULL);
 }
 
@@ -64,7 +65,23 @@ void hal_loop(void)
 }
 
 void setup()
-{
+{    
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("Starting...\n");
+
+  rm67162_init();
+  lcd_setRotation(1);
+  Serial.println("LCD OK \n");
+
+  lcd_fill(0, 0, 536, 240, 0xFFF0);  
+  Serial.println("Drawing done...\n");
+
+  // buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
+  // assert(buf);
+
+
+  // lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 }
 
 void loop()

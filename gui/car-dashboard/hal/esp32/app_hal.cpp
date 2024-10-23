@@ -3,9 +3,18 @@
 
 #include <lvgl.h>
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "rm67162.h"
+#include "Adafruit_BME280.h"
 #include "app_hal.h"
+
+#define I2C_SDA 32
+#define I2C_SCL 33
+#define SEALEVELPRESSURE_HPA (1013.25)
+#define BME280_ADDR 0x76
+
+Adafruit_BME280 bme;
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
@@ -71,6 +80,8 @@ void hal_setup(void)
   lv_disp_drv_register(&disp_drv);
 
   xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lvgl_tick_task);
+
+  auto status = bme.begin(BME280_ADDR);
 
   //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);
 }

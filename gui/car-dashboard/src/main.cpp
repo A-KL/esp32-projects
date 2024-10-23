@@ -14,17 +14,17 @@
 
 #include "ui/ui.h"
 
-static int ui_update_thread(void * data)
-{
-    (void)data;
+// static int ui_update_thread(void * data)
+// {
+//     (void)data;
 
-    while(1) {
-        delay(1000);
-        ui_set_altitude(rand()%1000 + 2000);
-    }
+//     while(1) {
+//         delay(1000);
+//         ui_set_altitude(rand()%1000 + 2000);
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 #ifdef ARDUINO
 

@@ -31,6 +31,16 @@ void updates(update_callback fn)
     SDL_CreateThread(fn, "ui_updates", NULL);
 }
 
+int hal_get_altitude()
+{
+  return 4100;
+}
+
+int hal_get_pitch()
+{
+  return 10;
+}
+
 void hal_setup(void)
 {
     // Workaround for sdl2 `-m32` crash

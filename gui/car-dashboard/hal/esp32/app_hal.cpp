@@ -8,11 +8,7 @@
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
 
-typedef int (*update_callback) (void *data);
-
-void my_disp_flush(lv_disp_drv_t *disp,
-                   const lv_area_t *area,
-                   lv_color_t *color_p)
+void hal_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
@@ -33,9 +29,14 @@ void my_disp_flush(lv_disp_drv_t *disp,
 //     j = !j;
 // }
 
-void updates(update_callback fn) 
+int hal_get_altitude()
 {
-   // SDL_CreateThread(fn, "ui_updates", NULL);
+  return 4100;
+}
+
+int hal_get_pitch()
+{
+  return 10;
 }
 
 void hal_setup(void)
@@ -46,17 +47,28 @@ void hal_setup(void)
 
   rm67162_init();
   lcd_setRotation(1);
-  Serial.println("LCD OK \n");
-
-  lcd_fill(0, 0, 536, 240, 0xFFF0);  
-  Serial.println("Drawing done...\n");
 
   buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
   assert(buf);
 
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
+  /*Initialize the display*/
+  static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+
+  /*Change the following line to your display resolution*/
+  disp_drv.hor_res = EXAMPLE_LCD_H_RES;
+  disp_drv.ver_res = EXAMPLE_LCD_V_RES;
+  disp_drv.flush_cb = hal_disp_flush;
+  disp_drv.draw_buf = &draw_buf;
+
+  lv_disp_drv_register(&disp_drv);
+
   //lv_timer_t *timer = lv_timer_create(timer_task, 500, seg_text);
+
+  //lcd_fill(0, 0, 536, 240, 0xFFF0);
+  //lcd_fill(0, 0, EXAMPLE_LCD_H_RES, EXAMPLE_LCD_V_RES, 0xFF00);
 }
 
 void hal_loop(void)

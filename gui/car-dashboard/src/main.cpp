@@ -26,6 +26,24 @@ static int ui_update_thread(void * data)
     return 0;
 }
 
+#ifdef ARDUINO
+
+void setup()
+{ 
+  lv_init();
+
+  hal_setup();
+
+  ui_init();
+}
+
+void loop()
+{
+  hal_loop();
+}
+
+#else
+
 int main(void)
 {
 	lv_init();
@@ -36,5 +54,9 @@ int main(void)
 
   //updates(ui_update_thread);
 
-  hal_loop();
+  while(1) {
+    hal_loop();
+  }
 }
+
+#endif

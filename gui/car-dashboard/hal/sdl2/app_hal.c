@@ -74,10 +74,8 @@ void hal_setup(void)
 
 void hal_loop(void)
 {
-    while(1) {
-        SDL_Delay(5);
-        lv_task_handler();
-    }
+    SDL_Delay(5);
+    lv_task_handler();
 }
 
 void delay(unsigned long miliseconds)

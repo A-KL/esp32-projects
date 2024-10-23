@@ -3,14 +3,7 @@
 #include "lvgl.h"
 #include "rm67162.h"
 
-#define LV_DELAY(x)                                                                                                                                  \
-  do {                                                                                                                                               \
-    uint32_t t = x;                                                                                                                                  \
-    while (t--) {                                                                                                                                    \
-      lv_timer_handler();                                                                                                                            \
-      delay(1);                                                                                                                                      \
-    }                                                                                                                                                \
-  } while (0);
+#include "app_hal.h"
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
@@ -45,8 +38,8 @@ void updates(update_callback fn)
    // SDL_CreateThread(fn, "ui_updates", NULL);
 }
 
-void setup()
-{    
+void hal_setup(void)
+{
   Serial.begin(115200);
   delay(1000);
   Serial.println("Starting...\n");
@@ -66,20 +59,8 @@ void setup()
   //lv_timer_t *timer = lv_timer_create(timer_task, 500, seg_text);
 }
 
-void loop()
-{
-    delay(2);
-    lv_timer_handler();
-}
-
-void hal_setup(void)
-{
-    setup();
-}
-
 void hal_loop(void)
 {
-    while(1) {
-        loop();
-    }
+  delay(2);
+  lv_timer_handler();
 }

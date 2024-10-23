@@ -10,6 +10,7 @@
 const uint16_t separator_size = 4;
 const uint16_t separator_width = 160;
 const uint16_t bottom_height = 50;
+const uint16_t highlight_padding = 10;
 
 const int background_color = 0x000000;
 const int background_light_color = 0x00F34F;
@@ -41,7 +42,20 @@ void ui_set_altitude(int value)
 
 void ui_set_pitch(int value)
 {
+    auto string_value = std::to_string(value);
+    lv_label_set_text(ui_pitch, string_value.c_str());
 
+    if (value > pitch_max) {
+        lv_obj_set_style_bg_color(ui_pitch_background, lv_color_hex(background_light_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+        lv_obj_set_style_text_color(ui_pitch_unit, lv_color_hex(primary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+
+        lv_label_set_text(ui_pitch_max, string_value.c_str());
+        pitch_max = value;
+    }
+    else {
+        lv_obj_set_style_bg_color(ui_pitch_background, lv_color_hex(background_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+        lv_obj_set_style_text_color(ui_pitch_unit, lv_color_hex(secondary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+    }
 }
 
 uint16_t ui_get_text_width(const char* text, const int size){
@@ -86,7 +100,7 @@ void ui_main_screen_init(void)
     ui_pitch_max_unit = lv_label_create(ui_screen);
     lv_obj_set_width( ui_pitch_max_unit, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height( ui_pitch_max_unit, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_x( ui_pitch_max_unit, -(right_center - ui_pitch_max_width - ui_pitch_max_unit_width + 7)  );
+    lv_obj_set_x( ui_pitch_max_unit, -(right_center - ui_pitch_max_width - ui_pitch_max_unit_width)  );
     lv_obj_set_y( ui_pitch_max_unit, -12 );
     lv_obj_set_align( ui_pitch_max_unit, LV_ALIGN_BOTTOM_RIGHT);
     lv_label_set_text(ui_pitch_max_unit, pitch_unit_text);
@@ -96,7 +110,7 @@ void ui_main_screen_init(void)
 
     // Alt Max
     auto left_center = screen_center / 2;
-    auto ui_alt_max_width = ui_get_text_width(max_alt_text, sizeof(max_alt_text)) / 2;
+    auto ui_alt_max_width = ui_get_text_width(max_alt_text, sizeof(max_alt_text));
     auto ui_alt_max_unit_width = ui_get_text_width(alt_unit_text, sizeof(alt_unit_text));
 
     ui_alt_max = lv_label_create(ui_screen);
@@ -123,11 +137,11 @@ void ui_main_screen_init(void)
     // Pitch background
     ui_pitch_background = lv_obj_create(ui_screen);
     lv_obj_remove_style_all(ui_pitch_background);
-    lv_obj_set_width( ui_pitch_background, lv_pct(46));
-    lv_obj_set_height( ui_pitch_background, lv_pct(70));
-    lv_obj_set_x( ui_pitch_background, lv_pct(26) );
-    lv_obj_set_y( ui_pitch_background, lv_pct(-12) );
-    lv_obj_set_align( ui_pitch_background, LV_ALIGN_CENTER );
+    lv_obj_set_width( ui_pitch_background, screen_center - highlight_padding * 2);
+    lv_obj_set_height( ui_pitch_background, (screen_hight - bottom_height - highlight_padding * 2));
+    lv_obj_set_x( ui_pitch_background, -highlight_padding );
+    lv_obj_set_y( ui_pitch_background, highlight_padding );
+    lv_obj_set_align( ui_pitch_background, LV_ALIGN_TOP_RIGHT);
     lv_obj_clear_flag( ui_pitch_background, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
     lv_obj_set_style_radius(ui_pitch_background, 10, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_pitch_background, lv_color_hex(background_color), LV_PART_MAIN | LV_STATE_DEFAULT );
@@ -159,11 +173,11 @@ void ui_main_screen_init(void)
     // Alt background
     ui_alt_background = lv_obj_create(ui_screen);
     lv_obj_remove_style_all(ui_alt_background);
-    lv_obj_set_width( ui_alt_background, lv_pct(47));
-    lv_obj_set_height( ui_alt_background, lv_pct(69));
-    lv_obj_set_x( ui_alt_background, lv_pct(-24) );
-    lv_obj_set_y( ui_alt_background, lv_pct(-12) );
-    lv_obj_set_align( ui_alt_background, LV_ALIGN_CENTER );
+    lv_obj_set_width( ui_alt_background, screen_center - highlight_padding * 2);
+    lv_obj_set_height( ui_alt_background, (screen_hight - bottom_height - highlight_padding * 2));
+    lv_obj_set_x( ui_alt_background, highlight_padding);
+    lv_obj_set_y( ui_alt_background, highlight_padding);
+    lv_obj_set_align( ui_alt_background, LV_ALIGN_TOP_LEFT );
     lv_obj_clear_flag( ui_alt_background, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
     lv_obj_set_style_radius(ui_alt_background, 10, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_alt_background, lv_color_hex(background_color), LV_PART_MAIN | LV_STATE_DEFAULT );
@@ -224,15 +238,15 @@ void ui_main_screen_init(void)
     lv_obj_add_style(ui_left_hor_separator, &style, 0);
 
     // Vertical line
-    ui_vertical_separator = lv_obj_create(ui_screen);
-    lv_obj_set_width( ui_vertical_separator, separator_size);
-    lv_obj_set_height( ui_vertical_separator, lv_pct(100));
-    lv_obj_set_x( ui_vertical_separator, 0 );
-    lv_obj_set_y( ui_vertical_separator, 0 );
-    lv_obj_set_align( ui_vertical_separator, LV_ALIGN_CENTER );
-    lv_obj_clear_flag( ui_vertical_separator, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-    lv_obj_set_style_bg_color(ui_vertical_separator, lv_color_hex(secondary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_bg_opa(ui_vertical_separator, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+    // ui_vertical_separator = lv_obj_create(ui_screen);
+    // lv_obj_set_width( ui_vertical_separator, separator_size);
+    // lv_obj_set_height( ui_vertical_separator, lv_pct(100));
+    // lv_obj_set_x( ui_vertical_separator, 0 );
+    // lv_obj_set_y( ui_vertical_separator, 0 );
+    // lv_obj_set_align( ui_vertical_separator, LV_ALIGN_CENTER );
+    // lv_obj_clear_flag( ui_vertical_separator, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+    // lv_obj_set_style_bg_color(ui_vertical_separator, lv_color_hex(secondary_color), LV_PART_MAIN | LV_STATE_DEFAULT );
+    // lv_obj_set_style_bg_opa(ui_vertical_separator, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
     // Right separator
     ui_right_hor_separator = lv_obj_create(ui_screen);

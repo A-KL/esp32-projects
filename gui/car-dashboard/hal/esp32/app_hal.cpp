@@ -29,14 +29,6 @@ void my_disp_flush(lv_disp_drv_t *disp,
     lv_disp_flush_ready(disp);
 }
 
-void hal_setup(void)
-{
-    Serial.begin(115200);
-    Serial.println("T-DISPLAY-S3-AMOLED FACTORY TEST");
-
-    //lv_timer_t *timer = lv_timer_create(timer_task, 500, seg_text);
-}
-
 // static void timer_task(lv_timer_t *t)
 // {
 //     lv_obj_t *seg = (lv_obj_t *)t->user_data;
@@ -50,18 +42,7 @@ void hal_setup(void)
 
 void updates(update_callback fn) 
 {
-
    // SDL_CreateThread(fn, "ui_updates", NULL);
-}
-
-void hal_loop(void)
-{
-    while(1) {
-        vTaskDelay(5);
-        lv_task_handler();
-        // lv_timer_handler();
-        // delay(2);
-    }
 }
 
 void setup()
@@ -77,15 +58,28 @@ void setup()
   lcd_fill(0, 0, 536, 240, 0xFFF0);  
   Serial.println("Drawing done...\n");
 
-  // buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
-  // assert(buf);
+  buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
+  assert(buf);
 
+  lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
-  // lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
+  //lv_timer_t *timer = lv_timer_create(timer_task, 500, seg_text);
 }
 
 void loop()
 {
-    lv_timer_handler();
     delay(2);
+    lv_timer_handler();
+}
+
+void hal_setup(void)
+{
+    setup();
+}
+
+void hal_loop(void)
+{
+    while(1) {
+        loop();
+    }
 }

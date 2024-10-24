@@ -24,12 +24,12 @@ static int tick_thread(void * data)
     return 0;
 }
 
-int hal_get_altitude()
+float hal_get_altitude()
 {
   return rand()%1000 + 2000;
 }
 
-int hal_get_pitch()
+float hal_get_pitch()
 {
   return rand()%10 + 5;;
 ;

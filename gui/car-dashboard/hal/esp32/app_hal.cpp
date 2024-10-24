@@ -3,18 +3,19 @@
 
 #include <lvgl.h>
 #include <Arduino.h>
+
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
 
 #include "rm67162.h"
-#include "Adafruit_BME280.h"
 #include "app_hal.h"
 
-#define I2C_SDA 32
-#define I2C_SCL 33
-#define SEALEVELPRESSURE_HPA (1013.25)
-#define BME280_ADDR 0x76
+#define SEALEVELPRESSURE_HPA (1019)
+#define BMP280_ADDR 0x76
 
-Adafruit_BME280 bme;
+Adafruit_BMP280 bme;
+bool bme_initialized = false;
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
@@ -67,13 +68,26 @@ void hal_log_cb(const char * buf)
   // serial_send("\n");
 }
 
-
-int hal_get_altitude()
+float hal_get_altitude()
 {
+  if (bme_initialized)
+  {
+    auto alt =  bme.readAltitude(SEALEVELPRESSURE_HPA);
+    printf("Altitude: %.2f\r\n", alt);
+
+    auto presure =  bme.readPressure();
+    printf("Pressure: %.2f\r\n", presure);
+
+    auto temperature =  bme.readTemperature();
+    printf("Temperature: %.2f\r\n", temperature);
+
+    return alt;
+  }
+
   return rand()%1000 + 2000;
 }
 
-int hal_get_pitch()
+float hal_get_pitch()
 {
   return rand()%10 + 5;;
 }
@@ -81,11 +95,14 @@ int hal_get_pitch()
 void hal_setup(void)
 {
   Serial.begin(115200);
+  Wire.begin(I2C_SDA, I2C_SCL);
+
   delay(1000);
-  Serial.println("Starting...\n");
   
   rm67162_init();
   lcd_setRotation(1);
+
+  bme_initialized = bme.begin(BMP280_ADDR);
 
   buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
   assert(buf);
@@ -105,8 +122,6 @@ void hal_setup(void)
   lv_disp_drv_register(&disp_drv);
 
   xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lvgl_tick_task);
-
-  auto status = bme.begin(BME280_ADDR);
 
   //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);
 

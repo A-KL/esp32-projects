@@ -25,6 +25,32 @@ static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
 static TaskHandle_t lvgl_tick_task = NULL;
 
+const int MPU_addr=0x68;
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+ 
+int minVal=265;
+int maxVal=402;
+
+float read_angle()
+{
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x3B);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_addr, 14);
+  AcX=Wire.read()<<8|Wire.read();
+  AcY=Wire.read()<<8|Wire.read();
+  AcZ=Wire.read()<<8|Wire.read();
+  int xAng = map(AcX,minVal,maxVal,-90,90);
+  int yAng = map(AcY,minVal,maxVal,-90,90);
+  int zAng = map(AcZ,minVal,maxVal,-90,90);
+  
+  auto x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI);
+  auto y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
+  auto z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
+
+  return y;
+}
+
 void hal_display_flush_cb(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
@@ -95,15 +121,26 @@ float hal_get_pitch()
 {
   if (mpu_initialized)
   {
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    printf("MPU: %.2f\r\n", a.acceleration.pitch);
+    // sensors_event_t a, g, temp;
+    // mpu.getEvent(&a, &g, &temp);
 
-    return a.acceleration.pitch;
+    // auto xAng = a.acceleration.roll;
+    // auto yAng = a.acceleration.pitch;
+    // auto zAng = a.acceleration.heading;
+
+    // auto x = RAD_TO_DEG * (atan2(-yAng, -zAng)+PI); 
+    // auto y = RAD_TO_DEG * (atan2(-xAng, -zAng)+PI); 
+    // auto z = RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
+    
+    // printf("MPU: %.2f\t%.2f\t%.2f\r\n", x, y, z);
+
+    return read_angle() - 180;
   }
 
   return rand()%10 + 5;;
 }
+
+
 
 void hal_setup(void)
 {
@@ -116,14 +153,23 @@ void hal_setup(void)
   lcd_setRotation(1);
 
   bme_initialized = bme.begin();//BMP280_ADDR
-  mpu_initialized = mpu.begin();
+ // mpu_initialized = mpu.begin();
 
+  // mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+  // mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+  // mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
   // mpu.setHighPassFilter(MPU6050_HIGHPASS_0_63_HZ);
   // mpu.setMotionDetectionThreshold(1);
   // mpu.setMotionDetectionDuration(20);
   // mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
   // mpu.setInterruptPinPolarity(true);
   // mpu.setMotionInterrupt(true);
+
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x6B);
+  Wire.write(0);
+  Wire.endTransmission(true);
+  mpu_initialized = true;
 
   buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
   assert(buf);

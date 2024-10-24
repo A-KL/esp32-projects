@@ -152,7 +152,7 @@ void hal_setup(void)
   rm67162_init();
   lcd_setRotation(1);
 
-  bme_initialized = bme.begin();//BMP280_ADDR
+  bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
  // mpu_initialized = mpu.begin();
 
   // mpu.setAccelerometerRange(MPU6050_RANGE_8_G);

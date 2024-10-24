@@ -83,7 +83,7 @@ void hal_setup(void)
   Serial.begin(115200);
   delay(1000);
   Serial.println("Starting...\n");
-
+  
   rm67162_init();
   lcd_setRotation(1);
 

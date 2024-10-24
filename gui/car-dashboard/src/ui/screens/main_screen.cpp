@@ -171,6 +171,31 @@ void ui_widget_set_value(ui_value_widget& widget, float value)
 
 // Public
 
+void ui_show(int index, bool state)
+{
+    switch (index)
+    {
+    case 0:
+        if (state) {
+             lv_obj_add_flag(altimeter_widget.label, LV_OBJ_FLAG_HIDDEN);
+        }
+        else {
+            lv_obj_clear_flag(altimeter_widget.label, LV_OBJ_FLAG_HIDDEN);
+        }
+        break;
+     case 1:
+        if (state) {
+             lv_obj_add_flag(pitch_widget.label, LV_OBJ_FLAG_HIDDEN);
+        }
+        else {
+            lv_obj_clear_flag(pitch_widget.label, LV_OBJ_FLAG_HIDDEN);
+        }
+        break;   
+    default:
+        break;
+    }
+}
+
 void ui_set_pitch(float value)
 {
     ui_widget_set_value(pitch_widget, value);

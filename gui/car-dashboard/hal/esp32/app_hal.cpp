@@ -6,6 +6,7 @@
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
+#include <Adafruit_MPU6050.h>
 #include <Adafruit_BMP280.h>
 
 #include "rm67162.h"
@@ -15,7 +16,10 @@
 #define BMP280_ADDR 0x76
 
 Adafruit_BMP280 bme;
+Adafruit_MPU6050 mpu;
+
 bool bme_initialized = false;
+bool mpu_initialized = false;
 
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *buf;
@@ -89,6 +93,15 @@ float hal_get_altitude()
 
 float hal_get_pitch()
 {
+  if (mpu_initialized)
+  {
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    printf("MPU: %.2f\r\n", a.acceleration.pitch);
+
+    return a.acceleration.pitch;
+  }
+
   return rand()%10 + 5;;
 }
 
@@ -102,7 +115,15 @@ void hal_setup(void)
   rm67162_init();
   lcd_setRotation(1);
 
-  bme_initialized = bme.begin(BMP280_ADDR);
+  bme_initialized = bme.begin();//BMP280_ADDR
+  mpu_initialized = mpu.begin();
+
+  // mpu.setHighPassFilter(MPU6050_HIGHPASS_0_63_HZ);
+  // mpu.setMotionDetectionThreshold(1);
+  // mpu.setMotionDetectionDuration(20);
+  // mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
+  // mpu.setInterruptPinPolarity(true);
+  // mpu.setMotionInterrupt(true);
 
   buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
   assert(buf);

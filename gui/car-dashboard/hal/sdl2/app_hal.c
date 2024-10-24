@@ -7,8 +7,6 @@
 #include "indev/keyboard.h"
 #include "sdl/sdl.h"
 
-typedef int (*update_callback) (void *data);
-
 /**
  * A task to measure the elapsed time for LittlevGL
  * @param data unused
@@ -26,19 +24,15 @@ static int tick_thread(void * data)
     return 0;
 }
 
-void updates(update_callback fn) 
-{
-    SDL_CreateThread(fn, "ui_updates", NULL);
-}
-
 int hal_get_altitude()
 {
-  return 4100;
+  return rand()%1000 + 2000;
 }
 
 int hal_get_pitch()
 {
-  return 10;
+  return rand()%10 + 5;;
+;
 }
 
 void hal_setup(void)
@@ -93,6 +87,4 @@ void hal_loop(void)
 void delay(unsigned long miliseconds)
 {
     SDL_Delay(miliseconds);
-    // lv_tick_inc(miliseconds);
-    // lv_task_handler();
 }

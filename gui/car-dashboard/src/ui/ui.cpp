@@ -5,23 +5,6 @@
 void ui_main_screen_init(void);
 
 lv_obj_t *ui_screen;
-
-lv_obj_t *ui_pitch;
-lv_obj_t *ui_pitch_unit;
-lv_obj_t *ui_pitch_max;
-lv_obj_t *ui_pitch_max_unit;
-lv_obj_t *ui_pitch_background;
-
-lv_obj_t *ui_alt;
-lv_obj_t *ui_alt_unit;
-lv_obj_t *ui_alt_max;
-lv_obj_t *ui_alt_max_unit;
-lv_obj_t *ui_alt_background;
-
-lv_obj_t *ui_left_hor_separator;
-lv_obj_t *ui_vertical_separator;
-lv_obj_t *ui_right_hor_separator;
-
 lv_obj_t *ui____initial_actions0;
 
 void ui_init( void )

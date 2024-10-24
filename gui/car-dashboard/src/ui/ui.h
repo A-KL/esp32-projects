@@ -33,6 +33,6 @@ LV_FONT_DECLARE( ui_font_conthraxfont48);
 
 void ui_init(void);
 
-void ui_set_altitude(int value);
+void ui_set_altitude(float value);
 
-void ui_set_pitch(int value);
+void ui_set_pitch(float value);

@@ -43,6 +43,31 @@ static void hal_timer_tick(void * pvParameters)
     }
 }
 
+void hal_log_cb(const char * buf)
+{
+  log_i("LOG: %s\r\n", buf);
+  /*Send the logs via serial port*/
+  // if(level == LV_LOG_LEVEL_ERROR) serial_send("ERROR: ");
+  // if(level == LV_LOG_LEVEL_WARN)  serial_send("WARNING: ");
+  // if(level == LV_LOG_LEVEL_INFO)  serial_send("INFO: ");
+  // if(level == LV_LOG_LEVEL_TRACE) serial_send("TRACE: ");
+
+  // serial_send("File: ");
+  // serial_send(file);
+
+  // char line_str[8];
+  // sprintf(line_str,"%d", line);
+  // serial_send("#");
+  // serial_send(line_str);
+
+  // serial_send(": ");
+  // serial_send(fn_name);
+  // serial_send(": ");
+  // serial_send(dsc);
+  // serial_send("\n");
+}
+
+
 int hal_get_altitude()
 {
   return rand()%1000 + 2000;
@@ -84,6 +109,8 @@ void hal_setup(void)
   auto status = bme.begin(BME280_ADDR);
 
   //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);
+
+  lv_log_register_print_cb(hal_log_cb);
 }
 
 void hal_loop(void)

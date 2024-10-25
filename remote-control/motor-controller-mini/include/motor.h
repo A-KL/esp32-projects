@@ -1,65 +1,34 @@
 #pragma once
 
+#include <math.h>
+#include <types.h>
+#include <Arduino.h>
+
+#include <driver_config.h>
+
+#ifndef MOTOR_PWM_FQC
+#define MOTOR_PWM_FQC         2500 // Hz
+#endif
+
+#ifndef MOTOR_PWM_RESOLUTION
+#define MOTOR_PWM_RESOLUTION  8 // Bit
+#endif
+
+#ifndef MOTOR_INPUT_DEAD_ZONE
+#define MOTOR_INPUT_DEAD_ZONE 10
+#endif
+
+#define MOTOR_DUTY_CYCLE (long)(pow(2, MOTOR_PWM_RESOLUTION) - 1) // with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
+
+// Utils
+
 inline bool near_zero(const int value) {
-  return (abs(value) < 30);
+  return (abs(value) < MOTOR_INPUT_DEAD_ZONE);
 }
 
-void init_motors_a_en(const motor_pins_t& pins)
-{
-  pinMode(pins.a, OUTPUT);
+// Run motors
 
-  ledcSetup(pins.en_channel, MOTOR_FREQ, MOTOR_RES);
-
-  ledcAttachPin(pins.en, pins.en_channel);
-}
-
-void init_motors_a_b_en(const motor_pins_t& pins)
-{
-  pinMode(pins.a, OUTPUT);
-  pinMode(pins.b, OUTPUT);
-
-  ledcSetup(pins.en_channel, MOTOR_FREQ, MOTOR_RES);
-  ledcAttachPin(pins.en, pins.en_channel);
-}
-
-void init_motors_a_b(const motor_pins_t& pins)
-{
-  ledcSetup(pins.a_channel, MOTOR_FREQ, MOTOR_RES);
-  ledcSetup(pins.b_channel, MOTOR_FREQ, MOTOR_RES);
-
-  ledcAttachPin(pins.a, pins.a_channel);
-  ledcAttachPin(pins.b, pins.b_channel);
-}
-
-void motor_init(const motor_config_t& config)
-{
-     switch (config.mode)
-     {
-      case a_b_en:
-          init_motors_a_b_en(config.pins);
-          break;
-
-      case a_b:
-          init_motors_a_b(config.pins);
-          break;
-
-      case dir_en:
-          init_motors_a_en(config.pins);
-          break;
-     
-      default:
-          break;
-     }
-}
-
-void motors_init() 
-{
-  for (auto i=0; i<motors_count; ++i) {
-      motor_init(motors[i]);
-  }
-}
-
-void motor_run_a_b(const byte channel_a, const byte channel_b, const int speed) 
+void motor_run_a_b(const uint8_t channel_a, const uint8_t channel_b, const int speed) 
 {
   if (near_zero(speed)) {
     ledcWrite(channel_a, 0);
@@ -75,7 +44,7 @@ void motor_run_a_b(const byte channel_a, const byte channel_b, const int speed)
   }
 }
 
-void motor_run_a_en(const byte pin_a, const byte channel_en, const int speed) 
+void motor_run_a_en(const uint8_t pin_a, const uint8_t channel_en, const int speed) 
 {
   if (near_zero(speed)) {
     ledcWrite(channel_en, 0);
@@ -86,7 +55,7 @@ void motor_run_a_en(const byte pin_a, const byte channel_en, const int speed)
   }
 }
 
-void motor_run_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en, const int speed) 
+void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t channel_en, const int speed) 
 {
   if (near_zero(speed)) {
     digitalWrite(pin_a, LOW);
@@ -102,23 +71,86 @@ void motor_run_a_b_en(const byte pin_a, const byte pin_b, const byte channel_en,
   }
 }
 
-void motor_run(const motor_pins_t& pins, const motor_config_t& config, const int speed)
+void motor_run(const motor_config_t& config, const int speed)
 {
     switch (config.mode)
     {
       case a_b_en:
-        motor_run_a_b_en(pins.a, pins.b, pins.en_channel, speed);
+        motor_run_a_b_en(config.pins.a, config.pins.b, config.pins.en_channel, speed);
         break;
 
       case a_b:
-        motor_run_a_b(pins.a_channel, pins.b_channel, speed);
+        motor_run_a_b(config.pins.a_channel, config.pins.b_channel, speed);
         break;
 
       case dir_en:
-        motor_run_a_en(pins.a, pins.en_channel, speed);
+        motor_run_a_en(config.pins.a, config.pins.en_channel, speed);
         break;
       
       default:
         break;
     }
+}
+
+template<short TMin, short TMax>
+inline void motor_run(const motor_config_t& config, const int speed)
+{
+    motor_run(config, map(speed, TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE));
+}
+
+// Init motors
+
+void motor_init_a_en(const motor_pins_t& pins)
+{
+  pinMode(pins.a, OUTPUT);
+
+  ledcSetup(pins.en_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+  ledcAttachPin(pins.en, pins.en_channel);
+}
+
+void motor_init_a_b_en(const motor_pins_t& pins)
+{
+  pinMode(pins.a, OUTPUT);
+  pinMode(pins.b, OUTPUT);
+
+  ledcSetup(pins.en_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+  ledcAttachPin(pins.en, pins.en_channel);
+}
+
+void motor_init_a_b(const motor_pins_t& pins)
+{
+  ledcSetup(pins.a_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+  ledcSetup(pins.b_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+
+  ledcAttachPin(pins.a, pins.a_channel);
+  ledcAttachPin(pins.b, pins.b_channel);
+}
+
+void motor_init(const motor_config_t& motor)
+{
+     switch (motor.mode)
+     {
+      case a_b_en:
+          motor_init_a_b_en(motor.pins);
+          break;
+
+      case a_b:
+          motor_init_a_b(motor.pins);
+          break;
+
+      case dir_en:
+          motor_init_a_en(motor.pins);
+          break;
+     
+      default:
+          break;
+     }
+}
+
+void motors_init() 
+{
+  for (auto i=0; i<motors_count; ++i) {
+      motor_init(motors[i]);
+      motor_run(motors[i], 0);
+  }
 }

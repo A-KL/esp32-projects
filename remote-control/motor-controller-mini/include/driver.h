@@ -1,5 +1,12 @@
 #pragma once
 
+#include <sbus.h>
+#include <motor.h>
+#include <lego_servo.h>
+#include <pwm_input.h>
+#include <pwm_output.h>
+#include <esp_now_input.h>
+
 bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
@@ -83,7 +90,7 @@ inline bool read_adc(const short index, int outputs[])
 
 void write_motor(short index, int output)
 {
-  motor_run(motors[index].pins, motors[index], output);
+  motor_run(motors[index], output);
 }
 
 void write_motors(int outputs[], short count)

@@ -2,6 +2,9 @@
 
 #include <Arduino.h>
 
+#include <driver_limits.h>
+#include <driver_config.h>
+
 typedef struct {
   volatile unsigned long startTime = 0;
   volatile unsigned long currentTime = 0;

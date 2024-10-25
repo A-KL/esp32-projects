@@ -6,7 +6,8 @@
 #include <esp_now.h>
 #include <esp32-hal-log.h>
 
-#include "config_esp32.h"
+#include <driver_limits.h>
+#include <driver_config.h>
 
 #define CHANNELS_COUNT 16
 

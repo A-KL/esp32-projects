@@ -35,9 +35,9 @@ struct motor_config_t
 };
 
 enum lego_servo_dir_t {
-    left = -1,
-    center = 0,
-    right = 1
+    forward = 0,
+    stop = 1,
+    backwards = 2
 };
 
 struct lego_servo_t {

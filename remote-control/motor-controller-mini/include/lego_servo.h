@@ -4,7 +4,8 @@
 #include <Arduino.h>
 
 #include <types.h>
-#include <config_esp32.h>
+#include <driver_limits.h>
+#include <driver_config.h>
 
 template<uint8_t PWM_CHANNELS_COUNT>
 class EspArduinoHalDriver
@@ -76,7 +77,7 @@ public:
     template<int16_t TMin, int16_t TMax>
     inline void write(int value)
     {
-        auto value = map();
+        //auto value = map();
         write(value);
     }
 
@@ -84,29 +85,29 @@ public:
     {
         if (value == 0) 
         {
-            if (_direction == left) {
+            if (_direction == backwards) {
                 ledcDetachPin(_pin_a);
             } 
-            else if(_direction = right) {
+            else if(_direction = forward) {
                 ledcDetachPin(_pin_b);
             }
-            _direction = center;
+            _direction = stop;
             digitalWrite(_pin_a, false);
             digitalWrite(_pin_b, false);
         } 
         else
         {
-            if (_direction != right && value < 0) {
+            if (_direction != forward && value < 0) {
                 ledcDetachPin(_pin_a);
                 ledcAttachPin(_pin_b, _pwm_channel);
                 digitalWrite(_pin_a, false);
-                _direction = right;
+                _direction = forward;
             }
-            else if (_direction != left && value > 0) {
+            else if (_direction != backwards && value > 0) {
                 ledcDetachPin(_pin_b);
                 ledcAttachPin(_pin_a, _pwm_channel);
                 digitalWrite(_pin_b, false);
-                _direction = left; 
+                _direction = backwards; 
             }
 
             ledcWrite(_pwm_channel, abs(value));                 
@@ -116,7 +117,7 @@ public:
 private:
     uint8_t _pin_a, _pin_b;
     uint8_t _pwm_channel;
-    lego_servo_dir_t _direction = center;
+    lego_servo_dir_t _direction = stop;
 };
 
 inline void lego_servo_init(const lego_servo_t& servo)
@@ -136,29 +137,32 @@ void lego_servo_write(lego_servo_t& servo, int value)
 {
     if (value == 0) 
     {
-        if (servo.direction == left) {
+        if (servo.direction == forward) 
+        {
             ledcDetachPin(servo.pin_a);
         } 
-        else if(servo.direction = right) {
+        else if(servo.direction = forward) 
+        {
             ledcDetachPin(servo.pin_b);
         }
-        servo.direction = center;
+
+        servo.direction = stop;
         digitalWrite(servo.pin_a, false);
         digitalWrite(servo.pin_b, false);
     } 
     else
     {
-        if (servo.direction != right && value < 0) {
+        if (servo.direction != forward && value < 0) {
             ledcDetachPin(servo.pin_a);
             ledcAttachPin(servo.pin_b, servo.channel);
             digitalWrite(servo.pin_a, false);
-            servo.direction = right;
+            servo.direction = forward;
         }
-        else if (servo.direction != left && value > 0) {
+        else if (servo.direction != backwards && value > 0) {
             ledcDetachPin(servo.pin_b);
             ledcAttachPin(servo.pin_a, servo.channel);
             digitalWrite(servo.pin_b, false);
-            servo.direction = left; 
+            servo.direction = backwards; 
         }
 
         ledcWrite(servo.channel, abs(value));                 

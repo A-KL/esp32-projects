@@ -1,5 +1,9 @@
 #pragma once
 
+#define SERVO_DUTY_CYCLE  ((long)((1<<SERVO_RES)-1))
+#define SERVO_LOW         ((long)(SERVO_DUTY_CYCLE * 0.025))
+#define SERVO_HIGH        ((long)(SERVO_DUTY_CYCLE * 0.125))
+
 inline void servos_init() {
     for (int i = 0; i < servos_count; i++) {
         assert(ledcSetup(i, SERVO_FREQ, SERVO_RES));

@@ -10,11 +10,13 @@
 #include <pwm_output.h>
 #include <lego_servo.h>
 
+#include <inputs_queue.h>
+
 bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
 
-void on_esp_now(const channel_t* channels, int channels_count) {
+void on_esp_now_received(const channel_t* channels, int channels_count) {
 
   // for (auto input_config : global_config["esp_now"]) {
   //   if (input_config.out_type == motor) {
@@ -36,6 +38,8 @@ void on_esp_now(const channel_t* channels, int channels_count) {
 
 void driver_init() 
 {
+  queue_init();
+
   adc_init();
   pwm_in_init();
   
@@ -43,13 +47,14 @@ void driver_init()
   sbus_tx.Begin();
 
   ps_init();
+  //enow_init();
 
   motors_init();
   servos_init();
   servos_start();
   lego_servos_init();
 
-  log_w("Initialization....OK.\r\n");
+  log_w("Initialization...\tDONE");
 }
 
 inline bool read_pwm(const short index, int outputs[]) 
@@ -106,18 +111,6 @@ void write_motors(int outputs[], short count)
   }
 }
 
-inline void write_lego_servo(short index, int output)
-{
-  lego_servo_write(lego_servos[index], output);
-}
-
-inline void write_lego_servos(int outputs[], short count)
-{
-  for (short i = 0; i<count; ++i) {
-    write_lego_servo(i, outputs[i]);
-  }
-}
-
 inline void trace_values(short outputs[], short count)
 {
   char trace[100];
@@ -142,10 +135,6 @@ void driver_loop()
   int outputs[motors_count];
   short outputs_servo[servos_count];
   int outputs_servo_lego[lego_servos_count];
-
-  // write_motor(0, 1023);
-  // delay(100);
-  // return;
 
   /* SBUS */
   if (sbus_rx.Read()) {
@@ -174,7 +163,7 @@ void driver_loop()
     write_motors(outputs, motors_count);
     pwm_write(outputs_servo, servos_count);
     delay(70);
-    write_lego_servos(outputs_servo_lego, lego_servos_count);
+    lego_servos_write(outputs_servo_lego, lego_servos_count);
 
     trace_values(outputs_servo, servos_count);
 

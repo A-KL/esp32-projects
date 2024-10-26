@@ -174,3 +174,15 @@ inline void lego_servo_write(lego_servo_t& servo, int value)
 {
     lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
 }
+
+inline void lego_servo_write(short index, int output)
+{
+  lego_servo_write(lego_servos[index], output);
+}
+
+inline void lego_servos_write(int outputs[], short count)
+{
+  for (short i = 0; i<count; ++i) {
+    lego_servo_write(i, outputs[i]);
+  }
+}

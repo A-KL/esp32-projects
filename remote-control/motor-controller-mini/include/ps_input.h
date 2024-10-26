@@ -4,13 +4,16 @@
 #include <driver_limits.h>
 #include <driver_config.h>
 
-#define PS3_INPUT_DEBUG
+#include <inputs_queue.h>
+
+#define INPUT_PS_MIN       0
+#define INPUT_PS_MAX       255
+#define INPUT_PS_DEAD_ZONE 10
+#define INPUT_PS3_DEBUG // temporary
 
 #ifdef HAS_BLUETOOTH
 
 #include <Ps3Controller.h>
-
-#define PS_INPUT_DEAD_ZONE 10
 
 void on_connect() {
     log_i("PS3 Controller Connected.");
@@ -21,9 +24,9 @@ void on_disconnect() {
   log_e("PS3 Controller connection lost.");
 }
 
-void on_data_received() {
-    
-#ifdef PS3_INPUT_DEBUG
+void on_data_received() 
+{
+#ifdef INPUT_PS3_DEBUG
     log_d("ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
 
         Ps3.data.analog.stick.lx,
@@ -35,22 +38,16 @@ void on_data_received() {
         Ps3.data.analog.button.l2,
         Ps3.data.analog.button.r2);
 #endif
+    Data_t data;
 
-    // if( Ps3.data.button.cross ){
-    //     log_d("Pressing the cross button\r\n");
-    // }
+    data.values[0] = Ps3.data.analog.stick.lx;
+    data.values[1] = Ps3.data.analog.stick.ly;
+    data.values[2] = Ps3.data.analog.stick.rx;
+    data.values[3] = Ps3.data.analog.stick.ry;
+    data.values[4] = Ps3.data.analog.button.l2;
+    data.values[5] = Ps3.data.analog.button.r2;
 
-    // if( Ps3.data.button.square ){
-    //     log_d("Pressing the square button\r\n");
-    // }
-
-    // if( Ps3.data.button.triangle ){
-    //     log_d("Pressing the triangle button\r\n");
-    // }
-
-    // if( Ps3.data.button.circle ){
-    //     log_d("Pressing the circle button\r\n");
-    // }
+    queue_send(data);
 }
 #endif
 
@@ -60,7 +57,12 @@ void ps_init() {
     Ps3.attachOnConnect(on_connect);
     Ps3.attachOnDisconnect(on_disconnect);
 
-    Ps3.begin(ps_controller_mac);
+    if (Ps3.begin(ps_controller_mac)) {
+        log_i("Ps3 initialization...\tOK");
+    }   
+    else {
+        log_w("Ps3 initialization...\tFAIL");
+    }
 #endif
 }
 

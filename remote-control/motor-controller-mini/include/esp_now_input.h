@@ -8,15 +8,18 @@
 
 #include <driver_limits.h>
 #include <driver_config.h>
+#include <inputs_queue.h>
 
-#define CHANNELS_COUNT 16
+#ifndef INPUT_ESPNOW_CHANNELS
+#define INPUT_ESPNOW_CHANNELS 16
+#endif
 
 struct channel_t {
   unsigned short value;
 };
 
 struct data_message_t {
-  channel_t channels[CHANNELS_COUNT];
+  channel_t channels[INPUT_ESPNOW_CHANNELS];
 };
 
 data_message_t message;
@@ -28,7 +31,7 @@ unsigned long receiveDelay = 500;
 unsigned long receives_count = 0;
 unsigned long receives_count_max = 64;
 
-void on_esp_now(const channel_t* channels, int channels_count);
+void on_esp_now_received(const channel_t* channels, int channels_count);
 
 void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len) 
 {
@@ -55,7 +58,7 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
     //     pwm_write(i, message.channels[i].value);
     // }
 
-    on_esp_now(message.channels, CHANNELS_COUNT);
+    on_esp_now_received(message.channels, INPUT_ESPNOW_CHANNELS);
     
     if (receives_count == 0)
     {
@@ -74,7 +77,7 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
     receives_count++;
 }
 
-void now_init() 
+void enow_init() 
 {
   // if (WiFi.status() == WL_CONNECTED) {
   //   WiFi.setSleep(false);
@@ -99,5 +102,5 @@ void now_init()
   esp_now_register_recv_cb(OnEspNowReceived);
 }
 
-inline void now_loop() {
+inline void enow_loop() {
 }

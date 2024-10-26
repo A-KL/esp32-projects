@@ -5,6 +5,9 @@
 #include <driver_limits.h>
 #include <driver_config.h>
 
+#define INPUT_SBUS_MIN  180 //200
+#define INPUT_SBUS_MAX  1800
+
 bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 

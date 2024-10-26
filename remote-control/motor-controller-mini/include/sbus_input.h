@@ -8,7 +8,7 @@
 bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 
-bfs::SbusData sbus_data;
+extern bfs::SbusData sbus_data;
 
 void sbus_init() {
     sbus_rx.Begin();

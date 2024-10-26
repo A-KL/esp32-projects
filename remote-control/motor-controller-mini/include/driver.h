@@ -1,15 +1,17 @@
 #pragma once
 
 #include <sbus.h>
-#include <motor.h>
 #include <ps_input.h>
-#include <lego_servo.h>
+#include <adc_input.h>
 #include <pwm_input.h>
-#include <pwm_output.h>
 #include <esp_now_input.h>
 
-bfs::SbusRx sbus_rx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
-bfs::SbusTx sbus_tx(&Serial1, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
+#include <motor.h>
+#include <pwm_output.h>
+#include <lego_servo.h>
+
+bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
+bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
 
 void on_esp_now(const channel_t* channels, int channels_count) {
@@ -34,10 +36,7 @@ void on_esp_now(const channel_t* channels, int channels_count) {
 
 void driver_init() 
 {
-  for (auto i = 0; i < adc_inputs_count; i++) {
-      pinMode(adc_input_pins[i], INPUT);
-  }
-
+  adc_init();
   pwm_in_init();
   
   sbus_rx.Begin();
@@ -49,6 +48,8 @@ void driver_init()
   servos_init();
   servos_start();
   lego_servos_init();
+
+  log_w("Initialization....OK.\r\n");
 }
 
 inline bool read_pwm(const short index, int outputs[]) 

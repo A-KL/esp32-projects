@@ -22,6 +22,7 @@ static button_input_t switch_input { switch_input_button, LOW, 2000, 0, 3, 0,  &
 
 void setup() {
   Serial.begin(115200);
+  Serial.println(HOSTNAME);
   sleep(3);
 
   storage_init();

@@ -1,11 +1,16 @@
 #pragma once
 
-#ifdef HAS_BLUETOOTH
-
-#include <Ps3Controller.h>
 #include <esp32-hal-log.h>
 #include <driver_limits.h>
 #include <driver_config.h>
+
+#define PS3_INPUT_DEBUG
+
+#ifdef HAS_BLUETOOTH
+
+#include <Ps3Controller.h>
+
+#define PS_INPUT_DEAD_ZONE 10
 
 void on_connect() {
     log_i("PS3 Controller Connected.");
@@ -17,21 +22,35 @@ void on_disconnect() {
 }
 
 void on_data_received() {
-    if( Ps3.data.button.cross ){
-        log_d("Pressing the cross button\r\n");
-    }
+    
+#ifdef PS3_INPUT_DEBUG
+    log_d("ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
 
-    if( Ps3.data.button.square ){
-        log_d("Pressing the square button\r\n");
-    }
+        Ps3.data.analog.stick.lx,
+        Ps3.data.analog.stick.ly,
+        
+        Ps3.data.analog.stick.rx,
+        Ps3.data.analog.stick.ry,
+        
+        Ps3.data.analog.button.l2,
+        Ps3.data.analog.button.r2);
+#endif
 
-    if( Ps3.data.button.triangle ){
-        log_d("Pressing the triangle button\r\n");
-    }
+    // if( Ps3.data.button.cross ){
+    //     log_d("Pressing the cross button\r\n");
+    // }
 
-    if( Ps3.data.button.circle ){
-        log_d("Pressing the circle button\r\n");
-    }
+    // if( Ps3.data.button.square ){
+    //     log_d("Pressing the square button\r\n");
+    // }
+
+    // if( Ps3.data.button.triangle ){
+    //     log_d("Pressing the triangle button\r\n");
+    // }
+
+    // if( Ps3.data.button.circle ){
+    //     log_d("Pressing the circle button\r\n");
+    // }
 }
 #endif
 

@@ -1,12 +1,11 @@
 #pragma once
 
-#ifdef BT
+#ifdef HAS_BLUETOOTH
 
 #include <Ps3Controller.h>
+#include <esp32-hal-log.h>
 #include <driver_limits.h>
 #include <driver_config.h>
-
-#define PS3_ADDRESS "01:02:03:04:05:06"
 
 void on_connect() {
     log_i("PS3 Controller Connected.");
@@ -19,32 +18,35 @@ void on_disconnect() {
 
 void on_data_received() {
     if( Ps3.data.button.cross ){
-        Serial.println("Pressing the cross button");
+        log_d("Pressing the cross button\r\n");
     }
 
     if( Ps3.data.button.square ){
-        Serial.println("Pressing the square button");
+        log_d("Pressing the square button\r\n");
     }
 
     if( Ps3.data.button.triangle ){
-        Serial.println("Pressing the triangle button");
+        log_d("Pressing the triangle button\r\n");
     }
 
     if( Ps3.data.button.circle ){
-        Serial.println("Pressing the circle button");
+        log_d("Pressing the circle button\r\n");
     }
 }
+#endif
 
 void ps_init() {
+#ifdef HAS_BLUETOOTH
     Ps3.attach(on_data_received);
     Ps3.attachOnConnect(on_connect);
     Ps3.attachOnDisconnect(on_disconnect);
 
-    Ps3.begin(PS3_ADDRESS);
+    Ps3.begin(ps_controller_mac);
+#endif
 }
 
 inline bool ps_loop() {
+#ifdef HAS_BLUETOOTH
     return Ps3.isConnected();
-}
-
 #endif
+}

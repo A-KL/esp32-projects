@@ -2,6 +2,7 @@
 
 #include <sbus.h>
 #include <motor.h>
+#include <ps_input.h>
 #include <lego_servo.h>
 #include <pwm_input.h>
 #include <pwm_output.h>
@@ -41,6 +42,8 @@ void driver_init()
   
   sbus_rx.Begin();
   sbus_tx.Begin();
+
+  ps_init();
 
   motors_init();
   servos_init();

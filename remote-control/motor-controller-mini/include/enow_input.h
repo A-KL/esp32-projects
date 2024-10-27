@@ -2,11 +2,11 @@
 
 #include <WiFi.h>
 
-#include <sbus.h>
+//#include <sbus.h>
 #include <esp_now.h>
 #include <esp32-hal-log.h>
 
-#include <driver_limits.h>
+//#include <driver_limits.h>
 #include <driver_config.h>
 #include <inputs_queue.h>
 
@@ -14,15 +14,12 @@
 #define INPUT_ESP_NOW_MAX      4095
 #define INPUT_ESP_NOW_CHANNELS 16
 
-struct channel_t {
-  unsigned short value;
+struct enow_message_t {
+  unsigned short  channels[INPUT_ESP_NOW_CHANNELS];
 };
 
-struct data_message_t {
-  channel_t channels[INPUT_ESP_NOW_CHANNELS];
-};
-
-data_message_t message;
+enow_message_t message;
+static queue_t<enow_message_t> enow_input_queue;
 
 // unsigned long lastTime = 0;
 // unsigned long elapsedTime = 0;
@@ -30,8 +27,6 @@ data_message_t message;
 
 // unsigned long receives_count = 0;
 // unsigned long receives_count_max = 64;
-
-void on_esp_now_received(const channel_t* channels, int channels_count);
 
 void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len) 
 {
@@ -63,7 +58,7 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
     //     pwm_write(i, message.channels[i].value);
     // }
 
-    on_esp_now_received(message.channels, INPUT_ESP_NOW_CHANNELS);
+    //on_esp_now_received(message.channels, INPUT_ESP_NOW_CHANNELS);
     
     // if (receives_count == 0)
     // {

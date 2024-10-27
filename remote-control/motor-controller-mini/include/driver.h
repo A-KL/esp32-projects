@@ -14,7 +14,7 @@
 
 static global_config_t global_config;
 
-void on_esp_now_received(const channel_t* channels, int channels_count) {
+void on_esp_now_received(const unsigned short* channels, int channels_count) {
 
   // for (auto input_config : global_config["esp_now"]) {
   //   if (input_config.out_type == motor) {
@@ -24,7 +24,7 @@ void on_esp_now_received(const channel_t* channels, int channels_count) {
 
   // SBUS Output
   for (auto i=0; i<channels_count; i++) {
-      sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
+     //sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
   }
 
   sbus_tx.data(sbus_data);
@@ -86,16 +86,6 @@ void trace_values(const uint16_t outputs[], const uint8_t count)
   }
   log_d("%s", trace);
 }
-
-// template<const int TMin, const int TMax>
-// void write_motors(short index, int outputs[])
-// {
-//   auto mapped_value = map(outputs[index], TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-
-//   run_motor(motors[index].pins, motors[index], mapped_value);
-  
-//   log_d("MOTOR OUT %d: %d", index, mapped_value);
-// }
 
 void driver_loop()
 {

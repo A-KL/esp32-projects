@@ -56,8 +56,8 @@ void loop() {
   if (channels > 0) 
   {
     // Motors
-    outputs_motors[0] = outputs[0];
-    outputs_motors[1] = outputs[1];
+    outputs_motors[0] = outputs[1];
+    outputs_motors[1] = outputs[2];
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, 2);
 
     // Servos
@@ -68,7 +68,7 @@ void loop() {
     // Lego
     outputs_servo_lego[0] = outputs[0];
     outputs_servo_lego[1] = outputs[1];
-    lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo_lego, 2);
+    //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo_lego, 2);
   } 
   else if(ps_receive(outputs) > 0)
   {

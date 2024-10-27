@@ -3,13 +3,13 @@
 #include <esp32-hal-log.h>
 #include <driver_limits.h>
 #include <driver_config.h>
-
 #include <inputs_queue.h>
+
+#define INPUT_PS3_DEBUG // temporary
 
 #define INPUT_PS_MIN       0
 #define INPUT_PS_MAX       255
 #define INPUT_PS_DEAD_ZONE 10
-#define INPUT_PS3_DEBUG // temporary
 
 #ifdef HAS_BLUETOOTH
 
@@ -27,7 +27,8 @@ void on_disconnect() {
 void on_data_received() 
 {
 #ifdef INPUT_PS3_DEBUG
-    log_d("ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
+    log_d("CPU Core: (%d) ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
+        xPortGetCoreID(),
 
         Ps3.data.analog.stick.lx,
         Ps3.data.analog.stick.ly,
@@ -51,7 +52,8 @@ void on_data_received()
 }
 #endif
 
-void ps_init() {
+inline void ps_init() 
+{
 #ifdef HAS_BLUETOOTH
     Ps3.attach(on_data_received);
     Ps3.attachOnConnect(on_connect);
@@ -66,8 +68,19 @@ void ps_init() {
 #endif
 }
 
-inline bool ps_loop() {
+bool ps_receive()
+{
 #ifdef HAS_BLUETOOTH
-    return Ps3.isConnected();
+    if (Ps3.isConnected()) 
+    {
+        //queue_receive();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+#elif
+    return false;
 #endif
 }

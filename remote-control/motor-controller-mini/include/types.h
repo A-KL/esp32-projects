@@ -87,19 +87,14 @@ struct input_config_t
 
 typedef std::map<const String, std::vector<input_config_t>> global_config_t;
 
-// Vars
-global_config_t global_config;
-
 // v2
-
-//global_config_t global_config;
 
 // const std::map<const String, const input_type_t> drive_input_map = 
 // { 
 //   { "pwm", pwm }, 
 //   { "adc", adc }, 
 //   { "sbus", sbus },
-//   { "now", now }
+//   { "enow", enow }
 // };
 
 // struct output_config_t

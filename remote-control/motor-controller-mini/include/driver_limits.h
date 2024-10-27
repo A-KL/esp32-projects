@@ -11,9 +11,6 @@
 #define INPUT_PWM_MIN   970 //1024
 #define INPUT_PWM_ZERO  800 //1020
 
-#define INPUT_ADC_MAX   4095
-#define INPUT_ADC_MIN   0
-
 
 #define SERVO_FREQ      50
 #define SERVO_RES       14

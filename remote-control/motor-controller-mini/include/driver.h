@@ -1,10 +1,10 @@
 #pragma once
 
-#include <sbus.h>
+#include <sbus_input.h>
 #include <ps_input.h>
 #include <adc_input.h>
 #include <pwm_input.h>
-#include <esp_now_input.h>
+#include <enow_input.h>
 
 #include <motor.h>
 #include <pwm_output.h>
@@ -12,9 +12,7 @@
 
 #include <inputs_queue.h>
 
-bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
-bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
-bfs::SbusData sbus_data;
+static global_config_t global_config;
 
 void on_esp_now_received(const channel_t* channels, int channels_count) {
 
@@ -38,13 +36,14 @@ void on_esp_now_received(const channel_t* channels, int channels_count) {
 
 void driver_init() 
 {
+  settings_load(global_config);
+
   queue_init();
 
   adc_init();
   pwm_in_init();
   
-  sbus_rx.Begin();
-  sbus_tx.Begin();
+  sbus_init();
 
   ps_init();
   //enow_init();
@@ -54,10 +53,10 @@ void driver_init()
   servos_start();
   lego_servos_init();
 
-  log_w("Initialization...\tDONE");
+  log_i("Initialization...\tDONE");
 }
 
-inline bool read_pwm(const short index, int outputs[]) 
+inline bool read_pwm(const short index, int16_t outputs[]) 
 { 
   if (pwm_inputs_count <= index) 
   {
@@ -79,30 +78,12 @@ inline bool read_pwm(const short index, int outputs[])
   return pwm_detected;
 }
 
-inline bool read_adc(const short index, int outputs[]) 
-{
-  if (adc_inputs_count <= index) 
-  {
-    return false;
-  }
-
- // TODO: Update this
-  auto adc_index = index;// motors_config[index].input_channel;
-  auto adc_value = analogRead(adc_input_pins[adc_index]);
-
-  log_d("ADC IN %d: %d", index, adc_value);
-
-  outputs[index] = map(adc_value, INPUT_ADC_MIN, INPUT_ADC_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-  
-  return true;
-}
-
-void write_motor(short index, int output)
+void write_motor(const short index, const int16_t output)
 {
   motor_run(motors[index], output);
 }
 
-void write_motors(int outputs[], short count)
+void write_motors(const int16_t outputs[], const short count)
 {
   for (short i = 0; i<count; ++i) {
     write_motor(i, outputs[i]);
@@ -111,10 +92,10 @@ void write_motors(int outputs[], short count)
   }
 }
 
-inline void trace_values(short outputs[], short count)
+void trace_values(const uint16_t outputs[], const uint8_t count)
 {
   char trace[100];
-  for (short i = 0; i<count; ++i) {
+  for (auto i = 0; i<count; ++i) {
     sprintf(trace, "%s\t%d", trace, outputs[i]);
   }
   log_d("%s", trace);
@@ -132,7 +113,7 @@ inline void trace_values(short outputs[], short count)
 
 void driver_loop()
 {
-  int outputs[motors_count];
+  int16_t outputs[motors_count];
   short outputs_servo[servos_count];
   int outputs_servo_lego[lego_servos_count];
 
@@ -165,7 +146,7 @@ void driver_loop()
     delay(70);
     lego_servos_write(outputs_servo_lego, lego_servos_count);
 
-    trace_values(outputs_servo, servos_count);
+    //trace_values(outputs_servo, servos_count);
 
     return;
   }
@@ -173,7 +154,7 @@ void driver_loop()
   /* PWM */
   for (auto i=0; i<motors_count; i++)
   {
-    if (read_pwm(i, outputs) || read_adc(i, outputs))
+    if (read_pwm(i, outputs) || adc_read<(-MOTOR_DUTY_CYCLE), (MOTOR_DUTY_CYCLE)>(i, outputs[i]))
     {
       write_motor(i, outputs[i]);
     }

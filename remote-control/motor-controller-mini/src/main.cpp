@@ -20,13 +20,14 @@ static void on_switch_input(short input) {
 
 static button_input_t switch_input { switch_input_button, LOW, 2000, 0, 3, 0,  &on_switch_input};
 
+
+
 void setup() {
   Serial.begin(115200);
   Serial.println(HOSTNAME);
   sleep(3);
 
   storage_init();
-  settings_load(global_config);
 
   button_input_init(switch_input);
   scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });

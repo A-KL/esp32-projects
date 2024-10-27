@@ -10,9 +10,9 @@
 inline void storage_init() 
 {
   if (!LittleFS.begin(true)) {
-    log_e("An error has occurred while mounting LittleFS");
+    log_e("[STORAGE] An error has occurred while mounting LittleFS");
   } else {
-    log_i("LittleFS mounted successfully");
+    log_i("[STORAGE] LittleFS mounted successfully");
   }
 }
 
@@ -22,8 +22,7 @@ String setting_read_key(const String& key, const char* fileName = "/default.json
 
     if (!file)
     {
-        //Serial.println("There was an error opening default.json file");
-        log_e("There was an error opening %sfile", "/default_v2.json");
+        log_e("[STORAGE] There was an error opening '%s' file", "/default_v2.json");
         file.close();
         return "";
     }
@@ -50,7 +49,7 @@ bool settings_load(global_config_t& config, const char* file_name = "/default_v2
 {
     File file = LittleFS.open(file_name, FILE_READ);
     if (!file) {
-        log_e("There was an error opening %s file", file_name);
+        log_e("[STORAGE] There was an error opening %s file", file_name);
         file.close();
         return false;
     }
@@ -59,7 +58,7 @@ bool settings_load(global_config_t& config, const char* file_name = "/default_v2
     DeserializationError error = deserializeJson(doc, file);
 
     if (error) {
-        log_e("There was an error deserializing json from %s", file_name);
+        log_e("[STORAGE] There was an error deserializing json from %s", file_name);
         doc.clear();
         file.close();
         return false;
@@ -71,7 +70,7 @@ bool settings_load(global_config_t& config, const char* file_name = "/default_v2
         auto& input_configs = config[kv.key().c_str()];
         auto values = kv.value().as<JsonArray>();
 
-        log_i("Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
+        log_i("[STORAGE] Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
 
         for (auto value : values) {
             input_config_t config;
@@ -80,14 +79,14 @@ bool settings_load(global_config_t& config, const char* file_name = "/default_v2
             config.out_type = string_to_output_type(value["out_type"].as<String>());
             input_configs.push_back(config);
 
-            log_i("\tin:%d out:%d type:%d", config.in_channel, config.out_channel, config.out_type);
+            log_d("[STORAGE] %d (in_ch:%d\tout_type:%d\tout_ch:%d)", kv.key().c_str(), config.in_channel, config.out_type, config.out_channel);
         }
     }
 
-    log_i("Configuration was loaded");
-
     doc.clear();
     file.close();
+
+    log_i("Configuration loading...\tDONE");
 
     return true;
 }
@@ -171,11 +170,12 @@ bool settings_apply(uint8_t *data, size_t len, size_t index, size_t total)
     auto root = doc.as<JsonObject>();
     auto motors_json = root["motors"].as<JsonArray>();
 
-    for (JsonVariant motor_json : motors_json) {
-        Serial.println(motor_json["mode"].as<int>());
-        Serial.println(motor_json["inverted"].as<bool>());
-        Serial.println(motor_json["input_type"].as<String>());
-        Serial.println(motor_json["input_channel"].as<int>());
+    for (auto motor_json : motors_json) {
+        log_d("[Storage] Apply(mode:%d inverted:%d input_type:%s input_channel:%d",
+            motor_json["mode"].as<int>(),
+            motor_json["inverted"].as<bool>(),
+            motor_json["input_type"].as<String>(),
+            motor_json["input_channel"].as<int>());
     }
 
     return true;

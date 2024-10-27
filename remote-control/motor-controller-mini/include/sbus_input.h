@@ -11,11 +11,44 @@
 bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 
-extern bfs::SbusData sbus_data;
+bfs::SbusData sbus_data;
 
-void sbus_init() {
+inline void sbus_init() {
     sbus_rx.Begin();
     sbus_tx.Begin();
+    log_i("SBUS initialization...\tOK");
+}
+
+// Output
+
+void sbus_write(const bfs::SbusData &data) {
+    sbus_tx.data(data);
+    sbus_tx.Write();
+} 
+
+template<short TMin, short TMax>
+void sbus_write(const int16_t* data, const size_t count) {
+  for (auto i=0; i<count; i++) {
+      sbus_data.ch[i] = map(data[i], TMin, TMax, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
+  }
+  sbus_write(sbus_data);
+} 
+
+// Input
+
+bool sbus_receive()
+{
+    if (!sbus_rx.Read()) {
+        return false;
+    }
+
+#ifdef INPUT_SBUS_DEBUG
+
+#endif
+
+    sbus_data = sbus_rx.data();
+
+    return true;
 }
 
 bool sbus_loop() 

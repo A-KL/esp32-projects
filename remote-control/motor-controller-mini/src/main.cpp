@@ -75,7 +75,13 @@ void loop() {
     // Motors
     outputs_motors[0] = outputs[1];
     outputs_motors[1] = outputs[3];
-    write_motors<INPUT_PS_MIN, INPUT_PS_MAX>(outputs_motors, 2);
+    write_motors<INPUT_PS_HALF_RANGE, -INPUT_PS_HALF_RANGE>(outputs_motors, 2);
+  }
+  else // No input
+  {
+    // Motors
+    memset(outputs_motors, 0, motors_count);
+    write_motors(outputs_motors, motors_count);
   }
 
   delay(50);

@@ -5,9 +5,12 @@
 #include <driver_config.h>
 #include <inputs_queue.h>
 
-#define INPUT_PS_MIN       0
-#define INPUT_PS_MAX       255
-#define INPUT_PS_DEAD_ZONE 10
+#define INPUT_PS_RANGE      255
+#define INPUT_PS_HALF_RANGE (INPUT_PS_RANGE/2)
+#define INPUT_PS_MIN        0
+#define INPUT_PS_MAX        (INPUT_PS_MIN + INPUT_PS_RANGE)
+
+#define INPUT_PS_DEAD_ZONE  10
 
 #ifdef HAS_BLUETOOTH
 

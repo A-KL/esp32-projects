@@ -78,20 +78,6 @@ inline bool read_pwm(const short index, int16_t outputs[])
   return pwm_detected;
 }
 
-void write_motor(const short index, const int16_t output)
-{
-  motor_run(motors[index], output);
-}
-
-void write_motors(const int16_t outputs[], const short count)
-{
-  for (short i = 0; i<count; ++i) {
-    write_motor(i, outputs[i]);
-    delay(10);
-    //log_d("MOTOR OUT %d: %d", i, outputs[i]);
-  }
-}
-
 void trace_values(const uint16_t outputs[], const uint8_t count)
 {
   char trace[100];
@@ -114,8 +100,8 @@ void trace_values(const uint16_t outputs[], const uint8_t count)
 void driver_loop()
 {
   int16_t outputs[motors_count];
-  short outputs_servo[servos_count];
-  int outputs_servo_lego[lego_servos_count];
+  int16_t outputs_servo[servos_count];
+  int16_t outputs_servo_lego[lego_servos_count];
 
   /* SBUS */
   if (sbus_rx.Read()) {

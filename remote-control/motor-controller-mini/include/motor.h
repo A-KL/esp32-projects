@@ -28,7 +28,7 @@ inline bool near_zero(const int value) {
 
 // Run motors
 
-void motor_run_a_b(const uint8_t channel_a, const uint8_t channel_b, const int speed) 
+void motor_run_a_b(const uint8_t channel_a, const uint8_t channel_b, const int16_t speed) 
 {
   if (near_zero(speed)) {
     ledcWrite(channel_a, 0);
@@ -44,7 +44,7 @@ void motor_run_a_b(const uint8_t channel_a, const uint8_t channel_b, const int s
   }
 }
 
-void motor_run_a_en(const uint8_t pin_a, const uint8_t channel_en, const int speed) 
+void motor_run_a_en(const uint8_t pin_a, const uint8_t channel_en, const int16_t speed) 
 {
   if (near_zero(speed)) {
     ledcWrite(channel_en, 0);
@@ -55,7 +55,7 @@ void motor_run_a_en(const uint8_t pin_a, const uint8_t channel_en, const int spe
   }
 }
 
-void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t channel_en, const int speed) 
+void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t channel_en, const int16_t speed) 
 {
   if (near_zero(speed)) {
     digitalWrite(pin_a, LOW);
@@ -71,8 +71,12 @@ void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t ch
   }
 }
 
-void motor_run(const motor_config_t& config, const int speed)
+void motor_run(const motor_config_t& config, const int16_t speed)
 {
+#ifdef OUTPUT_MOTOR_DEBUG
+    log_d("[MOTOR] (%d) Speed: %d", config.mode, speed);
+#endif
+
     switch (config.mode)
     {
       case a_b_en:
@@ -93,9 +97,37 @@ void motor_run(const motor_config_t& config, const int speed)
 }
 
 template<short TMin, short TMax>
-inline void motor_run(const motor_config_t& config, const int speed)
+inline void motor_run(const motor_config_t& config, const int16_t speed)
 {
     motor_run(config, map(speed, TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE));
+}
+
+// Write
+
+inline void write_motor(const uint8_t index, const int16_t speed)
+{
+    motor_run(motors[index], speed);
+}
+
+template<short TMin, short TMax>
+inline void write_motor(const uint8_t index, const int16_t output)
+{
+    motor_run<TMin, TMax>(motors[index], output);
+}
+
+void write_motors(const int16_t* outputs, const uint8_t count)
+{
+  for (auto i = 0; i<count; ++i) {
+    write_motor(i, outputs[i]);
+  }
+}
+
+template<short TMin, short TMax>
+void write_motors(const int16_t* outputs, const uint8_t count)
+{
+  for (auto i = 0; i<count; ++i) {
+    write_motor<TMin, TMax>(i, outputs[i]);
+  }
 }
 
 // Init motors

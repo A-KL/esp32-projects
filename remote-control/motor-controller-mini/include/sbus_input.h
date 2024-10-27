@@ -5,6 +5,8 @@
 #include <driver_limits.h>
 #include <driver_config.h>
 
+#define INPUT_SBUS_DEBUG
+
 #define INPUT_SBUS_MIN  180 //200
 #define INPUT_SBUS_MAX  1800
 
@@ -16,7 +18,7 @@ bfs::SbusData sbus_data;
 inline void sbus_init() {
     sbus_rx.Begin();
     sbus_tx.Begin();
-    log_i("SBUS initialization...\tOK");
+    log_i("SBUS initialization...OK");
 }
 
 // Output
@@ -36,48 +38,35 @@ void sbus_write(const int16_t* data, const size_t count) {
 
 // Input
 
-bool sbus_receive()
+uint8_t sbus_receive(int16_t* outputs)
 {
     if (!sbus_rx.Read()) {
-        return false;
+        return 0;
     }
+
+    sbus_data = sbus_rx.data();
 
 #ifdef INPUT_SBUS_DEBUG
+        log_d("CPU Core: (%d) SBUS: (%d %d %d %d %d %d %d %d)", 
+        xPortGetCoreID(),
 
+        sbus_data.ch[0],
+        sbus_data.ch[1],
+        sbus_data.ch[2],
+        sbus_data.ch[3],
+        
+        sbus_data.ch[4],
+        sbus_data.ch[5],
+        sbus_data.ch[6],
+        sbus_data.ch[7]);
 #endif
 
-    sbus_data = sbus_rx.data();
-
-    return true;
-}
-
-bool sbus_loop() 
-{
-    if (!sbus_rx.Read()) {
-        return false;
+    for (auto i=0; i<sbus_data.NUM_CH; ++i){
+        outputs[i] = sbus_data.ch[i]; // MAP?
     }
-
-    sbus_data = sbus_rx.data();
-
-    // for (auto input_config : global_config["sbus"]) 
-    // {
-    //   auto sbus_value = constrain(sbus_data.ch[input_config.in_channel], INPUT_SBUS_MIN, INPUT_SBUS_MAX);
-    //   switch (input_config.out_type)
-    //   {
-    //     case motor:
-    //       outputs[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE);
-    //       break;
-    //     case servo:
-    //       outputs_servo[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, SERVO_LOW, SERVO_HIGH);
-    //       break;
-    //     case servo_lego:
-    //       outputs_servo_lego[input_config.out_channel] = map(sbus_value, INPUT_SBUS_MIN, INPUT_SBUS_MAX, LEGO_SERVO_LOW, LEGO_SERVO_HIGH);
-    //       break;              
-    //   }
-    // }
 
     sbus_tx.data(sbus_data);
     sbus_tx.Write();
 
-    return true;
+    return sbus_data.NUM_CH;
 }

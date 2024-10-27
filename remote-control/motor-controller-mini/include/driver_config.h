@@ -9,19 +9,18 @@
 /* Outputs */
 
 /* PWM */
-const short servos_count = sizeof(servos_pins) / sizeof(short);
+const uint8_t servos_count = sizeof(servos_pins) / sizeof(uint8_t);
 
 /* Motors */
-const static short motors_count = sizeof(motors) / sizeof(motor_config_t);
+const static uint8_t motors_count = sizeof(motors) / sizeof(motor_config_t);
 
 /* LEGO */
-const int lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
-
+const static uint8_t lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo_t);
 
 /* Inputs */
 
 /* PWM */
-const short pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(short);
+const static uint8_t pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(uint8_t);
 
 /* ADC Inputs */
-const short adc_inputs_count = sizeof(adc_input_pins) / sizeof(short);
+const static uint8_t adc_inputs_count = sizeof(adc_input_pins) / sizeof(uint8_t);

@@ -5,8 +5,6 @@
 #include <driver_config.h>
 #include <inputs_queue.h>
 
-#define INPUT_PS3_DEBUG // temporary
-
 #define INPUT_PS_MIN       0
 #define INPUT_PS_MAX       255
 #define INPUT_PS_DEAD_ZONE 10
@@ -15,16 +13,16 @@
 
 #include <Ps3Controller.h>
 
-void on_connect() {
+void ps3_on_connect() {
     log_i("PS3 Controller Connected.");
     Ps3.setPlayer(1);
 }
 
-void on_disconnect() {
+void ps3_on_disconnect() {
   log_e("PS3 Controller connection lost.");
 }
 
-void on_data_received() 
+void ps3_on_data_received() 
 {
 #ifdef INPUT_PS3_DEBUG
     log_d("CPU Core: (%d) ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
@@ -55,31 +53,41 @@ void on_data_received()
 inline void ps_init() 
 {
 #ifdef HAS_BLUETOOTH
-    Ps3.attach(on_data_received);
-    Ps3.attachOnConnect(on_connect);
-    Ps3.attachOnDisconnect(on_disconnect);
+    Ps3.attach(ps3_on_data_received);
+    Ps3.attachOnConnect(ps3_on_connect);
+    Ps3.attachOnDisconnect(ps3_on_disconnect);
 
     if (Ps3.begin(ps_controller_mac)) {
-        log_i("Ps3 initialization...\tOK");
+        log_i("Ps3 initialization...OK");
     }   
     else {
-        log_w("Ps3 initialization...\tFAIL");
+        log_w("Ps3 initialization...FAIL");
     }
 #endif
 }
 
-bool ps_receive()
+uint8_t ps_receive(int16_t* outputs)
 {
 #ifdef HAS_BLUETOOTH
-    if (Ps3.isConnected()) 
+    if (!Ps3.isConnected()) 
     {
-        //queue_receive();
-        return true;
+        return 0;
     }
-    else
+
+    Data_t data;
+
+    if (queue_receive(data))
     {
-        return false;
+        auto channels = sizeof (data.values) / sizeof(int16_t);
+        for (auto i=0; i<channels; i++)
+        {
+            outputs[i] = data.values[i];
+        }
+        return channels;
     }
+
+    return false;
+
 #elif
     return false;
 #endif

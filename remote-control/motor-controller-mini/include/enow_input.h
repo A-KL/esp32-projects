@@ -6,7 +6,6 @@
 #include <esp_now.h>
 #include <esp32-hal-log.h>
 
-//#include <driver_limits.h>
 #include <driver_config.h>
 #include <inputs_queue.h>
 
@@ -17,9 +16,11 @@
 struct enow_message_t {
   unsigned short  channels[INPUT_ESP_NOW_CHANNELS];
 };
+static enow_message_t message;
 
-enow_message_t message;
 static queue_t<enow_message_t> enow_input_queue;
+
+
 
 // unsigned long lastTime = 0;
 // unsigned long elapsedTime = 0;
@@ -28,7 +29,32 @@ static queue_t<enow_message_t> enow_input_queue;
 // unsigned long receives_count = 0;
 // unsigned long receives_count_max = 64;
 
-void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len) 
+inline uint8_t mac_to_string(const uint8_t * mac, char* result)
+{
+  const auto string_size = 18;
+
+  snprintf(
+    result, 
+    string_size, 
+    "%02x:%02x:%02x:%02x:%02x:%02x",
+    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+    return string_size;
+}
+
+// useful for senders if receiver uses wifi network, at the same model
+// int32_t getWiFiChannel(const char *ssid) {
+//   if (int32_t n = WiFi.scanNetworks()) {
+//       for (uint8_t i=0; i<n; i++) {
+//           if (!strcmp(ssid, WiFi.SSID(i).c_str())) {
+//               return WiFi.channel(i);
+//           }
+//       }
+//   }
+//   return 0;
+// }
+
+void enow_on_received(const uint8_t * mac, const uint8_t *data, int len) 
 {
   memcpy(&message, data, sizeof(message));
 
@@ -49,6 +75,9 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
     message.channels[8].value,
     message.channels[9].value);
 #endif
+
+  queue_send(enow_input_queue, message);
+
     // for (auto i=0; i<sbus_channels_count; i++) {
     //     sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);     
     // }
@@ -57,8 +86,6 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
     //     //sbus_data.ch[i] = map(message.channels[i].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, INPUT_SBUS_MIN, INPUT_SBUS_MAX);   
     //     pwm_write(i, message.channels[i].value);
     // }
-
-    //on_esp_now_received(message.channels, INPUT_ESP_NOW_CHANNELS);
     
     // if (receives_count == 0)
     // {
@@ -79,28 +106,37 @@ void OnEspNowReceived(const uint8_t * mac, const uint8_t *data, int len)
 
 void enow_init() 
 {
-  // if (WiFi.status() == WL_CONNECTED) {
+  // auto mode = WiFi.getMode();
+  // if (mode != WIFI_MODE_STA && mode != WIFI_MODE_NULL) {
   //   WiFi.setSleep(false);
+  //   log_i("Looks like WiFi is being used, setting sleep to false.");
   // } else {
   //   WiFi.mode(WIFI_MODE_STA);
   // }
 
-  auto mode = WiFi.getMode();
-  if (mode != WIFI_MODE_STA && mode != WIFI_MODE_NULL) {
-    WiFi.setSleep(false);
-    log_i("Looks like WiFi is being used, setting sleep to false.");
-  } else {
-    WiFi.mode(WIFI_MODE_STA);
-  }
-
-  if (esp_now_init() != ESP_OK) {
-    log_e("Error initializing ESP-NOW");
+  if (esp_now_init() != ESP_OK) 
+  {
+    log_e("ESP-NOW Initializing...FAILED");
     return;
   }
-  log_i("ESP-NOW initialized");
-  
-  esp_now_register_recv_cb(OnEspNowReceived);
+
+  log_i("ESP-NOW Initializing...OK");
+
+  queue_init(enow_input_queue);
+
+  esp_now_register_recv_cb(esp_now_recv_cb_t(enow_on_received));
 }
 
-inline void enow_loop() {
+uint8_t enow_receive(int16_t* outputs)
+{
+    static enow_message_t data;
+
+    if (queue_receive(enow_input_queue, data))
+    {
+          memcpy(outputs, data.channels, sizeof(data.channels));
+
+          return sizeof(data.channels) / sizeof(unsigned short);
+    }
+
+    return 0;
 }

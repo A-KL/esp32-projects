@@ -7,6 +7,7 @@
 
 #include <storage.h>
 #include <inputs_queue.h>
+#include <network.h>
 #include <server.h>
 //#include <scheduler.h>
 //#include <button_input.h>
@@ -39,6 +40,7 @@ void setup() {
 
   storage_init();
   settings_load(global_config);
+  init_wifi();
 
   //button_input_init(switch_input);
   //scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });

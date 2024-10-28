@@ -5,10 +5,6 @@
 #define INPUT_PWM_MIN   970 //1024
 #define INPUT_PWM_ZERO  800 //1020
 
-
-#define SERVO_FREQ      50
-#define SERVO_RES       14
-
 // #define SERVO_LOW       500
 // #define SERVO_HIGH      2500
 //#define SERVO_DEFAULT     ((SERVO_LOW+SERVO_HIGH)/2)
@@ -17,5 +13,3 @@
 // #define SERVO_MAX_USEC (100* / SERVO_FREQ)
 // #define SERVO_PERIOD_USEC (100* / SERVO_FREQ)
 
-#define LEGO_SERVO_LOW  0
-#define LEGO_SERVO_HIGH (long)(pow(2, SERVO_RES) - 1)

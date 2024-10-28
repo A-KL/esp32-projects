@@ -4,8 +4,6 @@
 #include <types.h>
 #include <Arduino.h>
 
-#include <driver_config.h>
-
 #ifndef MOTOR_INPUT_DEAD_ZONE
 #define MOTOR_INPUT_DEAD_ZONE 10
 #endif

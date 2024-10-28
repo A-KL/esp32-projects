@@ -2,10 +2,10 @@
 
 #include <math.h>
 #include <Arduino.h>
-
 #include <types.h>
-#include <driver_limits.h>
-#include <driver_config.h>
+
+#define LEGO_SERVO_LOW  0
+#define LEGO_SERVO_HIGH (long)(pow(2, SERVO_RES) - 1)
 
 template<uint8_t PWM_CHANNELS_COUNT>
 class EspArduinoHalDriver
@@ -124,6 +124,7 @@ inline void lego_servo_init(const lego_servo_t& servo)
 {
     pinMode(servo.pin_a, OUTPUT);
     pinMode(servo.pin_b, OUTPUT);
+    ledcSetup(servo.channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 }
 
 inline void lego_servos_init()

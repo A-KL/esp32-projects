@@ -7,9 +7,8 @@
 
 #include <storage.h>
 #include <inputs_queue.h>
-//#include <scheduler.h>
-//#include <driver.h>
 #include <server.h>
+//#include <scheduler.h>
 //#include <button_input.h>
 
 #include <sbus_input.h>
@@ -18,9 +17,9 @@
 #include <pwm_input.h>
 #include <enow_input.h>
 
-#include <motor.h>
-#include <pwm_output.h>
-#include <lego_servo.h>
+#include <motor_output.h>
+#include <servo_output.h>
+#include <lego_servo_output.h>
 
 // static void on_switch_input(short input) {
 //     log_w("Button value: %d", input);
@@ -43,8 +42,6 @@ void setup() {
 
   //button_input_init(switch_input);
   //scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
-  
-  
 
   // adc_init();
   // pwm_in_init();
@@ -53,8 +50,14 @@ void setup() {
   //enow_init();
 
   motors_init();
-  // servos_init();
-  // servos_start();
+  servos_init();
+
+  if (servos_count > 0) {
+     servos_start();
+  } else {
+    servos_stop();
+  }
+
   // lego_servos_init();
 
   log_i("Initialization...\tDONE");
@@ -64,9 +67,6 @@ void setup() {
 }
 
 void loop() {
-  //server_loop();
-  //driver_loop();
-
   int16_t inputs[32];
 
   int16_t outputs_motors[motors_count];
@@ -74,12 +74,10 @@ void loop() {
   int16_t outputs_servo_lego[lego_servos_count];
 
   // SBUS
-  auto channels = sbus_receive(inputs);
-  if (channels > 0) 
+  if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    settings_map_inputs(global_config, "ps3", inputs, motor, outputs_motors);
-
+    settings_map_inputs(global_config, "sbus", inputs, motor, outputs_motors);
     // outputs_motors[0] = inputs[1];
     // outputs_motors[1] = inputs[2];
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
@@ -94,11 +92,10 @@ void loop() {
     // outputs_servo_lego[1] = outputs[1];
     //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo_lego, lego_servos_count);
   } 
-  else if(ps_receive(inputs) > 0)
+  else if (ps_receive(inputs) > 0)
   {
     // Motors
-    outputs_motors[0] = inputs[1];
-    outputs_motors[1] = inputs[3];
+    settings_map_inputs(global_config, "ps3", inputs, motor, outputs_motors);
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
   }
   else // No input
@@ -110,6 +107,7 @@ void loop() {
 
   delay(50);
 
+  // server_loop();
   // scheduler_loop();
   // button_input_update(switch_input);
 }

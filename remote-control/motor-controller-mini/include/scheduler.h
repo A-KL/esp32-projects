@@ -4,6 +4,11 @@
 #include <vector>
 #include <Arduino.h>
 
+//https://github.com/contrem/arduino-timer
+//#include <arduino-timer.h>
+//Timer<10> timer; // 10 concurrent tasks, using millis as resolution
+//timer.tick();
+
 struct callback_info_t {
     unsigned long last_trigger;
     unsigned long period;

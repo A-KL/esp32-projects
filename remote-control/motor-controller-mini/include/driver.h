@@ -36,10 +36,6 @@ void on_esp_now_received(const unsigned short* channels, int channels_count) {
 
 void driver_init() 
 {
-  settings_load(global_config);
-
-  queue_init();
-
   adc_init();
   pwm_in_init();
   

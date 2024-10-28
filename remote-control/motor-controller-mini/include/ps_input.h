@@ -10,13 +10,18 @@
 #define INPUT_PS_MIN        0
 #define INPUT_PS_MAX        (INPUT_PS_MIN + INPUT_PS_RANGE)
 
-#define INPUT_PS_DEAD_ZONE  10
+#define INPUT_PS_DEAD_ZONE  15
 
 #ifdef HAS_BLUETOOTH
 
 #include <Ps3Controller.h>
 
 static queue_t<ps3_t> ps_input_queue;
+
+inline int16_t ps3_trim(int16_t value)
+{
+    return abs(value) > INPUT_PS_DEAD_ZONE ? value : 0;
+}
 
 void ps3_on_connect() 
 {
@@ -45,29 +50,29 @@ void ps3_on_data_received()
         Ps3.data.analog.button.r2);
 #endif
 
-    Data_t data = { 
-        Ps3.data.analog.stick.lx, 
-        Ps3.data.analog.stick.ly,
-        Ps3.data.analog.stick.rx,
-        Ps3.data.analog.stick.ry,
+    // Data_t data = { 
+    //     Ps3.data.analog.stick.lx, 
+    //     Ps3.data.analog.stick.ly,
+    //     Ps3.data.analog.stick.rx,
+    //     Ps3.data.analog.stick.ry,
 
-        Ps3.data.analog.button.l2,
-        Ps3.data.analog.button.r2,
-        Ps3.data.analog.button.l1,
-        Ps3.data.analog.button.r1,
+    //     Ps3.data.analog.button.l2,
+    //     Ps3.data.analog.button.r2,
+    //     Ps3.data.analog.button.l1,
+    //     Ps3.data.analog.button.r1,
 
-        Ps3.data.analog.button.left,
-        Ps3.data.analog.button.up,
-        Ps3.data.analog.button.right,
-        Ps3.data.analog.button.down,
+    //     Ps3.data.analog.button.left,
+    //     Ps3.data.analog.button.up,
+    //     Ps3.data.analog.button.right,
+    //     Ps3.data.analog.button.down,
 
-        Ps3.data.analog.button.square,
-        Ps3.data.analog.button.triangle,
-        Ps3.data.analog.button.circle,
-        Ps3.data.analog.button.cross 
-    };
+    //     Ps3.data.analog.button.square,
+    //     Ps3.data.analog.button.triangle,
+    //     Ps3.data.analog.button.circle,
+    //     Ps3.data.analog.button.cross 
+    // };
 
-    queue_send(data);
+    queue_send(ps_input_queue, Ps3.data);
 }
 #endif
 
@@ -102,13 +107,13 @@ uint8_t ps_receive(int16_t* outputs)
     if (queue_receive(ps_input_queue, data))
     {
         int16_t values[] = {
-            data.analog.stick.lx, 
-            data.analog.stick.ly,
-            data.analog.stick.rx,
-            data.analog.stick.ry,
+            ps3_trim(data.analog.stick.lx), 
+            ps3_trim(data.analog.stick.ly),
+            ps3_trim(data.analog.stick.rx),
+            ps3_trim(data.analog.stick.ry),
 
-            data.analog.button.l2,
-            data.analog.button.r2,
+             ps3_trim(data.analog.button.l2),
+             ps3_trim(data.analog.button.r2),
             data.analog.button.l1,
             data.analog.button.r1,
 

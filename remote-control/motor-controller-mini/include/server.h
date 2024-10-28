@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Arduino.h>
 #include <ArduinoJson.h>
 
 #include <AsyncTCP.h>
@@ -52,27 +53,27 @@ void Serialize(const motor_config_t* configs, const int config_size, String& res
 
 void send_sbus_data(const int16_t values[], const short size) 
 {
-  StaticJsonDocument<400> doc;
+//   StaticJsonDocument<400> doc;
 
-  auto sbus = doc.createNestedArray("sbus_data");
+//   auto sbus = doc.createNestedArray("sbus_data");
 
-  for (auto i = 0; i<size; ++i) {  
-    sbus.add(values[i]);
-  }
+//   for (auto i = 0; i<size; ++i) {  
+//     sbus.add(values[i]);
+//   }
 
-  auto pwm = doc.createNestedArray("pwm_data");
+//   auto pwm = doc.createNestedArray("pwm_data");
 
-  pwm.add(input_pwm[0].Result());
-  pwm.add(input_pwm[1].Result());
+//   pwm.add(input_pwm[0].Result());
+//   pwm.add(input_pwm[1].Result());
 
-  auto adc = doc.createNestedArray("adc_data");
+//   auto adc = doc.createNestedArray("adc_data");
 
-  adc.add(2300);
-  adc.add(3000);
+//   adc.add(2300);
+//   adc.add(3000);
   
-  String output;
-  serializeJson(doc, output);
-  ws.textAll(output);
+//   String output;
+//   serializeJson(doc, output);
+//   ws.textAll(output);
 }
 
 void on_web_socket_data(const char* data, const size_t len)
@@ -104,10 +105,10 @@ void OnWebSocketMessage(void *arg, uint8_t *data, size_t len)
 void OnSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
   switch (type) {
     case WS_EVT_CONNECT:
-      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      log_i("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
       break;
     case WS_EVT_DISCONNECT:
-      Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      log_i("WebSocket client #%u disconnected\n", client->id());
       break;
     case WS_EVT_DATA:
       OnWebSocketMessage(arg, data, len);

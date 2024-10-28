@@ -6,6 +6,11 @@
 
 #include <driver_config.h>
 
+#ifndef MOTOR_INPUT_DEAD_ZONE
+#define MOTOR_INPUT_DEAD_ZONE 10
+#endif
+
+
 #ifndef MOTOR_PWM_FQC
 #define MOTOR_PWM_FQC         2500 // Hz
 #endif
@@ -14,11 +19,7 @@
 #define MOTOR_PWM_RESOLUTION  8 // Bit
 #endif
 
-#ifndef MOTOR_INPUT_DEAD_ZONE
-#define MOTOR_INPUT_DEAD_ZONE 10
-#endif
-
-#define MOTOR_DUTY_CYCLE (long)(pow(2, MOTOR_PWM_RESOLUTION) - 1) // with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
+#define MOTOR_DUTY_CYCLE      255 // with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
 
 // Utils
 
@@ -98,7 +99,7 @@ void motor_run(const motor_config_t& config, const int16_t speed)
 template<short TMin, short TMax>
 inline void motor_run(const motor_config_t& config, const int16_t speed)
 {
-    motor_run(config, map(speed, TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE));
+    motor_run(config, map(constrain(speed, TMin, TMax), TMin, TMax, -MOTOR_DUTY_CYCLE, MOTOR_DUTY_CYCLE));
 }
 
 // Write
@@ -108,7 +109,7 @@ inline void write_motor(const uint8_t index, const int16_t speed)
     motor_run(motors[index], speed);
 }
 
-template<short TMin, short TMax>
+template<int16_t TMin, int16_t TMax>
 inline void write_motor(const uint8_t index, const int16_t output)
 {
     motor_run<TMin, TMax>(motors[index], output);
@@ -121,7 +122,7 @@ void write_motors(const int16_t* outputs, const uint8_t count)
   }
 }
 
-template<short TMin, short TMax>
+template<int16_t TMin, int16_t TMax>
 void write_motors(const int16_t* outputs, const uint8_t count)
 {
   for (auto i = 0; i<count; ++i) {

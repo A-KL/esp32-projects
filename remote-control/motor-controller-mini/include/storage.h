@@ -7,6 +7,10 @@
 #include "FS.h"
 #include <LittleFS.h>
 
+#ifndef STORAGE_DEFAULT_CONFIG
+#define STORAGE_DEFAULT_CONFIG "/default_v2.json"
+#endif
+
 inline void storage_init() 
 {
   if (!LittleFS.begin(true)) {
@@ -45,7 +49,7 @@ String setting_read_key(const String& key, const char* fileName = "/default.json
     return result;
 }
 
-bool settings_load(global_config_t& config, const char* file_name = "/default_v2.json")
+bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFAULT_CONFIG)
 {
     File file = LittleFS.open(file_name, FILE_READ);
     if (!file) {
@@ -89,6 +93,17 @@ bool settings_load(global_config_t& config, const char* file_name = "/default_v2
     log_i("Configuration loading...\tDONE");
 
     return true;
+}
+
+void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs)
+{
+    for (auto& config : configs[input])
+    {
+        if (config.out_type == output_type)
+        {
+            outputs[config.out_channel] = inputs[config.in_channel];
+        }
+    }
 }
 
 // bool settings_load(motor_config_t motors[], const int count)

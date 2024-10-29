@@ -16,11 +16,8 @@
 struct enow_message_t {
   unsigned short  channels[INPUT_ESP_NOW_CHANNELS];
 };
-static enow_message_t message;
 
 static queue_t<enow_message_t> enow_input_queue;
-
-
 
 // unsigned long lastTime = 0;
 // unsigned long elapsedTime = 0;
@@ -56,24 +53,26 @@ inline uint8_t mac_to_string(const uint8_t * mac, char* result)
 
 void enow_on_received(const uint8_t * mac, const uint8_t *data, int len) 
 {
+  static enow_message_t message;
+
   memcpy(&message, data, sizeof(message));
 
 #ifdef INPUT_ESP_NOW_DEBUG
   log_d("CPU Core: (%d) Values: %d %d %d %d %d %d %d %d %d %d ",
     xPortGetCoreID(),
 
-    message.channels[0].value,
-    message.channels[1].value,
-    message.channels[2].value,
-    message.channels[3].value,
+    message.channels[0],
+    message.channels[1],
+    message.channels[2],
+    message.channels[3],
 
-    message.channels[4].value,
-    message.channels[5].value,
-    message.channels[6].value,
-    message.channels[7].value,
+    message.channels[4],
+    message.channels[5],
+    message.channels[6],
+    message.channels[7],
     
-    message.channels[8].value,
-    message.channels[9].value);
+    message.channels[8],
+    message.channels[9]);
 #endif
 
   queue_send(enow_input_queue, message);
@@ -106,25 +105,17 @@ void enow_on_received(const uint8_t * mac, const uint8_t *data, int len)
 
 void enow_init() 
 {
-  // auto mode = WiFi.getMode();
-  // if (mode != WIFI_MODE_STA && mode != WIFI_MODE_NULL) {
-  //   WiFi.setSleep(false);
-  //   log_i("Looks like WiFi is being used, setting sleep to false.");
-  // } else {
-  //   WiFi.mode(WIFI_MODE_STA);
-  // }
-
   if (esp_now_init() != ESP_OK) 
   {
     log_e("ESP-NOW Initializing...FAILED");
     return;
   }
 
-  log_i("ESP-NOW Initializing...OK");
-
   queue_init(enow_input_queue);
 
   esp_now_register_recv_cb(esp_now_recv_cb_t(enow_on_received));
+
+  log_i("ESP-NOW Initializing...OK");
 }
 
 uint8_t enow_receive(int16_t* outputs)
@@ -133,7 +124,7 @@ uint8_t enow_receive(int16_t* outputs)
 
     if (queue_receive(enow_input_queue, data))
     {
-          memcpy(outputs, data.channels, sizeof(data.channels));
+          memcpy(outputs, data.channels, sizeof(data));
 
           return sizeof(data.channels) / sizeof(unsigned short);
     }

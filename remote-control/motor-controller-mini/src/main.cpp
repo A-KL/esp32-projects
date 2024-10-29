@@ -49,7 +49,7 @@ void setup() {
   // pwm_in_init();
   sbus_init();
   ps_init();
-  //enow_init();
+  enow_init();
 
   motors_init();
   servos_init();
@@ -93,7 +93,13 @@ void loop() {
     // outputs_servo_lego[0] = outputs[0];
     // outputs_servo_lego[1] = outputs[1];
     //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo_lego, lego_servos_count);
-  } 
+  }
+  else if (enow_receive(inputs) > 0)
+  {
+    // Motors
+    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors);
+    write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+  }
   else if (ps_receive(inputs) > 0)
   {
     // Motors

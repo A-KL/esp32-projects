@@ -136,7 +136,7 @@ uint8_t ps_receive(int16_t* outputs)
 
     return false;
 
-#elif
+#else
     return false;
 #endif
 }

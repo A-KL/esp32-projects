@@ -22,5 +22,8 @@ const static uint8_t lego_servos_count = sizeof(lego_servos) / sizeof(lego_servo
 /* PWM */
 const static uint8_t pwm_inputs_count = sizeof(pwm_input_pins) / sizeof(uint8_t);
 
-/* ADC Inputs */
+/* ADC */
 const static uint8_t adc_inputs_count = sizeof(adc_input_pins) / sizeof(uint8_t);
+
+/* SBUS */
+const static uint8_t sbus_configured = sizeof(sbus_rx_tx_pins) / sizeof(uint8_t);

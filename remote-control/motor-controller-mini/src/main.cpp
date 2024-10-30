@@ -69,25 +69,22 @@ void setup() {
 }
 
 void loop() {
-  int16_t inputs[32];
+  static int16_t inputs[32];
 
-  int16_t outputs_motors[motors_count];
-  int16_t outputs_servo[servos_count];
-  int16_t outputs_servo_lego[lego_servos_count];
+  static int16_t outputs_motors[motors_count];
+  static int16_t outputs_servo[servos_count];
+  static int16_t outputs_servo_lego[lego_servos_count];
 
   // SBUS
   if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    settings_map_inputs(global_config, "sbus", inputs, motor, outputs_motors);
-    // outputs_motors[0] = inputs[1];
-    // outputs_motors[1] = inputs[2];
+    settings_map_inputs(global_config, "sbus", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
-    // outputs_servo[0] = outputs[0];
-    // outputs_servo[1] = outputs[1];
-    // pwm_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+    settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
+    pwm_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego
     // outputs_servo_lego[0] = outputs[0];
@@ -97,20 +94,32 @@ void loop() {
   else if (enow_receive(inputs) > 0)
   {
     // Motors
-    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors);
+    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+
+    // Servos
+    settings_map_inputs(global_config, "esp_now", inputs, servo, outputs_servo, servos_count);
+    pwm_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   }
   else if (ps_receive(inputs) > 0)
   {
     // Motors
-    settings_map_inputs(global_config, "ps3", inputs, motor, outputs_motors);
+    settings_map_inputs(global_config, "ps3", inputs, motor, outputs_motors, motors_count);
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
+
+    // Servos
+    settings_map_inputs(global_config, "ps3", inputs, servo, outputs_servo, servos_count);
+    pwm_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
   }
   else // No input
   {
     // Motors
     memset(outputs_motors, 0, motors_count);
     write_motors(outputs_motors, motors_count);
+
+    // Servos
+    //memset(outputs_servo, (SERVO_LOW + (SERVO_HIGH - SERVO_LOW)/2), servos_count);
+    //pwm_write(outputs_servo, servos_count);
   }
 
   delay(50);

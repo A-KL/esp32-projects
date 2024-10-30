@@ -95,8 +95,11 @@ bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFA
     return true;
 }
 
-void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs)
+void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, uint8_t inputs_count)
 {
+    if (inputs_count == 0) {
+        return;
+    }
     for (auto& config : configs[input])
     {
         if (config.out_type == output_type)

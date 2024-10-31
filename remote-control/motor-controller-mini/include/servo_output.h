@@ -9,58 +9,72 @@
 #define SERVO_LOW         ((long)(SERVO_DUTY_CYCLE * 0.025))
 #define SERVO_HIGH        ((long)(SERVO_DUTY_CYCLE * 0.125))
 
-// PWM
+class Servo
+{
+public:
 
-inline void pwm_init(const uint8_t channel, const int16_t freq, const int16_t res) {
-    assert(ledcSetup(channel, freq, res));
-}
+    inline void init(uint8_t pin, uint8_t channel)
+    {
+        _channel = channel;
+        _pin = pin;
 
-inline void pwm_start(const uint8_t channel, const uint8_t pin) {
-    ledcAttachPin(pin, channel);
-}
-
-inline void pwm_stop(const uint8_t pin) {
-    ledcDetachPin(pin);
-}
-
-inline void pwm_write(const uint8_t channel, const int16_t value) {
-    ledcWrite(channel, value);
-}
-
-template<int16_t TMin, int16_t TMax>
-inline void pwm_write(const uint8_t channel, const int16_t value) {
-    ledcWrite(channel, map(value, TMin, TMax, SERVO_LOW, SERVO_HIGH));
-}
-
-inline void pwm_write(const int16_t* values, const uint8_t channels) {
-    for (auto i = 0; i < min(channels, servos_count); i++) {
-         pwm_write(i, values[i]);
+        assert(ledcSetup(_channel, SERVO_FREQ, SERVO_RES));
+        _init = true;
     }
-}
 
-template<int16_t TMin, int16_t TMax>
-inline void pwm_write(const int16_t* values, const uint8_t channels) {
-    for (auto i = 0; i < min(channels, servos_count); i++) {
-         pwm_write<TMin, TMax>(i, values[i]);
+    void attach(bool attach = true)
+    {
+        if (attach && !_attached) {
+            ledcAttachPin(_pin, _channel);
+        }
+        if (!attach && _attached) {
+            ledcDetachPin(_pin);
+        }
+        _attached = attach;
     }
-}
+
+    // 0 - 180 - 270
+    inline void write_angle(uint8_t angle) const
+    {
+        write<0,180>(angle);
+    }
+
+    template<uint8_t TMin, uint8_t TMax>
+    inline void write(uint8_t angle) const
+    {
+        if (!_attached) {
+            return;
+        }
+        angle = constrain(angle, TMin, TMax);
+        ledcWrite(_channel, map(angle, TMin, TMax, SERVO_LOW, SERVO_HIGH));
+    }
+
+private:
+    uint8_t _pin = 0;
+    int8_t _channel = 0;
+    bool _init = false;
+    bool _attached = false;
+};
 
 // Servos
 
+static Servo servos[servos_count] = {};
+
 inline void servos_init() {
-    for (int i = 0; i < servos_count; i++) {
-        pwm_init(i, SERVO_FREQ, SERVO_RES); // first is channel
+    for (auto i = 0; i < servos_count; i++) {
+        servos[i].init(servos_pins[i], i);
     }
 }
 
-inline void servos_start() {
+inline void servos_attach(bool state) {
     for (auto i = 0; i < servos_count; i++) {
-        pwm_start(i, servos_pins[i]);
+        servos[i].attach(state);
     }
 }
 
-inline void servos_stop() {
-    for (auto i = 0; i < servos_count; i++) {
-        pwm_stop(servos_pins[i]);
+template<int16_t TMin, int16_t TMax>
+inline void servos_write(const int16_t* values, const uint8_t channels) {
+    for (auto i = 0; i < min(channels, servos_count); i++) {
+         servos[i].write<TMin, TMax>(values[i]);
     }
 }

@@ -53,13 +53,6 @@ void setup() {
 
   motors_init();
   servos_init();
-
-  if (servos_count > 0) {
-     servos_start();
-  } else {
-    servos_stop();
-  }
-
   // lego_servos_init();
 
   log_i("Initialization...\tDONE");
@@ -84,7 +77,7 @@ void loop() {
 
     // Servos
     settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
-    pwm_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+    servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego
     // outputs_servo_lego[0] = outputs[0];
@@ -99,7 +92,7 @@ void loop() {
 
     // Servos
     settings_map_inputs(global_config, "esp_now", inputs, servo, outputs_servo, servos_count);
-    pwm_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+    servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   }
   else if (ps_receive(inputs) > 0)
   {
@@ -109,7 +102,7 @@ void loop() {
 
     // Servos
     settings_map_inputs(global_config, "ps3", inputs, servo, outputs_servo, servos_count);
-    pwm_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
+    servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
   }
   else // No input
   {
@@ -117,12 +110,10 @@ void loop() {
     for (size_t i = 0; i < motors_count; i++) {
       outputs_motors[i] = 0;
     }
-    //memset(outputs_motors, 0, motors_count);
     write_motors(outputs_motors, motors_count);
 
     // Servos
-    //memset(outputs_servo, (SERVO_LOW + (SERVO_HIGH - SERVO_LOW)/2), servos_count);
-    //pwm_write(outputs_servo, servos_count);
+    servos_attach(false);
   }
 
   delay(50);

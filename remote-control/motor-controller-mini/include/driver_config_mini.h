@@ -20,7 +20,7 @@ const auto sbus_serial = &Serial1;
 const uint8_t servos_pins[] = { };
 
 /* LEGO */
-lego_servo_t lego_servos[] = { };
+static lego_servo_t lego_servos[] = { };
 
 /* Motors */
 motor_config_t motors [] = {

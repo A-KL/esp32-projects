@@ -134,7 +134,7 @@ inline void lego_servos_init()
     }
 }
 
-void lego_servo_write(lego_servo_t& servo, int value)
+void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
     if (value == 0) 
     {
@@ -171,7 +171,7 @@ void lego_servo_write(lego_servo_t& servo, int value)
 }
 
 template<short TMin, short TMax>
-inline void lego_servo_write(lego_servo_t& servo, int value)
+inline void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
     lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
 }

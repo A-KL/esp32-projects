@@ -19,7 +19,7 @@ const char* ps_controller_mac = "B8:27:EB:DF:B3:FF";
 
 /* Outputs */
 
-/* PWM */
+/* Servos */
 const uint8_t servos_pins[] = { };
 
 /* LEGO */

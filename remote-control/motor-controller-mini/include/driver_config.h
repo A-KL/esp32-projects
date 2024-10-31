@@ -8,10 +8,10 @@
 
 /* Outputs */
 
-/* PWM */
-const uint8_t servos_count = sizeof(servos_pins) / sizeof(uint8_t);
+/* Servo */
+const static uint8_t servos_count = sizeof(servos_pins) / sizeof(uint8_t);
 
-/* Motors */
+/* Motor */
 const static uint8_t motors_count = sizeof(motors) / sizeof(motor_config_t);
 
 /* LEGO */

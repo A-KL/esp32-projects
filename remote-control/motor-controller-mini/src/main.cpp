@@ -114,7 +114,10 @@ void loop() {
   else // No input
   {
     // Motors
-    memset(outputs_motors, 0, motors_count);
+    for (size_t i = 0; i < motors_count; i++) {
+      outputs_motors[i] = 0;
+    }
+    //memset(outputs_motors, 0, motors_count);
     write_motors(outputs_motors, motors_count);
 
     // Servos

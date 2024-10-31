@@ -24,5 +24,5 @@ bool queue_send(const queue_t<TData>& queue, const TData& data, const uint16_t t
 template<typename TData>
 bool queue_receive(const queue_t<TData>& queue, TData& data, const uint16_t timeout = 10)
 {
-  return xQueueReceive(queue.handle, &data, timeout) == pdPASS;
+  return xQueueReceive(queue.handle, &data, timeout / portTICK_PERIOD_MS) == pdPASS;
 }

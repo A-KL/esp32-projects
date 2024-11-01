@@ -66,7 +66,8 @@ void loop() {
 
   static int16_t outputs_motors[motors_count];
   static int16_t outputs_servo[servos_count];
-  static int16_t outputs_servo_lego[lego_servos_count];
+
+  servos_attach(true, servos_count); // test
 
   // SBUS
   if (sbus_receive(inputs) > 0) 

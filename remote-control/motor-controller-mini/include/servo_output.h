@@ -70,8 +70,8 @@ inline void servos_init() {
     }
 }
 
-inline void servos_attach(bool state) {
-    for (auto i = 0; i < servos_count; i++) {
+inline void servos_attach(bool state, uint8_t count = servos_count) {
+    for (auto i = 0; i < count; i++) {
         servos[i].attach(state);
     }
 }

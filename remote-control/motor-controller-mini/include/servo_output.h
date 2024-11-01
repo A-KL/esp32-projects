@@ -9,6 +9,44 @@
 #define SERVO_LOW         ((long)(SERVO_DUTY_CYCLE * 0.025))
 #define SERVO_HIGH        ((long)(SERVO_DUTY_CYCLE * 0.125))
 
+// v3
+
+class Servos
+{
+public:
+    Servos(const uint8_t pins[], const uint8_t start_channel = 0) : _pins(pins), _count(sizeof(pins)), _start_channel(start_channel), _states(new bool[_count])
+    { }
+
+    inline void init() {
+        for (auto i=0; i<_count; ++i) {
+            _states[i] = false;
+            assert(ledcSetup(_start_channel + i, SERVO_FREQ, SERVO_RES));
+        }
+    }
+
+    void attach(bool attach = true)
+    {
+        for (auto i=0; i<_count; ++i) 
+        {
+            if (attach && !_states[i]) {
+                ledcAttachPin(_pins[i], i + _start_channel);
+            }
+            if (!attach && _states[i]) {
+                ledcDetachPin(_pins[i]);
+            }
+            _states[i] = attach;
+        }
+    }
+
+private:
+    const uint8_t* _pins;
+    bool* _states;
+    const uint8_t _count;
+    const uint8_t _start_channel;
+};
+
+// v2
+
 class Servo
 {
 public:

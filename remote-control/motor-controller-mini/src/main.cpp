@@ -78,11 +78,6 @@ void loop() {
     // Servos
     settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
-
-    // Lego
-    // outputs_servo_lego[0] = outputs[0];
-    // outputs_servo_lego[1] = outputs[1];
-    //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo_lego, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)
   {

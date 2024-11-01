@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include <types.h>
 
+#define SERVO_FREQ        50
+#define SERVO_RES         14
+
 #define LEGO_SERVO_LOW  0
 #define LEGO_SERVO_HIGH (long)(pow(2, SERVO_RES) - 1)
 

@@ -3,72 +3,32 @@
 #include <Arduino.h>
 #include <esp32-hal-log.h>
 
-#define SERVO_FREQ        50
-#define SERVO_RES         14
-#define SERVO_DUTY_CYCLE  ((long)((1<<SERVO_RES)-1))
-#define SERVO_LOW         ((long)(SERVO_DUTY_CYCLE * 0.025))
-#define SERVO_HIGH        ((long)(SERVO_DUTY_CYCLE * 0.125))
-
-// v3
-
-class Servos
-{
-public:
-    Servos(const uint8_t pins[], const uint8_t start_channel = 0) : _pins(pins), _count(sizeof(pins)), _start_channel(start_channel), _states(new bool[_count])
-    { }
-
-    inline void init() {
-        for (auto i=0; i<_count; ++i) {
-            _states[i] = false;
-            assert(ledcSetup(_start_channel + i, SERVO_FREQ, SERVO_RES));
-        }
-    }
-
-    void attach(bool attach = true)
-    {
-        for (auto i=0; i<_count; ++i) 
-        {
-            if (attach && !_states[i]) {
-                ledcAttachPin(_pins[i], i + _start_channel);
-            }
-            if (!attach && _states[i]) {
-                ledcDetachPin(_pins[i]);
-            }
-            _states[i] = attach;
-        }
-    }
-
-private:
-    const uint8_t* _pins;
-    bool* _states;
-    const uint8_t _count;
-    const uint8_t _start_channel;
-};
-
-// v2
-
 class Servo
 {
 public:
-
-    inline void init(uint8_t pin, uint8_t channel)
+    inline bool init(uint8_t pin, uint8_t channel)
     {
         _channel = channel;
         _pin = pin;
-
-        assert(ledcSetup(_channel, SERVO_FREQ, SERVO_RES));
-        _init = true;
+        _init = ledcSetup(_channel, servo_frequency, servo_resolution) != 0;
+        return _init;
     }
 
-    void attach(bool attach = true)
+    bool attach(bool attach = true)
     {
+        if (!_init) {
+            return false;
+        }
+
         if (attach && !_attached) {
             ledcAttachPin(_pin, _channel);
         }
         if (!attach && _attached) {
             ledcDetachPin(_pin);
         }
+
         _attached = attach;
+        return true;
     }
 
     // 0 - 180 - 270
@@ -77,21 +37,27 @@ public:
         write<0,180>(angle);
     }
 
-    template<uint8_t TMin, uint8_t TMax>
-    inline void write(uint8_t angle) const
+    template<int16_t TMin, int16_t TMax>
+    inline void write(int16_t value) const
     {
-        if (!_attached) {
+        if (!_attached || !_init) {
             return;
         }
-        angle = constrain(angle, TMin, TMax);
-        ledcWrite(_channel, map(angle, TMin, TMax, SERVO_LOW, SERVO_HIGH));
+        ledcWrite(_channel, map(constrain(value, TMin, TMax), TMin, TMax, servo_low, servo_high));
     }
 
 private:
-    uint8_t _pin = 0;
-    int8_t _channel = 0;
+    int8_t _pin = -1;
+    int8_t _channel = -1;
+
     bool _init = false;
     bool _attached = false;
+
+    const uint8_t servo_frequency = 50;
+    const uint8_t servo_resolution = 14;
+    const uint32_t servo_duty_cycle = ((1<<servo_resolution) - 1);
+    const uint32_t servo_low = (servo_duty_cycle * 0.025);
+    const uint32_t servo_high = (servo_duty_cycle * 0.125);
 };
 
 // Servos

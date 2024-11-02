@@ -9,6 +9,7 @@
 #include <inputs_queue.h>
 #include <network.h>
 #include <server.h>
+#include <lcd.h>
 //#include <scheduler.h>
 //#include <button_input.h>
 
@@ -37,6 +38,7 @@ void setup() {
   Serial.println(HOSTNAME);
   sleep(2);
 
+  lcd_init();
   storage_init();
   settings_load(global_config);
   init_wifi();

@@ -27,3 +27,12 @@ const static uint8_t adc_inputs_count = sizeof(adc_input_pins) / sizeof(uint8_t)
 
 /* SBUS */
 const static uint8_t sbus_configured = sizeof(sbus_rx_tx_pins) / sizeof(uint8_t);
+
+void trace_values(const char* label, const int16_t* outputs, const uint8_t count)
+{
+  char trace[100];
+  for (auto i = 0; i<count; ++i) {
+    sprintf(trace, "%s\t%d", trace, outputs[i]);
+  }
+  log_d("%s (%s)", label, trace);
+}

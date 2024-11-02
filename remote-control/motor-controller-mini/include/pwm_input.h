@@ -2,8 +2,11 @@
 
 #include <Arduino.h>
 
-#include <driver_limits.h>
 #include <driver_config.h>
+
+#define INPUT_PWM_MAX   1996//2000
+#define INPUT_PWM_MIN   970 //1024
+#define INPUT_PWM_ZERO  800 //1020
 
 typedef struct {
   volatile unsigned long startTime = 0;

@@ -3,26 +3,10 @@
 #include <type_traits>
 #include <sbus.h>
 
-#include <driver_limits.h>
 #include <driver_config.h>
 
 #define INPUT_SBUS_MIN  175 //200
 #define INPUT_SBUS_MAX  1809
-
-// extern "C++"
-// {
-//     template <typename _CountofType, size_t _SizeOfArray>
-//     char (*__countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOfArray];
-//     #define _countof(_Array) sizeof(*__countof_helper(_Array))
-// }
-
-// template< typename T, size_t N >
-// constexpr size_t countof( const T (&)[N] ) { return N; }
-
-// #define COUNT(a) (__builtin_choose_expr( \
-//                   __builtin_types_compatible_p(typeof(a), typeof(&(a)[0])), \
-//                   (void)0, \
-//                   (sizeof(a)/sizeof((a)[0]))))
 
 bfs::SbusRx sbus_rx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);

@@ -62,16 +62,7 @@ private:
 
 // Servos
 
-static Servo servos[servos_count] = {};
-
-void trace_values(const char* label, const int16_t* outputs, const uint8_t count)
-{
-  char trace[100];
-  for (auto i = 0; i<count; ++i) {
-    sprintf(trace, "%s\t%d", trace, outputs[i]);
-  }
-  log_d("%s (%s)", label, trace);
-}
+static Servo servos[servos_count];
 
 inline void servos_init() {
     for (auto i = 0; i < servos_count; i++) {

@@ -154,7 +154,7 @@ float hal_get_pitch()
   return rand()%10 + 5;;
 }
 
-
+  static lv_disp_drv_t disp_drv;
 
 void hal_setup(void)
 {
@@ -166,6 +166,10 @@ void hal_setup(void)
 #ifdef LCD_USB_QSPI_DREVER
   rm67162_init();
   lcd_setRotation(1);
+#endif
+
+#ifndef LCD_USB_QSPI_DREVER
+  lcd_init(hal_display_flush_ready_cb, &disp_drv);
 #endif
 
   bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
@@ -193,10 +197,8 @@ void hal_setup(void)
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
   /*Initialize the display*/
-  static lv_disp_drv_t disp_drv;
-#ifndef LCD_USB_QSPI_DREVER
-  lcd_init(hal_display_flush_ready_cb, &disp_drv);
-#endif
+
+
   lv_disp_drv_init(&disp_drv);
 
   /*Change the following line to your display resolution*/

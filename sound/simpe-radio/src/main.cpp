@@ -18,9 +18,11 @@ void setup(){
   // setup i2s
   auto config = i2s.defaultConfig(TX_MODE);
   // you could define e.g your pins and change other settings
-  //config.pin_ws = 10;
-  //config.pin_bck = 11;
-  //config.pin_data = 12;
+  config.pin_ws = I2S_WS;
+  config.pin_bck = I2S_BCK;
+  config.pin_data = I2S_SD;
+  config.pin_mck = I2S_MCLK;
+  //config.fixed_mclk = 
   //config.mode = I2S_STD_FORMAT;
   //config.bits_per_sample = 32; // we coult do this explicitly
   i2s.begin(config);

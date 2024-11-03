@@ -9,7 +9,12 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_BMP280.h>
 
+#ifdef LCD_USB_QSPI_DREVER
 #include "rm67162.h"
+#else
+#include "esp_lcd.h"
+#endif
+
 #include "app_hal.h"
 
 #define SEALEVELPRESSURE_HPA (1019)
@@ -50,15 +55,24 @@ float read_angle()
 
   return y;
 }
+#ifndef LCD_USB_QSPI_DREVER
+void hal_display_flush_ready_cb(void *user_ctx)
+{
+    lv_disp_drv_t *disp_driver = (lv_disp_drv_t *)user_ctx;
+    lv_disp_flush_ready(disp_driver);
+}
+#endif
 
 void hal_display_flush_cb(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
+#ifdef LCD_USB_QSPI_DREVER
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
-    
     lcd_PushColors(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
-
     lv_disp_flush_ready(disp);
+#else
+    lcd_PushColors(disp->user_data, area->x1, area->y1, area->x2, area->y2, (uint16_t *)&color_p->full);
+#endif
 }
 
 static uint32_t hal_lvgl_timer_tick_get_cb(void) 
@@ -149,8 +163,10 @@ void hal_setup(void)
 
   delay(1000);
   
+#ifdef LCD_USB_QSPI_DREVER
   rm67162_init();
   lcd_setRotation(1);
+#endif
 
   bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
  // mpu_initialized = mpu.begin();
@@ -178,6 +194,9 @@ void hal_setup(void)
 
   /*Initialize the display*/
   static lv_disp_drv_t disp_drv;
+#ifndef LCD_USB_QSPI_DREVER
+  lcd_init(hal_display_flush_ready_cb, &disp_drv);
+#endif
   lv_disp_drv_init(&disp_drv);
 
   /*Change the following line to your display resolution*/

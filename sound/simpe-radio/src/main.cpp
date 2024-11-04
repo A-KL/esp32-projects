@@ -13,7 +13,7 @@ void setup(){
   AudioLogger::instance().begin(Serial, AudioLogger::Info);  
 
   // convert 16 bits to 32, you could also change the gain
-  nfc.begin(16, 32); 
+  nfc.begin(16, 32);
 
   // setup i2s
   auto config = i2s.defaultConfig(TX_MODE);
@@ -21,8 +21,7 @@ void setup(){
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
   config.pin_data = I2S_SD;
-  config.pin_mck = I2S_MCLK;
-  //config.fixed_mclk = 
+  //config.pin_mck = I2S_MCLK;
   //config.mode = I2S_STD_FORMAT;
   //config.bits_per_sample = 32; // we coult do this explicitly
   i2s.begin(config);

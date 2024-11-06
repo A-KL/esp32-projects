@@ -74,7 +74,7 @@ inline bool read_pwm(const short index, int16_t outputs[])
   return pwm_detected;
 }
 
-void trace_values(const uint16_t outputs[], const uint8_t count)
+inline void trace_values(const uint16_t outputs[], const uint8_t count)
 {
   char trace[100];
   for (auto i = 0; i<count; ++i) {

@@ -122,7 +122,7 @@ uint8_t enow_receive(int16_t* outputs)
 {
     static enow_message_t data;
 
-    if (queue_receive(enow_input_queue, data))
+    if (queue_receive(enow_input_queue, data, 25))
     {
           memcpy(outputs, data.channels, sizeof(data));
 

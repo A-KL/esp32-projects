@@ -54,6 +54,7 @@ void setup() {
 
   motors_init();
   servos_init();
+  servos_attach(true);
   // lego_servos_init();
 
   log_i("Initialization...\tDONE");
@@ -77,7 +78,6 @@ void write_mapped_outputs(const int16_t* inputs, const uint8_t inputs_count, con
     write_motors<TMin, TMax>(outputs_motors, motors_count);
 
     // Servos
-    servos_attach(true, servos_count);
     settings_map_inputs(global_config, config_name, inputs, servo, outputs_servo, servos_count);
     servos_write<TMin, TMax>(outputs_servo, servos_count);
 }
@@ -96,20 +96,8 @@ void loop() {
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
-    servos_attach(true, servos_count);
     settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
-  }
-  else if (enow_receive(inputs) > 0)
-  {
-    // Motors
-    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors, motors_count);
-    write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
-
-    // Servos
-    servos_attach(true, servos_count);
-    settings_map_inputs(global_config, "esp_now", inputs, servo, outputs_servo, servos_count);
-    servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   }
   else if (ps_receive(inputs) > 0)
   {
@@ -118,9 +106,24 @@ void loop() {
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
 
     // Servos
-    servos_attach(true, servos_count);
     settings_map_inputs(global_config, "ps3", inputs, servo, outputs_servo, servos_count);
     servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
+  }
+  else if (enow_receive(inputs) > 0)
+  {
+    // Motors
+    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors, motors_count);
+    write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+
+    // Servos
+    settings_map_inputs(global_config, "esp_now", inputs, servo, outputs_servo, servos_count);
+    // outputs_servo[0] = inputs[0];
+    // outputs_servo[1] = inputs[1];
+    // outputs_servo[2] = inputs[2];
+    // outputs_servo[3] = inputs[3];
+    // outputs_servo[4] = inputs[4];
+    // outputs_servo[5] = inputs[5];
+    servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   }
   else if (adc_receive(inputs) > 0)
   {
@@ -129,12 +132,12 @@ void loop() {
     write_motors<INPUT_ADC_MIN, INPUT_ADC_MAX>(outputs_motors, motors_count);
 
     // Servos
-    servos_attach(true, servos_count);
     settings_map_inputs(global_config, "adc", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ADC_MIN, INPUT_ADC_MAX>(outputs_servo, servos_count);
   }
   else // No input
   {
+    //log_i("No data!");
     // Motors
     for (size_t i = 0; i < motors_count; i++) {
       outputs_motors[i] = 0;
@@ -144,10 +147,11 @@ void loop() {
     // Servos
     servos_attach(false);
   }
-
-  delay(50);
   
   adc_loop();
+  servos_loop();
+
+  delay(20);
 
   // server_loop();
   // scheduler_loop();

@@ -18,11 +18,12 @@ void queue_init(queue_t<TData>& queue, uint8_t queue_size = 5)
 template<typename TData>
 bool queue_send(const queue_t<TData>& queue, const TData& data, const uint16_t timeout = 0)
 {
-  return xQueueSend(queue.handle, &data, timeout) == pdPASS;
+ // return xQueueOverwrite(queue.handle, &data) == pdPASS;
+ return xQueueSend(queue.handle, &data, timeout / portTICK_PERIOD_MS) == pdPASS;
 }
 
 template<typename TData>
-bool queue_receive(const queue_t<TData>& queue, TData& data, const uint16_t timeout = 10)
+bool queue_receive(const queue_t<TData>& queue, TData& data, const uint16_t timeout = 5)
 {
   return xQueueReceive(queue.handle, &data, timeout / portTICK_PERIOD_MS) == pdPASS;
 }

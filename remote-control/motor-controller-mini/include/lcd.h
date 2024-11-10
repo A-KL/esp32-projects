@@ -9,7 +9,7 @@
 
 inline void lcd_init()
 {
-#ifdef I2C_SDA && I2C_SCL
+#if defined(I2C_SDA) && defined(I2C_SCL)
     Wire.begin(I2C_SDA, I2C_SCL);
 #endif
 

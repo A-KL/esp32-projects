@@ -47,14 +47,13 @@ void setup() {
   //scheduler_add(300, [](){ send_sbus_data(sbus_data.ch, sbus_data.NUM_CH); });
 
   adc_init();
-  // pwm_in_init();
+  pwm_in_init();
   sbus_init();
   ps_init();
   enow_init();
 
   motors_init();
   servos_init();
-  // lego_servos_init();
 
   log_i("Initialization...\tDONE");
   

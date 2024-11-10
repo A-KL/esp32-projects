@@ -8,26 +8,31 @@
 #define INPUT_PWM_MIN   970 //1024
 #define INPUT_PWM_ZERO  800 //1020
 
-typedef struct {
-  volatile unsigned long startTime = 0;
-  volatile unsigned long currentTime = 0;
-  volatile unsigned long pulses = 0;
-  int result = 0;
-
-  void Capture() {
+class pwm_input_t 
+{
+public:
+  void Capture() 
+  {
     currentTime = micros();
     if (currentTime > startTime) {
       pulses = currentTime - startTime;
       startTime = currentTime;
     }
   }
-  int Result() {
+  
+  int Result() 
+  {
     if (pulses < 2000) {
       result = pulses;
     }
     return result;
   }
-} pwm_input_t;
+  private:
+    volatile unsigned long startTime = 0;
+    volatile unsigned long currentTime = 0;
+    volatile unsigned long pulses = 0;
+    int result = 0;
+};
 
 static pwm_input_t input_pwm[pwm_inputs_count];
 

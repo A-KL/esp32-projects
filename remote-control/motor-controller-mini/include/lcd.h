@@ -9,7 +9,11 @@
 
 inline void lcd_init()
 {
-#ifdef HAS_LCD    
+#ifdef I2C_SDA && I2C_SCL
+    Wire.begin(I2C_SDA, I2C_SCL);
+#endif
+
+#ifdef HAS_LCD
     static Adafruit_SSD1306 display(LCD_WIDTH, LCD_HEIGHT, &Wire, -1);
 
     if (!display.begin(SSD1306_SWITCHCAPVCC, LCD_ADDRESS)) {

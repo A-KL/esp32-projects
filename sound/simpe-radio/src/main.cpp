@@ -26,7 +26,10 @@ void setup(){
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
   config.pin_data = I2S_SD;
+  //config.pin_mck = I2S_MCLK;
   config.bits_per_sample = 32;
+  config.is_master = true;
+  //config.i2s_format = I2S_LSB_FORMAT;
 
   i2s.begin(config);
 

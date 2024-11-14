@@ -66,7 +66,7 @@ public:
 
       size_t samples_read = len / (sizeof(T) * cfg.channels);
 
-      envelope_calculate_right_left(
+      envelope_calculate_right_left<int32_t>(
         data,
         32, 
         samples_read,

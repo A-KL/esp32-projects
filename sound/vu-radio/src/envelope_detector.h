@@ -14,12 +14,9 @@ struct audio_envelope_context_t
 
 template<typename T>
 struct audio_sample_t {
-    T right: 16;
-    T left: 16;
+    T right;
+    T left;
 };
-
-typedef audio_sample_t<int16_t> audio_sample_16bit;
-typedef audio_sample_t<int32_t> audio_sample_32bit;
 
 void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate) 
 {
@@ -27,47 +24,56 @@ void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate
     context.release = expf(-1.0/((float)sample_rate * .100)); //100mS Release
 }
 
-inline void map_sample(uint8_t* samples, const uint8_t bps, const uint16_t sample_pair_position, uint8_t** result)
+template<typename T>
+inline void map_sample(const uint8_t* samples, const uint8_t bps, const uint16_t sample_index, const audio_sample_t<T>** result)
 {
-    *result = (samples + sample_pair_position * bps * 2);
+    *result = (const audio_sample_t<T>*)(samples + sample_index * bps * 2);
 }
 
-void envelope_calculate_average(unsigned char* samples, int16_t bps, const int16_t samples_count, audio_sample_16bit& result) 
+template<typename T>
+inline audio_sample_t<T>* get_sample(const uint16_t sample_index, const uint8_t* samples, const uint8_t bps)
 {
-    unsigned long  left_x = 0;
-    unsigned long right_x = 0;
-    audio_sample_16bit* sample = NULL;
-
-    for (auto i=0; i<samples_count; i++) {
-        map_sample(samples, bps, i, (unsigned char**)&sample);
-
-        left_x += sample->left;
-        right_x += sample->right;
-    }
-
-    result.left = left_x / samples_count;
-    result.right = right_x / samples_count;
+    return (audio_sample_t<T>*)(samples + sample_index * bps * 2);
 }
 
+// void envelope_calculate_average(unsigned char* samples, int16_t bps, const int16_t samples_count, audio_sample_16bit& result) 
+// {
+//     unsigned long  left_x = 0;
+//     unsigned long right_x = 0;
+//     audio_sample_16bit* sample = NULL;
+
+//     for (auto i=0; i<samples_count; i++) {
+//         map_sample(samples, bps, i, (uint8_t**)&sample);
+
+//         left_x += sample->left;
+//         right_x += sample->right;
+//     }
+
+//     result.left = left_x / samples_count;
+//     result.right = right_x / samples_count;
+// }
+
+template<typename T>
 void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, const uint8_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
 {
     float left_x = 0;
     float right_x = 0;
+    float gain = 10;
 
-    audio_sample_16bit* sample = NULL;
+    audio_sample_t<T>* sample = NULL;
 
     for (auto i=0; i<samples_count; i++)
     {
-        map_sample(samples, bps, i, (unsigned char**)&sample);
+        sample = get_sample<T>(i, samples, bps);
 
         left_x = sample->left;
         right_x = sample->right;
 
-        // left_x = (int16_t) samples[i];
-        // right_x = (int16_t) (samples[i] >> 16);
+        // left_x = (T) samples[i];
+        // right_x = (T) (samples[i] >> bps);
 
-        left_x = left_x * 10;
-        right_x = right_x * 10;
+        left_x *= gain;
+        right_x *= gain;
 
         left.dc_filter = left_x - left.x_prev + (.99 * left.dc_filter);
         left.x_prev = left_x;

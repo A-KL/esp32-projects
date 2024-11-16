@@ -235,7 +235,7 @@ void gui_init()
 
 void gui_update_task(void *arg)  
 {
-    while (1) 
+    //while (1) 
     {
         ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 

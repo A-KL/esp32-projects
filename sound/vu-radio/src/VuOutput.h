@@ -66,9 +66,9 @@ public:
 
       size_t samples_read = len / (sizeof(T) * cfg.channels);
 
-      envelope_calculate_right_left<int32_t>(
+      envelope_calculate_right_left<T>(
         data,
-        32, 
+        sizeof(T) * 8,
         samples_read,
         _right_envelope_context, 
         _left_envelope_context);
@@ -93,6 +93,14 @@ public:
       //   }
       // } 
       return len;
+    }
+
+    inline float value_left(){
+      return _left_envelope_context.envelope_out;
+    }
+
+    inline float value_right(){
+      return _right_envelope_context.envelope_out;
     }
     
   private:

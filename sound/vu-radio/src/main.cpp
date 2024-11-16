@@ -22,7 +22,7 @@ MultiOutput decoded_out;
 MultiOutput encoded_out;
 
 I2SStream i2s;
-VuMeter<int32_t> vu;
+VuMeter<int16_t> vu;
 NumberFormatConverterStream nfc(decoded_out);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
 
@@ -76,9 +76,13 @@ void setup(){
 
   i2s.begin(config);
   decoder.begin();
+
+  xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 0, NULL);
 }
 
 void loop(){
   copier.copy();
-  gui_update_task(nullptr);
+
+  left_pb.value = vu.value_left();
+  right_pb.value = vu.value_right();
 }

@@ -58,7 +58,7 @@ void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, co
 {
     float left_x = 0;
     float right_x = 0;
-    float gain = 10;
+    float gain = 0.1;
 
     audio_sample_t<T>* sample = NULL;
 

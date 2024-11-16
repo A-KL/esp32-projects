@@ -231,11 +231,9 @@ void gui_init()
     //gui_init_spectrum();
 }
 
-//long last_update_ms = millis();
-
 void gui_update_task(void *arg)  
 {
-    //while (1) 
+    while (1) 
     {
         ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
@@ -255,6 +253,6 @@ void gui_update_task(void *arg)
         //     gui_panel_update(main_panel);
         // } 
 
-        //vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(100 / portTICK_RATE_MS);
     }
 }

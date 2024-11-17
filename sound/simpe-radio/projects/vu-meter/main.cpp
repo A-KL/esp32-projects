@@ -72,7 +72,7 @@ void setup(){
   i2s.begin(config);
   decoder.begin();
 
-  xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 0, NULL);
+  gui_run(0);
 }
 
 void loop(){

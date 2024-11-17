@@ -234,7 +234,7 @@ void gui_init()
     //gui_init_spectrum();
 }
 
-void gui_update()
+void gui_progress_bars_update()
 {
     ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
@@ -259,12 +259,12 @@ void gui_update_task(void *arg)
 {
     while (1) 
     {
-        gui_update();
+        gui_progress_bars_update();
         vTaskDelay(100 / portTICK_RATE_MS);
     }
 }
 
 void gui_run(int core) 
 {
-    xTaskCreate(gui_update_task, "gui_task", 2048, NULL, core, NULL);
+    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
 }

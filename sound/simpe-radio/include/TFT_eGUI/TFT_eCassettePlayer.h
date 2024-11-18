@@ -8,8 +8,8 @@
 class TFT_eWidget
 {
     public:
-        TFT_eWidget(TFT_eSprite& canvas, int16_t width, int16_t height, int16_t top = 0, int16_t left = 0) 
-        : _canvas(&canvas), width(width), height(height), left(left), top(top)
+        TFT_eWidget(TFT_eSprite* canvas, int16_t width, int16_t height, int16_t top, int16_t left) 
+        : _canvas(canvas), width(width), height(height), left(left), top(top)
         { }
 
         int16_t width;
@@ -26,24 +26,22 @@ class TFT_eWidget
 
         virtual void update() = 0;
 
-    private:
+    protected:
         TFT_eSprite* _canvas = NULL;
 };
 
 class TFT_eCassettePlayer : public TFT_eWidget
 {
     public:
-        // TFT_eCassettePlayer(TFT_eSprite& canvas, int16_t width, int16_t height int16_t width, int16_t height) 
-        // : _canvas(&canvas), _width(width), _height(height)
-        // { 
-
-        // }
+        TFT_eCassettePlayer(TFT_eSprite* canvas, int16_t width, int16_t height, int16_t top = 0, int16_t left = 0) 
+        : TFT_eWidget(canvas, width, height, top, left)
+        { }
 
         void init()
         {   
             not_null(_canvas);
 
-            _top_height = (_height - cassette_height) / 2;
+            _top_height = (height - cassette_height) / 2;
 
             _canvas->setColorDepth(16);
             _canvas->setSwapBytes(true);
@@ -55,7 +53,7 @@ class TFT_eCassettePlayer : public TFT_eWidget
 
             // Background
 
-            _canvas->createSprite(_width, cassette_height);
+            _canvas->createSprite(width, cassette_height);
             _canvas->fillSprite(_color_background);
             _canvas->pushSprite(left, top + _top_height);
             _canvas->deleteSprite();
@@ -76,17 +74,14 @@ class TFT_eCassettePlayer : public TFT_eWidget
 
             // Top / Bottom regions
 
-            _canvas->createSprite(_width, _top_height);
+            _canvas->createSprite(width, _top_height);
             _canvas->fillSprite(_color_none);
 
             _canvas->pushSprite(left, top);
             _canvas->pushSprite(left, top + height - _top_height);
         }
 
-        uint16_t cassette_height = _height * 0.4;
-
-        int16_t _width;
-        int16_t _height;
+        uint16_t cassette_height = height * 0.4;
 
     private:
         uint16_t _top_height;
@@ -96,6 +91,4 @@ class TFT_eCassettePlayer : public TFT_eWidget
         uint32_t _color_full = TFT_DARK_GRAY;
         uint32_t _color_empty = TFT_LIGHTGREY;
         uint32_t _color_accent = TFT_RED;
-
-        TFT_eSprite* _canvas = NULL;
 };

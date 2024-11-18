@@ -2,29 +2,21 @@
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 
-#include <TFT_eSPI.h>
-#include "TFT_eGUI/TFT_eGUI.h"
+#include "gui.h"
 
 //                            -> EncodedAudioStream -> I2SStream
 // URLStream -> MultiOutput -|
 //                            -> MetaDataOutput
 
 URLStream url(LOCAL_SSID, LOCAL_PASSWORD);
-
 MultiOutput encoded_out;
-
 I2SStream i2s;
 NumberFormatConverterStream nfc(i2s);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
-
-MetaDataOutput metadata; // final output of metadata
-
+MetaDataOutput metadata;
 StreamCopy copier(encoded_out, url);
 
 const int output_format = 16;
-
-TFT_eSprite canvas = TFT_eSprite(&tft);
-TFT_eCassettePlayer player(&canvas, TFT_WIDTH, TFT_HEIGHT, 0, 0);
 
 void print_metadata(MetaDataType type, const char* str, int len){
   Serial.printf("==> %s: %s\r\n", toStr(type), str);
@@ -33,14 +25,7 @@ void print_metadata(MetaDataType type, const char* str, int len){
 void setup(){
   Serial.begin(115200);
 
-  tft.init();
-  tft.setRotation(TFT_ROTATE);
-  tft.setSwapBytes(true);
-
-  // //tft.setFreeFont(&Orbitron_Medium_20);
-  // tft.loadFont(NotoSansBold15);
-
-  tft.fillScreen(TFT_RED);
+  gui_init();
   
   AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 

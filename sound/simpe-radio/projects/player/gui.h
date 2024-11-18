@@ -5,8 +5,7 @@
 
 #include "NotoSansBold15.h"
 
-TFT_eSprite canvas = TFT_eSprite(&tft);
-TFT_eCassettePlayer player(&canvas, TFT_HEIGHT, TFT_WIDTH, 0, 0);
+TFT_eCassettePlayer player(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 
 void gui_init()
 {

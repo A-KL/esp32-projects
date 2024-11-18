@@ -15,19 +15,19 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-TFT_eSprite left_pb_canvas = TFT_eSprite(&tft); 
-TFT_eSprite right_pb_canvas = TFT_eSprite(&tft); 
+TFT_eSprite left_pb_canvas(&tft); 
+TFT_eSprite right_pb_canvas(&tft); 
 
-TFT_eSprite main_led_sprite = TFT_eSprite(&tft);
-TFT_eSprite second_led_sprite = TFT_eSprite(&tft);
+TFT_eSprite main_led_sprite(&tft);
+TFT_eSprite second_led_sprite(&tft);
 
-TFT_eSprite scale_sprite = TFT_eSprite(&tft);
-TFT_eSprite scale_text_sprite = TFT_eSprite(&tft);
-TFT_eSprite panel_sprite = TFT_eSprite(&tft);
+TFT_eSprite scale_sprite(&tft);
+TFT_eSprite scale_text_sprite(&tft);
+TFT_eSprite panel_sprite(&tft);
 
-TFT_eSprite line_label_sprite = TFT_eSprite(&tft);
+TFT_eSprite line_label_sprite(&tft);
 
-TFT_eSprite spectrum_sprite = TFT_eSprite(&tft);
+TFT_eSprite spectrum_sprite(&tft);
 
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;

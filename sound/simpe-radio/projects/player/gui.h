@@ -1,8 +1,11 @@
 #pragma once
 
-#include <TFT_eGUI/TFT_eGUI.h>
-
+#include <TFT_eGUI.h>
 #include "NotoSansBold15.h"
+
+#ifdef RM67162_DRIVER
+#include "rm67162.h"
+#endif
 
 TFT_eCassettePlayer player(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 
@@ -17,6 +20,11 @@ void gui_init()
   player.load_font(NotoSansBold15);
   player.init();
   player.begin();
+
+#ifdef RM67162_DRIVER
+  lcd_init();
+  //lcd_PushColors(0, 0, 240,536, (uint16_t*)tft.getPointer());
+#endif
 }
 
 void gui_update()

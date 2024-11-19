@@ -13,7 +13,7 @@ TFT_eCassettePlayer player(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 void gui_init()
 {
   tft.init();
-  tft.setRotation(TFT_ROTATE);
+  tft.setRotation(1);
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_BLACK);
 

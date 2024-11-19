@@ -42,12 +42,9 @@ class TFT_eCassettePlayer : public TFT_eWidget
             // Background
             if (_update_index >= 3)
             {
-                _canvas.createSprite(width, cassette_height);
-                _canvas.setColorDepth(16);
-                _canvas.setSwapBytes(true);
-                _canvas.fillSprite(_color_cassette_bg);
-                _canvas.pushSprite(left, top + cassette_header);
-                _canvas.deleteSprite();
+                create(width, cassette_height, _color_cassette_bg);
+                push(left, top + cassette_header);
+                del();
             }
 
             auto outer_diameter = height;
@@ -60,20 +57,17 @@ class TFT_eCassettePlayer : public TFT_eWidget
             // Cassette
             if (_update_index >= 2)
             {
-                _canvas.createSprite(outer_diameter, outer_diameter);
-                _canvas.setColorDepth(16);
-                _canvas.setSwapBytes(true);
-                _canvas.fillSprite(TFT_TRANSPARENT);
+                auto canvas = create(outer_diameter, outer_diameter, TFT_TRANSPARENT);
 
-                _canvas.fillSmoothCircle(radius, radius, radius, _color_cassette);
-                _canvas.fillSmoothCircle(radius, radius, tape_diameter/2.5, _color_tape);
-                _canvas.fillSmoothCircle(radius, radius, tape_diameter/3, TFT_BLACK);
-                _canvas.fillSmoothCircle(radius, radius, tape_diameter/3.2, _color_accent);
+                canvas->fillSmoothCircle(radius, radius, radius, _color_cassette);
+                canvas->fillSmoothCircle(radius, radius, tape_diameter/2.5, _color_tape);
+                canvas->fillSmoothCircle(radius, radius, tape_diameter/3, TFT_BLACK);
+                canvas->fillSmoothCircle(radius, radius, tape_diameter/3.2, _color_accent);
 
-                _canvas.pushSprite(left + left_location - radius, top, TFT_TRANSPARENT);
-                _canvas.pushSprite(left + right_location - radius, top, TFT_TRANSPARENT);
+                push_transparent(left + left_location - radius, top);
+                push_transparent(left + right_location - radius, top);
 
-                _canvas.deleteSprite();
+                del();
             }
 
             // Moving cassette parts

@@ -6,12 +6,12 @@
 #include "NotoSansBold15.h"
 #include "NotoSansMonoSCB20.h"
 
-#include "TFT_eGUI/TFT_eProgressBar.h"
-#include "TFT_eGUI/TFT_eLed.h"
-#include "TFT_eGUI/TFT_eScale.h"
-#include "TFT_eGUI/TFT_ePanel.h"
-#include "TFT_eGUI/TFT_eLabel.h"
-#include "TFT_eGUI/TFT_eSpectrum.h"
+#include "TFT_eProgressBar.h"
+#include "TFT_eLed.h"
+#include "TFT_eScale.h"
+#include "TFT_ePanel.h"
+#include "TFT_eLabel.h"
+#include "TFT_eSpectrum.h"
 
 TFT_eSPI tft = TFT_eSPI();
 

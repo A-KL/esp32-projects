@@ -20,6 +20,20 @@ const int output_format = 16;
 
 void print_metadata(MetaDataType type, const char* str, int len){
   Serial.printf("==> %s: %s\r\n", toStr(type), str);
+  
+  angle_d = 4;
+
+  switch (type)
+  {
+    case Description:
+      cassette.set_header(str);
+      break;
+    case Genre:
+      cassette.set_footer(str);
+      break;
+    default:
+      break;
+  }
 }
 
 void setup(){
@@ -47,18 +61,17 @@ void setup(){
 
   url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
 
-  url.end();
-
   metadata.setCallback(print_metadata);
   metadata.begin(url.httpRequest());
-//  gui_run(0);
+
+  gui_run(0);
 }
 
-void stop()
-{
-  url.end();
-  metadata.end();
-}
+// void stop()
+// {
+//   url.end();
+//   metadata.end();
+// }
 
 void loop(){
   copier.copy();

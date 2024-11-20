@@ -9,7 +9,7 @@ class TFT_eWidget
 {
     public:
         TFT_eWidget(TFT_eSPI* tft, int16_t width, int16_t height, int16_t top, int16_t left) 
-        : _canvas(tft), _canvas_to_rotate(tft), width(width), height(height), left(left), top(top)
+        : _canvas(tft), width(width), height(height), left(left), top(top)
         { }
 
         int16_t width;

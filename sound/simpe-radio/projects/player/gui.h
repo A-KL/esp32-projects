@@ -8,7 +8,7 @@
 TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
 #endif
 
-TFT_eCassettePlayer player(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
+TFT_eCassette cassette(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 
 void gui_init()
 {
@@ -28,15 +28,21 @@ void gui_init()
 #endif
 
   // tft.setFreeFont(&Orbitron_Medium_20);
-  player.load_font(NotoSansBold15);
-  player.init();
-  player.begin();
+  cassette.load_font(NotoSansBold15);
+  cassette.init();
+  cassette.begin();
 }
+
+static int angle =  0;
+static int angle_d =  0;
 
 void gui_update()
 {
-    // ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
-    player.update();
+    cassette.update();
+    cassette.rotate_tape(angle+=angle_d);
+
+    if (angle >= 360)
+    angle = 0;
 
 #ifdef RM67162_DRIVER
     lcd_PushColors(0, 0, TFT_WIDTH, TFT_HEIGHT, (uint16_t*)lcd_buffer.getPointer());
@@ -48,7 +54,7 @@ void gui_update_task(void *arg)
     while (1) 
     {
         gui_update();
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(50 / portTICK_RATE_MS);
     }
 }
 

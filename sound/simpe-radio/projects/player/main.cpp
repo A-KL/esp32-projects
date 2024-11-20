@@ -32,8 +32,6 @@ void setup(){
   //nfc.addNotifyAudioChange(i2s);
   nfc.begin(16, output_format);
 
-  url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
-
   auto config = i2s.defaultConfig(TX_MODE);
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
@@ -44,13 +42,22 @@ void setup(){
   encoded_out.add(metadata);
   encoded_out.add(decoder);
 
-  metadata.setCallback(print_metadata);
-  metadata.begin(url.httpRequest());
-
   i2s.begin(config);
   decoder.begin();
 
+  url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
+
+  url.end();
+
+  metadata.setCallback(print_metadata);
+  metadata.begin(url.httpRequest());
 //  gui_run(0);
+}
+
+void stop()
+{
+  url.end();
+  metadata.end();
 }
 
 void loop(){

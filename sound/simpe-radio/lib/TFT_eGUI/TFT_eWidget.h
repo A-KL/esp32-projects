@@ -25,10 +25,9 @@ class TFT_eWidget
 
         virtual void update() = 0;
 
-        void load_font(const uint8_t array[])
+        virtual void load_font(const uint8_t array[])
         {
             _canvas.loadFont(array);
-            _canvas_to_rotate.loadFont(array);
         }
 
         void set_parent(TFT_eSprite* parent)
@@ -38,7 +37,6 @@ class TFT_eWidget
 
     protected:
         TFT_eSprite _canvas;
-        TFT_eSprite _canvas_to_rotate;
 
         inline TFT_eSprite* create(int16_t w, int16_t h, uint32_t bg_color)
         {

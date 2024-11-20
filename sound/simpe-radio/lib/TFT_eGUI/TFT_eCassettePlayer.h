@@ -10,7 +10,7 @@ class TFT_eCassettePlayer : public TFT_eWidget
 {
     public:
         TFT_eCassettePlayer(TFT_eSPI *tft, int16_t width, int16_t height, int16_t top = 0, int16_t left = 0) 
-        : TFT_eWidget(tft, width, height, top, left)
+            : TFT_eWidget(tft, width, height, top, left)
         { }
 
         inline void init()
@@ -20,6 +20,13 @@ class TFT_eCassettePlayer : public TFT_eWidget
         {
             _angle = angle;
             partial_update(1);
+        }
+
+        void load_font(const uint8_t array[])
+        {
+            TFT_eWidget::load_font(array);
+
+            _canvas_to_rotate.loadFont(array);
         }
 
         inline void set_color(const uint16_t color)
@@ -133,6 +140,8 @@ class TFT_eCassettePlayer : public TFT_eWidget
         float cassette_height_ratio = 0.7;
 
     private:
+        TFT_eSprite _canvas_to_rotate;
+
         const char* _top_text = "ESP32 MP3 PLAYER";
         const char* _bottom_text = "LOADING...";
         

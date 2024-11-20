@@ -55,14 +55,14 @@ class TFT_eCassette : public TFT_eWidget
             partial_update(1);
         }
 
-        // inline void set_tape(float proportion)
-        // {
-        //     if (_proportion == proportion) {
-        //         return;
-        //     }
-        //     _proportion = proportion;
-        //     partial_update(2);
-        // }
+        inline void set_tape(float proportion)
+        {
+            if (_tape_proportion == proportion) {
+                return;
+            }
+            _tape_proportion = proportion;
+            partial_update(2);
+        }
 
         inline void set_header(const char* text)
         {
@@ -96,7 +96,7 @@ class TFT_eCassette : public TFT_eWidget
                 del();
             }
 
-            auto tape_diameter = _outer_diameter * 0.8;
+            auto tape_diameter = _outer_diameter * _tape_proportion;
             auto radius = _outer_diameter / 2;
 
             auto left_location = width / 6;
@@ -145,7 +145,7 @@ class TFT_eCassette : public TFT_eWidget
             if (_update_index >= 0)
             {
                 auto canvas = create(width, cassette_header, _color_header_footer_bg);
-                canvas->setTextColor(TFT_WHITE);
+                canvas->setTextColor(_color_tape);
 
                 auto text_top = cassette_header/2 - canvas->fontHeight()/2;
                 auto text_left = width/2;
@@ -198,6 +198,7 @@ class TFT_eCassette : public TFT_eWidget
         const char* _format_text = "PCM";
         const char* _freq_text = "48K";
         
+        float _tape_proportion = 0.8;
         uint16_t _outer_diameter;
         uint16_t _angle = 0;
 

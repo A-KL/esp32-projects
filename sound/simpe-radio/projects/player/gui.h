@@ -1,5 +1,5 @@
 #pragma once
-
+#define TFT_INVERSION_ON
 #include <TFT_eGUI.h>
 #include "NotoSansBold15.h"
 
@@ -12,19 +12,21 @@ TFT_eCassette cassette(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 
 void gui_init()
 {
+#ifdef RM67162_DRIVER
+  lcd_init();
+  lcd_setRotation(1);
+  lcd_brightness(200);
+
+  lcd_buffer.createSprite(TFT_HEIGHT, TFT_WIDTH);
+  lcd_buffer.setSwapBytes(1);
+  lcd_buffer.fillSprite(TFT_BLACK);
+
+  cassette.set_parent(&lcd_buffer);
+#elif
   tft.init();
   tft.setRotation(1);
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_BLACK);
-
-#ifdef RM67162_DRIVER
-  lcd_buffer.createSprite(TFT_WIDTH, TFT_HEIGHT);
-  lcd_buffer.setSwapBytes(1);
-  lcd_buffer.fillSprite(TFT_BLACK);
-  player.set_parent(&lcd_buffer);
-
-  lcd_init();
-  lcd_brightness(200);
 #endif
 
   // tft.setFreeFont(&Orbitron_Medium_20);
@@ -45,7 +47,7 @@ void gui_update()
     angle = 0;
 
 #ifdef RM67162_DRIVER
-    lcd_PushColors(0, 0, TFT_WIDTH, TFT_HEIGHT, (uint16_t*)lcd_buffer.getPointer());
+    lcd_PushColors(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lcd_buffer.getPointer());
 #endif
 }
 

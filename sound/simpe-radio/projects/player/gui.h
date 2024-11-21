@@ -1,11 +1,16 @@
 #pragma once
-#define TFT_INVERSION_ON
+
 #include <TFT_eGUI.h>
-#include "NotoSansBold15.h"
+
+#ifdef DEFAULT_FONT
+  #define stringify(x) #x
+  #define GEN_INC_PATH(a) stringify(a.h)
+  #include GEN_INC_PATH(DEFAULT_FONT)
+#endif
 
 #ifdef RM67162_DRIVER
-#include "rm67162.h"
-TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
+  #include "rm67162.h"
+  TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
 #endif
 
 TFT_eCassette cassette(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
@@ -18,7 +23,7 @@ void gui_init()
   lcd_brightness(200);
 
   lcd_buffer.createSprite(TFT_HEIGHT, TFT_WIDTH);
-  lcd_buffer.setSwapBytes(1);
+  //lcd_buffer.setSwapBytes(1);
   lcd_buffer.fillSprite(TFT_BLACK);
 
   cassette.set_parent(&lcd_buffer);
@@ -29,8 +34,7 @@ void gui_init()
   tft.fillScreen(TFT_BLACK);
 #endif
 
-  // tft.setFreeFont(&Orbitron_Medium_20);
-  cassette.load_font(NotoSansBold15);
+  cassette.load_font(DEFAULT_FONT);
   cassette.init();
   cassette.begin();
 }
@@ -56,7 +60,7 @@ void gui_update_task(void *arg)
     while (1) 
     {
         gui_update();
-        vTaskDelay(50 / portTICK_RATE_MS);
+        vTaskDelay(120 / portTICK_RATE_MS);
     }
 }
 

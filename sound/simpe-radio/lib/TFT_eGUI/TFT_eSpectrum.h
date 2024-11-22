@@ -24,6 +24,11 @@ class TFT_eSpectrum : public TFT_eWidget
         inline void init()
         {   
             create(get_band_w(), get_band_h(), background_color);
+
+            for (auto i=0; i<bands_count; i++) {
+                _values[i] = _min;
+                _values_new[i] = _min;
+            }
         }
 
         void update()
@@ -36,9 +41,15 @@ class TFT_eSpectrum : public TFT_eWidget
 
             for (auto i = 0; i<bands_count; ++i) 
             {
+                if (_values_new[i] == _values[i]) {
+                    continue;
+                }
+
+                _values[i] = _values_new[i];
+
                 auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
 
-                auto y = map(constrain(_values[i], _min, _max), _min, _max, 0, bar_h);
+                auto y = map(_values[i], _min, _max, 0, bar_h);
 
                 //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
                 _canvas.fillSprite(background_color);
@@ -48,6 +59,11 @@ class TFT_eSpectrum : public TFT_eWidget
 
                 push(left + bar_w * i + band_segment_padding * i, top);
             }
+        }
+
+        inline void set_value(uint8_t index, float value)
+        {
+            _values_new[index] = constrain(value, _min, _max);
         }
 
         //uint16_t foreground_color = TFT_DARK_DARK_GRAY;
@@ -64,6 +80,7 @@ class TFT_eSpectrum : public TFT_eWidget
 
     private:
         float _values[TSize];
+        float _values_new[TSize];
         float _min = 0;
         float _max = 255;
 

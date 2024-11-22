@@ -8,15 +8,15 @@
 class TFT_eWidget
 {
     public:
-        TFT_eWidget(TFT_eSPI* tft, int16_t width, int16_t height, int16_t top, int16_t left) 
+        TFT_eWidget(TFT_eSPI* tft, int16_t width, int16_t height, int16_t left, int16_t top) 
         : _canvas(tft), width(width), height(height), left(left), top(top)
         { }
 
         int16_t width;
         int16_t height;
-        int16_t top;
         int16_t left;
-
+        int16_t top;
+        
         virtual void init() = 0;
 
         virtual void begin() {
@@ -25,13 +25,11 @@ class TFT_eWidget
 
         virtual void update() = 0;
 
-        virtual void load_font(const uint8_t array[])
-        {
+        virtual void load_font(const uint8_t array[]) {
             _canvas.loadFont(array);
         }
 
-        void set_parent(TFT_eSprite* parent)
-        {
+        void set_parent(TFT_eSprite* parent) {
             _parent = parent;
         }
 
@@ -41,7 +39,7 @@ class TFT_eWidget
         inline TFT_eSprite* create(int16_t w, int16_t h, uint32_t bg_color)
         {
             create_sprite(_canvas, w, h, bg_color);
-
+            
             return  &_canvas;
         }
 

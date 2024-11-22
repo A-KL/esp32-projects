@@ -13,7 +13,7 @@
   TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
 #endif
 
-TFT_eSpectrum<10> spectrum(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
+TFT_eSpectrum<10> spectrum(&tft, 200, 150, 15, 15);
 
 void gui_init()
 {
@@ -23,7 +23,6 @@ void gui_init()
   lcd_brightness(200);
 
   lcd_buffer.createSprite(TFT_HEIGHT, TFT_WIDTH);
-  //lcd_buffer.setSwapBytes(1);
   lcd_buffer.fillSprite(TFT_BLACK);
 
   cassette.set_parent(&lcd_buffer);
@@ -35,16 +34,24 @@ void gui_init()
 #endif
 
   spectrum.load_font(DEFAULT_FONT);
+  spectrum.band_segment_padding = 5;
+
   spectrum.init();
   spectrum.begin();
+
+  spectrum
+    .set_value(0, 200)
+    .set_value(9, 200)
+    .set_value(5, 100);
 }
 
-static int angle =  0;
-static int angle_d =  0;
+float value = 0;
 
 void gui_update()
 {
-    spectrum.update();
+    spectrum
+        .set_value(3, value++)
+        .update();
 
 #ifdef RM67162_DRIVER
     lcd_PushColors(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lcd_buffer.getPointer());

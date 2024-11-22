@@ -69,7 +69,7 @@ void buttons_init()
 void print_metadata(MetaDataType type, const char* str, int len){
   Serial.printf("==> %s: %s\r\n", toStr(type), str);
 
-  //angle_d = 3;
+  angle_d = 3;
   digitalWrite(PIN_LED, HIGH);
 
   switch (type)

@@ -1,9 +1,7 @@
 #pragma once
 
 #include <vector>
-
 #include <TFT_eSPI.h> 
-
 #include "TFT_eSPI_Ex.h"
 
 #define TFT_SA_DARK_YELLOW tft_color24to16(0x23230F)
@@ -16,10 +14,9 @@ template <int TSize>
 class TFT_eSpectrum : public TFT_eWidget
 {
     public:
-        TFT_eSpectrum(TFT_eSPI *tft, int16_t width, int16_t height, int16_t top = 0, int16_t left = 0) 
-        : TFT_eWidget(tft, width, height, top, left)
-        {
-        }
+        TFT_eSpectrum(TFT_eSPI *tft, int16_t width, int16_t height, int16_t left = 0, int16_t top = 0) 
+        : TFT_eWidget(tft, width, height, left, top)
+        { }
 
         inline void init()
         {   
@@ -31,39 +28,20 @@ class TFT_eSpectrum : public TFT_eWidget
             }
         }
 
-        void update()
+        void begin()
         {
-            auto bar_w = get_band_w();
-            auto bar_h = get_band_h();
-
-            auto actual_top = top + band_segment_padding;
-            auto half_segment_padding = band_segment_padding / 2;
-
-            for (auto i = 0; i<bands_count; ++i) 
-            {
-                if (_values_new[i] == _values[i]) {
-                    continue;
-                }
-
-                _values[i] = _values_new[i];
-
-                auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
-
-                auto y = map(_values[i], _min, _max, 0, bar_h);
-
-                //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
-                _canvas.fillSprite(background_color);
-
-                //_canvas->fillRect(0, 0, bar_w, bar_h - y, background_color);
-                _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
-
-                push(left + bar_w * i + band_segment_padding * i, top);
-            }
+            update(true);
         }
 
-        inline void set_value(uint8_t index, float value)
+        void update()
+        {
+            update(false);
+        }
+
+        inline TFT_eSpectrum& set_value(uint8_t index, float value)
         {
             _values_new[index] = constrain(value, _min, _max);
+            return *this;
         }
 
         //uint16_t foreground_color = TFT_DARK_DARK_GRAY;
@@ -76,7 +54,7 @@ class TFT_eSpectrum : public TFT_eWidget
 
         uint8_t band_segments = 100;
         uint8_t band_segment_padding = 2;
-        uint8_t band_segment_height = 2;
+        //uint8_t band_segment_height = 2;
 
     private:
         float _values[TSize];
@@ -91,53 +69,35 @@ class TFT_eSpectrum : public TFT_eWidget
         inline int get_band_h() const {
             return height - band_segment_padding * 2;
         }
+
+        void update(bool force)
+        {
+            auto bar_w = get_band_w();
+            auto bar_h = get_band_h();
+
+            auto actual_top = top + band_segment_padding;
+            auto half_segment_padding = band_segment_padding / 2;
+
+            for (auto i = 0; i<bands_count; ++i) 
+            {
+                if (_values_new[i] == _values[i] && !force) 
+                {
+                    continue;
+                }
+
+                _values[i] = _values_new[i];
+
+                auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
+
+                auto y = map(_values[i], _min, _max, bar_h, 0);
+
+                //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
+                _canvas.fillSprite(background_color);
+
+                //_canvas->fillRect(0, 0, bar_w, bar_h - y, background_color);
+                _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
+
+                push(left + bar_w * i + band_segment_padding * i, top);
+            }
+        }        
 };
-
-// template <int TSize>
-// void gui_spectrum_init(TFT_eSpectrum<TSize>& spectrum) 
-// {   
-//     not_null(spectrum.canvas);
-
-//     spectrum.canvas->setColorDepth(16);
-//     //spectrum.canvas->createSprite(spectrum.width, spectrum.height);
-//     spectrum.canvas->setSwapBytes(true);
-//     // spectrum.canvas->fillSprite(spectrum.background_color);
-//     // spectrum.canvas->pushSprite(spectrum.left, spectrum.top);
-//     // spectrum.canvas->deleteSprite();
-
-//     auto band_w = spectrum.width / spectrum.bands - spectrum.band_segment_padding;
-//     auto band_h = spectrum.height - spectrum.band_segment_padding * 2;
-
-//     spectrum.canvas->createSprite(band_w, band_h);
-// }
-
-// template <int TSize>
-// void gui_spectrum_update(const TFT_eSpectrum<TSize>& spectrum) 
-// {
-//     not_null(spectrum.canvas);
-
-//     auto bar_w = spectrum.width / spectrum.bands - spectrum.band_segment_padding;
-//     auto bar_h = spectrum.height - spectrum.band_segment_padding * 2;
-
-//     auto top = spectrum.top + spectrum.band_segment_padding;
-//     auto half_segment_padding = spectrum.band_segment_padding / 2;
-
-//     for (auto i = 0; i<spectrum.bands; ++i) 
-//     {
-//         auto left = spectrum.left + half_segment_padding + i * (bar_w + spectrum.band_segment_padding);   
-//         auto y = map(spectrum.values[i], spectrum.min, spectrum.max, 0, bar_h);
-
-//         //spectrum.canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
-//         //spectrum.canvas->fillSprite(spectrum.background_color);
-//         spectrum.canvas->fillRect(0, 0, bar_w, bar_h - y, spectrum.background_color);
-//         spectrum.canvas->fillRectHGradient(0, y, bar_w, bar_h - y, TFT_GREENYELLOW, TFT_GREEN);
-
-//         spectrum.canvas->pushSprite(left, top);
-//     }
-// }
-
-// template <int TSize>
-// void gui_spectrum_begin(const TFT_eSpectrum<TSize>& spectrum) 
-// {
-//     gui_spectrum_update(spectrum);
-// }

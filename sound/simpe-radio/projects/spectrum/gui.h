@@ -13,7 +13,7 @@
   TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
 #endif
 
-TFT_eCassette cassette(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
+TFT_eSpectrum<10> spectrum(&tft, TFT_HEIGHT, TFT_WIDTH, 0, 0);
 
 void gui_init()
 {
@@ -34,9 +34,9 @@ void gui_init()
   tft.fillScreen(TFT_BLACK);
 #endif
 
-  cassette.load_font(DEFAULT_FONT);
-  cassette.init();
-  cassette.begin();
+  spectrum.load_font(DEFAULT_FONT);
+  spectrum.init();
+  spectrum.begin();
 }
 
 static int angle =  0;
@@ -44,11 +44,7 @@ static int angle_d =  0;
 
 void gui_update()
 {
-    cassette.update();
-    cassette.rotate_tape(angle+=angle_d);
-
-    if (angle >= 360)
-    angle = 0;
+    spectrum.update();
 
 #ifdef RM67162_DRIVER
     lcd_PushColors(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lcd_buffer.getPointer());

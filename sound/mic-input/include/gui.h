@@ -1,19 +1,11 @@
 #pragma once
 
 #include <TFT_eSPI.h>
+#include <TFT_eGUI.h>
 
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
 #include "NotoSansMonoSCB20.h"
-
-#include "TFT_eGUI/TFT_eProgressBar.h"
-#include "TFT_eGUI/TFT_eLed.h"
-#include "TFT_eGUI/TFT_eScale.h"
-#include "TFT_eGUI/TFT_ePanel.h"
-#include "TFT_eGUI/TFT_eLabel.h"
-#include "TFT_eGUI/TFT_eSpectrum.h"
-
-TFT_eSPI tft = TFT_eSPI();
 
 TFT_eSprite left_pb_canvas = TFT_eSprite(&tft); 
 TFT_eSprite right_pb_canvas = TFT_eSprite(&tft); 
@@ -224,6 +216,15 @@ void gui_init_spectrum() {
 
 void gui_init() 
 {
+    tft.init();
+    tft.setRotation(TFT_ROTATE);
+    tft.setSwapBytes(true);
+
+    //tft.setFreeFont(&Orbitron_Medium_20);
+    tft.loadFont(NotoSansBold15);
+
+    tft.fillScreen(TFT_BLACK);
+
     gui_meter_init();
     gui_labels_init();
 

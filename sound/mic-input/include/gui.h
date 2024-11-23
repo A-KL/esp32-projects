@@ -210,8 +210,8 @@ void gui_init_spectrum() {
     spectrum.values[8] = spectrum.max / 3;
     spectrum.values[9] = spectrum.max;
 
-    gui_spectrum_init(spectrum);
-    gui_spectrum_begin(spectrum);
+    // gui_spectrum_init(spectrum);
+    // gui_spectrum_begin(spectrum);
 }
 
 void gui_init() 
@@ -232,30 +232,37 @@ void gui_init()
     //gui_init_spectrum();
 }
 
-//long last_update_ms = millis();
+void gui_progress_bars_update()
+{
+    ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
+
+    gui_pb_update(left_pb);
+    gui_pb_update(right_pb);
+
+    gui_label_update(ovr_label);
+
+    // if (last_update_ms - millis() > 100) {
+    //     last_update_ms = millis();
+
+    //     if (YellowChevronBrush.left > 200) {
+    //         YellowChevronBrush.left = -10;
+    //     } else{
+    //         YellowChevronBrush.left--;
+    //     }
+    //     gui_panel_update(main_panel);
+    // } 
+}
 
 void gui_update_task(void *arg)  
 {
     while (1) 
     {
-        ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
-
-        gui_pb_update(left_pb);
-        gui_pb_update(right_pb);
-
-        gui_label_update(ovr_label);
-
-        // if (last_update_ms - millis() > 100) {
-        //     last_update_ms = millis();
-
-        //     if (YellowChevronBrush.left > 200) {
-        //         YellowChevronBrush.left = -10;
-        //     } else{
-        //         YellowChevronBrush.left--;
-        //     }
-        //     gui_panel_update(main_panel);
-        // } 
-
+        gui_progress_bars_update();
         vTaskDelay(100 / portTICK_RATE_MS);
     }
+}
+
+void gui_run(int core) 
+{
+    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
 }

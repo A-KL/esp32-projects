@@ -44,6 +44,8 @@ void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, co
 
     audio_sample_t<T>* sample = NULL;
 
+    LOGD("envelope_calculate_right_left: Samples count: %d", samples_count);
+
     for (auto i=0; i<samples_count; i++)
     {
         sample = get_sample<T>(i, samples, bps);

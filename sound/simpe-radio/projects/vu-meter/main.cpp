@@ -35,7 +35,7 @@ void setup(){
   Serial.begin(115200);
 
   tft.init();
-  tft.setRotation(TFT_ROTATE);
+  tft.setRotation(1);
   tft.setSwapBytes(true);
 
   //tft.setFreeFont(&Orbitron_Medium_20);

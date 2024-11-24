@@ -17,7 +17,7 @@ MultiOutput decoded_out;
 MultiOutput encoded_out;
 
 I2SStream i2s;
-VuMeter<int16_t> vu(0.1);
+VuMeter<int16_t> vu(0.01);
 NumberFormatConverterStream nfc(decoded_out);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
 

@@ -73,7 +73,7 @@ public:
         data,
         sizeof(T) * 8,
         _gain,
-        samples_read,
+        samples_read * 0.5,
         _right_envelope_context, 
         _left_envelope_context);
 

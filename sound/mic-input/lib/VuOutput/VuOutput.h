@@ -6,8 +6,9 @@ template <typename T>
 class VuMeter : public AudioOutput 
 {
 public:
-    VuMeter(bool active = true) 
+    VuMeter(const float gain = 1, bool active = true) 
     {
+        this->_gain = gain;
         this->is_active = active;
     }
 
@@ -66,13 +67,13 @@ public:
 
       size_t samples_read = len / (sizeof(T) * cfg.channels);
 
-      LOGD("Got %d samples to process", (int)samples_read);
+      LOGI("Got %d samples to process", (int)samples_read);
 
       envelope_calculate_right_left<T>(
         data,
         sizeof(T) * 8,
         _gain,
-        samples_read,
+        samples_read / 10,
         _right_envelope_context, 
         _left_envelope_context);
 
@@ -94,5 +95,5 @@ public:
   private:
     audio_envelope_context_t _right_envelope_context;
     audio_envelope_context_t _left_envelope_context;
-    float _gain = 1;// 0.1;
+    float _gain;
 };

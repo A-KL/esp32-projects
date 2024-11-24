@@ -37,7 +37,7 @@ inline audio_sample_t<T>* get_sample(const uint16_t sample_index, const uint8_t*
 }
 
 template<typename T>
-void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, const float gain, const uint8_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
+void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, const float gain, const size_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
 {
     float left_x = 0;
     float right_x = 0;
@@ -50,6 +50,8 @@ void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, co
 
         left_x = sample->left;
         right_x = sample->right;
+        
+        // LOGD("%f:%f", left_x, right_x);
 
         left_x *= gain;
         right_x *= gain;

@@ -6,7 +6,7 @@ AudioInfo info(44100, 2, 16);
 
 I2SStream i2s;
 CsvOutput<int16_t> csv(Serial);
-VuMeter<int16_t> vu;
+VuMeter<int16_t> vu(0.1);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
@@ -27,7 +27,7 @@ void setup(){
     gui_init();
     gui_set_input((int)1);
 
-    AudioLogger::instance().begin(Serial, AudioLogger::Debug);
+    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
@@ -42,12 +42,11 @@ void setup(){
     //cfg.pin_mck = 3; 
 
     decoded_out.add(vu);
-    //decoded_out.add(csv);
 
     i2s.begin(cfg);
 
     // make sure that we have the correct channels set up
-    //csv.begin(info);
+   csv.begin(info);
     vu.begin(info);
 
     gui_run(0);
@@ -58,6 +57,4 @@ void loop(){
 
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
-
-  //log_e("Left: %f Right: %f", vu.value_left(), vu.value_right());
 }

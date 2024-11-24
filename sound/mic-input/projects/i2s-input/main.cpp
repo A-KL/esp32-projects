@@ -5,13 +5,10 @@
 AudioInfo info(44100, 2, 16);
 
 I2SStream i2s;
-
 CsvOutput<int16_t> csv(Serial);
 VuMeter<int16_t> vu;
 MultiOutput decoded_out;
-
 StreamCopy copier(decoded_out, i2s);
-
 
 const int output_format = 16;
 
@@ -50,7 +47,7 @@ void setup(){
     i2s.begin(cfg);
 
     // make sure that we have the correct channels set up
-    csv.begin(info);
+    //csv.begin(info);
     vu.begin(info);
 
     gui_run(0);

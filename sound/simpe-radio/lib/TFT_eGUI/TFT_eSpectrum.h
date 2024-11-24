@@ -3,6 +3,7 @@
 #include <vector>
 #include <TFT_eSPI.h> 
 #include "TFT_eSPI_Ex.h"
+#include "TFT_eWidget.h"
 
 #define TFT_SA_DARK_YELLOW tft_color24to16(0x23230F)
 #define TFT_SA_YELLOW tft_color24to16(0xF3E835)

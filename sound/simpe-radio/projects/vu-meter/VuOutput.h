@@ -67,13 +67,12 @@ public:
 
       size_t samples_read = len / (sizeof(T) * cfg.channels);
 
-      LOGD("Got %d samples to process", (int)samples_read);
+      LOGI("Got %d samples to process", samples_read);
 
       envelope_calculate_right_left<T>(
         data,
-        sizeof(T) * 8,
         _gain,
-        samples_read * 0.5,
+        samples_read,
         _right_envelope_context, 
         _left_envelope_context);
 

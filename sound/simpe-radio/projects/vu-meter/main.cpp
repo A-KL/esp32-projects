@@ -17,7 +17,7 @@ MultiOutput decoded_out;
 MultiOutput encoded_out;
 
 I2SStream i2s;
-VuMeter<int16_t> vu(0.01);
+VuMeter<int16_t> vu(0.1);
 NumberFormatConverterStream nfc(decoded_out);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
 
@@ -46,7 +46,7 @@ void setup(){
   gui_init();
   gui_set_input((int)1);
   
-  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+  AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
   //nfc.addNotifyAudioChange(i2s);
   nfc.begin(16, output_format);

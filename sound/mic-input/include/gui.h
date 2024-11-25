@@ -36,8 +36,6 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
-TFT_eSpectrum<10> spectrum(spectrum_sprite, 60);
-
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
 
@@ -195,23 +193,6 @@ void gui_labels_init() {
 
     gui_label_init(ovr_label);
     gui_label_begin(ovr_label);
-}
-
-void gui_init_spectrum() {
-    spectrum.width = TFT_WIDTH;
-    spectrum.height = TFT_HEIGHT;
-    spectrum.values[0] = 100;
-    spectrum.values[1] = 100;
-    spectrum.values[2] = 100;
-    spectrum.values[3] = 100;
-    spectrum.values[4] = 50;
-    spectrum.values[5] = spectrum.max / 2;
-    spectrum.values[7] = spectrum.max / 3;
-    spectrum.values[8] = spectrum.max / 3;
-    spectrum.values[9] = spectrum.max;
-
-    // gui_spectrum_init(spectrum);
-    // gui_spectrum_begin(spectrum);
 }
 
 void gui_init() 

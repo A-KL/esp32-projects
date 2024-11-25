@@ -9,5 +9,6 @@
 #include "TFT_ePanel.h"
 #include "TFT_eLabel.h"
 #include "TFT_eSpectrum.h"
+#include "TFT_eCassette.h"
 
 TFT_eSPI tft = TFT_eSPI();

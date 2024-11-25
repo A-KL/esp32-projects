@@ -71,9 +71,8 @@ public:
 
       envelope_calculate_right_left<T>(
         data,
-        sizeof(T) * 8,
         _gain,
-        samples_read / 10,
+        samples_read,
         _right_envelope_context, 
         _left_envelope_context);
 

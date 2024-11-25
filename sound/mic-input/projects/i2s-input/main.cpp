@@ -2,11 +2,11 @@
 #include "gui.h"
 #include <VuOutput.h>
 
-AudioInfo info(44100, 2, 16);
+AudioInfo info(48000, 2, 16);
 
 I2SStream i2s;
 CsvOutput<int16_t> csv(Serial);
-VuMeter<int16_t> vu(0.01);
+VuMeter<int16_t> vu(0.1);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
@@ -27,7 +27,7 @@ void setup(){
     gui_init();
     gui_set_input((int)1);
 
-    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+    AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
@@ -42,6 +42,7 @@ void setup(){
     //cfg.pin_mck = 3; 
 
     decoded_out.add(vu);
+    //decoded_out.add(csv);
 
     i2s.begin(cfg);
 

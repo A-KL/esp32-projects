@@ -31,27 +31,27 @@ inline void map_sample(const uint8_t* samples, const uint8_t bps, const uint16_t
 }
 
 template<typename T>
-inline audio_sample_t<T>* get_sample(const uint16_t sample_index, const uint8_t* samples, const uint8_t bps)
+inline audio_sample_t<T>* get_sample(const uint16_t sample_index, const uint8_t* samples)
 {
-    return (audio_sample_t<T>*)(samples + sample_index * bps * 2);
+    return (audio_sample_t<T>*)(samples + sample_index * sizeof(T) * 2);
 }
 
 template<typename T>
-void envelope_calculate_right_left(const uint8_t* samples, const uint8_t bps, const float gain, const size_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
+void envelope_calculate_right_left(const uint8_t* samples, const float gain, const size_t samples_count, audio_envelope_context_t& right, audio_envelope_context_t& left)
 {
     float left_x = 0;
     float right_x = 0;
 
     audio_sample_t<T>* sample = NULL;
 
+    LOGI("Samples count: %d", samples_count);
+
     for (auto i=0; i<samples_count; i++)
     {
-        sample = get_sample<T>(i, samples, bps);
+        sample = get_sample<T>(i, samples);
 
         left_x = sample->left;
         right_x = sample->right;
-        
-        // LOGD("%f:%f", left_x, right_x);
 
         left_x *= gain;
         right_x *= gain;

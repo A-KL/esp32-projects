@@ -2,7 +2,7 @@
 #include "gui.h"
 #include <VuOutput.h>
 
-AudioInfo info(48000, 2, 16);
+AudioInfo info(I2S_SAMPLE_RATE, 2, I2S_BPS);
 
 I2SStream i2s;
 CsvOutput<int16_t> csv(Serial);
@@ -10,7 +10,7 @@ VuMeter<int16_t> vu(0.1);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
-const int output_format = 16;
+//const int output_format = I2S_BPS;
 
 void setup(){
     Serial.begin(115200);
@@ -36,7 +36,7 @@ void setup(){
     cfg.pin_ws = I2S_WS;
     cfg.pin_bck = I2S_SCK;
     cfg.pin_data = I2S_SD;
-    cfg.bits_per_sample = output_format;
+    //cfg.bits_per_sample = output_format;
     // this module nees a master clock if the ESP32 is master
     //cfg.use_apll = false;  // try with yes
     //cfg.pin_mck = 3; 

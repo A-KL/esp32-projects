@@ -14,7 +14,8 @@ NumberFormatConverterStream nfc(decoded_out);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
 StreamCopy copier(decoder, url);
 
-const int output_format = 16;
+const int output_bpp = 16;
+const int output_format = 48000;
 
 void fftResult(AudioFFTBase &fft){
     float diff;
@@ -52,7 +53,7 @@ void setup()
   auto tcfg = fft.defaultConfig();
   tcfg.copyFrom(config);
   tcfg.length = 1024;
-  tcfg.bits_per_sample = output_format;
+  tcfg.bits_per_sample = output_bpp;
   tcfg.callback = &fftResult;
   fft.begin(tcfg);
 

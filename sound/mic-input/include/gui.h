@@ -21,9 +21,6 @@ TFT_eSprite line_label_sprite = TFT_eSprite(&tft);
 
 TFT_eSprite spectrum_sprite = TFT_eSprite(&tft);
 
-TFT_eProgressBar left_pb;
-TFT_eProgressBar right_pb;
-
 TFT_eLed main_led;
 TFT_eLed second_led;
 
@@ -33,6 +30,9 @@ TFT_eLabel adc_label(line_label_sprite, "ADC", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel i2s_label(line_label_sprite, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
+
+TFT_eProgressBar left_pb;
+TFT_eProgressBar right_pb;
 
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 

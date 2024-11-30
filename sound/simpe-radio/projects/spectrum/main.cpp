@@ -14,12 +14,16 @@ NumberFormatConverterStream nfc(decoded_out);
 EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
 StreamCopy copier(decoder, url);
 
-const int output_bpp = 16;
-const int output_format = 48000;
+const uint8_t output_bpp = 16;
+const uint16_t output_format = 16;
 
 void fftResult(AudioFFTBase &fft){
     float diff;
     auto result = fft.result();
+    if (result.bin < 10)
+    {
+      spectrum.set_value(result.bin, map(result.magnitude, 0, 2000000, 0, 255));
+    }
     if (result.magnitude>100){
         Serial.print(result.bin);
         Serial.print(" ");
@@ -39,15 +43,15 @@ void setup()
 
   gui_init();
 
-  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
-  nfc.begin(16, output_format);
+  nfc.begin(output_bpp, output_format);
 
   auto config = i2s.defaultConfig(TX_MODE);
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
   config.pin_data = I2S_SD;
-  config.bits_per_sample = output_format;
+  config.bits_per_sample = output_bpp;
   i2s.begin(config);
 
   auto tcfg = fft.defaultConfig();

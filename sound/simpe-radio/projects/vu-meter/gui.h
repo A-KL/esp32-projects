@@ -1,17 +1,11 @@
 #pragma once
 
 #include <TFT_eSPI.h>
+#include "TFT_eGUI.h"
 
 //#include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
 #include "NotoSansMonoSCB20.h"
-
-#include "TFT_eProgressBar.h"
-#include "TFT_eLed.h"
-#include "TFT_eScale.h"
-#include "TFT_ePanel.h"
-#include "TFT_eLabel.h"
-#include "TFT_eSpectrum.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -44,17 +38,9 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
 
-const static TFT_eSolidBrush RedBrush(TFT_RED);
-const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
-
-const static TFT_eSolidBrush YellowBrush(TFT_YELLOW);
-const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
-const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 20);
-
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
-
-static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
+const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 
 const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);

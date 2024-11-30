@@ -13,7 +13,11 @@
   TFT_eSprite lcd_buffer = TFT_eSprite(&tft);
 #endif
 
-TFT_eSpectrum<10> spectrum(&tft, 200, 150, 15, 15);
+const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
+const static TFT_eProgressBar_SimpleValueStyle spectrum_style(YellowChevronBrush);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 2, 16);
+
+TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
 
 void gui_init()
 {
@@ -33,16 +37,17 @@ void gui_init()
   tft.fillScreen(TFT_BLACK);
 #endif
 
-  spectrum.load_font(DEFAULT_FONT);
-  spectrum.band_segment_padding = 5;
+  //spectrum.load_font(DEFAULT_FONT);
+  spectrum.band_segment_padding = 2;
+  spectrum.bar_style = &lime_segmented_style;
 
   spectrum.init();
   spectrum.begin();
 
-  spectrum
-    .set_value(0, 200)
-    .set_value(9, 200)
-    .set_value(5, 100);
+  // spectrum
+  //   .set_value(0, 200)
+  //   .set_value(9, 200)
+  //   .set_value(5, 100);
 }
 
 float value = 0;
@@ -50,7 +55,7 @@ float value = 0;
 void gui_update()
 {
     spectrum
-        .set_value(3, value++)
+       // .set_value(3, value++)
         .update();
 
 #ifdef RM67162_DRIVER

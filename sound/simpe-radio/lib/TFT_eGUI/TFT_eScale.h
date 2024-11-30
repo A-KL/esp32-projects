@@ -46,98 +46,101 @@ class TFT_eScale : public TFT_eWidget
             _text_rotation.loadFont(array);
         }
 
-    void begin() 
-    {
-        auto mark_w = interval_width;
-        auto marks_count = _values.size();
+        void update() {}
 
-        auto long_marks_interval = get_indicator_interval();
-        auto long_marks_length = get_indicator_length_horizontal();
-
-        auto long_start_padding = start_padding;
-        auto short_start_padding = long_start_padding + long_marks_interval / 2;
-
-        if (long_marks_length > 0 & show_intervals) 
+        void begin() 
         {
-            for (auto i = 0; i < marks_count; i++)
-            {
-                if (interval_layout == Top || interval_layout == Both)
-                {
-                    _canvas.drawWideLine(
-                        long_start_padding + long_marks_interval*i - mark_w/2, 0, 
-                        long_start_padding + long_marks_interval*i - mark_w/2, long_marks_length,
-                        mark_w,
-                        foreground_color);
-                }
+            auto mark_w = interval_width;
+            auto marks_count = _values.size();
 
-                if (interval_layout == Bottom || interval_layout == Both)
+            auto long_marks_interval = get_indicator_interval();
+            auto long_marks_length = get_indicator_length_horizontal();
+
+            auto long_start_padding = start_padding;
+            auto short_start_padding = long_start_padding + long_marks_interval / 2;
+
+            if (long_marks_length > 0 & show_intervals) 
+            {
+                for (auto i = 0; i < marks_count; i++)
                 {
-                    _canvas.drawWideLine(
-                        long_start_padding + long_marks_interval*i - mark_w/2, height - long_marks_length, 
-                        long_start_padding + long_marks_interval*i - mark_w/2, height,
-                        mark_w,
-                        foreground_color);
+                    if (interval_layout == Top || interval_layout == Both)
+                    {
+                        _canvas.drawWideLine(
+                            long_start_padding + long_marks_interval*i - mark_w/2, 0, 
+                            long_start_padding + long_marks_interval*i - mark_w/2, long_marks_length,
+                            mark_w,
+                            foreground_color);
+                    }
+
+                    if (interval_layout == Bottom || interval_layout == Both)
+                    {
+                        _canvas.drawWideLine(
+                            long_start_padding + long_marks_interval*i - mark_w/2, height - long_marks_length, 
+                            long_start_padding + long_marks_interval*i - mark_w/2, height,
+                            mark_w,
+                            foreground_color);
+                    }
                 }
             }
+
+            if (show_labels) 
+            {
+                _canvas.setTextColor(foreground_color, background_color);
+                
+                auto text_center = get_text_center();
+                auto text_h = _canvas.fontHeight() + 1;
+
+                for (auto i = 0; i < marks_count; i++)
+                {
+                    auto label = String(_values[marks_count - i - 1]);
+
+                    if (!horizontal_labels)
+                    {
+                        auto text_w = _canvas.textWidth(label) + 1;
+
+                        _text_rotation.setColorDepth(16);
+                        _text_rotation.createSprite(text_w, text_h);
+                        _text_rotation.setSwapBytes(true);
+                        _text_rotation.setTextColor(foreground_color, background_color);
+
+                        _text_rotation.drawString(label, 0, 0, 1);
+                        _canvas.setPivot(start_padding + long_marks_interval * i - mark_w/2, text_center); //long_marks_length + text_h
+
+                        _text_rotation.pushRotated(&_canvas, 90, background_color);
+                        _text_rotation.deleteSprite();
+                    }
+                    else
+                    {
+                        _canvas.drawCentreString(label, start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2, 1);
+                    }
+                }
+            }
+
+            if (long_marks_length > 1 & show_sub_intervals) 
+            {
+                for (auto i = 0; i < marks_count - 1; i++)
+                {
+                    if (interval_layout == Top || interval_layout == Both)
+                    {
+                        _canvas.drawWideLine(
+                            short_start_padding + long_marks_interval * i - mark_w/2, 0, 
+                            short_start_padding + long_marks_interval * i - mark_w/2, long_marks_length / 2,
+                            mark_w,
+                            foreground_color);
+                    }
+                    if (interval_layout == Bottom || interval_layout == Both)
+                    {
+                        _canvas.drawWideLine(
+                            short_start_padding + long_marks_interval * i - mark_w/2, height - long_marks_length / 2, 
+                            short_start_padding + long_marks_interval * i - mark_w/2, height,
+                            mark_w,
+                            foreground_color);
+                    }
+                }
+            }
+
+            push(left, top);
         }
-
-        if (show_labels) {
-            
-            _canvas.setTextColor(foreground_color, background_color);
-            auto text_center = get_text_center();
-            auto text_h = _canvas.fontHeight() + 1;
-
-        for (auto i = 0; i < marks_count; i++)
-        {
-            auto label = String(_values[marks_count - i - 1]);
-
-            if (!horizontal_labels)
-            {
-                auto text_w = _canvas.textWidth(label) + 1;
-
-                _text_rotation.setColorDepth(16);
-                _text_rotation.createSprite(text_w, text_h);
-                _text_rotation.setSwapBytes(true);
-                _text_rotation.setTextColor(foreground_color, background_color);
-
-                _text_rotation.drawString(label, 0, 0, 1);
-                _canvas.setPivot(start_padding + long_marks_interval * i - mark_w/2, text_center); //long_marks_length + text_h
-
-                _text_rotation.pushRotated(&_canvas, 90, background_color);
-                _text_rotation.deleteSprite();
-            }
-            else
-            {
-                _canvas.drawCentreString(label, start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2, 1);
-            }
-        }
-    }
-
-        if (long_marks_length > 1 & show_sub_intervals) 
-        {
-            for (auto i = 0; i < marks_count - 1; i++)
-            {
-                if (interval_layout == Top || interval_layout == Both)
-                {
-                    _canvas.drawWideLine(
-                        short_start_padding + long_marks_interval * i - mark_w/2, 0, 
-                        short_start_padding + long_marks_interval * i - mark_w/2, long_marks_length / 2,
-                        mark_w,
-                        foreground_color);
-                }
-                if (interval_layout == Bottom || interval_layout == Both)
-                {
-                    _canvas.drawWideLine(
-                        short_start_padding + long_marks_interval * i - mark_w/2, height - long_marks_length / 2, 
-                        short_start_padding + long_marks_interval * i - mark_w/2, height,
-                        mark_w,
-                        foreground_color);
-                }
-            }
-        }
-
-        _canvas.pushSprite(left, top);
-    }
 
     private:
         std::vector<int> _values;

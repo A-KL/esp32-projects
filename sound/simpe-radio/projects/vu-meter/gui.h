@@ -21,8 +21,6 @@ TFT_eSprite right_pb_canvas(&tft);
 TFT_eSprite main_led_sprite(&tft);
 TFT_eSprite second_led_sprite(&tft);
 
-TFT_eSprite scale_sprite(&tft);
-TFT_eSprite scale_text_sprite(&tft);
 TFT_eSprite panel_sprite(&tft);
 
 TFT_eSprite line_label_sprite(&tft);
@@ -42,7 +40,7 @@ TFT_eLabel i2s_label(line_label_sprite, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 
-TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
+TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.width(), 60, 0, 35);
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
@@ -136,16 +134,10 @@ void gui_meter_init() {
     left_pb.background_color = TFT_BLACK;
 
     // Scale
-    scale.left = 0;
-    scale.top = 35;
-    scale.width = tft.width();
-    scale.height = 60;
+    scale.load_font(NotoSansBold15);
     scale.interval_layout = Both;
     scale.show_labels = true;
     scale.horizontal_labels = false;
-
-    scale_sprite.loadFont(NotoSansBold15);
-    scale_text_sprite.loadFont(NotoSansBold15);
 
     // Right progress bar
     right_pb.top = 100;
@@ -168,8 +160,8 @@ void gui_meter_init() {
     gui_pb_begin(left_pb);
     gui_pb_begin(right_pb);
 
-    gui_scale_init(scale);
-    gui_scale_begin(scale);
+    scale.init();
+    scale.begin();
 }
 
 void gui_labels_init() {

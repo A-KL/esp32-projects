@@ -1,6 +1,8 @@
 #pragma once
 
-#include "widgets.h"
+#include <TFT_eSPI.h>
+
+#include <widgets.h>
 
 //#define GFXFF 1
 //#define FF18  &FreeSans12pt7b

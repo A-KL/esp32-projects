@@ -5,10 +5,11 @@
 #include <Adafruit_INA219.h>
 #include "NotoSansBold15.h"
 #include "lego_plus_driver.h"
-#include "radio.h"
+
 #include "gui.h"
 
-#include <esp32_now.h>
+#include "rf24_radio.h"
+#include "now.h"
 
 #if defined(PS3)
   #include <Ps3Controller.h>

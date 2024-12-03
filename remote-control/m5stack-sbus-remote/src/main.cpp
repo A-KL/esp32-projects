@@ -20,7 +20,7 @@
   #include <PS4Controller.h>
   #define INIT_CONTROLLER PS4.begin("b8:27:eb:df:b3:ff")
   #define PS4.isConnected()
-#else
+#elif XBOX
   #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
 
   XboxSeriesXControllerESP32_asukiaaa::Core
@@ -28,6 +28,9 @@
 
   #define INIT_CONTROLLER xboxController.begin()
   #define CONTROLLER_CONNECTED xboxController.isConnected()
+#else
+  #define INIT_CONTROLLER log_i("No controller")
+  #define CONTROLLER_CONNECTED false
 #endif
 
 Adafruit_INA219 ina219_output(INA219_ADDRESS);
@@ -77,8 +80,8 @@ void on_esp_now_message_received(const data_message_t& data) {
   // log_w("Commands: %d\t %d", left, right);
 }
 
-void setup() {
-
+void setup() 
+{
   Wire.begin();
   Serial.begin(115200);
 
@@ -115,6 +118,7 @@ void setup() {
 }
 
 void loop() {
+  return;
   auto left_speed = 0;
   auto right_speed = 0;
 

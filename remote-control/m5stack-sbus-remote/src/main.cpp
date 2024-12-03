@@ -117,8 +117,8 @@ void setup()
   gui_init();
 }
 
-void loop() {
-  return;
+void loop() 
+{
   auto left_speed = 0;
   auto right_speed = 0;
 

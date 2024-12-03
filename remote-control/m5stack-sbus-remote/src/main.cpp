@@ -36,7 +36,9 @@ Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
 bool ina219_output_connected = false;
 bool ina219_input_connected = false;
 bool motor_driver_connected = false;
+bool motor_driver_v2_connected = false;
 
+GoPlus2 goPlus;
 bfs::SbusRx sbus_rx(&Serial1);
 std::array<int16_t, bfs::SbusRx::NUM_CH()> sbus_data;
 
@@ -102,6 +104,10 @@ void setup() {
   auto version = readVersion();
   motor_driver_connected = version != 0;
   log_i("Motor Driver ver: %d\r\n", version);
+
+  goPlus.begin();
+  motor_driver_v2_connected = goPlus.hub1_a_read_value(HUB1_R_ADDR) > 0;
+  log_i("Motor Driver V2 available: %d", motor_driver_v2_connected);
 
   sbus_rx.Begin(16, 17);
 
@@ -211,7 +217,15 @@ void loop() {
     motors_values.setText(0, "l %d", left_speed);
     motors_values.setText(1, "r %d", right_speed);
   }
-  else
+  else if (motor_driver_v2_connected)
+  {
+    goPlus.Motor_write_speed(MOTOR_NUM0, -left_speed/2);
+    goPlus.Motor_write_speed(MOTOR_NUM1, right_speed/2);
+
+    motors_values.setText(0, "l %d", left_speed);
+    motors_values.setText(1, "r %d", right_speed);
+  }
+  else 
   {
     motors_values.setText(0, "l ---");
     motors_values.setText(1, "r ---");

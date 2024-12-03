@@ -1,21 +1,22 @@
 //#include <M5Stack.h>
 #include <Wire.h>
-#include <sbus.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
 #include "NotoSansBold15.h"
-#include "lego_plus_driver.h"
-
 #include "gui.h"
+
+#include "lego_plus_driver.h"
+#include "GoPlus2.h"
 
 #include "rf24_radio.h"
 #include "now.h"
+#include <sbus.h>
 
-#if defined(PS3)
+#ifdef PS3
   #include <Ps3Controller.h>
   #define INIT_CONTROLLER Ps3.begin("b8:27:eb:df:b3:ff")
-  #define Ps3.isConnected()
-#elif defined(PS4)
+  #define CONTROLLER_CONNECTED Ps3.isConnected()
+#elif PS4
   #include <PS4Controller.h>
   #define INIT_CONTROLLER PS4.begin("b8:27:eb:df:b3:ff")
   #define PS4.isConnected()
@@ -79,28 +80,28 @@ void setup() {
   Wire.begin();
   Serial.begin(115200);
 
-  xboxController.begin();
+  INIT_CONTROLLER;
 
   // if (INIT_CONTROLLER)
   // {
-  //   Serial.println("Failed to start Controller Host");
+  //   log_i("Failed to start Controller Host");
   // }
   now_init();
   setupRadio();
 
   if (!ina219_output.begin()) {
-    Serial.println("Failed to find output INA219 chip");
+    log_i("Failed to find output INA219 chip");
     ina219_output_connected = false;
   }
 
   if (!ina219_input.begin()) {
-    Serial.println("Failed to find input INA219 chip");
+    log_i("Failed to find input INA219 chip");
     ina219_input_connected = false;
   }
 
   auto version = readVersion();
   motor_driver_connected = version != 0;
-  Serial.printf("Motor Driver ver: %d\r\n", version);
+  log_i("Motor Driver ver: %d\r\n", version);
 
   sbus_rx.Begin(16, 17);
 
@@ -111,7 +112,7 @@ void loop() {
   auto left_speed = 0;
   auto right_speed = 0;
 
-  xboxController.onLoop();
+  //xboxController.onLoop();
   now_loop();
 
   if (CONTROLLER_CONNECTED) {
@@ -144,9 +145,7 @@ void loop() {
       Serial.print("\t");
     }
     /* Display lost frames and failsafe data */
-    Serial.print(sbus_rx.lost_frame());
-    Serial.print("\t");
-    Serial.println(sbus_rx.failsafe());
+    log_d("%d\t%d", sbus_rx.lost_frame(), sbus_rx.failsafe());
 
     left_speed = map(sbus_data[2], ch_min_value, ch_max_value, -255, 255);
     right_speed = map(sbus_data[1], ch_min_value, ch_max_value, 255, -255);

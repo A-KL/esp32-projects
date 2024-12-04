@@ -60,15 +60,16 @@ int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_va
 }
 
 void on_esp_now_disconnected() {
-    for (int8_t i = 0; i < 6; i++) {
-        //esp_now_values.setText(i, "ch%d --", i);
+    for (int8_t i = 0; i < 5; i++) {
+        esp_now_values.setText(i, "ch%d --", i);
     }
 }
 
-void on_esp_now_message_received(const data_message_t& data) {
-    for (int8_t i = 0; i < 6; i++) {
-     // esp_now_values.setText(i, "ch%d %d%", i, data.channels[i].value);
-  }
+void on_esp_now_message_received(const data_message_t& data) 
+{
+    for (int8_t i = 0; i < 5; i++) {
+      esp_now_values.setText(i, "ch%d %d%", i, data.channels[i].value);
+    }
   // auto grab = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
   // auto left = map(data.channels[3].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 180, 0);
   // auto right = map(data.channels[5].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 10, 180);
@@ -127,18 +128,18 @@ void loop()
 
   if (CONTROLLER_CONNECTED) {
 
-    //PS3.setPlayer(1);
+    Ps3.setPlayer(1);
 
-    // ps3_values.setText(0, "ls %d", PS4.data.analog.stick.ly);
-    // ps3_values.setText(1, "rs %d", PS4.data.analog.stick.ry);
+    ps_values.setText(0, "ls %d", Ps3.data.analog.stick.ly);
+    ps_values.setText(1, "rs %d", Ps3.data.analog.stick.ry);
 
-    // left_speed = map(PS4.data.analog.stick.ly, -128, 128, -255, 255);
-    // right_speed = map(PS4.data.analog.stick.ry, 128, -128, 255, -255);
+    left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
+    right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
   }
   else
   {
-    ps3_values.setText(0, "ls ---");
-    ps3_values.setText(1, "rs ---");
+    ps_values.setText(0, "ls ---");
+    ps_values.setText(1, "rs ---");
   }
 
   if (sbus_rx.Read())
@@ -238,7 +239,7 @@ void loop()
   // Update GUI
 
   sbus_values.render(spr);
-  ps3_values.render(spr);
+  ps_values.render(spr);
   nrf42_values.render(spr);
   encoder_values.render(spr);
   motors_values.render(spr);

@@ -227,8 +227,11 @@ void loop()
     goPlus.Motor_write_speed(MOTOR_NUM0, -left_speed/2);
     goPlus.Motor_write_speed(MOTOR_NUM1, right_speed/2);
 
-    motors_values.setText(0, "l %d", left_speed);
-    motors_values.setText(1, "r %d", right_speed);
+    motors_values.setText(0, "l %d", -left_speed/2);
+    motors_values.setText(1, "r %d", right_speed/2);
+
+    goPlus.Servo_write_angle(SERVO_NUM0,  map(left_speed, -255, 255, 0, 180));
+    goPlus.Servo_write_angle(SERVO_NUM1,  map(right_speed, -255, 255, 0, 180)); 
   }
   else 
   {

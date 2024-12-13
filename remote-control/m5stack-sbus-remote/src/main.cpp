@@ -133,8 +133,15 @@ void loop()
     ps_values.setText(0, "ls %d", Ps3.data.analog.stick.ly);
     ps_values.setText(1, "rs %d", Ps3.data.analog.stick.ry);
 
-    left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
-    right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
+    const static int dead_zone = 20;
+
+    if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
+      left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
+    }
+
+    if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
+      right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
+    }
   }
   else
   {

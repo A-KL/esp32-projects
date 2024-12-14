@@ -1,12 +1,13 @@
-//#include <M5Stack.h>
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+
 #include "NotoSansBold15.h"
 #include "gui.h"
 
 #include "lego_plus_driver.h"
 #include "GoPlus2.h"
+#include "MPU6886.h"
 
 #include "rf24_radio.h"
 #include "now.h"
@@ -41,6 +42,7 @@ bool ina219_input_connected = false;
 bool motor_driver_connected = false;
 bool motor_driver_v2_connected = false;
 
+MPU6886 imu;
 GoPlus2 goPlus;
 bfs::SbusRx sbus_rx(&Serial1);
 std::array<int16_t, bfs::SbusRx::NUM_CH()> sbus_data;
@@ -49,13 +51,11 @@ const int ch_min_value = 200;
 const int ch_max_value = 1800;
 const int ch_max_count = 8;
 
-int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value)
-{
+inline int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value) {
   return map(value, min, max, 0, 100);
 }
 
-int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value)
-{
+inline int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value) {
   return map(value, min, max, -255, 255);
 }
 
@@ -65,8 +65,7 @@ void on_esp_now_disconnected() {
     }
 }
 
-void on_esp_now_message_received(const data_message_t& data) 
-{
+void on_esp_now_message_received(const data_message_t& data) {
     for (int8_t i = 0; i < 5; i++) {
       esp_now_values.setText(i, "ch%d %d%", i, data.channels[i].value);
     }
@@ -85,6 +84,8 @@ void setup()
 {
   Wire.begin();
   Serial.begin(115200);
+
+  imu.Init();
 
   INIT_CONTROLLER;
 
@@ -153,8 +154,6 @@ void loop()
   {
     sbus_data = sbus_rx.ch();
 
-    //spr.setTextColor(WHITE); 
-
     for (int8_t i = 0; i < ch_max_count; i++)
     {
       sbus_values.setText(i, "ch%d %d%", i, percentage(sbus_data[i]));
@@ -192,6 +191,7 @@ void loop()
     nrf42_values.setText(1, "ch1 ---");
   }
 
+  // Power
   if (ina219_output_connected && ina219_input_connected) 
   {
     auto shunt_voltage = ina219_output.getShuntVoltage_mV();
@@ -210,6 +210,23 @@ void loop()
     power_values.setText(1, "--- mA");
     power_values.setText(2, "--- mW");
   }
+
+  // Acc
+  int16_t temp = 0;
+  float pitch = 0;
+  float roll = 0;
+  float yaw = 0;
+
+  imu.getTempAdc(&temp);
+  imu.getAhrsData(&pitch, &roll, &yaw);
+
+  log_d("MPU6886 Temp: %d", temp);
+  log_d("MPU6886 pitch: %f roll: %f yaw: %f", pitch, roll, yaw);
+
+ // power_values.setText(3, "temp %.2f", temp);
+  power_values.setText(3, "pitch %.2f", pitch);
+  power_values.setText(4, "roll %.2f", roll);
+  power_values.setText(5, "yaw %.2f", yaw);
 
   // Encoder
   for (int8_t i = 0; i < 4; i++) 
@@ -247,12 +264,5 @@ void loop()
   }
 
   // Update GUI
-
-  sbus_values.render(spr);
-  ps_values.render(spr);
-  nrf42_values.render(spr);
-  encoder_values.render(spr);
-  motors_values.render(spr);
-  power_values.render(spr);
-  esp_now_values.render(spr);
+  gui_render();
 }

@@ -29,7 +29,7 @@ WidgetList<2> nrf42_values(nrf42_panel, 0, widget_title_height, COLOR_DARK_RED);
 WidgetList<4> encoder_values(encoders_panel, 0, widget_title_height, COLOR_DARK_MAGENTA);
 WidgetList<2> motors_values(motors_panel, 0, widget_title_height, COLOR_DARK_GREEN);
 
-WidgetList<3> power_values(power_panel, 0, widget_title_height, COLOR_DARK_YELLOW);
+WidgetList<6> power_values(power_panel, 0, widget_title_height, COLOR_DARK_YELLOW);
 WidgetList<6> esp_now_values(esp_now_panel, 0, widget_title_height, COLOR_DARK_GRAY);
 
 //WidgetListPanel<3> power(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::Large, "power", COLOR_DARK_YELLOW, COLOR_YELLOW);
@@ -53,4 +53,15 @@ void gui_init() {
   motors_panel.render(spr);
   power_panel.render(spr);
   esp_now_panel.render(spr);
+}
+
+void gui_render()
+{
+  sbus_values.render(spr);
+  ps_values.render(spr);
+  nrf42_values.render(spr);
+  encoder_values.render(spr);
+  motors_values.render(spr);
+  power_values.render(spr);
+  esp_now_values.render(spr);
 }

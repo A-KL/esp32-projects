@@ -174,7 +174,7 @@ void loop()
     } 
   }
 
-  if (isReceived()) 
+  if (RF24_IsReceived()) 
   {
     auto ch_left = received.channels[2].value;
     auto ch_right = received.channels[4].value;
@@ -224,9 +224,9 @@ void loop()
   log_d("MPU6886 pitch: %f roll: %f yaw: %f", pitch, roll, yaw);
 
  // power_values.setText(3, "temp %.2f", temp);
-  power_values.setText(3, "pitch %.2f", pitch);
-  power_values.setText(4, "roll %.2f", roll);
-  power_values.setText(5, "yaw %.2f", yaw);
+  power_values.setText(3, "p %.2f", pitch);
+  power_values.setText(4, "r %.2f", roll);
+  power_values.setText(5, "y %.2f", yaw);
 
   // Encoder
   for (int8_t i = 0; i < 4; i++) 

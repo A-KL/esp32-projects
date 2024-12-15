@@ -8,6 +8,7 @@
 #include "lego_plus_driver.h"
 #include "GoPlus2.h"
 #include "MPU6886.h"
+#include "sound.h"
 
 #include "rf24_radio.h"
 #include "now.h"
@@ -86,6 +87,7 @@ void setup()
   Serial.begin(115200);
 
   imu.Init();
+  sound_init();
 
   INIT_CONTROLLER;
 
@@ -234,6 +236,11 @@ void loop()
     encoder_values.setText(i, "ch%d %d", i, motor_driver_connected ? readEncoder(i) : 0);
   }
 
+  // Sound
+  if (left_speed > 0 && right_speed < 0) {
+    sound_on(true);
+  }
+
   // Motor
   if (motor_driver_connected) 
   {
@@ -261,7 +268,11 @@ void loop()
   {
     motors_values.setText(0, "l ---");
     motors_values.setText(1, "r ---");
+
+    sound_on(false);
   }
+
+  //Speaker.update();
 
   // Update GUI
   gui_render();

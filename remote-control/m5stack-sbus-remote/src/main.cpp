@@ -52,6 +52,12 @@ const int ch_min_value = 200;
 const int ch_max_value = 1800;
 const int ch_max_count = 8;
 
+// motor_a = wheel(y + x)
+// motor_b = wheel(y - x)
+inline float wheel(const float v, const float max_value = 255) {
+    return max_value * constrain(v, -1, 1);
+}
+
 inline int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value) {
   return map(value, min, max, 0, 100);
 }
@@ -129,8 +135,8 @@ void loop()
   //xboxController.onLoop();
   now_loop();
 
-  if (CONTROLLER_CONNECTED) {
-
+  if (CONTROLLER_CONNECTED) 
+  {
     Ps3.setPlayer(1);
 
     ps_values.setText(0, "ls %d", Ps3.data.analog.stick.ly);
@@ -138,13 +144,18 @@ void loop()
 
     const static int dead_zone = 20;
 
-    if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
-      left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
-    }
+    // motor_a = wheel(y + x)
+    // motor_b = wheel(y - x)
+    left_speed = constrain((Ps3.data.analog.stick.ry + Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
+    right_speed = constrain((Ps3.data.analog.stick.ry - Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
 
-    if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
-      right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
-    }
+    // if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
+    //   left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
+    // }
+
+    // if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
+    //   right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
+    // }
   }
   else
   {

@@ -61,16 +61,16 @@ class Widget
          return ret;
       }
 
-      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* text) 
+      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const uint32_t background, const char* text) 
       {
-         canvas.setTextColor(color565(color));
+         canvas.setTextColor(color565(color), color565(background));
          canvas.drawString(text, x, y);
       }
 
       template<typename... Args>
-      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const char* format, Args... args) 
+      void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const uint32_t background, const char* format, Args... args) 
       {
-         canvas.setTextColor(color565(color));
+         canvas.setTextColor(color565(color), color565(background));
          canvas.setCursor(x, y);
          canvas.printf(format, args...);
       }
@@ -100,7 +100,7 @@ class WidgetPanel : public WidgetRect
 
          renderRoundedSmooth(canvas, color565(_title), color565(_background));
 
-         renderText(canvas, text_margin_x, text_margin_y, COLOR_LIGHT_GRAY, _text);
+         renderText(canvas, text_margin_x, text_margin_y, COLOR_LIGHT_GRAY, _background, _text);
 
          canvas.pushSprite(Left, Top);
          canvas.deleteSprite();
@@ -191,11 +191,13 @@ class WidgetList : public WidgetRect
       void render(TFT_eSprite& canvas)
       {
          canvas.createSprite(Width, Height);
+         canvas.setColorDepth(16);
+         canvas.setSwapBytes(true);
          canvas.fillSprite(color565(_background));
 
          for (auto i = 0; i < TSize; ++i) 
          {
-            renderText(canvas, _margin_x, _margin_y + _margin_x / 2 + i * 15, _color, _list[i].c_str());
+            renderText(canvas, _margin_x, _margin_y + _margin_x / 2 + i * 15, _color, _background, _list[i].c_str());
          }
 
          canvas.pushSprite(Left, Top);

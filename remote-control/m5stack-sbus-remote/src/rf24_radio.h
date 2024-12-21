@@ -48,7 +48,7 @@ void receiveRadio() {
   }
 }
 
-bool isReceived() {
+bool RF24_IsReceived() {
     receiveRadio();
 
     auto not_ok = (millis() - lastRecvTime) > 100; 

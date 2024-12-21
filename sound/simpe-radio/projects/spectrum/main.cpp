@@ -20,21 +20,21 @@ const uint16_t output_format = 16;
 void fftResult(AudioFFTBase &fft){
     float diff;
     auto result = fft.result();
-    if (result.bin < 10)
+    if (result.bin < 11)
     {
-      spectrum.set_value(result.bin, map(result.magnitude, 0, 2000000, 0, 255));
+      spectrum.set_value(result.bin-1, map(result.magnitude, 0, 2000000, 0, 255));
     }
-    if (result.magnitude>100){
-        Serial.print(result.bin);
-        Serial.print(" ");
-        Serial.print(result.frequency);
-        Serial.print(" ");
-        Serial.print(result.magnitude);  
-        Serial.print(" => ");
-        Serial.print(result.frequencyAsNote(diff));
-        Serial.print( " diff: ");
-        Serial.println(diff);
-    }
+    // if (result.magnitude>100){
+    //     Serial.print(result.bin);
+    //     Serial.print(" ");
+    //     Serial.print(result.frequency);
+    //     Serial.print(" ");
+    //     Serial.print(result.magnitude);  
+    //     Serial.print(" => ");
+    //     Serial.print(result.frequencyAsNote(diff));
+    //     Serial.print( " diff: ");
+    //     Serial.println(diff);
+    // }
 }
 
 void setup()

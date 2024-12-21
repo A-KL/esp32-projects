@@ -40,7 +40,7 @@ void gui_init()
 }
 
 static int angle =  0;
-static int angle_d =  0;
+static int angle_d =  5;
 
 void gui_update()
 {

@@ -1,9 +1,10 @@
-#ifndef Widgets_h
-#define Widgets_h
+#pragma once
 
 #include <string.h>
 #include <stdio.h>
 #include <TFT_eSPI.h>
+
+#include <vector>
 
 const int corner_radius = 0;
 const int widget_width = 100;
@@ -234,4 +235,31 @@ const int WidgetPanel::Medium = widget_m_height;
 const int WidgetPanel::Large = widget_l_height;
 const int WidgetPanel::ExtraLarge = widget_xl_height;
 
-#endif
+class WidgetCarusel
+{
+   public:
+      void add(WidgetPanel* widget) {
+         _widgets.push_back(widget);
+
+         if (_widgets.size() == 1) {
+            _selected_widget = _widgets.begin();
+         }
+      }
+
+      void next() {
+         if (_selected_widget == _widgets.end()) {
+            _selected_widget = _widgets.begin();
+         } 
+         else {
+            ++_selected_widget;
+         }
+      }
+
+      void render(TFT_eSprite& canvas) {
+         (*_selected_widget)->render(canvas);
+      }
+   
+   private:
+      std::vector<WidgetPanel*> _widgets;
+      std::vector<WidgetPanel*>::iterator _selected_widget;
+};

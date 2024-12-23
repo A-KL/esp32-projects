@@ -1,4 +1,4 @@
-#include "Adafruit_GFX.h"
+#include "TFT_eSPI.h"
 
  #include "../Fonts/FreeSans7pt7b.h"
 // #include "../Fonts/FreeSans8pt7b.h"
@@ -8,6 +8,8 @@
 #include "../BaseGraphics/Color.h"
 
 #include "TFTCanvas.h"
+
+
 
 void TFTCanvas::Init(const Color& color)
 {

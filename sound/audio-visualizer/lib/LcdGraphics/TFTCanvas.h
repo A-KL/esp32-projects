@@ -1,23 +1,10 @@
 #pragma once
 
-#include "Adafruit_ILI9341.h"
-//#include "TFT_eSPI.h"
-
-#include "../BaseGraphics/Canvas.h"
-
-#define TFT_SCK    18
-#define TFT_MOSI   23
-#define TFT_MISO   19
-#define TFT_CS     05
-#define TFT_DC     16
-#define TFT_RESET  17
-
 class TFTCanvas :
 	public Canvas<Color>
 {
 public:
-	TFTCanvas() :
-		 _display(TFT_CS, TFT_DC, TFT_RESET), _background(0, 0, 0)
+	TFTCanvas(TFT_eSPI* tft) : _display(tft), _background(0, 0, 0)
 	{}
 
 	void Init(const Color& color);
@@ -38,12 +25,12 @@ public:
 
 	inline int Height() const
 	{
-		return _display.height();
+		return TFT_HEIGHT;
 	}
 
 	inline int Witdth() const
 	{
-		return _display.width();
+		return TFT_WIDTH;
 	}
 
 	void Clear(const Color& color);
@@ -55,7 +42,7 @@ public:
 	virtual ~TFTCanvas();
 
 private:
-	Adafruit_ILI9341 _display;
+	TFT_eSPI* _display;
 
 	const Color _background;
 };

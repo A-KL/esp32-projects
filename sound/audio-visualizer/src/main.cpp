@@ -10,17 +10,12 @@
 #include "Radio.h"
 #include "AdcAudioDevice.h"
 
-#ifdef M5STACK
-  #include "M5StackCanvas.h"
-  #define TCanvas M5StackCanvas
-#endif
+#include "TFT_eSPI.h"
+#include "TFTCanvas.h"
 
-#ifdef ESP_WROVER
-  #include "TFTCanvas.h"
-  #define TCanvas TFTCanvas
-#endif
+TFT_eSPI lcd;
 
-TCanvas canvas;
+TFTCanvas canvas(&lcd);
 MainForm form({ 0, 0, 320, 240 });
 
 #define SAMPLES 512

@@ -4,10 +4,8 @@
 #include "TFT_eGUI.h"
 
 //#include "Orbitron_Bold_12.h"
-#include "NotoSansBold15.h"
+#include <NotoSansBold15.h>
 #include "NotoSansMonoSCB20.h"
-
-TFT_eSPI tft = TFT_eSPI();
 
 TFT_eSprite left_pb_canvas(&tft); 
 TFT_eSprite right_pb_canvas(&tft); 

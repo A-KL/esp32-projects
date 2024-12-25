@@ -3,8 +3,12 @@
 #include <TFT_eSPI.h>
 #include "TFT_eGUI.h"
 
-//#include "Orbitron_Bold_12.h"
-#include <NotoSansBold15.h>
+#if (TFT_HEIGHT > 320)
+    #include "Orbitron_Bold_12.h"
+#else
+    #include "NotoSansBold15.h"
+#endif
+
 #include "NotoSansMonoSCB20.h"
 
 TFT_eSprite left_pb_canvas(&tft); 
@@ -14,8 +18,6 @@ TFT_eSprite main_led_sprite(&tft);
 TFT_eSprite second_led_sprite(&tft);
 
 TFT_eSprite panel_sprite(&tft);
-
-TFT_eSprite line_label_sprite(&tft);
 
 TFT_eSprite spectrum_sprite(&tft);
 
@@ -27,10 +29,10 @@ TFT_eLed second_led;
 
 TFT_ePanel main_panel;
 
-TFT_eLabel adc_label(line_label_sprite, "ADC", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel i2s_label(line_label_sprite, "I2S", 4, TFT_GREEN);
-TFT_eLabel disabled_label(line_label_sprite, "OPT", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel adc_label(&tft, "ADC", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
+TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.width(), 60, 0, 35);
 

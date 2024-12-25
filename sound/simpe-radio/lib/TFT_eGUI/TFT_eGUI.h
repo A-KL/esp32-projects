@@ -5,6 +5,7 @@
 
 #include "TFT_eCassette.h"
 #include "TFT_eColorBrush.h"
+#include "TFT_eColors.h"
 #include "TFT_eLabel.h"
 #include "TFT_eLed.h"
 #include "TFT_ePanel.h"

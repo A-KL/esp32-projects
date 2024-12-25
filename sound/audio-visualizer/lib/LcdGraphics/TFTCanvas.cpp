@@ -1,69 +1,68 @@
 #include "TFT_eSPI.h"
 
- #include "../Fonts/FreeSans7pt7b.h"
+#include "../Fonts/FreeSans7pt7b.h"
 // #include "../Fonts/FreeSans8pt7b.h"
 #include "../Fonts/FreeSansBold7pt7b.h"
 //#include "../Fonts/FreeSansBold8pt7b.h"
 
 #include "../BaseGraphics/Color.h"
 
+#include "Canvas.h"
 #include "TFTCanvas.h"
-
-
 
 void TFTCanvas::Init(const Color& color)
 {
-  _display.begin();
+  _tft->begin();
   
-  if (_display.width() < _display.height())
+  if (_tft->width() < _tft->height())
   {
-    _display.setRotation(_display.getRotation() ^ 1);
+    _tft->setRotation(_tft->getRotation() ^ 1);
   }
 
-  _display.fillScreen((unsigned short)color);
+  _tft->fillScreen((unsigned short)color);
 }
 
 void TFTCanvas::DrawPoint(int x, int y, const Color& color)
 {
-	_display.drawPixel(x, y, (unsigned short)color);
+	  _tft->drawPixel(x, y, (unsigned short)color);
 }
 
 void TFTCanvas::DrawLine(int x0, int y0, int x1, int y1, const Color& color)
 {
-	_display.drawLine(x0, y0, x1, y1, (unsigned short)color);
+	  _tft->drawLine(x0, y0, x1, y1, (unsigned short)color);
 }
 
 void TFTCanvas::DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
 {
-	_display.fillRect(x0, y0, w, h, (unsigned short)color);
+	  _tft->fillRect(x0, y0, w, h, (unsigned short)color);
 }
 
 void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 {
-  _display.drawRect(x0, y0, w, h, (unsigned short)color);
+    _tft->drawRect(x0, y0, w, h, (unsigned short)color);
 }
 
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
-  if (index == 0) {
-    _display.setFont(&FreeSansBold7pt7b);
-  }
-  else {
-    _display.setFont(&FreeSans7pt7b);
-  }
+    if (index == 0) {
+      //_tft->setFont(&FreeSansBold7pt7b);
+    }
+    else {
+     // _tft->setFont(&FreeSans7pt7b);
+    }
 
-  _display.setTextSize(size);
+    _tft->setTextSize(size);
 }
 
 void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)
 {
-  _display.setTextColor((unsigned short)color);
+  _tft->setTextColor((unsigned short)color);
 
   int16_t  x0=0, y0=0;
   int16_t  x1, y1;
   uint16_t w1, h1;
 
-  _display.getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
+  //_tft->getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
 
   if (w > w1)
   {
@@ -75,19 +74,19 @@ void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Col
     y += (h - h1) / 2.0 - 1;
   }
 
-  _display.setCursor(x, y + h1);
+  _tft->setCursor(x, y + h1);
 
-	_display.println(text);
+	_tft->println(text);
 }
 
 void TFTCanvas::DrawImage(int x, int y, int w, int h, const unsigned short* data)
 {
-  _display.drawRGBBitmap(x, y, data, w, h);
+    _tft->drawBitmap(x, y, (uint8_t*)data, w, h, (uint16_t)_background);
 }
 
 void TFTCanvas::Clear(const Color& color)
 {
-	_display.fillScreen((unsigned short)color);
+	  _tft->fillScreen((unsigned short)color);
 }
 
 void TFTCanvas::Clear()

@@ -4,7 +4,7 @@ class TFTCanvas :
 	public Canvas<Color>
 {
 public:
-	TFTCanvas(TFT_eSPI* tft) : _display(tft), _background(0, 0, 0)
+	TFTCanvas(TFT_eSPI* tft) : _tft(tft), _background(0, 0, 0)
 	{}
 
 	void Init(const Color& color);
@@ -28,7 +28,7 @@ public:
 		return TFT_HEIGHT;
 	}
 
-	inline int Witdth() const
+	inline int Width() const
 	{
 		return TFT_WIDTH;
 	}
@@ -42,7 +42,7 @@ public:
 	virtual ~TFTCanvas();
 
 private:
-	TFT_eSPI* _display;
+	TFT_eSPI* _tft;
 
 	const Color _background;
 };

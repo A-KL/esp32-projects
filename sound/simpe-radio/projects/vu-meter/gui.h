@@ -14,18 +14,13 @@
 TFT_eSprite left_pb_canvas(&tft); 
 TFT_eSprite right_pb_canvas(&tft); 
 
-TFT_eSprite main_led_sprite(&tft);
-TFT_eSprite second_led_sprite(&tft);
-
 TFT_eSprite panel_sprite(&tft);
-
-TFT_eSprite spectrum_sprite(&tft);
 
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;
 
-TFT_eLed main_led;
-TFT_eLed second_led;
+TFT_eLed main_led(&tft);
+TFT_eLed second_led(&tft);
 
 TFT_ePanel main_panel;
 
@@ -70,33 +65,33 @@ void gui_set_input(int input)
         break;
     }
 
-    gui_label_update(adc_label);
-    gui_label_update(i2s_label);
-    gui_label_update(disabled_label);
+    adc_label.update();
+    i2s_label.update();
+    disabled_label.update();
 }
 
-void gui_led_init() {
+void gui_led_init() 
+{
     main_led.top = 100;
     main_led.left = 15;
-    main_led.value = true;
-    main_led.canvas = &main_led_sprite;
+    main_led.checked = true;
 
     second_led.top = 100;
     second_led.left = 40;
-    second_led.value = true;
-    second_led.canvas = &second_led_sprite;
+    second_led.checked = true;
     second_led.on_color = TFT_RED;
     second_led.on_color_to = TFT_DARK_RED_12;
     second_led.off_color = TFT_DARK_RED_8;
 
-    gui_led_init(main_led);
-    gui_led_init(second_led);
+    main_led.init();
+    second_led.init();
 
-    gui_led_begin(main_led);
-    gui_led_begin(second_led);
+    main_led.begin();
+    second_led.begin();
 }
 
-void gui_notify_init() {
+void gui_notify_init() 
+{
     main_panel.left = 0;
     main_panel.top = 100;
     main_panel.width = TFT_HEIGHT;
@@ -150,35 +145,37 @@ void gui_meter_init() {
     scale.begin();
 }
 
-void gui_labels_init() {
-    line_label_sprite.loadFont(NotoSansMonoSCB20);
-    //ovr_label_sprite.loadFont(NotoSansMonoSCB20);
-
+void gui_labels_init() 
+{
     auto top = TFT_HEIGHT - 40;
 
     adc_label.left = 15;
     adc_label.top = top;
 
-    gui_label_init(adc_label);
-    gui_label_begin(adc_label);
+    adc_label.load_font(NotoSansMonoSCB20);
+    adc_label.init();
+    adc_label.begin();
 
     i2s_label.left = adc_label.left + adc_label.width + 5;
     i2s_label.top = top;
 
-    gui_label_init(i2s_label);
-    gui_label_begin(i2s_label);
+    i2s_label.load_font(NotoSansMonoSCB20);
+    i2s_label.init();
+    i2s_label.begin();
 
     disabled_label.left = i2s_label.left + i2s_label.width + 5;
     disabled_label.top = top;
 
-    gui_label_init(disabled_label);
-    gui_label_begin(disabled_label);
+    disabled_label.load_font(NotoSansMonoSCB20);
+    disabled_label.init();
+    disabled_label.begin();
 
     ovr_label.left = disabled_label.left + disabled_label.width + 5;
     ovr_label.top = top;
 
-    gui_label_init(ovr_label);
-    gui_label_begin(ovr_label);
+    ovr_label.load_font(NotoSansMonoSCB20);
+    ovr_label.init();
+    ovr_label.begin();
 }
 
 void gui_init() 
@@ -197,7 +194,7 @@ void gui_progress_bars_update()
     gui_pb_update(left_pb);
     gui_pb_update(right_pb);
 
-    gui_label_update(ovr_label);
+    ovr_label.update();
 
     // if (last_update_ms - millis() > 100) {
     //     last_update_ms = millis();

@@ -9,8 +9,8 @@
 class TFT_eLabel : public TFT_eWidget
 {
     public:
-        TFT_eLabel(TFT_eSPI* tft, const char* text, int16_t top = 0, int16_t left = 0, const int16_t width = -1, const int16_t height = -1) 
-        : TFT_eWidget(tft, width, height, top, left), _text(text)
+        TFT_eLabel(TFT_eSPI* tft, const char* text, int16_t border = 0, int16_t color = TFT_DARKGREY, int16_t top = 0, int16_t left = 0, const int16_t width = -1, const int16_t height = -1) 
+        : TFT_eWidget(tft, width, height, top, left), _text(text), borders_thickness{border, border, border, border}, foreground_color(color)
         { }
 
         int foreground_color = TFT_DARKGREY;

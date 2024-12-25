@@ -53,7 +53,6 @@ class TFT_eLed : public TFT_eWidget
         }
 
     private:
-
         inline void update_round() 
         {
             auto padding = width / 10;

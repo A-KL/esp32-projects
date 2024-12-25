@@ -48,6 +48,11 @@ class TFT_eWidget
             del_sprite(_canvas);
         }
 
+        inline void push()
+        {
+            push(left, top);
+        }
+
         void push(int32_t x, int32_t y)
         {
             if (_parent == nullptr) {

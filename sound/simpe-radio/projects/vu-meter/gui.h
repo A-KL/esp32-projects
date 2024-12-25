@@ -11,26 +11,6 @@
 
 #include "NotoSansMonoSCB20.h"
 
-TFT_eSprite left_pb_canvas(&tft); 
-TFT_eSprite right_pb_canvas(&tft); 
-
-TFT_eSprite panel_sprite(&tft);
-
-TFT_eProgressBar left_pb;
-TFT_eProgressBar right_pb;
-
-TFT_eLed main_led(&tft);
-TFT_eLed second_led(&tft);
-
-TFT_ePanel main_panel;
-
-TFT_eLabel adc_label(&tft, "ADC", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
-TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
-
-TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.width(), 60, 0, 35);
-
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
 const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
@@ -45,6 +25,24 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     { {0, &DarkGreenBrush} },
     3, 
     60);
+
+TFT_eSprite left_pb_canvas(&tft); 
+TFT_eSprite right_pb_canvas(&tft); 
+
+TFT_eProgressBar left_pb;
+TFT_eProgressBar right_pb;
+
+TFT_eLed main_led(&tft);
+TFT_eLed second_led(&tft);
+
+TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, TFT_HEIGHT, 20);
+
+TFT_eLabel adc_label(&tft, "ADC", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
+TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
+
+TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.width(), 60, 0, 35);
 
 void gui_set_input(int input)
 {
@@ -92,15 +90,8 @@ void gui_led_init()
 
 void gui_notify_init() 
 {
-    main_panel.left = 0;
-    main_panel.top = 100;
-    main_panel.width = TFT_HEIGHT;
-    main_panel.height = 20;
-    main_panel.canvas = &panel_sprite;
-    main_panel.background = &YellowChevronBrush;
-
-    gui_panel_init(main_panel);
-    gui_panel_begin(main_panel);
+    main_panel.init();
+    main_panel.begin();
 }
 
 void gui_meter_init() {

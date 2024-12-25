@@ -70,11 +70,11 @@ void gui_set_input(int input)
 
 void gui_led_init() 
 {
-    main_led.top = 100;
+    main_led.top = 130;
     main_led.left = 15;
     main_led.checked = true;
 
-    second_led.top = 100;
+    second_led.top = 130;
     second_led.left = 40;
     second_led.checked = true;
     second_led.on_color = TFT_RED;
@@ -173,6 +173,7 @@ void gui_init()
 {
     gui_meter_init();
     gui_labels_init();
+    gui_led_init();
 
     //gui_notify_init();
     //gui_init_spectrum();

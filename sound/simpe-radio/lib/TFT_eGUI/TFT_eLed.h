@@ -18,10 +18,10 @@ class TFT_eLed : public TFT_eWidget
 
         uint32_t off_color = TFT_DARKGREEN;
 
-        uint32_t bg_color = TFT_WHITE;
+        uint32_t bg_color = TFT_DARK_GRAY;
         uint32_t bg_color_to = TFT_DARKGREY;
 
-        inline void init() 
+        inline void init()
         {
             create(width, height, round ? TFT_TRANSPARENT : bg_color);
         }
@@ -92,7 +92,7 @@ class TFT_eLed : public TFT_eWidget
                     checked ? on_color : off_color,
                     checked ? on_color_to : off_color);
             }
-            push(left, top);
+            push();
         }
 };
 

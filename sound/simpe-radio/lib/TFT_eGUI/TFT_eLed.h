@@ -12,6 +12,7 @@ class TFT_eLed : public TFT_eWidget
 
         bool round = true;
         bool checked = false;
+        uint16_t padding = 0;
 
         uint32_t on_color = TFT_GREENYELLOW;
         uint32_t on_color_to = TFT_GREEN;
@@ -19,7 +20,7 @@ class TFT_eLed : public TFT_eWidget
         uint32_t off_color = TFT_DARKGREEN;
 
         uint32_t bg_color = TFT_DARK_GRAY;
-        uint32_t bg_color_to = TFT_DARKGREY;
+        uint32_t bg_color_to = TFT_DARK_DARK_GRAY;
 
         inline void init()
         {
@@ -31,7 +32,7 @@ class TFT_eLed : public TFT_eWidget
             if (round) 
             {
                 auto center = width / 2;
-                _canvas.fillSmoothCircle(center, center, width / 2 - 1, bg_color);
+                _canvas.fillSmoothCircle(center, center, center - 1, bg_color);
             } 
             else 
             {
@@ -55,39 +56,30 @@ class TFT_eLed : public TFT_eWidget
     private:
         inline void update_round() 
         {
-            auto padding = width / 10;
             auto center = width / 2;
-
-            if (padding <= 0)
-                padding = 1;
-
             auto r = (width - padding) / 2 - 1;
 
-            _canvas.fillCircle(center, center, r, checked ? on_color : off_color);
+            _canvas.fillSmoothCircle(center, center, r, checked ? on_color : off_color);
 
             push_transparent(left, top);
         }
 
         inline void update_rect()
         {
-            auto padding = width / 10;
-
-            if (padding <= 0)
-                padding = 1;
-
-            auto led_size = width - padding * 2;
+            auto left = padding / 2;
+            auto led_size = width - padding;
 
             if (bg_color == bg_color_to) 
             {
                 _canvas.fillRect(
-                    padding, padding, 
+                    left, left, 
                     led_size, led_size, 
                     checked ? on_color : off_color);
             } 
             else 
             {
                 _canvas.fillRectVGradient(
-                    padding, padding, 
+                    left, left, 
                     led_size, led_size, 
                     checked ? on_color : off_color,
                     checked ? on_color_to : off_color);

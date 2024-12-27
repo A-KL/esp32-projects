@@ -72,11 +72,14 @@ void gui_led_init()
 {
     main_led.top = 130;
     main_led.left = 15;
+    main_led.padding = 4;
     main_led.checked = true;
 
     second_led.top = 130;
     second_led.left = 40;
-    second_led.checked = true;
+    second_led.padding = 4;
+    second_led.checked = false;
+    second_led.round = false;
     second_led.on_color = TFT_RED;
     second_led.on_color_to = TFT_DARK_RED_12;
     second_led.off_color = TFT_DARK_RED_8;

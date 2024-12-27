@@ -37,10 +37,6 @@ void setup(){
   tft.init();
   tft.setRotation(1);
   tft.setSwapBytes(true);
-
-  //tft.setFreeFont(&Orbitron_Medium_20);
-  tft.loadFont(NotoSansBold15);
-
   tft.fillScreen(TFT_BLACK);
 
   gui_init();

@@ -18,6 +18,7 @@
 #include <adc_input.h>
 #include <pwm_input.h>
 #include <enow_input.h>
+#include <xbox_input.h>
 
 #include <motor_output.h>
 #include <servo_output.h>
@@ -50,6 +51,7 @@ void setup() {
   pwm_in_init();
   sbus_init();
   ps_init();
+  xbox_init();
   enow_init();
 
   motors_init();

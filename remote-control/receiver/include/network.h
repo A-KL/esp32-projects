@@ -1,5 +1,4 @@
-#ifndef network_h
-#define network_h
+#pragma once
 
 #include <WiFi.h>
 
@@ -13,12 +12,4 @@ void wifi_init()
   WiFi.mode(WIFI_MODE_STA);
   
   Serial.println(WiFi.macAddress());
-
-  // WiFi.begin(ssid, password);
-
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(500);
-  // }
 }
-
-#endif

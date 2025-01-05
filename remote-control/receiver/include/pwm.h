@@ -1,5 +1,4 @@
-#ifndef rc_pwm_h
-#define rc_pwm_h
+#pragma once
 
 #include <ESP32Servo.h>
 #include <config_esp32_c3.h>
@@ -56,5 +55,3 @@ void pwm_write(const int ch, const int value) {
     }
     servos[ch].write(map(value,INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180));
 }
-
-#endif

@@ -1,9 +1,6 @@
-#ifndef config_esp32_c3_h
-#define config_esp32_c3_h
+#pragma once
 
 #include <types.h>
-
-#define LED_BUILTIN 8
 
 #define INPUT_SBUS_MIN  200
 #define INPUT_SBUS_MAX  1800
@@ -21,5 +18,3 @@ const int pwm_channels_count = sizeof(pwm_pins) / sizeof(int);
 const int sbus_rx_tx_pins[] = { 20, 21 };
 
 const int sbus_channels_count = 16;
-
-#endif

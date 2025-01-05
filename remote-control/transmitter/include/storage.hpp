@@ -4,22 +4,22 @@
 #include <iostream>
 #include <string>
 #include <ArduinoJson.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 #include <esp32-hal-log.h>
 
 const String Empty("");
 
 void storage_init() 
 {
-  if (!SPIFFS.begin(true)) {
-    log_i("An error has occurred while mounting SPIFFS");
+  if (!LittleFS.begin(true)) {
+    log_i("An error has occurred while mounting storage");
   }
-  log_i("SPIFFS mounted successfully");
+  log_i("Storage mounted successfully");
 }
 
 String setting_read(const String& key, const char* filePath = "/default.json")
 {
-    File file = SPIFFS.open(filePath, FILE_READ);
+    File file = LittleFS.open(filePath, FILE_READ);
 
     if (!file)
     {
@@ -47,7 +47,7 @@ String setting_read(const String& key, const char* filePath = "/default.json")
 
 bool settings_load_array(std::function<bool(JsonVariant&)> parse, const char* elementName, const char* filePath = "/default.json")
 {
-    File file = SPIFFS.open(filePath, FILE_READ);
+    File file = LittleFS.open(filePath, FILE_READ);
 
     if (!file)
     {
@@ -86,7 +86,7 @@ bool settings_load_array(std::function<bool(JsonVariant&)> parse, const char* el
 
 void settings_save(uint8_t *data, size_t len, size_t index, size_t total, const char* filePath = "/default.json")
 {
-    File file = SPIFFS.open(filePath, "w+");
+    File file = LittleFS.open(filePath, "w+");
     file.write(data, total);
     file.close();
 }

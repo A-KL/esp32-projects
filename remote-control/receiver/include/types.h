@@ -1,5 +1,4 @@
-#ifndef types_h
-#define types_h
+#pragma once
 	
 #include <map>
 
@@ -14,5 +13,3 @@ struct data_message_t {
 };
 
 data_message_t message;
-
-#endif

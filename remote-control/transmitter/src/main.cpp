@@ -7,7 +7,7 @@
 
 #include <config_esp32.hpp>
 #include <filters.hpp>
-#include <esp32_now.h>
+#include <esp32_now.hpp>
 
 #define CHANNELS_COUNT ADC_CHANNELS_COUNT + SW_TWO_CHANNELS_COUNT + SW_THREE_CHANNELS_COUNT
 

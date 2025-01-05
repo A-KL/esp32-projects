@@ -1,24 +1,23 @@
-#ifndef storage_h
-#define storage_h
+#pragma once
 
 #include <iostream>
 #include <string>
 #include <ArduinoJson.h>
 
 #include <types.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 
 void storage_init() 
 {
-  if (!SPIFFS.begin(true)) {
-    log_e("An error has occurred while mounting SPIFFS");
+  if (!LittleFS.begin(true)) {
+    log_e("An error has occurred while mounting LittleFS");
   }
-  log_i("SPIFFS mounted successfully");
+  log_i("LittleFS mounted successfully");
 }
 
 String setting_read(const String& key)
 {
-    File file = SPIFFS.open("/default.json", FILE_READ);
+    File file = LittleFS.open("/default.json", FILE_READ);
 
     if (!file)
     {
@@ -106,7 +105,7 @@ String setting_read(const String& key)
 
 void settings_save(uint8_t *data, size_t len, size_t index, size_t total)
 {
-    File file = SPIFFS.open("/default.json", "w+");
+    File file = LittleFS.open("/default.json", "w+");
     file.write(data, total);
     file.close();
 }
@@ -133,5 +132,3 @@ bool settings_apply(uint8_t *data, size_t len, size_t index, size_t total)
 
     return true;
 }
-
-#endif

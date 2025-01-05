@@ -1,7 +1,6 @@
-#ifndef api_h
-#define api_h
+#pragma once
 
-#include <SPIFFS.h>
+#include <LittleFS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <storage.h>
@@ -41,7 +40,7 @@ void OnConfig(AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t
 
 void api_init()  {
     api.on("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send(SPIFFS, "/default.json", "application/json");
+        request->send(LittleFS, "/default.json", "application/json");
     });
 
     api.on("/config", HTTP_PUT, [](AsyncWebServerRequest *request) {}, NULL, OnConfig);
@@ -58,5 +57,3 @@ void api_init()  {
 
 void api_loop()
 { }
-
-#endif

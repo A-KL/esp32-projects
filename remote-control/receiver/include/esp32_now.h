@@ -1,3 +1,5 @@
+#pragma once
+
 #include <types.h>
 #include <sbus.h>
 #include <esp_now.h>

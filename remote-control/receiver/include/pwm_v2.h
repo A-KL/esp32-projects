@@ -1,5 +1,4 @@
-#ifndef rc_pwm_v2_h
-#define rc_pwm_v2_h
+#pragma once
 
 #include <Arduino.h>
 #include <config_esp32_c3.h>
@@ -38,5 +37,3 @@ void pwm_write(const int values[], int size) {
 void pwm_write(const int ch, const int value) {
     ledcWrite(ch, map(value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, COUNT_LOW, COUNT_HIGH));
 }
-
-#endif

@@ -7,7 +7,7 @@
 
 #ifdef ESP_NOW_JSON_SETTINGS
   #include <ArduinoJson.h>
-  #include <storage.h>
+  #include <storage.hpp>
 #endif
 
 #ifdef __cplusplus

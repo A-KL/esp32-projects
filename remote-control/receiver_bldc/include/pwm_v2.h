@@ -1,4 +1,4 @@
-// #pragma once
+#pragma once
 
 // #include <Arduino.h>
 // #include <config_esp32_c3.h>

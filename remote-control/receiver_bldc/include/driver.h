@@ -12,12 +12,16 @@ class driver_strategy_t
 
         inline void write(T desired) 
         {
+            if (_desired_speed == desired) 
+            {
+                return;
+            }
             _desired_speed_updated = millis();
             _desired_speed = desired;
-            _acc_step = abs(_desired_speed - _actual_speed) / _acc_d;
+            _acc_step *= (_desired_speed - _actual_speed) / abs(_desired_speed - _actual_speed);
         }
 
-        inline T read() 
+        inline T read()
         {
             if (_actual_speed != _desired_speed) 
             {
@@ -36,8 +40,8 @@ class driver_strategy_t
         long _desired_speed_updated;
 
         uint16_t _acc_ms = 50;
-        float _acc_d = 10;
-        float _acc_step;
+
+        T _acc_step = 10;
 
         T _actual_speed;
         T _desired_speed;

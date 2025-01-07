@@ -9,10 +9,16 @@
 #define INPUT_ESP_NOW_MIN   0
 #define INPUT_ESP_NOW_MAX   4095
 
-const int pwm_pins[] = { 0, 1, 2, 3, 4, 7 };
+/* PS */
+const char* ps_controller_mac = "b8:27:eb:df:b3:ff";
 
-const int pwm_channels_count = sizeof(pwm_pins) / sizeof(int);
+/* SBUS */
+const uint8_t sbus_rx_tx_pins[] = { 16, 17 };
+const auto sbus_serial = &Serial1;
 
-const int sbus_rx_tx_pins[] = { 20, 21 };
+/* Motors */
+const uint8_t motor_dir [] = { 25, 26 };
+const uint8_t motor_speed [] = { 33, 27 };
+const uint8_t motor_pwm_ch [] = { 0, 1 };
 
-const int sbus_channels_count = 16;
+const static uint8_t motors_count = sizeof(motor_dir) / sizeof(uint8_t);

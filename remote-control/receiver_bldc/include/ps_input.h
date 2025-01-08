@@ -10,15 +10,24 @@
 
 #define INPUT_PS_DEAD_ZONE  15
 
+typedef void(*ps_callback_t)(int8_t, int8_t, int8_t, int8_t, int8_t, int8_t);
+
 #ifdef HAS_BLUETOOTH
 
 #include <Ps3Controller.h>
+
+static ps_callback_t _on_ps_data_received_callback = nullptr;
 
 //static queue_t<ps3_t> ps_input_queue;
 
 inline int16_t ps3_trim(int16_t value)
 {
     return abs(value) > INPUT_PS_DEAD_ZONE ? value : 0;
+}
+
+inline void ps_attach(ps_callback_t callback) 
+{
+    _on_ps_data_received_callback = callback;
 }
 
 void ps3_on_connect() 
@@ -71,6 +80,19 @@ void ps3_on_data_received()
     // };
 
    // queue_send(ps_input_queue, Ps3.data);
+
+   if (_on_ps_data_received_callback != nullptr) 
+   {
+    _on_ps_data_received_callback(
+        Ps3.data.analog.stick.lx,
+        Ps3.data.analog.stick.ly,
+        
+        Ps3.data.analog.stick.rx,
+        Ps3.data.analog.stick.ry,
+        
+        Ps3.data.analog.button.l2,
+        Ps3.data.analog.button.r2);
+   }
 }
 #endif
 
@@ -91,6 +113,8 @@ inline void ps_init()
    // queue_init(ps_input_queue);
 #endif
 }
+
+
 
 uint8_t ps_receive(int16_t* outputs)
 {

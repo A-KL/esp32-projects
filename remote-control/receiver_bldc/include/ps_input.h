@@ -10,7 +10,7 @@
 
 #define INPUT_PS_DEAD_ZONE  15
 
-typedef void(*ps_callback_t)(int8_t, int8_t, int8_t, int8_t, int8_t, int8_t);
+typedef void(*ps_callback_t)(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
 
 #ifdef HAS_BLUETOOTH
 

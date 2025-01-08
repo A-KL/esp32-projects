@@ -18,27 +18,30 @@ static const int16_t dead_zone = 18;
 static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
 
-static inline int16_t filter_dead_zone(int16_t value)
+static inline int16_t filter_dead_zone(const int16_t value)
 {
   return (abs(value) < dead_zone) ? 0 : value;
 }
 
-static inline void write(int16_t power, int16_t steer)
+static inline void write(const int16_t power, const int16_t steer)
 {
-  static int16_t left_speed = constrain(power - steer, Power_Min, Power_Max);
-  static int16_t right_speed = constrain(power + steer, Power_Min, Power_Max);
+  int16_t left_speed = constrain(power - steer, Power_Min, Power_Max);
+  int16_t right_speed = constrain(power + steer, Power_Min, Power_Max);
 
   left_value.write(left_speed);
   right_value.write(right_speed);
 }
 
-static void on_ps3_input(int8_t lx, int8_t ly, int8_t rx, int8_t ry, int8_t l2, int8_t r2) 
+static void on_ps3_input(int16_t lx, int16_t ly, int16_t rx, int16_t ry, int16_t l2, int16_t r2) 
 {
   auto power = r2 - l2;
   auto steer = - lx;
 
   power = filter_dead_zone(power);
   steer = filter_dead_zone(steer);
+
+  // left_value.write(l2);
+  // right_value.write(r2);
 
   write(power, steer);
 }
@@ -58,9 +61,9 @@ void setup() {
 }
 
 void loop() {
-  auto speed_left = left_value.read();
-  auto speed_right = right_value.read();
+  auto left = left_value.read();
+  auto right = right_value.read();
 
-  log_d("Speed:\t%d\t%d\t(%d)", speed_left, speed_right, millis());
+  log_d("Speed:\t%d\t%d", left, right);
   delay(50);
 }

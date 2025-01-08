@@ -7,7 +7,7 @@
 #endif
 
 #ifndef MOTOR_PWM_FQC
-#define MOTOR_PWM_FQC         2500 // Hz
+#define MOTOR_PWM_FQC         10000 // Hz
 #endif
 
 #ifndef MOTOR_PWM_RESOLUTION
@@ -37,6 +37,12 @@ void motor_write_a_en(const uint8_t pin_a, const uint8_t channel_en, const int16
     digitalWrite(pin_a, speed > 0 ? HIGH : LOW);
     ledcWrite(channel_en, abs(speed));
   }
+}
+
+template<short TMin, short TMax>
+void motor_write_a_en(const uint8_t pin_a, const uint8_t channel_en, const int16_t speed)
+{
+  motor_write_a_en(pin_a, channel_en, map(constrain(speed, TMin, TMax), TMin, TMax, -motor_duty_cycle, motor_duty_cycle));
 }
 
 // Init motors

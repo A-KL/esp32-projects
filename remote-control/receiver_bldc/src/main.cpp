@@ -66,4 +66,7 @@ void loop() {
 
   log_d("Speed:\t%d\t%d", left, right);
   delay(50);
+
+  motor_write_a_en(motor_dir[0], motor_pwm_ch[0], left);
+  motor_write_a_en(motor_dir[1], motor_pwm_ch[1], right);
 }

@@ -32,6 +32,11 @@ static inline void write(const int16_t power, const int16_t steer)
   right_value.write(right_speed);
 }
 
+static void on_ps3_lost()
+{
+  write(0, 0);
+}
+
 static void on_ps3_input(int16_t lx, int16_t ly, int16_t rx, int16_t ry, int16_t l2, int16_t r2) 
 {
   auto power = r2 - l2;
@@ -51,7 +56,7 @@ void setup() {
 
   delay(3000);
 
-  ps_attach(on_ps3_input);
+  ps_attach(on_ps3_input, on_ps3_lost);
   ps_init();
 
   motors_init();

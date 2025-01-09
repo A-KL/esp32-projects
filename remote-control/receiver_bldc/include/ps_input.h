@@ -10,13 +10,15 @@
 
 #define INPUT_PS_DEAD_ZONE  15
 
-typedef void(*ps_callback_t)(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
+typedef void(*ps_data_event_t)(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
+typedef void(*ps_connection_event_t)();
 
 #ifdef HAS_BLUETOOTH
 
 #include <Ps3Controller.h>
 
-static ps_callback_t _on_ps_data_received_callback = nullptr;
+static ps_data_event_t _on_ps_data_received_event = nullptr;
+static ps_connection_event_t _on_ps_connection_lost_event = nullptr;
 
 //static queue_t<ps3_t> ps_input_queue;
 
@@ -25,9 +27,10 @@ inline int16_t ps3_trim(int16_t value)
     return abs(value) > INPUT_PS_DEAD_ZONE ? value : 0;
 }
 
-inline void ps_attach(ps_callback_t callback) 
+inline void ps_attach(ps_data_event_t received_event, ps_connection_event_t lost_event) 
 {
-    _on_ps_data_received_callback = callback;
+    _on_ps_data_received_event = received_event;
+    _on_ps_connection_lost_event = lost_event;
 }
 
 void ps3_on_connect() 
@@ -39,6 +42,9 @@ void ps3_on_connect()
 void ps3_on_disconnect() 
 {
     log_e("PS3 Controller connection lost.");
+    if (_on_ps_connection_lost_event != nullptr) {
+        _on_ps_connection_lost_event();
+    }
 }
 
 void ps3_on_data_received() 
@@ -81,9 +87,9 @@ void ps3_on_data_received()
 
    // queue_send(ps_input_queue, Ps3.data);
 
-   if (_on_ps_data_received_callback != nullptr) 
+   if (_on_ps_data_received_event != nullptr) 
    {
-    _on_ps_data_received_callback(
+    _on_ps_data_received_event(
         Ps3.data.analog.stick.lx,
         Ps3.data.analog.stick.ly,
         
@@ -91,7 +97,8 @@ void ps3_on_data_received()
         Ps3.data.analog.stick.ry,
         
         Ps3.data.analog.button.l2,
-        Ps3.data.analog.button.r2);
+        Ps3.data.analog.button.r2
+    );
    }
 }
 #endif

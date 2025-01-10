@@ -1,7 +1,6 @@
 #pragma once
 
 #include <esp32-hal-log.h>
-#include <driver_config.h>
 
 #define INPUT_PS_RANGE      255
 #define INPUT_PS_HALF_RANGE (INPUT_PS_RANGE/2)
@@ -10,7 +9,7 @@
 
 #define INPUT_PS_DEAD_ZONE  15
 
-typedef void(*ps_data_event_t)(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
+typedef void(*ps_data_event_t)(int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, int16_t, int16_t);
 typedef void(*ps_connection_event_t)();
 
 #ifdef HAS_BLUETOOTH
@@ -97,7 +96,10 @@ void ps3_on_data_received()
         Ps3.data.analog.stick.ry,
         
         Ps3.data.analog.button.l2,
-        Ps3.data.analog.button.r2
+        Ps3.data.analog.button.r2,
+
+        Ps3.data.button.triangle,
+        Ps3.data.button.cross
     );
    }
 }

@@ -20,5 +20,7 @@ const auto sbus_serial = &Serial1;
 const uint8_t motor_dir [] = { 25, 26 };
 const uint8_t motor_speed [] = { 33, 27 };
 const uint8_t motor_pwm_ch [] = { 0, 1 };
+const uint8_t motor_stop [] = { 0, 1 };
+const uint8_t motor_brake [] = { 0, 1 };
 
 const static uint8_t motors_count = sizeof(motor_dir) / sizeof(uint8_t);

@@ -2,6 +2,91 @@
 
 #include <Arduino.h>
 
+class motor_driver_t
+{
+  public:
+    motor_driver_t(const int16_t pin_direction, const int16_t pin_en, const uint64_t frequency = 10000, const uint16_t resolution = 10, const uint16_t dead_zone = 10)
+    : _pin_direction(pin_direction), _pin_en(pin_en), _frequency(frequency),  _resolution(resolution), _dead_zone(dead_zone)
+    {}
+
+    motor_driver_t& init()
+    {
+      if (_pin_en_ch == -1) {
+        _pin_en_ch = _channels++;
+      }
+
+      ledcSetup(_pin_en_ch, _frequency, _resolution);
+      ledcAttachPin(_pin_en, _pin_en_ch);   
+
+      pinMode(_pin_direction, OUTPUT);
+
+      return *this;
+    }
+
+    motor_driver_t& add_brake(int16_t pin_brake)
+    {
+      _pin_brake = pin_brake;
+      pinMode(_pin_brake, OUTPUT);
+
+      return *this;
+    }
+
+    motor_driver_t& add_stop(int16_t pin_stop)
+    {
+      _pin_stop = pin_stop;
+      pinMode(_pin_stop, OUTPUT);
+
+      return *this;
+    }
+
+    void stop(bool stop = true)
+    {
+      _stop = stop;
+      digitalWrite(_pin_stop, _stop);
+    }
+
+    void brake(bool brake = true) const
+    {
+      digitalWrite(_pin_brake, brake);
+    }
+
+    void write(int16_t speed) const
+    {
+        if (near_zero(speed)) 
+        {
+          ledcWrite(_pin_en_ch, 0);
+        }
+        else 
+        {
+          digitalWrite(_pin_direction, speed > 0 ? HIGH : LOW);
+          ledcWrite(_pin_en_ch, abs(speed));
+        }
+    }
+
+  private:
+    bool _stop = false;
+
+    static uint8_t _channels;
+
+    int16_t _pin_stop = -1;
+    int16_t _pin_brake = -1;
+
+    const int16_t _pin_direction;
+    const int16_t _pin_en;
+
+    int16_t _pin_en_ch = -1;
+
+    const uint64_t _frequency;
+    const uint16_t _resolution;
+    const uint16_t _dead_zone;
+
+    inline bool near_zero(const int value) {
+      return (abs(value) < _dead_zone);
+    }
+};
+
+uint8_t motor_driver_t::_channels = 0;
+
 #ifndef MOTOR_INPUT_DEAD_ZONE
 #define MOTOR_INPUT_DEAD_ZONE 10
 #endif

@@ -15,6 +15,9 @@ static const int16_t Power_Min = -255;
 static const int16_t Power_Max = 255;
 static const int16_t dead_zone = 18;
 
+static motor_driver_t motor_left(25, 33, 15000);
+static motor_driver_t motor_right(26, 27, 15000);
+
 static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
 
@@ -60,6 +63,8 @@ void setup() {
   ps_init();
 
   motors_init();
+
+  motor_left.begin().add_brake(12);
 
   // wifi_init();
   // now_init();

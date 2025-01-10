@@ -1,5 +1,21 @@
 #include <Arduino.h>
 
+#ifndef MOTOR_INPUT_DEAD_ZONE
+#define MOTOR_INPUT_DEAD_ZONE 10
+#endif
+
+#ifndef MOTOR_PWM_FQC
+#define MOTOR_PWM_FQC         10000 // Hz
+#endif
+
+#ifndef MOTOR_PWM_RESOLUTION
+#define MOTOR_PWM_RESOLUTION  8 // Bit
+#endif
+
+#ifndef INPUT_MOTOR_MAX_LIMIT
+#define INPUT_MOTOR_MAX_LIMIT 1
+#endif
+
 #ifndef CONFIG_FILE
 #error "Config file was not defined"
 #endif
@@ -15,8 +31,8 @@ static const int16_t Power_Min = -255;
 static const int16_t Power_Max = 255;
 static const int16_t dead_zone = 18;
 
-static motor_driver_t motor_left(25, 33, 15000);
-static motor_driver_t motor_right(26, 27, 15000);
+static motor_driver_t motor_left(25, 33, 0, 0, 15000);
+static motor_driver_t motor_right(26, 27, 0, 0, 15000);
 
 static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
@@ -62,9 +78,10 @@ void setup() {
   ps_attach(on_ps3_input, on_ps3_lost);
   ps_init();
 
-  motors_init();
+  //motors_init();
 
-  motor_left.begin().add_brake(12);
+  motor_left.init();
+  motor_right.init();
 
   // wifi_init();
   // now_init();
@@ -75,8 +92,9 @@ void loop() {
   auto right = right_value.read();
 
   log_d("Speed:\t%d\t%d", left, right);
+
   delay(50);
 
-  motor_write_a_en(motor_dir[0], motor_pwm_ch[0], left);
-  motor_write_a_en(motor_dir[1], motor_pwm_ch[1], right);
+  motor_left.write(left);
+  motor_right.write(right);
 }

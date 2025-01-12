@@ -31,7 +31,7 @@ static const int16_t Power_Max = 255;
 static const int16_t dead_zone = 20;
 
 static motor_driver_t motor_left(25, 33, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
-static motor_driver_t motor_right(19, 21, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+static motor_driver_t motor_right(19, 21, 18, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 
 static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);

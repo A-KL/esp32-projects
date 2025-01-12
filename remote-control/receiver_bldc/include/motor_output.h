@@ -32,8 +32,8 @@ class motor_driver_t
       ledcAttachPin(_pin_en, _pin_en_ch);   
 
       pinMode(_pin_direction, OUTPUT);
-      pinMode(_pin_brake, OUTPUT);
-      pinMode(_pin_stop, OUTPUT);
+      // pinMode(_pin_brake, OUTPUT);
+      // pinMode(_pin_stop, OUTPUT);
 
       return *this;
     }

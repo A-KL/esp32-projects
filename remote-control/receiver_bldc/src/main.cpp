@@ -5,7 +5,7 @@
 #endif
 
 #ifndef MOTOR_PWM_FQC
-#define MOTOR_PWM_FQC         10000 // Hz
+#define MOTOR_PWM_FQC         15000 // Hz
 #endif
 
 #ifndef MOTOR_PWM_RESOLUTION
@@ -28,10 +28,10 @@
 
 static const int16_t Power_Min = -255;
 static const int16_t Power_Max = 255;
-static const int16_t dead_zone = 18;
+static const int16_t dead_zone = 20;
 
-static motor_driver_t motor_left(25, 33, 0, 0, 15000);
-static motor_driver_t motor_right(26, 27, 0, 0, 15000);
+static motor_driver_t motor_left(25, 33, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
+static motor_driver_t motor_right(19, 21, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 
 static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
@@ -46,8 +46,8 @@ static inline int16_t filter_dead_zone(const int16_t value)
 
 static inline void write(const int16_t power, const int16_t steer)
 {
-  static int16_t left_speed = constrain(power - steer, Power_Min, Power_Max);
-  static int16_t right_speed = constrain(power + steer, Power_Min, Power_Max);
+  int16_t left_speed = constrain(power - steer, Power_Min, Power_Max);
+  int16_t right_speed = constrain(power + steer, Power_Min, Power_Max);
 
   left_value.write(left_speed);
   right_value.write(right_speed);

@@ -26,11 +26,8 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     3, 
     60);
 
-TFT_eSprite left_pb_canvas(&tft); 
-TFT_eSprite right_pb_canvas(&tft); 
-
-TFT_eProgressBar left_pb;
-TFT_eProgressBar right_pb;
+TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 10, 15);
+TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 100, 15);
 
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
@@ -42,7 +39,7 @@ TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
 
-TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.width(), 60, 0, 35);
+TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 35);
 
 void gui_set_input(int input)
 {
@@ -99,13 +96,7 @@ void gui_notify_init()
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.top = 10;
-    left_pb.left = 15;
-    left_pb.width = tft.width() - left_pb.left;
     left_pb.max = 1200;
-
-    left_pb.canvas = &left_pb_canvas;
-    left_pb.value_style = &lime_segmented_pb_style;
     left_pb.background_color = TFT_BLACK;
 
     // Scale
@@ -115,13 +106,7 @@ void gui_meter_init() {
     scale.horizontal_labels = false;
 
     // Right progress bar
-    right_pb.top = 100;
-    right_pb.left = 15;
-    right_pb.width = tft.width() - right_pb.left;
     right_pb.max = 1200;
-
-    right_pb.canvas = &right_pb_canvas;
-    right_pb.value_style = &lime_segmented_pb_style;
     right_pb.background_color = TFT_BLACK;
 
     // right_pb.borders_thickness[0] = 1;
@@ -129,11 +114,11 @@ void gui_meter_init() {
     // right_pb.borders_thickness[2] = 1;
     // right_pb.borders_thickness[3] = 1; 
 
-    gui_pb_init(left_pb);
-    gui_pb_init(right_pb);
+    left_pb.init();
+    right_pb.init();
 
-    gui_pb_begin(left_pb);
-    gui_pb_begin(right_pb);
+    left_pb.begin();
+    right_pb.begin();
 
     scale.init();
     scale.begin();
@@ -175,8 +160,8 @@ void gui_labels_init()
 void gui_init() 
 {
     gui_meter_init();
-    gui_labels_init();
-    gui_led_init();
+    //gui_labels_init();
+    //gui_led_init();
 
     //gui_notify_init();
     //gui_init_spectrum();
@@ -184,12 +169,11 @@ void gui_init()
 
 void gui_progress_bars_update()
 {
-    ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
+    //ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
-    gui_pb_update(left_pb);
-    gui_pb_update(right_pb);
-
-    ovr_label.update();
+    left_pb.update();
+    right_pb.update();
+    //ovr_label.update();
 
     // if (last_update_ms - millis() > 100) {
     //     last_update_ms = millis();

@@ -66,38 +66,25 @@ void print_metadata(MetaDataType type, const char* str, int len){
   }
 }
 
-inline void audio_switch_out()
-{
-    if (i2s.isActive()) {
-        i2s.end();
-        //spdif.begin(spdif_config);
-    } else {
-        spdif.end();
-        //i2s.begin(i2s_config);
-    }
-}
-
 inline void audio_init()
 {
 //nfc.addNotifyAudioChange(i2s);
   nfc.begin(16, output_format);
 
   // S/PDIF
-  auto spdif_config = spdif.defaultConfig();
+  static auto spdif_config = spdif.defaultConfig();
   spdif_config.copyFrom(info); 
   spdif_config.pin_data = 23;
   spdif_config.buffer_size = 384;
   spdif_config.buffer_count = 8;
 
-  //spdif.begin(spdif_config);
-
   // I2S
-  auto config = i2s.defaultConfig(TX_MODE);
-  config.pin_ws = I2S_WS;
-  config.pin_bck = I2S_BCK;
-  config.pin_data = I2S_SD;
-  config.bits_per_sample = output_format;
-  config.is_master = true;
+  static auto i2s_config = i2s.defaultConfig(TX_MODE);
+  i2s_config.pin_ws = I2S_WS;
+  i2s_config.pin_bck = I2S_BCK;
+  i2s_config.pin_data = I2S_SD;
+  i2s_config.bits_per_sample = output_format;
+  i2s_config.is_master = true;
 
   encoded_out.add(metadata);
   encoded_out.add(decoder);
@@ -108,7 +95,8 @@ inline void audio_init()
 
   metadata.setCallback(print_metadata);
 
-  i2s.begin(config);
+  i2s.begin(i2s_config);
+//spdif.begin(spdif_config);
   decoder.begin();
 }
 
@@ -143,4 +131,15 @@ inline void audio_loop()
     copier.copy();
     // left_pb.value = vu.value_left();
     // right_pb.value = vu.value_right();
+}
+
+inline void audio_switch_out()
+{
+    if (i2s.isActive()) {
+        i2s.end();
+       // spdif.begin(spdif_config);
+    } else {
+        spdif.end();
+       // i2s.begin(i2s_config);
+    }
 }

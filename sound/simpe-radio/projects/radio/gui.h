@@ -10,7 +10,11 @@
   #include GEN_INC_PATH(DEFAULT_FONT)
 #endif
 
-TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
+
+static TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, 10, 15, tft.width() - 15);
+static TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, 100, 15, tft.width() - 15);
+static TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
 
 void gui_init()
 {
@@ -19,6 +23,12 @@ void gui_init()
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_WHITE);
   tft.drawBitmap(0, 0, (const uint8_t *)espressif_logo_featured, TFT_WIDTH, TFT_HEIGHT, TFT_WHITE);
+
+  left_pb.init();
+  right_pb.init();
+
+  left_pb.begin();
+  right_pb.begin();
 
   //spectrum.load_font(DEFAULT_FONT);
   // spectrum.band_segment_padding = 2;

@@ -1,5 +1,5 @@
 #include <OneButton.h>
-#include <AiEsp32RotaryEncoder.h>
+//#include <AiEsp32RotaryEncoder.h>
 
 // #include "Creds.h"
 // #include "AudioTools.h"
@@ -23,7 +23,7 @@ void setup(){
   Serial.begin(115200);
   AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
-  pinMode(PIN_LED, OUTPUT);
+  //pinMode(PIN_LED, OUTPUT);
 
   gui_init();
   buttons_init();

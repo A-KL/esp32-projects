@@ -110,7 +110,7 @@ int main()
 
 	listDevices(0);
 
-	auto dev = setupAudio("/Users/anatolii.klots/Documents/Sources/esp32-projects/sound/audio-visualizer/src-sdl/BabyElephantWalk60.wav");
+	auto dev = setupAudio("/esp32-projects/sound/audio-visualizer/src-sdl/BabyElephantWalk60.wav");
 
 	SDL_PauseAudioDevice(dev, SDL_FALSE); /* start audio playing. */
 

@@ -1,5 +1,3 @@
-#define SDL_MAIN_HANDLED
-
 #include <SDL.h>
 #include <SDL_ttf.h>
 
@@ -36,11 +34,11 @@ int main()
 		return 1;
 	}
 
-	listDevices(0);
-
-	listDevices(1);
-
-	TTF_Init();
+	if (TTF_Init() != 0)
+	{
+		SDL_Log("Unable to initialize TTF: %s", SDL_GetError());
+		return 1;
+	}
 
 	SDL_Event event;
 
@@ -58,7 +56,7 @@ int main()
 
 	// Title
 
-	auto font = "C:/Windows/Fonts/Carlito-Regular.ttf";
+	//auto font = "/Users/anatolii.klots/Documents/Sources/esp32-projects/sound/audio-visualizer/src-sdl/Carlito/Carlito-Regular.ttf";
 
 	UILabel label({ 0, 0, 320, 25 }, "S/PDIF");
 
@@ -75,8 +73,6 @@ int main()
 
 	UILabel label_out_spdif({ 30, 0, 40, 18 }, "COAX", Color::Red, Color::Red, 2);
 	label_out_spdif.setForecolor({ 255, 0, 0, 0 });
-
-	
 
 	//analyzer.setBand(0, 50);
 	//analyzer.setBand(1, 30);
@@ -112,7 +108,9 @@ int main()
 	panel.Add(level_left_label);
 	panel.Add(level_right_label);
 
-	auto dev = setupAudio("C:\\Sources\\esp32-projects\\audio-visualizer\\x64\\Debug\\Etherwood - Spoken.wav");
+	listDevices(0);
+
+	auto dev = setupAudio("/Users/anatolii.klots/Documents/Sources/esp32-projects/sound/audio-visualizer/src-sdl/BabyElephantWalk60.wav");
 
 	SDL_PauseAudioDevice(dev, SDL_FALSE); /* start audio playing. */
 

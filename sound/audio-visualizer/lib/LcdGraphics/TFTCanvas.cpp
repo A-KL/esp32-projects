@@ -1,10 +1,5 @@
 #include "TFT_eSPI.h"
-
-#include "../Fonts/FreeSans7pt7b.h"
-// #include "../Fonts/FreeSans8pt7b.h"
-#include "../Fonts/FreeSansBold7pt7b.h"
-//#include "../Fonts/FreeSansBold8pt7b.h"
-
+#include "../fonts/NotoSansBold15.h"
 #include "../BaseGraphics/Color.h"
 
 #include "Canvas.h"
@@ -18,6 +13,9 @@ void TFTCanvas::Init(const Color& color)
   {
     _tft->setRotation(_tft->getRotation() ^ 1);
   }
+
+  _tft->setSwapBytes(true);
+  _tft->loadFont(NotoSansBold15);
 
   _tft->fillScreen((unsigned short)color);
 }
@@ -45,10 +43,10 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
     if (index == 0) {
-      //_tft->setFont(&FreeSansBold7pt7b);
+      _tft->setFreeFont(1);
     }
     else {
-     // _tft->setFont(&FreeSans7pt7b);
+      _tft->setFreeFont(index);
     }
 
     _tft->setTextSize(size);

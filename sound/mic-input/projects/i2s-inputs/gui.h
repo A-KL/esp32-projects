@@ -34,7 +34,7 @@ TFT_eLabel ovr_label(line_label_sprite, "OVR", 4, TFT_DARK_DARK_GRAY);
 TFT_eProgressBar left_pb;
 TFT_eProgressBar right_pb;
 
-TFT_eScale scale(scale_sprite, scale_text_sprite, {3, 1, 0, -1, -3, -5, -10, -20}, "dB");
+TFT_eScale scale(scale_sprite, scale_text_sprite, {2, 0, -1, -2, -3, -5, -10, -20}, "dB");
 
 const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
@@ -51,7 +51,7 @@ static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY);
 const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
-const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 35);
 
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     { {0, &YellowBrush}, {1, &GreenBrush}, {10, &YellowBrush}, {11, &GreenBrush}},
@@ -118,8 +118,8 @@ void gui_notify_init() {
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.top = 10;
-    left_pb.left = 15;
+    left_pb.top = 5;
+    left_pb.left = 5;
     left_pb.width = tft.width() - left_pb.left;
     left_pb.max = 1200;
 
@@ -129,19 +129,19 @@ void gui_meter_init() {
 
     // Scale
     scale.left = 0;
-    scale.top = 35;
+    scale.top = 30;
     scale.width = tft.width();
     scale.height = 60;
     scale.interval_layout = Both;
     scale.show_labels = true;
-    scale.horizontal_labels = false;
+    scale.horizontal_labels = true;
 
     scale_sprite.loadFont(NotoSansBold15);
     scale_text_sprite.loadFont(NotoSansBold15);
 
     // Right progress bar
-    right_pb.top = 100;
-    right_pb.left = 15;
+    right_pb.top = 95;
+    right_pb.left = 5;
     right_pb.width = tft.width() - right_pb.left;
     right_pb.max = 1200;
 

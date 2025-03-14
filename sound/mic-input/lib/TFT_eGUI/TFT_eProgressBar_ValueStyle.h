@@ -87,11 +87,11 @@ class TFT_eProgressBar_SegmentedValueStyle : public TFT_eProgressBar_ValueStyle
             :  TFT_eProgressBar_SegmentedValueStyle(
                { 
                     { 0, segment_color }, 
-                    { (segments_count * 0.9), segment_hi_color }
+                    { (segments_count * 0.8), segment_hi_color }
                 },
                 { 
                     { 0, segment_bg_color }, 
-                    { (segments_count * 0.9), segment_hi_bg_color }
+                    { (segments_count * 0.8), segment_hi_bg_color }
                 },
                 padding,
                 segments_count)

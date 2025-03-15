@@ -12,15 +12,15 @@ void setup(void) {
     // Open Serial 
     Serial.begin(115200);
     while(!Serial);
-    AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
+    AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
   
     // setup output
     auto cfg = out.defaultConfig(TX_MODE);
     cfg.copyFrom(info);
-    cfg.ssid = "ssid";
-    cfg.password = "password";
+    cfg.ssid = "";
+    cfg.password = "";
     cfg.stream_name = "Stream1";
-    cfg.target_ip = IPAddress{192,168,1,37}; 
+    cfg.target_ip = IPAddress{192,168,1,30}; 
     cfg.throttle_active = true;
     //cfg.throttle_correction_us = 0; // optimize overload and underrun
     if (!out.begin(cfg)) stop();

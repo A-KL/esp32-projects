@@ -2,6 +2,7 @@
 
 #include "gui.h"
 #include "audio.h"
+#include "network.h"
 
 enum audio_input_t {
     ADC = 0,

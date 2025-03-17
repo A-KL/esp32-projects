@@ -2,15 +2,13 @@
 #include "gui.h"
 #include <VuOutput.h>
 
-AudioInfo info(I2S_SAMPLE_RATE, 2, I2S_BPS);
+AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
 
 I2SStream i2s;
 CsvOutput<int16_t> csv(Serial);
-VuMeter<int16_t> vu(0.1);
+VuMeter<int16_t> vu(AUDIO_VU_RATIO);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
-
-//const int output_format = I2S_BPS;
 
 void setup(){
     Serial.begin(115200);

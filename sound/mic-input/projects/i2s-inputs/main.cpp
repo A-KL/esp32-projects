@@ -1,17 +1,14 @@
 #include "AudioTools.h"
-#include "AudioTools/AudioLibs/VBANStream.h"
 
 #include "Creds.h"
 #include "gui.h"
 #include <VuOutput.h>
 
-
-AudioInfo info(I2S_SAMPLE_RATE, 2, I2S_BPS);
+AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
 
 I2SStream i2s;
 CsvOutput<int16_t> csv(Serial);
-VuMeter<int16_t> vu(0.05);
-VBANStream vban;
+VuMeter<int16_t> vu(1.50);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
@@ -30,11 +27,11 @@ void setup(){
     gui_init();
     gui_set_input((int)1);
 
-    AudioLogger::instance().begin(Serial, AudioLogger::Info);
+    AudioLogger::instance().begin(Serial, AudioLogger::Debug);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
-    //cfg.i2s_format = I2S_STD_FORMAT; // or try with I2S_LSB_FORMAT
+    cfg.i2s_format = I2S_STD_FORMAT; // or try with I2S_LSB_FORMAT
     cfg.is_master = true;
     cfg.pin_ws = I2S_WS;
     cfg.pin_bck = I2S_SCK;
@@ -45,26 +42,26 @@ void setup(){
     //cfg.pin_mck = 3; 
 
     // Network
-    auto vban_cfg = vban.defaultConfig(TX_MODE);
-    vban_cfg.copyFrom(info);
-    vban_cfg.ssid = LOCAL_SSID;
-    vban_cfg.password = LOCAL_PASSWORD;
-    vban_cfg.stream_name = "av-receiver-stream";
-    vban_cfg.target_ip = IPAddress{0,0,0,0}; 
-    vban_cfg.throttle_active = true;
+    // auto vban_cfg = vban.defaultConfig(TX_MODE);
+    // vban_cfg.copyFrom(info);
+    // vban_cfg.ssid = LOCAL_SSID;
+    // vban_cfg.password = LOCAL_PASSWORD;
+    // vban_cfg.stream_name = "av-receiver-stream";
+    // vban_cfg.target_ip = IPAddress{0,0,0,0}; 
+    // vban_cfg.throttle_active = true;
 
     // Decoders
     decoded_out.add(vu);
-    decoded_out.add(vban);
+   // decoded_out.add(vban);
    // decoded_out.add(csv);
 
     i2s.begin(cfg);
-   // csv.begin(info);
+    csv.begin(info);
     vu.begin(info);
 
-    if (!vban.begin(vban_cfg)) {
-      stop();
-    }
+    // if (!vban.begin(vban_cfg)) {
+    //   stop();
+    // }
 
     gui_run(0);
 }

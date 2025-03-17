@@ -18,7 +18,7 @@ public:
 
 	virtual int Height() const = 0;
 
-	virtual int Witdth() const = 0;
+	virtual int Width() const = 0;
 
 	virtual void Clear(const TColor& color) = 0;
 

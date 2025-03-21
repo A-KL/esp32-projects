@@ -65,11 +65,12 @@ void setup(){
   i2s.begin(config);
   decoder.begin();
 
-  gui_run(0);
+  //gui_run(0);
 }
 
 void loop(){
   copier.copy();
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
+  gui_progress_bars_update();
 }

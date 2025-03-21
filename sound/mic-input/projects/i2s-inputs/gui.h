@@ -195,6 +195,14 @@ void gui_labels_init() {
     gui_label_begin(ovr_label);
 }
 
+int gui_cpu_get_cores() 
+{
+    esp_chip_info_t info;
+    esp_chip_info(&info);
+    
+    return info.cores;
+}
+
 void gui_init() 
 {
     tft.init();
@@ -243,7 +251,18 @@ void gui_update_task(void *arg)
     }
 }
 
-void gui_run(int core) 
+inline void gui_update()
 {
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
+    if (gui_cpu_get_cores() > 1) {
+        return;
+    }
+    gui_progress_bars_update();
+}
+
+void gui_begin() 
+{
+    if (gui_cpu_get_cores() < 1) {
+        return;
+    }
+    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
 }

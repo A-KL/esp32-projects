@@ -41,6 +41,14 @@ TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
 
 TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 35);
 
+int gui_cpu_get_cores() 
+{
+    esp_chip_info_t info;
+    esp_chip_info(&info);
+    
+    return info.cores;
+}
+
 void gui_set_input(int input)
 {
     adc_label.foreground_color = TFT_DARK_DARK_GRAY;
@@ -196,7 +204,18 @@ void gui_update_task(void *arg)
     }
 }
 
-void gui_run(int core) 
+inline void gui_update()
 {
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
+    if (gui_cpu_get_cores() > 1) {
+        return;
+    }
+    gui_progress_bars_update();
+}
+
+void gui_begin() 
+{
+    if (gui_cpu_get_cores() < 1) {
+        return;
+    }
+    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
 }

@@ -25,13 +25,12 @@ void setup(){
     tft.fillScreen(TFT_BLACK);
 
     gui_init();
-    //gui_set_input((int)1);
 
     AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
-    cfg.is_master = true;
+    cfg.is_master = I2S_MASTER;
     cfg.pin_ws = I2S_WS;
     cfg.pin_bck = I2S_BCK;
     cfg.pin_data = I2S_SD;
@@ -68,5 +67,5 @@ void loop(){
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
 
-  gui_progress_bars_update();
+  gui_update();
 }

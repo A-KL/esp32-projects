@@ -247,3 +247,27 @@ void gui_run(int core)
 {
     xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
 }
+
+int gui_cpu_get_cores() 
+{
+    esp_chip_info_t info;
+    esp_chip_info(&info);
+    
+    return info.cores;
+}
+
+inline void gui_update()
+{
+    if (gui_cpu_get_cores() > 1) {
+        return;
+    }
+    gui_progress_bars_update();
+}
+
+void gui_begin() 
+{
+    if (gui_cpu_get_cores() < 1) {
+        return;
+    }
+    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
+}

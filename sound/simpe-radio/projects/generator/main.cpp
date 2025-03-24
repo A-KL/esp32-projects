@@ -42,7 +42,6 @@ void setup(void) {
   Serial.println("started...");
 }
 
-// Arduino loop - copy sound to out 
 void loop() {
   copier.copy();
 }

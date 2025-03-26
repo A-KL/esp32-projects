@@ -3,12 +3,16 @@
 #include <VuOutput.h>
 
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
+AudioInfo info_out(I2S_SAMPLE_RATE, 2, 16);
 
 I2SStream i2s;
-//CsvOutput<int16_t> csv(Serial);
-VuMeter<int16_t> vu(AUDIO_VU_RATIO);
 MultiOutput decoded_out;
-StreamCopy copier(decoded_out, i2s);
+
+NumberFormatConverterStream nfc(decoded_out);
+CsvOutput<int16_t> csv(Serial);
+VuMeter<int16_t> vu(AUDIO_VU_RATIO);
+
+StreamCopy copier(nfc, i2s);
 
 void setup(){
     Serial.begin(115200);
@@ -25,7 +29,7 @@ void setup(){
     gui_init();
     //gui_set_input((int)1);
 
-    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+    AudioLogger::instance().begin(Serial, AudioLogger::Debug);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
@@ -33,17 +37,18 @@ void setup(){
     cfg.pin_ws = I2S_WS;
     cfg.pin_bck = I2S_BCK;
     cfg.pin_data = I2S_SD;
-    //cfg.use_apll = false;  // try with yes
-    //cfg.pin_mck = 3; 
+    cfg.pin_mck = -1;
+    cfg.i2s_format =  I2S_STD_FORMAT;
 
     decoded_out.add(vu);
-    //decoded_out.add(csv);
+   // decoded_out.add(csv);
 
     i2s.begin(cfg);
 
+    nfc.begin(I2S_BPS, 16);
     // make sure that we have the correct channels set up
     //csv.begin(info);
-    vu.begin(info);
+    vu.begin(info_out);
 
     gui_begin();
 }

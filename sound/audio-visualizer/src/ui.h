@@ -8,7 +8,7 @@ static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
 
 void loopUI(void * args)
 {
-    auto canvas = *(TCanvas*)args;
+    auto canvas = *(TFTCanvas*)args;
 
     AudioFrame frame = {0, 0};
 

@@ -43,7 +43,7 @@ int Freq_Bin[BUCKETS * 2]
 #define SAMPLES 1024
 #define SAMPLES_DATA 1024 * 4 * 2
 
-complex signal[SAMPLES];
+complex audio_signal[SAMPLES];
 float spectrum[BUCKETS];
 
 SDL_AudioDeviceID dev;
@@ -59,10 +59,10 @@ void run_fft(Uint8* stream, int start, int len)
 
         //SDL_Log("%i L: %f R: %f", i, sampleLeft, sampleRight);
 
-        signal[i] = sampleLeft;
+        audio_signal[i] = sampleLeft;
     }
 
-    CFFT::Forward(signal, SAMPLES);
+    CFFT::Forward(audio_signal, SAMPLES);
     //auto SampleRate = 44100;
 
     //for (int j = 0; j < (SAMPLES / 2); j++)
@@ -88,7 +88,7 @@ void run_fft(Uint8* stream, int start, int len)
 
     for (int i = 0, bin = 1; i < 30; i++, bin += 4)
     {
-        analyzer.setBand(i, abs(signal[bin].re()));
+        analyzer.setBand(i, abs(audio_signal[bin].re()));
     }
 }
 
@@ -141,7 +141,6 @@ SDL_AudioDeviceID setupAudio(const char* file)
     SDL_Log("Default audio playback device: %s", SDL_GetAudioDeviceName(0, 1));
 
     return dev;
-
 }
 
 void listDevices(bool is_capture) {

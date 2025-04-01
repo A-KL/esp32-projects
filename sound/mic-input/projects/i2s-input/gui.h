@@ -252,6 +252,8 @@ int gui_cpu_get_cores()
 {
     esp_chip_info_t info;
     esp_chip_info(&info);
+
+    log_i("CPU CORES: %d", info.cores);
     
     return info.cores;
 }

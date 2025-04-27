@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#define ESP_NOW_CHANNELS_COUNT 10
+#define ESP_NOW_CHANNELS_COUNT 20
 
 const uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 

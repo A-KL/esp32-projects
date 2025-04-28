@@ -19,7 +19,9 @@ struct Signal {
 
 Signal message;
 
-void radio_init()
+static bool radio_initialized = false;
+
+bool radio_init()
 {
   radio.begin();
   radio.setChannel(RF_CHANNEL);
@@ -30,16 +32,24 @@ void radio_init()
   //radio.setRetries(3, 5);
   radio.openWritingPipe(RF_PIPE_OUT);
   radio.stopListening();
+  radio_initialized = radio.isChipConnected() == 1;
 //#ifdef DEBUG
   radio.printDetails();
-  Log.infoln("RF24 Connected: %d", radio.isChipConnected() == 1 ? "Yes" : "No");
+  Log.infoln("RF24 Connected: %s", init ? "Yes" : "No");
 //#endif
+  return radio_initialized;
 }
 
-inline void radio_send_default()
+inline bool radio_send_default()
 {
+  if (!radio_initialized) {
+    return false;
+  }
+
   auto res = radio.write(&message, sizeof(Signal));
+
   if (!res){
-    // log_d("RF24: Error sending the data"); 
- }
+      // log_d("RF24: Error sending the data"); 
+  }
+  return res;
 }

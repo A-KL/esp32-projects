@@ -15,7 +15,7 @@
 #define INPUT_PWM_MIN   1024
 
 const int adc_input_pins[] = { 
-    A0, A1, A3
+    A0, A1, A2
 };
 
 const int sw_three_input_pins[] = { 

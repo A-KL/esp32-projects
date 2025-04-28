@@ -81,6 +81,7 @@ void loop()
   for (auto i=0; i< CHANNELS_COUNT; i++) 
   {
     unsigned short raw = inputs[i]->read();
+    Log.info(" %d\t", raw);
   #ifdef RADIO_ENABLED
     message.channels[i].value = raw;
   #endif
@@ -88,6 +89,8 @@ void loop()
     data_message.channels[i].value = raw;
   #endif
   }
+
+  Log.infoln(" ");
 
   radio_send_default();
 

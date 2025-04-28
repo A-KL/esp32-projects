@@ -82,14 +82,15 @@ void loop()
   {
     unsigned short raw = inputs[i]->read();
     Log.info(" %d\t", raw);
-  #ifdef RADIO_ENABLED
-    message.channels[i].value = raw;
-  #endif
-  #ifdef ESP_NOW_ENABLED
-    data_message.channels[i].value = raw;
-  #endif
-  }
+      
+    #ifdef RADIO_ENABLED
+      message.channels[i].value = raw;
+    #endif
 
+    #ifdef ESP_NOW_ENABLED
+      data_message.channels[i].value = raw;
+    #endif
+  }
   Log.infoln(" ");
 
   radio_send_default();

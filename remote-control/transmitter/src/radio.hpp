@@ -35,7 +35,7 @@ bool radio_init()
   radio_initialized = radio.isChipConnected() == 1;
 //#ifdef DEBUG
   radio.printDetails();
-  Log.infoln("RF24 Connected: %s", init ? "Yes" : "No");
+  Log.infoln("RF24 Connected: %s", radio_initialized ? "Yes" : "No");
 //#endif
   return radio_initialized;
 }

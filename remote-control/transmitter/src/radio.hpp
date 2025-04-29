@@ -15,6 +15,12 @@ struct Channel {
 };
 struct Signal {
   Channel channels[CHANNELS_COUNT];
+  int max_value;
+  int min_value = 0;
+
+  float value(unsigned short index, float min, float max) {
+      return map(channels[index].value, min_value, max_value, min, max);
+  }
 };
 
 Signal message;
@@ -46,6 +52,7 @@ inline bool radio_send_default()
     return false;
   }
 
+  message.max_value = ADC_MAX;
   auto res = radio.write(&message, sizeof(Signal));
 
   if (!res){

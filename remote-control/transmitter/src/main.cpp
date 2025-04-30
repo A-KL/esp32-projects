@@ -11,6 +11,7 @@
 
 #include "printf.h"
 #include "inputs.hpp"
+#include "display.hpp"
 
 #ifdef ESP_NOW_ENABLED
 #include <esp32_now.hpp>
@@ -56,6 +57,8 @@ void setup()
 
   inputs_init();
 
+  display_init();
+
 #ifdef RADIO_ENABLED
   radio_init();
 #endif
@@ -78,10 +81,10 @@ void loop()
 {
   digitalWrite(LED_BUILTIN, HIGH);
 
-  for (auto i=0; i< CHANNELS_COUNT; i++) 
+  for (auto i=0; i < CHANNELS_COUNT; i++) 
   {
     unsigned short raw = inputs[i]->read();
-    Log.info(" %d\t", raw);
+    //Log.info(" %d\t", raw);
       
     #ifdef RADIO_ENABLED
       message.channels[i].value = raw;
@@ -90,8 +93,14 @@ void loop()
     #ifdef ESP_NOW_ENABLED
       data_message.channels[i].value = raw;
     #endif
+
+    #ifdef DISPLAY_ENABLED
+      if (i < 3) display_rows[i] = raw;
+    #endif
   }
-  Log.infoln(" ");
+ // Log.infoln(" ");
+
+  display_update();
 
   radio_send_default();
 

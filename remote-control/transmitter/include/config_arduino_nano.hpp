@@ -2,8 +2,11 @@
 
 #include <Arduino.h>
 
-#define RF_CE_PIN 7
-#define RF_CSN_PIN 8
+// #define RF_CE_PIN 7
+// #define RF_CSN_PIN 8
+
+#define RF_CE_PIN 10
+#define RF_CSN_PIN 9
 
 #define ADC_MIN 0
 #define ADC_MAX 1024

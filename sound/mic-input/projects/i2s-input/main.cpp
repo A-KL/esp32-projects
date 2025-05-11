@@ -37,7 +37,8 @@ void setup(){
     cfg.pin_ws = I2S_WS;
     cfg.pin_bck = I2S_BCK;
     cfg.pin_data = I2S_SD;
-    cfg.i2s_format =  I2S_STD_FORMAT;
+    cfg.i2s_format = I2S_FORMAT;//  I2S_RIGHT_JUSTIFIED_FORMAT;
+    
 
     decoded_out.add(vu);
     //decoded_out.add(csv);

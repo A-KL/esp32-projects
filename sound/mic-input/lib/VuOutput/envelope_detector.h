@@ -20,8 +20,8 @@ struct audio_sample_t {
 
 void envelope_init(audio_envelope_context_t& context, const uint16_t sample_rate) 
 {
-    context.attack = expf(-1.0/((float)sample_rate * .030)); //50mS Attack
-    context.release = expf(-1.0/((float)sample_rate * .100)); //100mS Release
+   context.attack = expf(-1.0/((float)sample_rate * .010)); //50mS Attack
+   context.release = expf(-1.0/((float)sample_rate * .050)); //100mS Release
 }
 
 template<typename T>
@@ -31,7 +31,7 @@ inline void map_sample(const uint8_t* samples, const uint8_t bps, const uint16_t
 }
 
 template<typename T>
-inline audio_sample_t<T>* get_sample(const uint16_t sample_index, const uint8_t* samples)
+inline audio_sample_t<T>* get_sample(const uint8_t* samples, const uint16_t sample_index)
 {
     return (audio_sample_t<T>*)(samples + sample_index * sizeof(T) * 2);
 }
@@ -48,10 +48,16 @@ void envelope_calculate_right_left(const uint8_t* samples, const float gain, con
 
     for (auto i=0; i<samples_count; i++)
     {
-        sample = get_sample<T>(i, samples);
+        auto padding = i*4;
+        //LOGW("R(%02x, %02x) L(%02x, %02x)", samples[padding], samples[padding+1], samples[padding+2], samples[padding+3]);
+
+        sample = get_sample<T>(samples, i);
 
         left_x = sample->left;
         right_x = sample->right;
+
+        //LOGW("R(%04x) L(%04x)", sample->right, sample->left);
+        //LOGW("R(%04x) L(%04x)", sample->right, sample->left);
 
         left_x *= gain;
         right_x *= gain;

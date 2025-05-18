@@ -28,6 +28,11 @@ public:
     bool begin(int channels) {
         TRACED();
         cfg.channels = channels;
+
+        log_w("CH: %d", cfg.channels);
+        log_w("SR: %d", cfg.sample_rate);
+        log_w("BPS: %d", cfg.bits_per_sample);
+
         return begin();
     }
 
@@ -67,7 +72,7 @@ public:
 
       size_t samples_read = len / (sizeof(T) * cfg.channels);
 
-      LOGI("Got %d samples to process", (int)samples_read);
+      LOGD("Got %d samples to process", (int)samples_read);
 
       envelope_calculate_right_left<T>(
         data,

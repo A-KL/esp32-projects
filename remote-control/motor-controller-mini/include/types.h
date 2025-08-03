@@ -12,9 +12,9 @@ enum motor_mode_t {
 
 const std::map<const String, const motor_mode_t> drive_modes_map = 
 { 
-  {"a_b_en", a_b_en}, 
-  {"a_b", a_b},
-  {"dir_en", dir_en} 
+  { "a_b_en", a_b_en }, 
+  { "a_b", a_b },
+  { "dir_en", dir_en } 
 };
 
 struct motor_pins_t 
@@ -34,9 +34,9 @@ struct motor_config_t
   motor_pins_t pins;
 };
 
-enum lego_servo_dir_t {
+enum lego_servo_position_t {
     forward = 0,
-    stop = 1,
+    middle = 1,
     backwards = 2
 };
 
@@ -44,7 +44,7 @@ struct lego_servo_t {
     short pin_a;
     short pin_b;
     short channel;
-    lego_servo_dir_t direction;
+    lego_servo_position_t direction;// = lego_servo_position_t::middle;
 };
 
 // Input config

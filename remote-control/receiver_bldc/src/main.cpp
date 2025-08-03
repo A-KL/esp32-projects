@@ -93,7 +93,7 @@ void loop()
   auto left = left_value.read();
   auto right = right_value.read();
 
-  log_d("Speed:\t%d\t%d", left, right);
+  log_i("Speed:\t%d\t%d", left, right);
 
   delay(50);
 

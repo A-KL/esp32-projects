@@ -65,62 +65,62 @@ private:
     }
 };
 
-class LegoServo
+class lego_servo_driver_t
 {
-public:
-    LegoServo(uint8_t pin_a, uint8_t pin_b, uint8_t pwm_channel) 
-    : _pin_a(pin_a), _pin_b(_pin_b), _pwm_channel(pwm_channel)
-    { }
+    public:
+        lego_servo_driver_t(uint8_t pin_a, uint8_t pin_b, uint8_t pwm_channel) 
+            : _pin_a(pin_a), _pin_b(_pin_b), _pwm_channel(pwm_channel)
+        { }
 
-    void init() {
-        pinMode(_pin_a, OUTPUT);
-        pinMode(_pin_b, OUTPUT);  
-    }
-
-    template<int16_t TMin, int16_t TMax>
-    inline void write(int value)
-    {
-        //auto value = map();
-        write(value);
-    }
-
-    void write(int value)
-    {
-        if (value == 0) 
-        {
-            if (_direction == backwards) {
-                ledcDetachPin(_pin_a);
-            } 
-            else if(_direction = forward) {
-                ledcDetachPin(_pin_b);
-            }
-            _direction = stop;
-            digitalWrite(_pin_a, false);
-            digitalWrite(_pin_b, false);
-        } 
-        else
-        {
-            if (_direction != forward && value < 0) {
-                ledcDetachPin(_pin_a);
-                ledcAttachPin(_pin_b, _pwm_channel);
-                digitalWrite(_pin_a, false);
-                _direction = forward;
-            }
-            else if (_direction != backwards && value > 0) {
-                ledcDetachPin(_pin_b);
-                ledcAttachPin(_pin_a, _pwm_channel);
-                digitalWrite(_pin_b, false);
-                _direction = backwards; 
-            }
-
-            ledcWrite(_pwm_channel, abs(value));                 
+        void init() {
+            pinMode(_pin_a, OUTPUT);
+            pinMode(_pin_b, OUTPUT);  
         }
-    }
 
-private:
-    uint8_t _pin_a, _pin_b;
-    uint8_t _pwm_channel;
-    lego_servo_dir_t _direction = stop;
+        template<int16_t TMin, int16_t TMax>
+        inline void write(int value)
+        {
+            //auto value = map();
+            write(value);
+        }
+
+        void write(int value)
+        {
+            if (value == 0) 
+            {
+                if (_state == backwards) {
+                    ledcDetachPin(_pin_a);
+                } 
+                else if(_state = forward) {
+                    ledcDetachPin(_pin_b);
+                }
+                _state = middle;
+                digitalWrite(_pin_a, false);
+                digitalWrite(_pin_b, false);
+            } 
+            else
+            {
+                if (_state != forward && value < 0) {
+                    ledcDetachPin(_pin_a);
+                    ledcAttachPin(_pin_b, _pwm_channel);
+                    digitalWrite(_pin_a, false);
+                    _state = forward;
+                }
+                else if (_state != backwards && value > 0) {
+                    ledcDetachPin(_pin_b);
+                    ledcAttachPin(_pin_a, _pwm_channel);
+                    digitalWrite(_pin_b, false);
+                    _state = backwards; 
+                }
+
+                ledcWrite(_pwm_channel, abs(value));                 
+            }
+        }
+
+    private:
+        uint8_t _pin_a, _pin_b;
+        uint8_t _pwm_channel;
+        lego_servo_position_t _state = middle;
 };
 
 inline void lego_servo_init(const lego_servo_t& servo)
@@ -150,7 +150,7 @@ void lego_servo_write(lego_servo_t& servo, int16_t value)
             ledcDetachPin(servo.pin_b);
         }
 
-        servo.direction = stop;
+        servo.direction = middle;
         digitalWrite(servo.pin_a, false);
         digitalWrite(servo.pin_b, false);
     } 

@@ -2,9 +2,15 @@
 #include <Wire.h>
 #include <ArduinoLog.h>
 
+#include <Stepper.h>
 #include <AS5600.h>
 
+#define STEPS 100
+
 AS5600L encoder(AS5600_DEFAULT_ADDRESS);   //  use default Wire
+
+Stepper stepper(STEPS, 8, 9, 10, 11);
+int previous = 0;
 
 void setup()
 {
@@ -30,10 +36,17 @@ void setup()
   // encoder.begin(4);  //  set direction pin.
   // encoder.setDirection(AS5600_CLOCK_WISE);
   // encoder.setOutputMode(AS5600_OUTMODE_ANALOG_100);
+  stepper.setSpeed(30);
 }
 
 void loop()
 {
-  Serial.println(encoder.readAngle());
+  auto val = encoder.readAngle();
+  
+  Serial.println(val);
+
+  stepper.step(val - previous);
+
+  previous = val;
 
 }

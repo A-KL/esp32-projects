@@ -11,7 +11,7 @@ const uint8_t adc_input_pins[] = { };
 const uint8_t pwm_input_pins[] = { 1, 0 };
 
 /* SBUS */
-const uint8_t sbus_rx_tx_pins[] = { 20, 21 };
+const uint8_t sbus_rx_tx_pins[] = { 44, 43 };
 const auto sbus_serial = &Serial1;
 
 /* Outputs */

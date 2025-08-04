@@ -8,7 +8,7 @@
 #include <storage.h>
 #include <inputs_queue.h>
 #include <network.h>
-#include <server.h>
+#include <web_server.h>
 #include <lcd.h>
 //#include <scheduler.h>
 //#include <button_input.h>

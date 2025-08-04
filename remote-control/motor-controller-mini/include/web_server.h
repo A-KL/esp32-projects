@@ -11,6 +11,7 @@
 #include <LittleFS.h>
 
 #include <types.h>
+#include <storage.h>
 
 DNSServer dns;
 

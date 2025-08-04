@@ -11,7 +11,7 @@
 class pwm_input_t 
 {
 public:
-  void Capture() 
+  void capture() 
   {
     currentTime = micros();
     if (currentTime > startTime) {
@@ -20,7 +20,7 @@ public:
     }
   }
 
-  int Result() 
+  int value() 
   {
     if (pulses < 2000) {
       result = pulses;
@@ -36,15 +36,15 @@ public:
 
 static pwm_input_t input_pwm[pwm_inputs_count];
 
-void IRAM_ATTR TimerInputHandler(void* arg) {
+void IRAM_ATTR timerInputHandler(void* arg) {
   auto input = (pwm_input_t*)arg;
-  input->Capture();
+  input->capture();
 }
 
 inline void pwm_in_init() {
   for (auto i=0; i < pwm_inputs_count; i++) {
       pinMode(pwm_input_pins[i], INPUT);
-      attachInterruptArg(digitalPinToInterrupt(pwm_input_pins[i]), TimerInputHandler, &input_pwm[i], CHANGE);
+      attachInterruptArg(digitalPinToInterrupt(pwm_input_pins[i]), timerInputHandler, &input_pwm[i], CHANGE);
   }
 }
 
@@ -60,7 +60,7 @@ bool pwm_receive(const uint8_t index, int16_t* output)
     return false;
   }
 
-  auto pwm_value = input_pwm[index].Result();
+  auto pwm_value = input_pwm[index].value();
   auto pwm_detected = pwm_value > INPUT_PWM_ZERO;
 
   if (pwm_detected) {
@@ -70,13 +70,19 @@ bool pwm_receive(const uint8_t index, int16_t* output)
   return pwm_detected;
 }
 
-inline int pwm_receive(int16_t* outputs) 
+uint8_t pwm_receive(int16_t* outputs) 
 {
   int count = 0;
+
   for (auto i=0; i<pwm_inputs_count; i++) {
-    if(pwm_receive(i, outputs)) {
+    if (pwm_receive(i, outputs)) {
       count++;
     }
   }
+
+#ifdef INPUT_PWM_DEBUG
+  trace_values("PWM: ", outputs, count);
+#endif
+
   return count;
 }

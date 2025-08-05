@@ -4,66 +4,11 @@
 #include <Arduino.h>
 #include <types.h>
 
-#define SERVO_FREQ        50
-#define SERVO_RES         14
+#define LEGO_SERVO_FREQ     50
+#define LEGO_SERVO_RES      14
 
-#define LEGO_SERVO_LOW  0
-#define LEGO_SERVO_HIGH (long)(pow(2, SERVO_RES) - 1)
-
-template<uint8_t PWM_CHANNELS_COUNT>
-class EspArduinoHalDriver
-{
-protected:
-    EspArduinoHalDriver()
-    {
-
-    }
-
-    inline void init_pin(uint8_t pin, uint8_t direction) {
-        pinMode(pin, direction);
-    }
-
-    inline void init_pwm_pin(uint8_t pin, uint8_t& channel = -1) {
-        if (channel == -1)
-        {
-            channel = get_or_assign_channel(pin);
-        }
-        ledcAttachPin(pin, channel);
-    }
-
-    inline void write(uint8_t pin, int value, uint8_t& channel = -1) {
-        if (channel == -1)
-        {
-            channel = get_or_assign_channel(pin);
-        }
-        ledcWrite(channel, value);
-    }
-
-    inline void write(uint8_t pin, bool value) {
-        digitalWrite(pin, value);
-    }
-
-
-
-private:
-    static uint8_t pwm_channels[PWM_CHANNELS_COUNT];
-
-    int find_channel(uint8_t pin) {
-        for (auto i=0; i<PWM_CHANNELS_COUNT; ++i) {
-            if (pwm_channels[i] == pin) {
-                return i;
-            }
-        }
-    }
-
-    int get_or_assign_channel(uint8_t pin) {
-        for (auto i=0; i<PWM_CHANNELS_COUNT; ++i) {
-            if (pwm_channels[i] == pin) {
-                return i;
-            }
-        }
-    }
-};
+#define LEGO_SERVO_LOW      0
+#define LEGO_SERVO_HIGH     (long)(pow(2, LEGO_SERVO_RES) - 1)
 
 class lego_servo_driver_t
 {
@@ -75,6 +20,23 @@ class lego_servo_driver_t
         void init() {
             pinMode(_pin_a, OUTPUT);
             pinMode(_pin_b, OUTPUT);  
+        }
+
+        bool attach(bool attach = true)
+        {
+            if (_state == middle) {
+                return true;
+            }
+
+            if (!attach && _state == forward) {
+                ledcDetachPin(_pin_b);
+            }
+
+            if (!attach && _state == backwards) {
+                ledcDetachPin(_pin_a);
+            }
+
+            return true;
         }
 
         template<int16_t TMin, int16_t TMax>
@@ -123,14 +85,14 @@ class lego_servo_driver_t
         lego_servo_position_t _state = middle;
 };
 
-inline void lego_servo_init(const lego_servo_t& servo)
+void lego_servo_init(const lego_servo_t& servo)
 {
     pinMode(servo.pin_a, OUTPUT);
     pinMode(servo.pin_b, OUTPUT);
     ledcSetup(servo.channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 }
 
-inline void lego_servos_init()
+void lego_servos_init()
 {
     for (auto& servo : lego_servos) {
         lego_servo_init(servo);

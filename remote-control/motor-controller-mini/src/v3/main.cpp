@@ -39,6 +39,7 @@ void loop() {
 
   static int16_t outputs_motors[motors_count];
   static int16_t outputs_servo[servos_count];
+  static int16_t outputs_lego_servo[lego_servos_count];
 
     // SBUS
   if (sbus_receive(inputs) > 0) 
@@ -51,6 +52,10 @@ void loop() {
     servos_attach(true, servos_count);
    // settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+
+    // Lego Servo
+    // settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
+    lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)
   {
@@ -65,7 +70,13 @@ void loop() {
   }
   else if (pwm_receive(inputs) )
   {
-    
+    // Motors
+    // settings_map_inputs(global_config, "pwm", inputs, motor, outputs_motors, motors_count);
+    // write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
+
+    // Lego Servo
+    // settings_map_inputs(global_config, "pwm", inputs, servo, outputs_servo, servos_count);
+    // lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else // No input
   {

@@ -71,12 +71,16 @@ void loop() {
   else if (pwm_receive(inputs) )
   {
     // Motors
+    outputs_motors[0] = inputs[0];
+    outputs_motors[1] = inputs[2];
     // settings_map_inputs(global_config, "pwm", inputs, motor, outputs_motors, motors_count);
-    // write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
+    write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
 
     // Lego Servo
+    outputs_lego_servo[0] = inputs[0];
+    outputs_lego_servo[1] = inputs[2];
     // settings_map_inputs(global_config, "pwm", inputs, servo, outputs_servo, servos_count);
-    // lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
+    lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else // No input
   {

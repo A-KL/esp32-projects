@@ -5,10 +5,10 @@
 #include <types.h>
 
 #define LEGO_SERVO_FREQ     50
-#define LEGO_SERVO_RES      14
+#define LEGO_SERVO_RES      10
 
-#define LEGO_SERVO_LOW      0
-#define LEGO_SERVO_HIGH     (long)(pow(2, LEGO_SERVO_RES) - 1)
+#define LEGO_SERVO_MIN      0
+#define LEGO_SERVO_MAX      (long)(pow(2, LEGO_SERVO_RES) - 1)
 
 class lego_servo_driver_t
 {
@@ -135,10 +135,10 @@ void lego_servo_write(lego_servo_t& servo, int16_t value)
     }
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 inline void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
-    lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
+    lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_MIN, LEGO_SERVO_MAX));
 }
 
 inline void lego_servo_write(uint8_t index, int16_t output)
@@ -146,7 +146,7 @@ inline void lego_servo_write(uint8_t index, int16_t output)
     lego_servo_write(lego_servos[index], output);
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 inline void lego_servo_write(uint8_t index, int16_t output)
 {
     lego_servo_write<TMin, TMax>(lego_servos[index], output);
@@ -159,7 +159,7 @@ void lego_servos_write(int16_t* outputs, uint8_t count)
   }
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 void lego_servos_write(int16_t* outputs, uint8_t count)
 {
   for (auto i = 0; i<count; ++i) {

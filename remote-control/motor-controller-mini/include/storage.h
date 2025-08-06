@@ -11,6 +11,8 @@
 #define STORAGE_DEFAULT_CONFIG "/default_v2.json"
 #endif
 
+#include <serialize.h>
+
 void storage_init() 
 {
   if (!LittleFS.begin(true)) {
@@ -71,16 +73,18 @@ bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFA
     auto root = doc.as<JsonObject>();
 
     for (JsonPair kv : root) {
-        auto& input_configs = config[kv.key().c_str()];
+
+        auto key = to_enum<input_type_t>(kv.key().c_str(), input_type_strings);
+        auto& input_configs = config[key];
         auto values = kv.value().as<JsonArray>();
 
         log_i("[STORAGE] Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
 
-        for (auto value : values) {
+        for (const auto& value : values) {
             input_config_t config;
             config.in_channel = value["in_ch"].as<short>();
             config.out_channel = value["out_ch"].as<short>();
-            config.out_type = string_to_output_type(value["out_type"].as<String>());
+            config.out_type = to_enum<output_type_t>(value["out_type"].as<String>(), output_type_strings);
             input_configs.push_back(config);
 
             log_d("[STORAGE] %d (in_ch:%d\tout_type:%d\tout_ch:%d)", kv.key().c_str(), config.in_channel, config.out_type, config.out_channel);
@@ -95,13 +99,12 @@ bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFA
     return true;
 }
 
-void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, const uint8_t inputs_count)
+void settings_map_inputs(global_config_t& configs, const input_type_t input_type, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, const uint8_t inputs_count)
 {
     if (inputs_count == 0) {
         return;
     }
-
-    for (auto& config : configs[input]) {
+    for (const auto& config : configs[input_type]) {
         if (config.out_type == output_type) {
             outputs[config.out_channel] = inputs[config.in_channel];
         }

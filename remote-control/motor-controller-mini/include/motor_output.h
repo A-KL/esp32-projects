@@ -134,7 +134,7 @@ void write_motors(const int16_t* outputs, const uint8_t count)
 
 // Init motors
 
-void motor_init_a_en(const motor_pins_t& pins)
+void motor_init_a_en(const dc_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
 
@@ -142,7 +142,7 @@ void motor_init_a_en(const motor_pins_t& pins)
   ledcAttachPin(pins.en, pins.en_channel);
 }
 
-void motor_init_a_b_en(const motor_pins_t& pins)
+void motor_init_a_b_en(const dc_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
   pinMode(pins.b, OUTPUT);
@@ -151,7 +151,7 @@ void motor_init_a_b_en(const motor_pins_t& pins)
   ledcAttachPin(pins.en, pins.en_channel);
 }
 
-void motor_init_a_b(const motor_pins_t& pins)
+void motor_init_a_b(const dc_pins_t& pins)
 {
   ledcSetup(pins.a_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
   ledcSetup(pins.b_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
@@ -160,20 +160,20 @@ void motor_init_a_b(const motor_pins_t& pins)
   ledcAttachPin(pins.b, pins.b_channel);
 }
 
-void motor_init(const motor_config_t& motor)
+void motor_init(const motor_config_t& config)
 {
-     switch (motor.mode)
+     switch (config.mode)
      {
       case a_b_en:
-          motor_init_a_b_en(motor.pins);
+          motor_init_a_b_en(config.pins);
           break;
 
       case a_b:
-          motor_init_a_b(motor.pins);
+          motor_init_a_b(config.pins);
           break;
 
       case dir_en:
-          motor_init_a_en(motor.pins);
+          motor_init_a_en(config.pins);
           break;
      
       default:

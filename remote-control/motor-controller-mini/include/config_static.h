@@ -7,7 +7,7 @@ void config_init() {
 }
 
 void controls_map_inputs(
-    const String input, 
+    const String input_type, 
     const int16_t* inputs, 
     const output_type_t output_type, 
     int16_t* outputs, 

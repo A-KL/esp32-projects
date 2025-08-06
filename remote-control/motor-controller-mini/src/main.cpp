@@ -6,7 +6,7 @@
 #include CONFIG_FILE
 
 #ifndef CONTROLS_FILE
-#error "Control file was not defined"
+#define CONTROLS_FILE <config_json.h>
 #endif
 #include CONTROLS_FILE
 

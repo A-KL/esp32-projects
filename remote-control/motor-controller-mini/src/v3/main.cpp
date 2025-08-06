@@ -1,13 +1,15 @@
 #include <Arduino.h>
 
-#ifndef CONFIG_FILE
-#error "Config file was not defined"
+#ifndef CONFIG_NAME
+#error "Config was not defined"
 #endif
+#define CONFIG_FILE <CONFIG_NAME.h>
 #include CONFIG_FILE
 
-#ifndef CONTROLS_FILE
-#error "Control file was not defined"
+#ifndef CONTROLS_NAME
+#define CONTROLS_NAME config_json
 #endif
+#define CONTROLS_FILE <CONTROLS_NAME.h>
 #include CONTROLS_FILE
 
 #include <network.h>

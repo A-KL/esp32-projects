@@ -11,7 +11,7 @@
 #define STORAGE_DEFAULT_CONFIG "/default_v2.json"
 #endif
 
-inline void storage_init() 
+void storage_init() 
 {
   if (!LittleFS.begin(true)) {
     log_e("[STORAGE] An error has occurred while mounting LittleFS");
@@ -95,78 +95,18 @@ bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFA
     return true;
 }
 
-void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, uint8_t inputs_count)
+void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, const uint8_t inputs_count)
 {
     if (inputs_count == 0) {
         return;
     }
-    for (auto& config : configs[input])
-    {
-        if (config.out_type == output_type)
-        {
+
+    for (auto& config : configs[input]) {
+        if (config.out_type == output_type) {
             outputs[config.out_channel] = inputs[config.in_channel];
         }
     }
 }
-
-// bool settings_load(motor_config_t motors[], const int count)
-// {
-//     File file = LittleFS.open("/default.json", FILE_READ);
-//     if (!file)
-//     {
-//         Serial.println("There was an error opening default.json file");
-//         file.close();
-//         return false;
-//     }
-    
-//     StaticJsonDocument<512> doc;
-//     DeserializationError error = deserializeJson(doc, file);
-
-//     if (error) {       
-//         doc.clear();
-//         file.close();
-//         return false;
-//     }
-
-//     auto root = doc.as<JsonObject>();
-//     auto motors_json = root["motors"].as<JsonArray>();
-
-//     if (count > motors_json.size())
-//     {
-//         Serial.print("Configuration doesn't cover all motors: ");
-//         Serial.println(motors_json.size());
-//         file.close();
-//         return false;
-//     }
-
-//     auto i = 0;
-
-//     for (JsonVariant motor_json : motors_json) 
-//     {
-//         motors[i].mode = motor_json["mode"].as<motor_mode_t>();
-//         motors[i].inverted = motor_json["inv"].as<bool>();
-//         motors[i].input_channel =  motor_json["ch"].as<int>();
-
-//         auto input_type_str = motor_json["type"].as<String>();
-//         auto input_type_iter = drive_input_map.find(input_type_str);
-
-//         if (input_type_iter == drive_input_map.end())
-//         {
-//             Serial.print("Unable to map value: ");
-//             Serial.println(input_type_str);
-//             //log_e("Netif Get IP Failed!");
-//             file.close();
-//             return false;
-//         }
-
-//         motors[i].input_type = input_type_iter->second;
-
-//         i++;
-//     }
-
-//     file.close();
-//     return true;
-// }
 
 void settings_save(const char* fileName, uint8_t *data, size_t len, size_t index, size_t total)
 {

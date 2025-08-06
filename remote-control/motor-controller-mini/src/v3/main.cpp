@@ -5,6 +5,11 @@
 #endif
 #include CONFIG_FILE
 
+#ifndef CONTROLS_FILE
+#error "Control file was not defined"
+#endif
+#include CONTROLS_FILE
+
 #include <network.h>
 
 #include <pwm_input.h>
@@ -21,6 +26,7 @@ void setup() {
   Serial.println(HOSTNAME);
   sleep(2);
 
+  config_init();
   init_wifi();
 
   pwm_in_init();
@@ -45,16 +51,16 @@ void loop() {
   if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    //settings_map_inputs(global_config, "sbus", inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs("sbus", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-   // settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
+   // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
-    // settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
+    // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
     lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)

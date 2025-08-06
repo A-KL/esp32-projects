@@ -5,7 +5,11 @@
 #endif
 #include CONFIG_FILE
 
-#include <storage.h>
+#ifndef CONTROLS_FILE
+#error "Control file was not defined"
+#endif
+#include CONTROLS_FILE
+
 #include <inputs_queue.h>
 #include <network.h>
 #include <web_server.h>
@@ -32,16 +36,13 @@
 // }
 //static button_input_t switch_input { switch_input_button, LOW, 2000, 0, 3, 0,  &on_switch_input};
 
-static global_config_t global_config;
-
 void setup() {
   Serial.begin(115200);
   Serial.println(HOSTNAME);
   sleep(2);
 
   lcd_init();
-  storage_init();
-  settings_load(global_config);
+  config_init();
   init_wifi();
 
   //button_input_init(switch_input);
@@ -93,45 +94,45 @@ void loop() {
   if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    settings_map_inputs(global_config, "sbus", inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs("sbus", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    settings_map_inputs(global_config, "sbus", inputs, servo, outputs_servo, servos_count);
+    controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
   }
   else if (enow_receive(inputs) > 0)
   {
     // Motors
-    settings_map_inputs(global_config, "esp_now", inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs("esp_now", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    settings_map_inputs(global_config, "esp_now", inputs, servo, outputs_servo, servos_count);
+    controls_map_inputs("esp_now", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   }
   else if (ps_receive(inputs) > 0)
   {
     // Motors
-    settings_map_inputs(global_config, "ps3", inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs("ps3", inputs, motor, outputs_motors, motors_count);
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    settings_map_inputs(global_config, "ps3", inputs, servo, outputs_servo, servos_count);
+    controls_map_inputs("ps3", inputs, servo, outputs_servo, servos_count);
     servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
   }
   else if (adc_receive(inputs) > 0)
   {
     // Motors
-    settings_map_inputs(global_config, "adc", inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs("adc", inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_ADC_MIN, INPUT_ADC_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    settings_map_inputs(global_config, "adc", inputs, servo, outputs_servo, servos_count);
+    controls_map_inputs("adc", inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ADC_MIN, INPUT_ADC_MAX>(outputs_servo, servos_count);
   }
   else // No input

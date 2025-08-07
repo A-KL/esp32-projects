@@ -20,7 +20,8 @@ const std::map<const String, const output_type_t> output_type_strings =
 { 
   { "motor",      dc         }, 
   { "servo",      servo      }, 
-  { "servo_lego", servo_lego }
+  { "servo_lego", servo_lego },
+  { "sbus",       sbus_out   },
 };
 
 const std::map<const String, const dc_mode_t> drive_mode_string = 

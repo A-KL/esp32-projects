@@ -7,9 +7,10 @@
 // Outputs
 
 enum output_type_t {
-  dc  = 0,
-  servo  = 1,
-  servo_lego = 2
+  dc         = 0,
+  servo      = 1,
+  servo_lego = 2,
+  sbus_out   = 3
 };
 
 enum dc_mode_t {

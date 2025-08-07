@@ -1,14 +1,24 @@
 #include <Arduino.h>
 
+#ifndef DEVICE_ID
+#error "Device-ID is not defined!"
+#endif
+
 #ifndef CONTROLS_NAME
 #define CONTROLS_NAME config_json
 #endif
 #define CONTROLS_FILE <CONTROLS_NAME.h>
 #include CONTROLS_FILE
 
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+#define HOSTNAME_PREFIX esp32
+#define HOSTNAME QUOTE(HOSTNAME_PREFIX-DEVICE_ID)
+
 #include <inputs_queue.h>
 #include <network.h>
-#include <web_server.h>
+// #include <web_server.h>
 #include <lcd.h>
 //#include <scheduler.h>
 //#include <button_input.h>
@@ -60,70 +70,104 @@ void setup() {
   // server_init();
 }
 
-template<short TMin, short TMax>
-void write_mapped_outputs(const int16_t* inputs, const uint8_t inputs_count, const char* config_name)
-{
-    if (inputs_count == 0) {
-      return;
-    }
+// template<short TMin, short TMax>
+// void write_mapped_outputs(const int16_t* inputs, const uint8_t inputs_count, const char* config_name)
+// {
+//     if (inputs_count == 0) {
+//       return;
+//     }
 
-    static int16_t outputs_motors[motors_count];
-    static int16_t outputs_servo[servos_count];
+//     static int16_t outputs_motors[motors_count];
+//     static int16_t outputs_servo[servos_count];
 
-    // Motors
-    settings_map_inputs(global_config, config_name, inputs, motor, outputs_motors, motors_count);
-    write_motors<TMin, TMax>(outputs_motors, motors_count);
+//     // Motors
+//     controls_map_inputs(config_name, inputs, dc, outputs_motors, motors_count);
+//     write_motors<TMin, TMax>(outputs_motors, motors_count);
 
-    // Servos
-    servos_attach(true, servos_count);
-    settings_map_inputs(global_config, config_name, inputs, servo, outputs_servo, servos_count);
-    servos_write<TMin, TMax>(outputs_servo, servos_count);
-}
+//     // Servos
+//     servos_attach(true, servos_count);
+//     controls_map_inputs(config_name, inputs, servo, outputs_servo, servos_count);
+//     servos_write<TMin, TMax>(outputs_servo, servos_count);
+// }
 
 void loop() {
   static int16_t inputs[32];
 
   static int16_t outputs_motors[motors_count];
   static int16_t outputs_servo[servos_count];
+  static int16_t outputs_lego_servo[lego_servos_count];
 
   // SBUS
   if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    controls_map_inputs(sbus, inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
     controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+
+    // Lego Servo
+    controls_map_inputs(sbus, inputs, servo_lego, outputs_servo, servos_count);
+    lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)
   {
     // Motors
-    controls_map_inputs(esp_now, inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
     controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+
+    // Lego Servo
+    controls_map_inputs(esp_now, inputs, servo_lego, outputs_servo, servos_count);
+    lego_servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (ps_receive(inputs) > 0)
   {
     // Motors
-    controls_map_inputs(ps3, inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs(ps3, inputs, dc, outputs_motors, motors_count);
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
     controls_map_inputs(ps3, inputs, servo, outputs_servo, servos_count);
     servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
+
+    // Lego Servo
+    controls_map_inputs(ps3, inputs, servo_lego, outputs_servo, servos_count);
+    lego_servos_write<INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_lego_servo, lego_servos_count);
+  } 
+  else if (pwm_receive(inputs))
+  {
+    // Motors
+    outputs_motors[0] = inputs[0];
+    outputs_motors[1] = inputs[2];
+    // settings_map_inputs(pwm, inputs, motor, outputs_motors, motors_count);
+    write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
+
+    // Servos
+    servos_attach(true, servos_count);
+    outputs_servo[0] = inputs[0];
+    outputs_servo[1] = inputs[2];
+    //controls_map_inputs(pwm, inputs, servo, outputs_servo, servos_count);
+    servos_write<-INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_servo, servos_count);
+
+    // Lego Servo
+    outputs_lego_servo[0] = inputs[0];
+    outputs_lego_servo[1] = inputs[2];
+    // settings_map_inputs(global_config, pwm, inputs, servo, outputs_servo, servos_count);
+    lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (adc_receive(inputs) > 0)
   {
     // Motors
-    controls_map_inputs(adc, inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs(adc, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_ADC_MIN, INPUT_ADC_MAX>(outputs_motors, motors_count);
 
     // Servos

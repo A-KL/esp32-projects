@@ -27,8 +27,8 @@ lego_servo_t lego_servos[] = {
 
 /* Motors */
 motor_config_t motors[] = {
-    { motor_mode_t::a_b_en, { 40, 39, 41, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
-    { motor_mode_t::a_b_en, { 42, 45,  6, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 40, 39, 41, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 42, 45,  6, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
 /* Misc */

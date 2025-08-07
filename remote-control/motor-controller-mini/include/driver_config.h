@@ -1,9 +1,10 @@
 #pragma once
 
-#ifndef CONFIG_FILE
-#error "Config file was not defined"
+#ifndef CONFIG_NAME
+#error "Config was not defined"
 #endif
 
+#define CONFIG_FILE <CONFIG_NAME.h>
 #include CONFIG_FILE
 
 /* Outputs */

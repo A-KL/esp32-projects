@@ -1,13 +1,9 @@
 #include <Arduino.h>
 
-#ifndef CONFIG_FILE
-#error "Config file was not defined"
+#ifndef CONTROLS_NAME
+#define CONTROLS_NAME config_json
 #endif
-#include CONFIG_FILE
-
-#ifndef CONTROLS_FILE
-#define CONTROLS_FILE <config_json.h>
-#endif
+#define CONTROLS_FILE <CONTROLS_NAME.h>
 #include CONTROLS_FILE
 
 #include <inputs_queue.h>

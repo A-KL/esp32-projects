@@ -4,6 +4,10 @@
 #include <driver_config.h>
 #include <pwm_in.h>
 
+#define INPUT_PWM_MAX  1996 // 2000
+#define INPUT_PWM_MIN   970 // 1024
+#define INPUT_PWM_ZERO  800 // 1020
+
 static pwm_input_t input_pwm[pwm_inputs_count];
 
 inline void pwm_in_init() {

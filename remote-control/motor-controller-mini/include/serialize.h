@@ -12,7 +12,7 @@ const std::map<const String, const input_type_t> input_type_strings =
   { "adc",  adc     }, 
   { "sbus", sbus    },
   { "esp_now", esp_now },
-  { "ps3",   ps3       },
+  { "ps3",   ps3    },
   { "xbox", xbox    }
 };
 

@@ -1,10 +1,8 @@
 #include <Arduino.h>
 
-#ifndef CONFIG_NAME
-#error "Config was not defined"
+#ifndef DEVICE_ID
+#error "Device-ID is not defined!"
 #endif
-#define CONFIG_FILE <CONFIG_NAME.h>
-#include CONFIG_FILE
 
 #ifndef CONTROLS_NAME
 #define CONTROLS_NAME config_json
@@ -12,7 +10,14 @@
 #define CONTROLS_FILE <CONTROLS_NAME.h>
 #include CONTROLS_FILE
 
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+#define HOSTNAME_PREFIX esp32
+#define HOSTNAME QUOTE(HOSTNAME_PREFIX-DEVICE_ID)
+
 #include <network.h>
+#include <diagnostics.h>
 
 #include <pwm_input.h>
 #include <sbus_input.h>
@@ -22,11 +27,15 @@
 #include <servo_output.h>
 #include <lego_servo_output.h>
 
+diagnostic_scope_t scope;
+
 void setup() {
   Serial.begin(115200);
   Serial.println();
   Serial.println(HOSTNAME);
   sleep(2);
+
+  scope.begin();
 
   config_init();
   init_wifi();
@@ -39,7 +48,7 @@ void setup() {
   servos_init();
   lego_servos_init();
 
-  log_i("Initialization...\tDONE");
+  scope.finish("Initialization - DONE");
 }
 
 void loop() {
@@ -49,34 +58,37 @@ void loop() {
   static int16_t outputs_servo[servos_count];
   static int16_t outputs_lego_servo[lego_servos_count];
 
-    // SBUS
-  if (sbus_receive(inputs) > 0) 
-  {
-    // Motors
-    controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
-    write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
+  scope.begin();
 
-    // Servos
-    servos_attach(true, servos_count);
-   // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
-    servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+  //   // SBUS
+  // if (sbus_receive(inputs) > 0) 
+  // {
+  //   // Motors
+  //   controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
+  //   write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
-    // Lego Servo
-    // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
-    lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
-  }
-  else if (enow_receive(inputs) > 0)
-  {
-    // Motors
-   // settings_map_inputs(global_config, esp_now, inputs, motor, outputs_motors, motors_count);
-    write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+  //   // Servos
+  //   servos_attach(true, servos_count);
+  //  // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
+  //   servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
-    // Servos
-    servos_attach(true, servos_count);
-   // settings_map_inputs(global_config, esp_now, inputs, servo, outputs_servo, servos_count);
-    servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
-  }
-  else if (pwm_receive(inputs) )
+  //   // Lego Servo
+  //   // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
+  //   lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
+  // }
+  // else if (enow_receive(inputs) > 0)
+  // {
+  //   // Motors
+  //  // settings_map_inputs(global_config, esp_now, inputs, motor, outputs_motors, motors_count);
+  //   write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+
+  //   // Servos
+  //   servos_attach(true, servos_count);
+  //  // settings_map_inputs(global_config, esp_now, inputs, servo, outputs_servo, servos_count);
+  //   servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+  // }
+  // else 
+  if (pwm_receive(inputs))
   {
     // Motors
     outputs_motors[0] = inputs[0];
@@ -101,4 +113,6 @@ void loop() {
     // Servos
     servos_attach(false);
   }
+
+  scope.finish("Loop");
 }

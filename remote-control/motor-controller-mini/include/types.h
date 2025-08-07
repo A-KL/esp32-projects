@@ -51,13 +51,13 @@ struct lego_servo_t {
 // Input config
 
 enum input_type_t {
-  none  = -1,
-  pwm   = 0,
-  adc   = 1,
-  sbus  = 2,
+  none    = -1,
+  pwm     = 0,
+  adc     = 1,
+  sbus    = 2,
   esp_now = 3,
-  ps    = 4,
-  xbox  = 5
+  ps3     = 4,
+  xbox    = 5
 };
 
 // Global

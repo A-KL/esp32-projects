@@ -4,11 +4,12 @@
 #include <Arduino.h>
 #include <types.h>
 
-#define LEGO_SERVO_FREQ     50
+#define LEGO_SERVO_FREQ     2500
 #define LEGO_SERVO_RES      10
 
 #define LEGO_SERVO_MIN      0
-#define LEGO_SERVO_MAX      (long)(pow(2, LEGO_SERVO_RES) - 1)
+
+constexpr static unsigned LEGO_SERVO_MAX = (1 << LEGO_SERVO_RES) - 1;
 
 class lego_servo_driver_t
 {
@@ -40,10 +41,9 @@ class lego_servo_driver_t
         }
 
         template<int16_t TMin, int16_t TMax>
-        inline void write(int value)
+        inline void write(int speed)
         {
-            //auto value = map();
-            write(value);
+            write(map(constrain(speed, TMin, TMax), TMin, TMax, -LEGO_SERVO_MAX, LEGO_SERVO_MAX));
         }
 
         void write(int value)

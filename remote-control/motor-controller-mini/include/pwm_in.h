@@ -31,8 +31,7 @@ public:
   unsigned long value() {
     if (newPulseDurationAvailable) {
       newPulseDurationAvailable = false;
-      unsigned long pulseDuration = pulseInTimeEnd - pulseInTimeBegin;
-      return pulseDuration;
+      return (pulseInTimeEnd - pulseInTimeBegin);
     }
     return 0;
   }

@@ -8,7 +8,6 @@
 #define MOTOR_INPUT_DEAD_ZONE 10
 #endif
 
-
 #ifndef MOTOR_PWM_FQC
 #define MOTOR_PWM_FQC         2500 // Hz
 #endif
@@ -21,7 +20,8 @@
 #define INPUT_MOTOR_MAX_LIMIT 1
 #endif
 
-const static int motor_duty_cycle = (255 * INPUT_MOTOR_MAX_LIMIT); // with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
+// with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
+constexpr static unsigned motor_duty_cycle = ((1 << MOTOR_PWM_RESOLUTION) - 1) * INPUT_MOTOR_MAX_LIMIT;
 
 // Utils
 

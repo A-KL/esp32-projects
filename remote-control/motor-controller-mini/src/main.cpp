@@ -18,7 +18,7 @@
 
 #include <inputs_queue.h>
 #include <network.h>
-// #include <web_server.h>
+#include <web_server.h>
 #include <lcd.h>
 //#include <scheduler.h>
 //#include <button_input.h>
@@ -66,7 +66,6 @@ void setup() {
 
   log_i("Initialization...\tDONE");
   
-  // wifi_init(HOSTNAME);
   // server_init();
 }
 

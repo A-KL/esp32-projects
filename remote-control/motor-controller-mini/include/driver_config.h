@@ -7,6 +7,10 @@
 #define CONFIG_FILE <CONFIG_NAME.h>
 #include CONFIG_FILE
 
+#ifndef MOTOR_INPUT_DEAD_ZONE
+#define MOTOR_INPUT_DEAD_ZONE 10
+#endif
+
 /* Outputs */
 
 /* Servo */
@@ -40,4 +44,10 @@ void log_d_values(const char* label, const int16_t* outputs, const uint8_t count
     sprintf(trace, "%s\t%d", trace, outputs[i]);
   }
   log_d("%s (%s)", label, trace);
+}
+
+// Utils
+
+inline bool near_zero(const int value) {
+  return (abs(value) < MOTOR_INPUT_DEAD_ZONE);
 }

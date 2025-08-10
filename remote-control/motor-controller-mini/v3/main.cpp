@@ -59,47 +59,44 @@ void loop() {
   static int16_t outputs_servo[servos_count];
   static int16_t outputs_lego_servo[lego_servos_count];
 
-  //scope.begin();
+  scope.begin();
 
-    // SBUS
-  // if (sbus_receive(inputs) > 0) 
-  // {
-  //   // Motors
-  //   controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
-  //   write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
+  //  SBUS
+  if (sbus_receive(inputs) > 0) 
+  {
+    // Motors
+    controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
+    write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
-  //   // Servos
-  //   servos_attach(true, servos_count);
-  //   controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
-  //   servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+    // Servos
+    // servos_attach(true, servos_count);
+    // controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
+    // servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
-  //   // Lego Servo
-  //   // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
-  //   //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
-  // }
-  // else if (enow_receive(inputs) > 0)
+    // Lego Servo
+    // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
+    //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
+  }
+  else 
+  // if (enow_receive(inputs) > 0)
   // {
   //   // Motors
   //   controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
   //   write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
   //   // Servos
-  //   servos_attach(true, servos_count);
-  //   controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
-  //   servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+  //   // servos_attach(true, servos_count);
+  //   // controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
+  //   // servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   // }
   // else
-  if (pwm_receive(inputs))
+   if (pwm_receive(inputs))
   {
     // Motors
-    outputs_motors[0] = inputs[0];
-    outputs_motors[1] = inputs[1];
-    // settings_map_inputs(global_config, pwm, inputs, motor, outputs_motors, motors_count);
+    controls_map_inputs(pwm, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
 
     // // Lego Servo
-    // outputs_lego_servo[0] = inputs[0];
-    // outputs_lego_servo[1] = inputs[1];
     // // settings_map_inputs(global_config, pwm, inputs, servo, outputs_servo, servos_count);
     // lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
     delay(15);
@@ -116,5 +113,5 @@ void loop() {
     servos_attach(false);
   }
 
-  //scope.finish("Loop");
+  scope.finish("Loop");
 }

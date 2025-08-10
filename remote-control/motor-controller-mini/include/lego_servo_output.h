@@ -4,12 +4,15 @@
 #include <Arduino.h>
 #include <types.h>
 
-#define LEGO_SERVO_FREQ     2500
-#define LEGO_SERVO_RES      10
+#ifndef DC_PWM_RESOLUTION
+#define LEGO_SERVO_RES      8    // Bit
+#endif
 
-#define LEGO_SERVO_MIN      0
+#ifndef DC_PWM_FREQUENCY
+#define LEGO_SERVO_FREQ     2500  // Hz
+#endif
 
-constexpr static unsigned LEGO_SERVO_MAX = (1 << LEGO_SERVO_RES) - 1;
+constexpr static unsigned DC_SPEED_MAX = (1 << LEGO_SERVO_RES) - 1;
 
 class lego_servo_driver_t
 {
@@ -43,7 +46,7 @@ class lego_servo_driver_t
         template<int16_t TMin, int16_t TMax>
         inline void write(int speed)
         {
-            write(map(constrain(speed, TMin, TMax), TMin, TMax, -LEGO_SERVO_MAX, LEGO_SERVO_MAX));
+            write(map(constrain(speed, TMin, TMax), TMin, TMax, -DC_SPEED_MAX, DC_SPEED_MAX));
         }
 
         void write(int value)
@@ -101,7 +104,7 @@ void lego_servos_init()
 
 void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
-    if (value == 0) 
+    if (near_zero(value))
     {
         if (servo.direction == forward) 
         {
@@ -138,7 +141,7 @@ void lego_servo_write(lego_servo_t& servo, int16_t value)
 template<int TMin, int TMax>
 inline void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
-    lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_MIN, LEGO_SERVO_MAX));
+    lego_servo_write(servo, map(constrain(value, TMin, TMax), TMin, TMax, -DC_SPEED_MAX, DC_SPEED_MAX));
 }
 
 inline void lego_servo_write(uint8_t index, int16_t output)

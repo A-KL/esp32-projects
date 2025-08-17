@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define SERVO_FREQ     50
-#define SERVO_RES      14
+#define SERVO_RES      12
 
 class Servo
 {

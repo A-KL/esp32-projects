@@ -71,7 +71,7 @@ uint8_t sbus_receive(int16_t* outputs)
 #endif
 
     for (auto i=0; i<sbus_data.NUM_CH; ++i){
-        outputs[i] = sbus_data.ch[i]; // MAP?
+        outputs[i] = sbus_data.ch[i];
     }
 
     sbus_tx.data(sbus_data);

@@ -59,7 +59,7 @@ void loop() {
   static int16_t outputs_servo[servos_count];
   static int16_t outputs_lego_servo[lego_servos_count];
 
-  scope.begin();
+//  scope.begin();
 
   //  SBUS
   if (sbus_receive(inputs) > 0) 
@@ -77,20 +77,18 @@ void loop() {
     // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
     //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
-  else 
-  // if (enow_receive(inputs) > 0)
-  // {
-  //   // Motors
-  //   controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
-  //   write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
+  else if (enow_receive(inputs) > 0)
+  {
+    // Motors
+    controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
+    write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
   //   // Servos
   //   // servos_attach(true, servos_count);
   //   // controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
   //   // servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
-  // }
-  // else
-   if (pwm_receive(inputs))
+  } 
+  else if (pwm_receive(inputs))
   {
     // Motors
     controls_map_inputs(pwm, inputs, dc, outputs_motors, motors_count);
@@ -113,5 +111,5 @@ void loop() {
     servos_attach(false);
   }
 
-  scope.finish("Loop");
+  //scope.finish("Loop");
 }

@@ -5,6 +5,13 @@
 
 inline void init_wifi()
 {
+#ifndef WIFI_ENABLED
+    log_i("WiFi disabled");
+    WiFi.disconnect();
+    WiFi.mode(WIFI_OFF);
+    return;
+#endif
+
     uint8_t status = WiFi.status();
     uint8_t mode = WiFi.status();
 

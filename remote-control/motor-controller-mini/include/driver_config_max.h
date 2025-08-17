@@ -17,12 +17,12 @@ const auto sbus_serial = &Serial1;
 /* Outputs */
 
 /* PWM */
-const uint8_t servos_pins[] = { 7, 14, 15, 16, 17, 18 };
+const uint8_t servos_pins[] = { 7, 14, 15, 16 }; //, 17, 18
 
 /* LEGO */
 lego_servo_t lego_servos[] = {
-    { 1, 2, 8 }, //a, b, channel
-    { 3, 4, 9 }  //a, b, channel
+    { 1, 2, 4 }, //a, b, channel
+    { 3, 4, 5 }  //a, b, channel
 };
 
 /* Motors */

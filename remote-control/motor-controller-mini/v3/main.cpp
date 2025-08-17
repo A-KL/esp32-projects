@@ -16,6 +16,7 @@
 #define HOSTNAME_PREFIX esp32
 #define HOSTNAME QUOTE(HOSTNAME_PREFIX-DEVICE_ID)
 
+#include <lcd.h>
 #include <network.h>
 //#include <web_server.h>
 #include <diagnostics.h>
@@ -40,6 +41,7 @@ void setup() {
 
   config_init();
   init_wifi();
+  lcd_init();
 
   pwm_in_init();
   sbus_init();

@@ -71,9 +71,9 @@ void loop() {
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
-    // servos_attach(true, servos_count);
-    // controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
-    // servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
+    servos_attach(true, servos_count);
+    controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
+    servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
     // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
@@ -85,10 +85,10 @@ void loop() {
     controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
-  //   // Servos
-  //   // servos_attach(true, servos_count);
-  //   // controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
-  //   // servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+    // Servos
+    servos_attach(true, servos_count);
+    controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
+    servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
   } 
   else if (pwm_receive(inputs))
   {

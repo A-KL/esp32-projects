@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define SERVO_FREQ     50
-#define SERVO_RES      12
+#define SERVO_RES      10
 
 class Servo
 {
@@ -40,11 +40,14 @@ public:
     }
 
     template<int16_t TMin, int16_t TMax>
-    inline void write(int16_t value) const
+    void write(int16_t value) const
     {
         if (!_attached || !_init) {
             return;
         }
+        #ifdef OUTPUT_SERVOS_DEBUG 
+            //log_d_values("[SERVOS] ", values, min(channels, servos_count));
+        #endif
         ledcWrite(_channel, map(constrain(value, TMin, TMax), TMin, TMax, servo_low, servo_high));
     }
 

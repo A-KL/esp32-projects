@@ -52,6 +52,8 @@ bool halt(void*)
   // Led: no connection
   led.input_lost();
 
+  log_i("Halt!");
+
   return true;
 }
 
@@ -85,11 +87,10 @@ void loop()
   static int16_t outputs_motors[motors_count];
   static int16_t outputs_servo[servos_count];
   static int16_t outputs_lego_servo[lego_servos_count];
-  
-  static auto input_received = true;
-  static auto halt_task = (void*)NULL;
 
  // scope.begin();
+  static auto halt_task = (void*)NULL;
+  auto input_received = true;
 
   //  SBUS
   if (sbus_receive(inputs) > 0) 
@@ -135,14 +136,13 @@ void loop()
   }
   else
   {
-    if (!halt_task) 
-    {
+    if (!halt_task) {
       halt_task = input_watchdog.every(1000, halt);
     }
     input_received = false;
   }
 
-  if (input_received && halt_task) 
+  if (input_received && halt_task)
   {
     input_watchdog.cancel(halt_task);
     halt_task = NULL;

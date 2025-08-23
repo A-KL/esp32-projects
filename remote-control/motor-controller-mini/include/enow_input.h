@@ -126,13 +126,11 @@ uint8_t enow_receive(int16_t* outputs)
 #ifndef WIFI_ENABLED
   return 0;
 #endif
-
     static enow_message_t data;
 
     if (queue_receive(enow_input_queue, data))
     {
           memcpy(outputs, data.channels, sizeof(data));
-
           return sizeof(data.channels) / sizeof(unsigned short);
     }
 

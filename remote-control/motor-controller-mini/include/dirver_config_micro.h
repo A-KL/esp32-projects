@@ -2,13 +2,12 @@
 
 #include <types.h>
 
+/* Debug */
+// #define OUTPUT_SERVOS_DEBUG
+// #define INPUT_ESP_NOW_DEBUG
+
 #define WIFI_ENABLED
 // #define HAS_BLE
-
-#define OUTPUT_SERVOS_DEBUG
-// #define OUTPUT_MOTOR_DEBUG
-// #define INPUT_PWM_DEBUG
-
 #define LED_PIN 8
 
 /* Inputs */

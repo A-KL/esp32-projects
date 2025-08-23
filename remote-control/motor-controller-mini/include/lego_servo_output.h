@@ -169,3 +169,10 @@ void lego_servos_write(int16_t* outputs, uint8_t count)
     lego_servo_write<TMin, TMax>(i, outputs[i]);
   }
 }
+
+void lego_servos_stop()
+{
+    for (auto& servo : lego_servos) {
+        lego_servo_write(servo, 0);
+    }
+}

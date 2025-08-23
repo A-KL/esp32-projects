@@ -3,7 +3,9 @@
 #include <WiFi.h>
 #include <esp32-hal-log.h>
 
-inline void init_wifi()
+#include <driver_config.h>
+
+void init_wifi()
 {
 #ifndef WIFI_ENABLED
     log_i("WiFi disabled");

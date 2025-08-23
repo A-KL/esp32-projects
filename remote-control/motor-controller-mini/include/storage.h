@@ -75,11 +75,11 @@ bool settings_load(global_config_t& config, const char* file_name = DEVICE_CONFI
         return false;
     }
     
-    StaticJsonDocument<2048> doc;
+    StaticJsonDocument<4048> doc;
     DeserializationError error = deserializeJson(doc, file);
 
     if (error) {
-        log_e("[Error] There was an error deserializing json from %s", file_name);
+        log_e("[Error] There was an error deserializing json: %s", error.c_str());
         doc.clear();
         file.close();
         return false;

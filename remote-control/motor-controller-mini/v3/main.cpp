@@ -16,7 +16,10 @@
 #define HOSTNAME_PREFIX esp32
 #define HOSTNAME QUOTE(HOSTNAME_PREFIX-DEVICE_ID)
 
+#include <arduino-timer.h>
+
 #include <lcd.h>
+#include <led.h>
 #include <network.h>
 //#include <web_server.h>
 #include <diagnostics.h>
@@ -29,7 +32,28 @@
 #include <servo_output.h>
 #include <lego_servo_output.h>
 
-diagnostic_scope_t scope;
+//diagnostic_scope_t scope;
+
+//Timer<> input_watchdog;
+static auto input_watchdog = timer_create_default();
+static auto led = led_t(LED_PIN, input_watchdog);
+
+bool halt(void*)
+{
+  // Motors
+  motors_stop();
+
+  // Lego
+  lego_servos_stop();
+
+  // Servos
+  servos_attach(false);
+
+  // Led: no connection
+  led.input_lost();
+
+  return true;
+}
 
 void setup() {
   Serial.begin(115200);
@@ -37,11 +61,11 @@ void setup() {
   Serial.println(HOSTNAME);
   sleep(2);
 
-  scope.begin();
+  //scope.begin();
 
   config_init();
   init_wifi();
-  lcd_init();
+  //lcd_init();
 
   pwm_in_init();
   sbus_init();
@@ -51,17 +75,21 @@ void setup() {
   servos_init();
   lego_servos_init();
 
-  scope.finish("Initialization - DONE");
+  //scope.finish("Initialization - DONE");
 }
 
-void loop() {
+void loop() 
+{
   static int16_t inputs[32];
 
   static int16_t outputs_motors[motors_count];
   static int16_t outputs_servo[servos_count];
   static int16_t outputs_lego_servo[lego_servos_count];
+  
+  static auto input_received = true;
+  static auto halt_task = (void*)NULL;
 
-//  scope.begin();
+ // scope.begin();
 
   //  SBUS
   if (sbus_receive(inputs) > 0) 
@@ -76,7 +104,7 @@ void loop() {
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
-    // controls_map_inputs("sbus", inputs, servo, outputs_servo, servos_count);
+    // controls_map_inputs(sbus, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
     //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)
@@ -89,6 +117,10 @@ void loop() {
     servos_attach(true, servos_count);
     controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
+
+    // Lego Servo
+    // controls_map_inputs(esp_now, inputs, servo_lego, outputs_lego_servo, servos_count);
+    // lego_servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_lego_servo, lego_servos_count);
   } 
   else if (pwm_receive(inputs))
   {
@@ -96,22 +128,28 @@ void loop() {
     controls_map_inputs(pwm, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
 
-    // // Lego Servo
-    // // settings_map_inputs(global_config, pwm, inputs, servo, outputs_servo, servos_count);
+    // Lego Servo
+    // controls_map_inputs(pwm, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
     // lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
     delay(15);
   }
-  else // No input
+  else
   {
-    // Motors
-    for (size_t i = 0; i < motors_count; i++) {
-      outputs_motors[i] = 0;
+    if (!halt_task) 
+    {
+      halt_task = input_watchdog.every(1000, halt);
     }
-    write_motors(outputs_motors, motors_count);
-
-    // Servos
-    servos_attach(false);
+    input_received = false;
   }
+
+  if (input_received && halt_task) 
+  {
+    input_watchdog.cancel(halt_task);
+    halt_task = NULL;
+    led.input_received();
+  }
+
+  input_watchdog.tick();
 
   //scope.finish("Loop");
 }

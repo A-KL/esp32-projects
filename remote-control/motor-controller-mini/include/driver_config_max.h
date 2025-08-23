@@ -2,6 +2,11 @@
 
 #include <types.h>
 
+#define WIFI_ENABLED
+#define HAS_BLE
+
+#define OUTPUT_SERVO_DEBUG
+
 /* Inputs */
 
 /* ADC */

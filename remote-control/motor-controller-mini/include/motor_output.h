@@ -178,3 +178,10 @@ void motors_init()
       motor_run(motors[i], 0);
   }
 }
+
+void motors_stop()
+{
+    for (auto i=0; i<motors_count; ++i) {
+      motor_run(motors[i], 0);
+  }
+}

@@ -27,6 +27,7 @@
 #include <pwm_input.h>
 #include <sbus_input.h>
 #include <enow_input.h>
+#include <xbox_input.h>
 
 #include <motor_output.h>
 #include <servo_output.h>
@@ -72,6 +73,8 @@ void setup() {
   pwm_in_init();
   sbus_init();
   enow_init();
+
+  xbox_init();
 
   motors_init();
   servos_init();
@@ -133,6 +136,10 @@ void loop()
     // controls_map_inputs(pwm, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
     // lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
     delay(15);
+  }
+  else if (xbox_receive(inputs))
+  {
+
   }
   else
   {

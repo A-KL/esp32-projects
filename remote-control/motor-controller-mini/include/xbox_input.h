@@ -14,18 +14,10 @@ static XboxSeriesXControllerESP32_asukiaaa::Core xbox_input;
 
 #endif
 
-inline void xbox_init() 
+void xbox_init() 
 {
 #ifdef HAS_BLE
     xbox_input.begin();
-
-    // if (Ps3.begin(ps_controller_mac)) {
-    //     log_i("Ps3 initialization...OK");
-    // }   
-    // else {
-    //     log_w("Ps3 initialization...FAIL");
-    // }
-
     queue_init(xbox_input_queue);
 #endif
 }
@@ -43,6 +35,10 @@ uint8_t xbox_receive(int16_t* outputs)
     if (!xbox_input.isWaitingForFirstNotification())
     {
         log_d("XBOX Controller Address: %s", xbox_input.buildDeviceAddressStr());
+
+        auto joystick_max = XboxControllerNotificationParser::maxJoy;
+
+        auto d = xbox_input.xboxNotif.trigRT;
 
         return true;
     }

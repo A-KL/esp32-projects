@@ -2,8 +2,14 @@
 
 #include <types.h>
 
+/* General */
+
 #define WIFI_ENABLED
-#define HAS_BLE
+//define HAS_BLE
+#define RGB_LED_PIN 21
+#define LED_PIN     1
+
+/* Debug */
 
 #define OUTPUT_SERVO_DEBUG
 
@@ -38,9 +44,9 @@ motor_config_t motors[] = {
 
 /* Misc */
 
-const uint8_t switch_input_button = 13;
+// const uint8_t switch_input_button = 13;
 
-const uint8_t led_output = -1;
-const uint8_t rgb_output = 21;
+// const uint8_t led_output = -1;
+// const uint8_t rgb_output = 21;
 
-const bool enable_lcd = true; // i2c 8 and 9
+// const bool enable_lcd = true; // i2c 8 and 9

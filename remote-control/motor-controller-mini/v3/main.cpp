@@ -53,7 +53,7 @@ bool halt(void*)
   // Led: no connection
   led.input_lost();
 
-  log_i("Halt!");
+//  log_i("Halt!");
 
   return true;
 }
@@ -67,8 +67,8 @@ void setup() {
   //scope.begin();
 
   config_init();
-  init_wifi();
-  //lcd_init();
+  init_wifi();  
+  lcd_init();
 
   pwm_in_init();
   sbus_init();

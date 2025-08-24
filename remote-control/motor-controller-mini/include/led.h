@@ -2,10 +2,59 @@
 
 #include <arduino-timer.h>
 
+#include <Adafruit_NeoPixel.h> 
+
+class rgb_animation_t
+{
+  public:
+    rgb_animation_t(Adafruit_NeoPixel& rgb, Timer<>& timer) 
+      : _rgb(rgb), _timer(timer), _task(NULL) 
+    {
+      _rgb.begin();
+      _rgb.setBrightness(100);
+    }
+
+    void input_received() 
+    {
+      if (_task) {
+        _timer.cancel(_task);
+        _task = NULL;
+
+        _rgb.setPixelColor(0, _rgb.Color(0, 255, 0));
+        _rgb.show();
+      }
+    }
+
+    void input_lost() {
+       if (!_task) {
+        _task = _timer.every(300, on_led_timer, &_rgb);
+      }
+    }
+
+    private:
+      Adafruit_NeoPixel& _rgb;
+      Timer<>& _timer;
+      void* _task;
+
+    static bool on_led_timer(void* arg) 
+    {
+      auto rgb = (Adafruit_NeoPixel*)arg;
+
+      if (rgb->getPixelColor(0)) {
+        rgb->clear();
+      } else {
+        rgb->setPixelColor(0, rgb->Color(255, 0, 0));
+      }
+      rgb->show();
+
+      return true;
+    }
+};
+
 class led_t
 {
   public:
-    led_t(int led_pin, Timer<>& timer) 
+    led_t(const int led_pin, Timer<>& timer) 
       : _led_pin(led_pin), _timer(timer), _task(NULL) 
     {
       pinMode(led_pin, OUTPUT);
@@ -28,7 +77,7 @@ class led_t
     }
 
   private:
-    int _led_pin;
+    const int _led_pin;
     Timer<>& _timer;
     void* _task;
 

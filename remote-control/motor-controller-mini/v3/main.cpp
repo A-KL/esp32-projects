@@ -37,7 +37,15 @@
 
 //Timer<> input_watchdog;
 static auto input_watchdog = timer_create_default();
+
+#ifdef LED_PIN
 static auto led = led_t(LED_PIN, input_watchdog);
+#endif
+
+#ifdef RGB_LED_PIN
+static auto rgb_led = Adafruit_NeoPixel(1, RGB_LED_PIN, NEO_RGB + NEO_KHZ800);
+static auto led = rgb_animation_t(rgb_led, input_watchdog);
+#endif
 
 bool halt(void*)
 {

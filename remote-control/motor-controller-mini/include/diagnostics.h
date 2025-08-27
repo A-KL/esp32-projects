@@ -1,19 +1,17 @@
-// #pragma once
+#pragma once
 
-// #include <Timer.h>
+class diagnostic_scope_t
+{
+    public:
+        void begin() {
+            _start_time = millis();
+        }
 
-// class diagnostic_scope_t
-// {
-//     public:
-//         void begin() {
-//             _timer.start();
-//         }
-
-//         void finish(const char* name) {
-//             _timer.stop();
-//             log_d("[%s] Elapsed: %d msec", name, _timer.read());
-//         }
+        void finish(const char* name) {
+            auto stop_time = millis();
+            log_d("[%s] Elapsed: %d msec", name, stop_time - _start_time);
+        }
         
-//     private:
-//         Timer _timer;
-// };
+    private:
+        unsigned long _start_time = 0l;
+};

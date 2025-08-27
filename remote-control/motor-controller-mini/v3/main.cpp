@@ -33,13 +33,12 @@
 #include <servo_output.h>
 #include <lego_servo_output.h>
 
-//diagnostic_scope_t scope;
+diagnostic_scope_t scope;
 
-//Timer<> input_watchdog;
 static auto input_watchdog = timer_create_default();
 
 #ifdef LED_PIN
-static auto led = led_t(LED_PIN, input_watchdog);
+static auto led = led_animation_t(LED_PIN, input_watchdog);
 #endif
 
 #ifdef RGB_LED_PIN
@@ -72,7 +71,7 @@ void setup() {
   Serial.println(HOSTNAME);
   sleep(2);
 
-  //scope.begin();
+  scope.begin();
 
   config_init();
   init_wifi();  
@@ -88,7 +87,7 @@ void setup() {
   servos_init();
   lego_servos_init();
 
-  //scope.finish("Initialization - DONE");
+  scope.finish("Initialization - DONE");
 }
 
 void loop() 
@@ -163,6 +162,8 @@ void loop()
     halt_task = NULL;
     led.input_received();
   }
+
+  lcd_display(inputs, 10);
 
   input_watchdog.tick();
 

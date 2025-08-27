@@ -74,8 +74,8 @@ void lcd_init()
 
 void lcd_display(const int16_t* values, const uint8_t count) {
 #ifdef LCD_SSD1306
-  const uint8_t cols = 2;
-  const uint8_t rows = 3;
+  const uint8_t cols = 3;
+  const uint8_t rows = 6;
 #elif LCD_SH1107
   const uint8_t cols = 3;
   const uint8_t rows = 5;
@@ -84,12 +84,14 @@ void lcd_display(const int16_t* values, const uint8_t count) {
   const auto w_in = (LCD_WIDTH / cols);
   const auto h_in = (LCD_HEIGHT / rows);
 
+  display.clearDisplay();
   for (uint8_t i = 0; i<cols; i++) {
     for (uint8_t j = 0; j<rows; j++) {
       display.setCursor(i * w_in, j * h_in);
-      display.println(values[i+j]);
+      display.println(values[j+i*rows]);
     }
   }
+  display.display();
 }
 
 void scan_i2c(){

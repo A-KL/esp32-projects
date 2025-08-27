@@ -163,7 +163,7 @@ void loop()
     led.input_received();
   }
 
-  lcd_display(inputs, 10);
+  lcd_display(inputs, 32);
 
   input_watchdog.tick();
 

@@ -41,7 +41,7 @@ bool pwm_receive(const uint8_t index, int16_t* outputs)
   }
   else
   {
-    outputs[index] = INPUT_PWM_MID;
+    outputs[index] = 0;// INPUT_PWM_MID;
   }
 
   return pwm_detected;

@@ -28,6 +28,7 @@
 #include <sbus_input.h>
 #include <enow_input.h>
 #include <xbox_input.h>
+#include <ps3_input.h>
 
 #include <motor_output.h>
 #include <servo_output.h>

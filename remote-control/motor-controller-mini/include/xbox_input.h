@@ -4,7 +4,7 @@
 #include <driver_config.h>
 #include <inputs_queue.h>
 
-#ifdef HAS_BLE
+#ifdef BLE_ENABLED
 
 #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
 
@@ -16,7 +16,7 @@ static XboxSeriesXControllerESP32_asukiaaa::Core xbox_input;
 
 void xbox_init() 
 {
-#ifdef HAS_BLE
+#ifdef BLE_ENABLED
     xbox_input.begin();
     queue_init(xbox_input_queue);
 #endif
@@ -24,7 +24,7 @@ void xbox_init()
 
 uint8_t xbox_receive(int16_t* outputs)
 {
-#ifdef HAS_BLE
+#ifdef BLE_ENABLED
     xbox_input.onLoop();
 
     if (!xbox_input.isConnected()) 

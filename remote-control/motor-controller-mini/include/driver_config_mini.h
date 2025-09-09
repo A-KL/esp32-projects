@@ -41,7 +41,6 @@ motor_config_t motors [] = {
 
 /* Misc */
 
-const uint8_t switch_input_button = 9;
-
-const uint8_t led_output = 8;
-const short rgb_output = -1;
+const short switch_input_button = 9;
+const short led_output          = 8;
+const short rgb_output          = -1;

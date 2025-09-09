@@ -2,12 +2,6 @@
 
 #include <types.h>
 
-/* General */
-
-#define WIFI_ENABLED
-//define HAS_BLE
-#define RGB_LED_PIN 21
-
 /* Debug */
 
 #define OUTPUT_SERVO_DEBUG

@@ -4,7 +4,12 @@
 
 #define WIFI_ENABLED
 #define HAS_BLE
+#define LED_PIN 8
 
+/* Debug */
+
+// #define OUTPUT_SERVOS_DEBUG
+// #define INPUT_ESP_NOW_DEBUG
 #define INPUT_PWM_DEBUG
 
 /* Inputs */
@@ -32,11 +37,11 @@ static lego_servo_t lego_servos[] = {
 
 /* Motors */
 motor_config_t motors [] = {
-    { motor_mode_t::a_b_en, {  9, 10, 11, -1, -1, 2 } }, //a, b, en, pwm_a, pwm_b, pwm_en
-    { motor_mode_t::a_b_en, { 18, 17, 16, -1, -1, 3 } }  //b, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, {  9, 10, 11, -1, -1, 2 } }, //a, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 18, 17, 16, -1, -1, 3 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
 /* Misc */
 const short input_button_switch = -1;
-const short output_led     = -1;
-const short output_led_rgb = -1;
+const short output_led          = 7;
+const short output_led_rgb      = -1;

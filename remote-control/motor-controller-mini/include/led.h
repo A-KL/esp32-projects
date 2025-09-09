@@ -2,6 +2,7 @@
 
 #include <arduino-timer.h>
 
+#ifdef RGB_LED_PIN
 #include <Adafruit_NeoPixel.h> 
 
 class rgb_animation_t
@@ -50,7 +51,9 @@ class rgb_animation_t
       return true;
     }
 };
+#endif
 
+#ifdef LED_PIN
 // template <
 //     typename TState = bool
 // >
@@ -130,3 +133,4 @@ class led_animation_t
       return true;
     }
 };
+#endif

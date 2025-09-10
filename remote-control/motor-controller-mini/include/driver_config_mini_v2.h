@@ -2,10 +2,6 @@
 
 #include <types.h>
 
-#define WIFI_ENABLED
-#define HAS_BLE
-#define LED_PIN 8
-
 /* Debug */
 
 // #define OUTPUT_SERVOS_DEBUG
@@ -42,6 +38,6 @@ motor_config_t motors [] = {
 };
 
 /* Misc */
-const short input_button_switch = -1;
-const short output_led          = 7;
-const short output_led_rgb      = -1;
+// const short input_button_switch = -1;
+// const short output_led          = 7;
+// const short output_led_rgb      = -1;

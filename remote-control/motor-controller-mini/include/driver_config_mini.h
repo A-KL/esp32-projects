@@ -2,12 +2,6 @@
 
 #include <types.h>
 
-/* Generic */
-
-#define WIFI_ENABLED
-// #define HAS_BLE
-#define LED_PIN 8
-
 /* Debug */
 
 // #define OUTPUT_SERVOS_DEBUG
@@ -41,6 +35,6 @@ motor_config_t motors [] = {
 
 /* Misc */
 
-const short switch_input_button = 9;
-const short led_output          = 8;
-const short rgb_output          = -1;
+// const short switch_input_button = 9;
+// const short led_output          = 8;
+// const short rgb_output          = -1;

@@ -44,7 +44,8 @@ static auto led = rgb_animation_t(rgb_led, input_watchdog);
 #endif
 
 #ifdef LED_PIN
-static auto led = led_animation_t(LED_PIN, input_watchdog);
+static auto led = led_t(LED_PIN);
+static auto indicator = led_animation_t(led, input_watchdog);
 #endif
 
 bool halt(void*)
@@ -59,7 +60,7 @@ bool halt(void*)
   servos_attach(false);
 
   // Led: no connection
-  led.input_lost();
+  indicator.input_lost();
 
 //  log_i("Halt!");
 
@@ -161,7 +162,7 @@ void loop()
   {
     input_watchdog.cancel(halt_task);
     halt_task = NULL;
-    led.input_received();
+    indicator.input_received();
   }
 
   lcd_display(inputs, 32);

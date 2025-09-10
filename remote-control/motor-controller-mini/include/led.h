@@ -54,13 +54,11 @@ class rgb_animation_t
 #endif
 
 #ifdef LED_PIN
-// template <
-//     typename TState = bool
-// >
+//template <typename TState = bool>
 class led_t
 {
   public:
-    inline led_t(const int pin, const bool state_on = LOW) 
+    led_t(const int pin, const bool state_on = LOW) 
       : _pin(pin), _state_on(state_on) 
     {
       pinMode(_pin, OUTPUT);
@@ -98,11 +96,9 @@ class led_t
 class led_animation_t
 {
   public:
-    led_animation_t(const int led_pin, Timer<>& timer) 
-      : _led_pin(led_pin), _timer(timer), _task(NULL) 
-    {
-      pinMode(led_pin, OUTPUT);
-    }
+    led_animation_t(led_t& led, Timer<>& timer) 
+      : _led(led), _timer(timer), _task(NULL) 
+    { }
 
     void input_received() 
     {
@@ -110,7 +106,7 @@ class led_animation_t
         _timer.cancel(_task);
         _task = NULL;
 
-        digitalWrite(_led_pin, LOW);
+        _led.on();
       }
     }
 
@@ -121,14 +117,14 @@ class led_animation_t
     }
 
   private:
-    const int _led_pin;
+    led_t& _led;
     Timer<>& _timer;
     void* _task;
 
     static bool on_led_timer(void* arg) 
     {
-      auto led = (led_animation_t*)arg;
-      digitalWrite(led->_led_pin, !digitalRead(led->_led_pin));
+      auto led_animation = (led_animation_t*)arg;
+      led_animation->_led.toggle();
 
       return true;
     }

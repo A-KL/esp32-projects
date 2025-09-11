@@ -31,11 +31,11 @@ bool pwm_receive(const uint8_t index, int16_t* outputs)
   }
 
   auto pwm_value = input_pwm[index].value();
-  auto pwm_detected = pwm_value > INPUT_PWM_ZERO;
+  auto pwm_detected = pwm_value > INPUT_PWM_ZERO && pwm_value < 5000;
 
-  //log_d("PWN %d", pwm_value);
+  //log_d("PWN %u", pwm_value);
 
-  if (pwm_detected) 
+  if (pwm_detected)
   {
     outputs[index] = constrain(pwm_value, INPUT_PWM_MIN, INPUT_PWM_MAX);
   }
@@ -57,7 +57,8 @@ uint8_t pwm_receive(int16_t* outputs)
   }
 
 #ifdef INPUT_PWM_DEBUG
-  log_d_values("PWM: ", outputs, count);
+  // log_d_values("PWM: ", outputs, count);
+  log_d("PWM: (%d, %d)", outputs[0], outputs[1]);
 #endif
 
   return count;

@@ -40,7 +40,7 @@ void log_d_values(const char* label, const int16_t* outputs, const uint8_t count
   char trace[100];
   memset(trace, 0, sizeof(trace) * sizeof(char));
   
-  for (auto i = 0; i<count; ++i) {
+  for (auto i = 0; i<count; i++) {
     sprintf(trace, "%s\t%d", trace, outputs[i]);
   }
   log_d("%s (%s)", label, trace);

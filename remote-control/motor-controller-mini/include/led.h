@@ -51,6 +51,11 @@ class rgb_animation_t
       return true;
     }
 };
+
+static auto rgb_led = Adafruit_NeoPixel(1, RGB_LED_PIN, NEO_RGB + NEO_KHZ800);
+
+#define indicator_t(X) rgb_animation_t(rgb_led, X)
+
 #endif
 
 #ifdef LED_PIN
@@ -129,4 +134,32 @@ class led_animation_t
       return true;
     }
 };
+
+static auto led = led_t(LED_PIN);
+
+#define indicator_t(X) led_animation_t(led, X)
+
 #endif
+
+#if not defined(LED_PIN) && not defined(RGB_LED_PIN)
+
+class no_animation_t
+{
+  public:
+    no_animation_t(Timer<>& timer)
+    { }
+
+    inline void input_received() {
+    }
+
+    inline void input_lost() {
+    }
+};
+
+#define indicator_t(X) no_animation_t(X)
+
+#endif
+
+// LED_TYPE=RGB
+// LED_TYPE=None
+// LED_PIN=7

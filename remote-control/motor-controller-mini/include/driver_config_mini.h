@@ -8,6 +8,8 @@
 // #define INPUT_ESP_NOW_DEBUG
 // #define INPUT_PWM_DEBUG
 
+#define OUTPUT_MOTORS_DEBUG
+
 /* Inputs */
 
 /* ADC */

@@ -66,7 +66,7 @@ void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t ch
 
 void motor_run(const motor_config_t& config, const int16_t speed)
 {
-#ifdef OUTPUT_MOTOR_DEBUG
+#ifdef OUTPUT_MOTORS_DEBUG
    log_d("[MOTOR] (%d) Speed: %d", config.mode, speed);
 #endif
     switch (config.mode)

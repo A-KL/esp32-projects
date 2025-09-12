@@ -7,8 +7,7 @@
 #define INPUT_PWM_MAX  1996 // 2000
 #define INPUT_PWM_MIN   970 // 1024
 #define INPUT_PWM_ZERO  800 // 1020
-
-constexpr static unsigned INPUT_PWM_MID = (INPUT_PWM_MIN + (INPUT_PWM_MAX - INPUT_PWM_MIN) / 2.0);
+#define INPUT_PWM_MID (INPUT_PWM_MIN + (INPUT_PWM_MAX - INPUT_PWM_MIN) / 2.0);
 
 static pwm_input_t input_pwm[pwm_inputs_count];
 
@@ -41,7 +40,7 @@ bool pwm_receive(const uint8_t index, int16_t* outputs)
   }
   else
   {
-    outputs[index] = 0;// INPUT_PWM_MID;
+    outputs[index] = INPUT_PWM_MID;
   }
 
   return pwm_detected;

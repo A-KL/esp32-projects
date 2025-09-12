@@ -55,7 +55,7 @@ bool halt(void*)
 
 //  log_i("Halt!");
 
-  return true;
+  return false;
 }
 
 void setup() {
@@ -144,7 +144,7 @@ void loop()
   else
   {
     if (!halt_task) {
-      halt_task = input_watchdog.every(1000, halt);
+      halt_task = input_watchdog.every(500, halt);
     }
     input_received = false;
   }

@@ -53,7 +53,7 @@ bool halt(void*)
   // Led: no connection
   indicator.input_lost();
 
-//  log_i("Halt!");
+  log_i("Halt!");
 
   return false;
 }

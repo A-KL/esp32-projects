@@ -45,9 +45,6 @@ public:
         if (!_attached || !_init) {
             return;
         }
-        #ifdef OUTPUT_SERVOS_DEBUG 
-            //log_d_values("[SERVOS] ", values, min(channels, servos_count));
-        #endif
         ledcWrite(_channel, map(constrain(value, TMin, TMax), TMin, TMax, servo_low, servo_high));
     }
 

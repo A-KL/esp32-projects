@@ -21,7 +21,7 @@ inline void servos_attach(bool state, uint8_t count = servos_count) {
 template<int16_t TMin, int16_t TMax>
 inline void servos_write(const int16_t* values, const uint8_t channels) 
 {
-#ifdef OUTPUT_SERVO_DEBUG 
+#ifdef OUTPUT_SERVOS_DEBUG 
     log_d_values("[SERVO] ", values, min(channels, servos_count));
 #endif
     for (auto i = 0; i < min(channels, servos_count); i++) {

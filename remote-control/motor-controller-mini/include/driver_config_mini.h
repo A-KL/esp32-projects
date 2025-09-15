@@ -4,28 +4,29 @@
 
 /* Debug */
 
-// #define OUTPUT_SERVOS_DEBUG
+//#define OUTPUT_SERVOS_DEBUG
+//#define OUTPUT_MOTORS_DEBUG
+
 // #define INPUT_ESP_NOW_DEBUG
 // #define INPUT_PWM_DEBUG
-
-#define OUTPUT_MOTORS_DEBUG
 
 /* Inputs */
 
 /* ADC */
-const uint8_t adc_input_pins[] = { 4, 3 };
+const uint8_t adc_input_pins[] = { };
 
 /* PWM */
 const uint8_t pwm_input_pins[] = { 1, 0 };
 
 /* SBUS */
 const uint8_t sbus_rx_tx_pins[] = { 20, 21 };
+
 const auto sbus_serial = &Serial1;
 
 /* Outputs */
 
 /* PWM */
-const uint8_t servos_pins[] = { };
+const uint8_t servos_pins[] = { 4, 3 };
 
 /* LEGO */
 static lego_servo_t lego_servos[] = { };

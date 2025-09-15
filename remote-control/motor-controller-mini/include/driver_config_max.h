@@ -4,7 +4,7 @@
 
 /* Debug */
 
-#define OUTPUT_SERVO_DEBUG
+// #define OUTPUT_SERVO_DEBUG
 
 /* Inputs */
 

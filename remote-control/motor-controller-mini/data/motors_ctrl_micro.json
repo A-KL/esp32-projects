@@ -25,5 +25,13 @@
         { "in_ch": 13, "out_type": "sbus", "out_ch": 7 },
         { "in_ch": 14, "out_type": "sbus", "out_ch": 8 },
         { "in_ch": 15, "out_type": "sbus", "out_ch": 9 }
+    ],
+    "ps3": [
+        { "in_ch": 0, "out_type": "servo", "out_ch": 0 },
+        { "in_ch": 1, "out_type": "servo", "out_ch": 1 },
+        { "in_ch": 2, "out_type": "servo", "out_ch": 2 },
+        { "in_ch": 3, "out_type": "servo", "out_ch": 3 },
+        { "in_ch": 4, "out_type": "servo", "out_ch": 4 },
+        { "in_ch": 3, "out_type": "servo", "out_ch": 5 }
     ]
 }

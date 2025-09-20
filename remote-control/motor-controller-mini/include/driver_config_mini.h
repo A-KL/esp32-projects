@@ -5,7 +5,7 @@
 /* Debug */
 
 //#define OUTPUT_SERVOS_DEBUG
-//#define OUTPUT_MOTORS_DEBUG
+#define OUTPUT_MOTORS_DEBUG
 
 // #define INPUT_ESP_NOW_DEBUG
 // #define INPUT_PWM_DEBUG
@@ -33,8 +33,8 @@ static lego_servo_t lego_servos[] = { };
 
 /* Motors */
 motor_config_t motors [] = {
-    { dc_mode_t::a_b_en, { 7,  6, 5, -1, -1, 0 } }, //a, b, en, pwm_a, pwm_b, pwm_en
-    { dc_mode_t::a_b_en, { 8, 10, 2, -1, -1, 1 } }  //b, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 7,  6, 5, -1, -1, 2 } }, //a, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 8, 10, 2, -1, -1, 3 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
 /* Misc */

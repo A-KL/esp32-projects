@@ -73,7 +73,7 @@ void setup() {
   pwm_in_init();
   sbus_init();
   enow_init();
-
+  ps3_init();
   xbox_init();
 
   motors_init();
@@ -137,6 +137,17 @@ void loop()
     // lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
     delay(15);
   }
+  else if (ps3_receive(inputs))
+  {
+    // Motors
+    controls_map_inputs(ps3, inputs, dc, outputs_motors, motors_count);
+    write_motors<INPUT_PS_MIN, INPUT_PS_MAX>(outputs_motors, motors_count);
+
+    // Servos
+    servos_attach(true, servos_count);
+    controls_map_inputs(ps3, inputs, servo, outputs_servo, servos_count);
+    servos_write<INPUT_PS_MIN, INPUT_PS_MAX>(outputs_servo, servos_count);
+  }
   else if (xbox_receive(inputs))
   {
 
@@ -156,7 +167,7 @@ void loop()
     indicator.input_received();
   }
 
-  lcd_display(inputs, 32);
+  //lcd_display(inputs, 32);
 
   input_watchdog.tick();
 

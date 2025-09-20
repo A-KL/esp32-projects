@@ -64,14 +64,14 @@ class Widget
 
       void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const uint32_t background, const char* text) 
       {
-         canvas.setTextColor(color565(color), color565(background));
+         canvas.setTextColor(color565(color), color565(background), false);
          canvas.drawString(text, x, y);
       }
 
       template<typename... Args>
       void renderText(TFT_eSprite& canvas, const int16_t x, const int16_t y, const uint32_t color, const uint32_t background, const char* format, Args... args) 
       {
-         canvas.setTextColor(color565(color), color565(background));
+         canvas.setTextColor(color565(color), color565(background), false);
          canvas.setCursor(x, y);
          canvas.printf(format, args...);
       }
@@ -81,11 +81,11 @@ class WidgetRect: public Widget
 {
    public:
         WidgetRect(const int left, const int top, const int width, const int height) :
-            Widget(left, top), Width(widget_width), Height(height)
+            Widget(left, top), Width(width), Height(height)
         {}
 
       const int Width;
-      const int Height;     
+      const int Height;
 };
 
 class WidgetPanel : public WidgetRect
@@ -116,7 +116,8 @@ class WidgetPanel : public WidgetRect
       const char* _text;
       uint32_t _background;
       uint32_t _title;
-
+      uint8_t _radius = 8;
+      
       void renderNormal(TFT_eSprite& canvas)
       {
          canvas.fillRoundRect(0, 0, Width, Height, corner_radius, color565(_background));
@@ -125,32 +126,29 @@ class WidgetPanel : public WidgetRect
 
       void renderRoundedSmooth(TFT_eSprite& canvas, int32_t color_title, int32_t color_tile)
       {
-         int32_t radius = 8;
-
-         int32_t x = 0;
-         int32_t y = 0;
-
-         int32_t title_padding = radius * 1.5;
+         int16_t x = 0;
+         int16_t y = 0;
+         int16_t title_padding = _radius * 1.5;
 
          // canvas.setTextColor(TFT_BLACK, color_title);
 
-         canvas.fillSmoothCircle(x + radius, y + radius, radius, color_title);
+         canvas.fillSmoothCircle(x + _radius, y + _radius, _radius, color_title);
 
-         canvas.fillSmoothCircle(x + Width - radius - 1, y + radius, radius, color_title);
+         canvas.fillSmoothCircle(x + Width - _radius - 1, y + _radius, _radius, color_title);
 
-         canvas.fillRect(x + radius, y, Width - radius * 2, radius, color_title);
+         canvas.fillRect(x + _radius, y, Width - _radius * 2, _radius, color_title);
 
-         canvas.fillRect(x, y + radius, Width, title_padding, color_title);
+         canvas.fillRect(x, y + _radius, Width, title_padding, color_title);
 
          //canvas.drawString(title, radius, 4);
 
-         canvas.fillRect(x, y + radius + title_padding, Width, Height - radius * 2 - title_padding, color_tile);
+         canvas.fillRect(x, y + _radius + title_padding, Width, Height - _radius * 2 - title_padding, color_tile);
 
-         canvas.fillSmoothCircle(x + radius, y + Height - radius, radius, color_tile);
+         canvas.fillSmoothCircle(x + _radius, y + Height - _radius, _radius, color_tile);
 
-         canvas.fillSmoothCircle(x + Width - radius - 1, y + Height - radius, radius, color_tile);
+         canvas.fillSmoothCircle(x + Width - _radius - 1, y + Height - _radius, _radius, color_tile);
 
-         canvas.fillRect(x + radius, y + Height - radius, Width - radius * 2, radius, color_tile);
+         canvas.fillRect(x + _radius, y + Height - _radius, Width - _radius * 2, _radius, color_tile);
       }
 };
 
@@ -158,33 +156,32 @@ template <std::size_t TSize>
 class WidgetList : public WidgetRect
 {
    public:
-        WidgetList(const int left = 0, const int top = 0, const int width = widget_width, const int height = WidgetPanel::Medium, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
-            : WidgetRect(left, top, width, height), _margin_x(text_margin_x), _margin_y(text_margin_y), _background(background), _color(color)
+        WidgetList(const int left, const int top, const int width, const int height, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : WidgetRect(left, top, width, height), _background(background), _color(color)
         {}
 
-        WidgetList(const WidgetRect& parent, const int margin_left = 0, const int margin_top = 0, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
-            : WidgetList(parent.Left + margin_left, parent.Top + margin_top, parent.Width - margin_left * 2, parent.Height - margin_top, background, color)
+         WidgetList(const WidgetRect& parent, const int margin_left = text_margin_x, const int margin_top = text_margin_y, const uint32_t background = TFT_TRANSPARENT, const uint32_t color = COLOR_LIGHT_GRAY) 
+            : WidgetList(
+               (parent.Left + margin_left), 
+               (parent.Top + margin_top), 
+               (parent.Width - margin_left * 2), 
+               (parent.Height - margin_top), 
+               background, color)
         {}
 
-         void setText(int index, String value) 
-         {
+         inline void setText(int index, String value) {
             _list[index] = value;
          }
 
          template<typename... Args>
-         void setText(int index, const char* format, Args... args) 
-         {
+         void setText(int index, const char* format, Args... args) {
             char buff[15];
-
             snprintf(buff, sizeof(buff), format, args...);
-
             _list[index] = buff;
          }
 
-         void clear()
-         {
-            for(auto i = 0; i < TSize; ++i) 
-            {
+         void clear() {
+            for(auto i = 0; i < TSize; ++i) {
                _list[i] = "";
             }
          }
@@ -194,20 +191,18 @@ class WidgetList : public WidgetRect
          canvas.createSprite(Width, Height);
          canvas.setColorDepth(16);
          canvas.setSwapBytes(true);
+        // canvas.fillSprite(TFT_TRANSPARENT);
          canvas.fillSprite(color565(_background));
 
          for (auto i = 0; i < TSize; ++i) 
          {
-            renderText(canvas, _margin_x, _margin_y + _margin_x / 2 + i * 15, _color, _background, _list[i].c_str());
+            renderText(canvas, 0,  i * 15, _color, _background, _list[i].c_str());
          }
-
          canvas.pushSprite(Left, Top);
          canvas.deleteSprite();
       }
 
     private:
-        const int _margin_x;
-        const int _margin_y;
         const uint32_t _color;
         const uint32_t _background;
         String _list[TSize];
@@ -235,7 +230,7 @@ const int WidgetPanel::Medium = widget_m_height;
 const int WidgetPanel::Large = widget_l_height;
 const int WidgetPanel::ExtraLarge = widget_xl_height;
 
-class WidgetCarusel
+class WidgetCarousel
 {
    public:
       void add(WidgetPanel* widget) {

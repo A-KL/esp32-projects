@@ -15,8 +15,10 @@ const int margin = 5;
 const int widget_title_h = 24;
 const int widget_title_margin = 6;
 
+WidgetGridLayout layout(0, 0, TFT_WIDTH, TFT_HEIGHT, 4, 3, 4); // TODO: start using
+
 WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus", COLOR_DARK_GRAY);
-WidgetPanel ps_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_DARKGREEN, TFT_BLUE);
+WidgetPanel ps_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_BLUE, TFT_DARKGREEN);
 
 WidgetPanel nrf42_panel(margin * 2 + sbus_panel.Width, margin, WidgetPanel::Small, "nrf42", COLOR_DARK_RED, COLOR_RED);
 WidgetPanel encoders_panel(margin * 2 + sbus_panel.Width, margin * 2 + nrf42_panel.Height, WidgetPanel::Medium, "encoders", COLOR_DARK_MAGENTA, COLOR_MAGENTA);
@@ -26,7 +28,7 @@ WidgetPanel power_panel(margin * 3 + sbus_panel.Width * 2, margin, WidgetPanel::
 WidgetPanel esp_now_panel(margin * 3 + sbus_panel.Width * 2, margin * 2 + power_panel.Height, WidgetPanel::Medium, "esp now", COLOR_DARK_GRAY);
 
 WidgetList<8> sbus_values(sbus_panel, widget_title_margin, widget_title_h, COLOR_DARK_GRAY);
-WidgetList<2> ps_values(ps_panel, widget_title_margin, widget_title_h, TFT_DARKGREEN);
+WidgetList<2> ps_values(ps_panel, widget_title_margin, widget_title_h, TFT_BLUE);
 
 WidgetList<2> nrf42_values(nrf42_panel, widget_title_margin, widget_title_h, COLOR_DARK_RED);
 WidgetList<4> encoder_values(encoders_panel, widget_title_margin, widget_title_h, COLOR_DARK_MAGENTA);

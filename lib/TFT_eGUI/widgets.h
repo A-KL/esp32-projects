@@ -124,7 +124,7 @@ class WidgetPanel : public WidgetRect
          canvas.fillRoundRect(0, 0, Width, widget_title_height, corner_radius, color565(_title));
       }
 
-      void renderRoundedSmooth(TFT_eSprite& canvas, int32_t color_title, int32_t color_tile)
+      void renderRoundedSmooth(TFT_eSprite& canvas, int32_t color_title, int32_t color)
       {
          int16_t x = 0;
          int16_t y = 0;
@@ -142,13 +142,28 @@ class WidgetPanel : public WidgetRect
 
          //canvas.drawString(title, radius, 4);
 
-         canvas.fillRect(x, y + _radius + title_padding, Width, Height - _radius * 2 - title_padding, color_tile);
+         // canvas.fillRect(x, y + _radius + title_padding, Width, Height - _radius * 2 - title_padding, color);
 
-         canvas.fillSmoothCircle(x + _radius, y + Height - _radius, _radius, color_tile);
+         // canvas.fillSmoothCircle(x + _radius, y + Height - _radius, _radius, color);
 
-         canvas.fillSmoothCircle(x + Width - _radius - 1, y + Height - _radius, _radius, color_tile);
+         // canvas.fillSmoothCircle(x + Width - _radius - 1, y + Height - _radius, _radius, color);
 
-         canvas.fillRect(x + _radius, y + Height - _radius, Width - _radius * 2, _radius, color_tile);
+         // canvas.fillRect(x + _radius, y + Height - _radius, Width - _radius * 2, _radius, color);
+
+         renderRoundedSmoothBottom(canvas, x, y + title_padding, Width, Height - title_padding, color);
+
+        // renderRoundedSmoothBottom(canvas, x + 2, y + title_padding + 2, Width - 4, Height - title_padding - 4, TFT_BLACK);
+      }
+
+      void renderRoundedSmoothBottom(TFT_eSprite& canvas, int16_t x, int16_t y, int16_t w, int16_t h, int32_t color)
+      {
+         canvas.fillRect(x, y + _radius, w, h - _radius * 2, color);
+
+         canvas.fillSmoothCircle(x + _radius, y + h - _radius, _radius, color);
+
+         canvas.fillSmoothCircle(x + w - _radius - 1, y + h - _radius, _radius, color);
+
+         canvas.fillRect(x + _radius, y + h - _radius, w - _radius * 2, _radius, color);
       }
 };
 
@@ -165,7 +180,7 @@ class WidgetList : public WidgetRect
                (parent.Left + margin_left), 
                (parent.Top + margin_top), 
                (parent.Width - margin_left * 2), 
-               (parent.Height - margin_top), 
+               (parent.Height - margin_top - 3), // TODO fix bottom margin
                background, color)
         {}
 
@@ -257,4 +272,30 @@ class WidgetCarousel
    private:
       std::vector<WidgetPanel*> _widgets;
       std::vector<WidgetPanel*>::iterator _selected_widget;
+};
+
+class WidgetGridLayout : public WidgetRect
+{
+public:
+   WidgetGridLayout(
+         const int left, const int top, const int width, const int height, 
+         const uint16_t rows, const uint16_t cols, const uint16_t spacing = 2) 
+      : WidgetRect(left, top, width, height), _rows(rows), _cols(cols), _spacing(spacing)
+   { }
+
+   WidgetRect get(const uint16_t row, const uint16_t col, const uint16_t row_span = 0, const uint16_t col_span = 0)
+   {
+      const auto cell_w = (Width - _spacing * (_cols + 1)) / _cols;
+      const auto cell_h = (Height - _spacing * (_rows + 1)) / _rows;
+
+      auto x = Left + _spacing * (col + 1) + cell_h * col;
+      auto y = Top + _spacing * (row + 1) + cell_w * row;
+
+      return WidgetRect(x, y, cell_w, cell_h);
+   }
+
+private:
+   const uint16_t _rows;
+   const uint16_t _cols;
+   const uint16_t _spacing;
 };

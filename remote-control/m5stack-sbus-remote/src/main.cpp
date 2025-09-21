@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+#include "M5Unified.h"
 
 #include "NotoSansBold15.h"
 #include "gui.h"
@@ -89,6 +90,9 @@ void on_esp_now_message_received(const data_message_t& data) {
 
 void setup() 
 {
+    auto cfg = M5.config();
+    M5.begin(cfg);
+
   Wire.begin();
   Serial.begin(115200);
 
@@ -131,6 +135,12 @@ void loop()
 {
   auto left_speed = 0;
   auto right_speed = 0;
+
+  M5.update();
+
+  if (M5.BtnA.wasPressed()) {
+      Serial.println("BtnA Pressed");
+  }
 
   //xboxController.onLoop();
   now_loop();
@@ -224,7 +234,7 @@ void loop()
     auto power_mW = ina219_output.getPower_mW();
     auto load_voltage = bus_voltage + (shunt_voltage / 1000);
 
-    power_values.setText(0, "%.2f V", bus_voltage);
+    power_values.setText(0, "%.2f v", bus_voltage);
     power_values.setText(1, "%.2f mA", current_mA);
     power_values.setText(2, "%.2f mW", power_mW);
   }

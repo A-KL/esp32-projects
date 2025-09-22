@@ -2,12 +2,6 @@
 
 #include <types.h>
 
-/* Generic */
-
-#define WIFI_ENABLED
-#define HAS_BLE
-#define LED_PIN 8
-
 /* Debug */
 // #define OUTPUT_SERVOS_DEBUG
 // #define INPUT_ESP_NOW_DEBUG
@@ -21,13 +15,16 @@ const uint8_t adc_input_pins[] = { };
 const uint8_t pwm_input_pins[] = { };
 
 /* SBUS */
-const uint8_t sbus_rx_tx_pins[] = { 20, 21 };
+const uint8_t sbus_rx_tx_pins[] = { 3, 1 };
 const auto sbus_serial = &Serial1;
+
+/* PS */
+const char* ps_controller_mac = "B8:27:EB:DF:B3:FF";
 
 /* Outputs */
 
 /* PWM */
-const uint8_t servos_pins[] = { 0, 1, 2, 3, 4, 5 };
+const uint8_t servos_pins[] = { 26, 36, 18, 19, 21, 22 };
 
 /* Motors */
 const motor_config_t motors [] = { };

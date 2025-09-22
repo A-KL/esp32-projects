@@ -75,7 +75,7 @@ void ps3_on_data_received()
 }
 #endif
 
-inline void ps_init() 
+inline void ps3_init() 
 {
 #ifdef HAS_BLUETOOTH
     Ps3.attach(ps3_on_data_received);
@@ -93,7 +93,7 @@ inline void ps_init()
 #endif
 }
 
-uint8_t ps_receive(int16_t* outputs)
+uint8_t ps3_receive(int16_t* outputs)
 {
 #ifdef HAS_BLUETOOTH
     if (!Ps3.isConnected()) 

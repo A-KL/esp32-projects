@@ -2,10 +2,6 @@
 
 #include <Arduino.h>
 
-#define INPUT_PWM_MAX  1996 // 2000
-#define INPUT_PWM_MIN   970 // 1024
-#define INPUT_PWM_ZERO  800 // 1020
-
 void timerInputHandler(void* arg);
 
 class pwm_input_t 
@@ -13,7 +9,7 @@ class pwm_input_t
 public:
   void init(const int pin) {
     _pin = pin;
-    pinMode(_pin, INPUT);
+    pinMode(_pin, INPUT_PULLDOWN);
     attachInterruptArg(digitalPinToInterrupt(_pin), timerInputHandler, this, CHANGE);
   }
 
@@ -35,8 +31,7 @@ public:
   unsigned long value() {
     if (newPulseDurationAvailable) {
       newPulseDurationAvailable = false;
-      unsigned long pulseDuration = pulseInTimeEnd - pulseInTimeBegin;
-      return pulseDuration;
+      return (pulseInTimeEnd - pulseInTimeBegin);
     }
     return 0;
   }

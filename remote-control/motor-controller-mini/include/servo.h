@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define SERVO_FREQ     50
-#define SERVO_RES      14
+#define SERVO_RES      10
 
 class Servo
 {
@@ -40,7 +40,7 @@ public:
     }
 
     template<int16_t TMin, int16_t TMax>
-    inline void write(int16_t value) const
+    void write(int16_t value) const
     {
         if (!_attached || !_init) {
             return;

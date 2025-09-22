@@ -4,7 +4,8 @@
 #include "M5Unified.h"
 
 #include "NotoSansBold15.h"
-#include "gui.h"
+//#include "gui.h"
+#include "ui/ui.h"
 
 #include "lego_plus_driver.h"
 #include "GoPlus2.h"
@@ -69,7 +70,7 @@ inline int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch
 
 void on_esp_now_disconnected() {
     for (int8_t i = 0; i < 5; i++) {
-        esp_now_values.setText(i, "ch%d --", i);
+      esp_now_values.setText(i, "ch%d --", i);
     }
 }
 
@@ -128,7 +129,7 @@ void setup()
 
   sbus_rx.Begin(16, 17);
 
-  gui_init();
+  //gui_init();
 }
 
 void loop() 
@@ -161,8 +162,8 @@ void loop()
       steer = 0;
     }
 
-    ps_values.setText(0, "p %d", power);
-    ps_values.setText(1, "s %d", steer);
+   // ps_values.setText(0, "p %d", power);
+    //ps_values.setText(1, "s %d", steer);
 
     // motor_a = wheel(y + x)
     // motor_b = wheel(y - x)
@@ -268,11 +269,6 @@ void loop()
     encoder_values.setText(i, "ch%d %d", i, motor_driver_connected ? readEncoder(i) : 0);
   }
 
-  // Sound
-  // if (left_speed > 0 && right_speed < 0) {
-  //   sound_on(true);
-  // }
-
   // Motor
   if (motor_driver_connected) 
   {
@@ -300,12 +296,8 @@ void loop()
   {
     motors_values.setText(0, "l ---");
     motors_values.setText(1, "r ---");
-
-    //sound_on(false);
   }
 
-  //Speaker.update();
-
   // Update GUI
-  gui_render();
+  //gui_render();
 }

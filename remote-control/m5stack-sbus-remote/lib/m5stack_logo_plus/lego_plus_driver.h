@@ -1,5 +1,4 @@
-#ifndef lego_plus_driver_h
-#define lego_plus_driver_h
+#pragma once
 
 #include "CommUtil.h"
 
@@ -55,5 +54,3 @@ uint8_t readVersion() {
 
     return dest;
 }
-
-#endif

@@ -15,7 +15,10 @@ const int margin = 5;
 const int widget_title_h = 24;
 const int widget_title_margin = 6;
 
-WidgetGridLayout layout(0, 0, TFT_WIDTH, TFT_HEIGHT, 4, 3, 4); // TODO: start using
+WidgetGridLayout layout(0, 0, 320, 240, 4, 3, margin); // TODO: start using
+auto d = layout.get(0, 0, 3);
+
+//WidgetPanel sbus_panel(, "sbus", COLOR_DARK_GRAY);
 
 WidgetPanel sbus_panel(margin, margin * 1, WidgetPanel::Large, "sbus", COLOR_DARK_GRAY);
 WidgetPanel ps_panel(margin, margin * 2 + sbus_panel.Height, WidgetPanel::Small, "ps4", TFT_BLUE, TFT_DARKGREEN);

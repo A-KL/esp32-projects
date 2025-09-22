@@ -95,6 +95,10 @@ class WidgetPanel : public WidgetRect
             WidgetRect(left, top, widget_width, size), _text(text), _background(background), _title(title)
         {}
     
+        WidgetPanel(const WidgetRect& rect, const char* text, const uint32_t background = COLOR_DARK_GRAY, const uint32_t title = COLOR_GRAY) :
+            WidgetRect(rect.Left, rect.Top, rect.Width, rect.Height), _text(text), _background(background), _title(title)
+        {}
+
       virtual void render(TFT_eSprite& canvas)
       {
          canvas.createSprite(Width, Height);
@@ -285,8 +289,8 @@ public:
 
    WidgetRect get(const uint16_t row, const uint16_t col, const uint16_t row_span = 0, const uint16_t col_span = 0)
    {
-      const auto cell_w = (Width - _spacing * (_cols + 1)) / _cols;
-      const auto cell_h = (Height - _spacing * (_rows + 1)) / _rows;
+      const auto cell_w = (Width - _spacing * (_cols + 1 - col_span)) / _cols * col_span;
+      const auto cell_h = (Height - _spacing * (_rows + 1 - row_span)) / _rows * row_span;
 
       auto x = Left + _spacing * (col + 1) + cell_h * col;
       auto y = Top + _spacing * (row + 1) + cell_w * row;

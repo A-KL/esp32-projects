@@ -197,8 +197,6 @@ void hal_setup(void)
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
   /*Initialize the display*/
-
-
   lv_disp_drv_init(&disp_drv);
 
   /*Change the following line to your display resolution*/

@@ -3,31 +3,157 @@
 // LVGL version: 8.3.11
 // Project name: SquareLine_Project
 
-#include "../ui.h"
 #include <lvgl.h>
 #include <string>
+
+#include "main_screen.h"
+
+lv_obj_t *ui_screen;
+lv_obj_t *ui____initial_actions0;
+
+lv_obj_t *ui_tab_view = NULL;
+
+lv_obj_t *ui_tab_page_inputs = NULL;
+lv_obj_t *ui_tab_page_outputs = NULL;
+lv_obj_t *ui_tab_page_telemetry = NULL;
+
+lv_obj_t *ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100, int16_t h = 155, int16_t border = 3)
+{
+    auto panel = lv_obj_create(parent);
+    
+    lv_obj_set_width( panel, w);
+    lv_obj_set_height( panel, h);
+
+    lv_obj_set_align( panel, LV_ALIGN_CENTER );
+    lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(panel, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_clear_flag( panel, LV_OBJ_FLAG_SCROLLABLE );
+
+    lv_obj_set_style_radius(panel, 6,  LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_border_color(panel, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
+    lv_obj_set_style_border_opa(panel, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_border_width(panel, border, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+    lv_obj_set_style_pad_left(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_row(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_column(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+    return panel;
+}
+
+lv_obj_t *ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color_hex)
+{    
+    auto label = lv_label_create(parent);
+
+    lv_obj_set_width(label, lv_pct(100));
+    lv_obj_set_height(label, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_align(label, LV_ALIGN_CENTER );
+    lv_label_set_text(label, title);
+    lv_obj_set_style_bg_color(label, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
+    lv_obj_set_style_bg_opa(label, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+    return label;
+}
+
+lv_obj_t *ui_create_tab(lv_obj_t *tab_view, const char* name)
+{
+    auto page = lv_tabview_add_tab(tab_view, name);
+
+    lv_obj_set_flex_flow(page,LV_FLEX_FLOW_COLUMN_WRAP);
+    lv_obj_set_flex_align(page, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_set_style_pad_left(page, 2, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(page, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(page, 2, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(page, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_row(page, 4, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_column(page, 4, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+    return page;
+}
+
+lv_obj_t *ui_create_tabview(lv_obj_t *screen, uint8_t corner_radius = 6)
+{
+    auto tab_view = lv_tabview_create(screen, LV_DIR_BOTTOM, 20);
+
+    lv_obj_set_width(tab_view, lv_pct(100));
+    lv_obj_set_height(tab_view, lv_pct(100));
+    lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
+
+    lv_obj_set_style_text_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0x808080),  LV_PART_MAIN | LV_STATE_DEFAULT );
+    lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_MAIN| LV_STATE_DEFAULT);
+    
+    lv_obj_set_style_text_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0xDEDEDE),  LV_PART_ITEMS | LV_STATE_CHECKED );
+    lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
+   
+    lv_obj_set_style_radius(lv_tabview_get_tab_btns(tab_view), 6,  LV_PART_ITEMS| LV_STATE_CHECKED);
+    
+    lv_obj_set_style_bg_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0x545454),  LV_PART_ITEMS | LV_STATE_CHECKED );
+    lv_obj_set_style_bg_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
+    
+    lv_obj_set_style_bg_main_stop(lv_tabview_get_tab_btns(tab_view), 0,  LV_PART_ITEMS| LV_STATE_CHECKED);
+    lv_obj_set_style_bg_grad_stop(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
+    
+    lv_obj_set_style_border_side(lv_tabview_get_tab_btns(tab_view), LV_BORDER_SIDE_NONE,  LV_PART_ITEMS| LV_STATE_CHECKED);
+
+    return tab_view;
+}
+
+lv_obj_t *ui_create_screen(uint32_t color_hex)
+{
+    auto screen = lv_obj_create(NULL);
+
+    lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_bg_color(screen, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+    return screen;
+}
 
 void ui_main_screen_init(void)
 {
     // Main screen
-    ui_screen = lv_obj_create(NULL);
-    lv_obj_clear_flag( ui_screen, LV_OBJ_FLAG_SCROLLABLE );
-    lv_obj_set_style_bg_color(ui_screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_bg_opa(ui_screen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-    // /* Create simple label */
-    // lv_obj_t *label = lv_label_create( ui_screen );
-    // lv_label_set_text( label, "Hello Ardino and LVGL!");
-    // lv_obj_align( label, LV_ALIGN_CENTER, 0, 0 );
-    
-    // auto screen_width = LV_HOR_RES;
-    // auto screen_hight = LV_VER_RES;
+    ui_screen = ui_create_screen(0x000000);
 
-    // auto widget_width = (screen_width - separator_size) / 2;
+    /* TabView */
 
-    // // Altimeter
-    // ui_widget_init(ui_screen, altimeter_widget, 0, 0, widget_width, screen_hight, alt_value, alt_unit);
+    ui_tab_view = ui_create_tabview(ui_screen);
 
-    // // Pitch
-    // ui_widget_init(ui_screen, pitch_widget, (widget_width + separator_size), 0, widget_width, screen_hight, pitch_value, pitch_unit, -20);
+    /* TabView Pages */
+
+    ui_tab_page_inputs = ui_create_tab(ui_tab_view, "inputs");
+    ui_tab_page_outputs = ui_create_tab(ui_tab_view, "outputs");
+    ui_tab_page_telemetry = ui_create_tab(ui_tab_view, "telemetry");
+
+    /* Page SBUS */
+
+    auto sbus_panel = ui_create_panel(ui_tab_page_inputs, 0xD500DF);
+    auto sbus_panel_title = ui_create_panel_title(sbus_panel, "sbus", 0xD500DF);
+
+    /* Page ENOW */
+
+    auto enow_panel = ui_create_panel(ui_tab_page_inputs, 0x585858);
+    auto enow_panel_title = ui_create_panel_title(enow_panel, "enow", 0x585858);
+
+    /* Page NRF24 */
+
+    auto nrf24_panel = ui_create_panel(ui_tab_page_inputs, 0xEF0068);
+    auto nrf24_panel_title = ui_create_panel_title(nrf24_panel, "nrf24", 0xEF0068);
+}
+
+void ui_main_screen_destroy()
+{
+    if (ui_screen) {
+        lv_obj_del(ui_screen);
+    }
+
+    ui_tab_view = NULL;
+
+    ui_tab_page_inputs = NULL;
+    ui_tab_page_outputs = NULL;
+    ui_tab_page_telemetry = NULL;
 }

@@ -40,11 +40,6 @@ void hal_display_flush_cb(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_col
     // lv_disp_flush_ready(disp);
 }
 
-// static uint32_t hal_lvgl_timer_tick_get_cb(void) 
-// { 
-//   return millis(); 
-// }
-
 static void hal_timer_tick(void * pvParameters)
 {
     while(1) {
@@ -52,6 +47,8 @@ static void hal_timer_tick(void * pvParameters)
         lv_tick_inc(5);
     }
 }
+
+#if LV_USE_LOG != 0
 
 void hal_log_cb(const char * buf)
 {
@@ -63,6 +60,8 @@ void hal_log_cb(const char * buf)
   // if(level == LV_LOG_LEVEL_TRACE) serial_send("TRACE: ");
 }
 
+#endif
+
 void lcd_init()
 {
   tft.init();
@@ -70,22 +69,22 @@ void lcd_init()
   tft.fillScreen(TFT_RED); //TFT_BLACK
 }
 
-void lvgl_init()
+void hal_init()
 {
 #if LV_USE_LOG != 0
-    /* register print function for debugging */
     lv_log_register_print_cb(hal_log_cb); 
 #endif
 
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
-  /*Initialize the display*/
   static lv_disp_drv_t disp_drv;
   lv_disp_drv_init(&disp_drv);
+
   disp_drv.hor_res = TFT_HEIGHT;
   disp_drv.ver_res =  TFT_WIDTH;
   disp_drv.flush_cb = hal_display_flush_cb;
   disp_drv.draw_buf = &draw_buf;
+
   lv_disp_drv_register(&disp_drv);
 
     /*Initialize the (dummy) input device driver*/
@@ -95,9 +94,7 @@ void lvgl_init()
     // indev_drv.read_cb = my_touchpad_read;
     // lv_indev_drv_register( &indev_drv );ati
 
-  //xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lv_tick_task);
-
-  //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);
+  xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lv_tick_task);
 }
 
 void hal_loop(void)

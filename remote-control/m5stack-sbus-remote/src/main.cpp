@@ -1,21 +1,21 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+#include <sbus.h>
+
 #include "M5Unified.h"
-
-#include "NotoSansBold15.h"
-#include "lv_gui.h"
-//#include "gui.h"
-#include "ui/ui.h"
-
 #include "lego_plus_driver.h"
 #include "GoPlus2.h"
 #include "MPU6886.h"
-#include "sound.h"
+
+//#include "NotoSansBold15.h"
+#include "lv_hal.h"
+//#include "gui.h"
+#include "ui/ui.h"
+#include "ui/lvgl_widgets.h"
 
 #include "rf24_radio.h"
 #include "now.h"
-#include <sbus.h>
 
 #ifdef PS3
   #include <Ps3Controller.h>
@@ -102,28 +102,27 @@ void on_esp_now_message_received(const data_message_t& data) {
 
 void setup() 
 {
-  auto cfg = M5.config();
-
-  //M5.begin(cfg);
   Serial.begin(115200);
   Wire.begin();
+
+  auto cfg = M5.config();
+  M5.begin(cfg);
   
+//gui_init();
   lcd_init();
   lv_init();
-  lvgl_init();
+  hal_init();
   ui_init();
+
+  now_init();
+  setupRadio();
+
+  sbus_rx.Begin(16, 17);
 
 return;
   imu.Init();
 
   INIT_CONTROLLER;
-
-  // if (INIT_CONTROLLER)
-  // {
-  //   log_i("Failed to start Controller Host");
-  // }
-  now_init();
-  setupRadio();
 
   if (!ina219_output.begin()) {
     log_i("Failed to find output INA219 chip");
@@ -142,26 +141,29 @@ return;
   goPlus.begin();
   motor_driver_v2_connected = goPlus.hub1_a_read_value(HUB1_R_ADDR) > 0;
   log_i("Motor Driver V2 available: %d", motor_driver_v2_connected);
-
-  sbus_rx.Begin(16, 17);
-
-  //gui_init();
 }
 
 void loop() 
 {
-  hal_loop();
-
   auto left_speed = 0;
   auto right_speed = 0;
 
   M5.update();
 
+  // Update GUI
+  //gui_render();
+  hal_loop();
+
   if (M5.BtnA.wasPressed()) {
       Serial.println("BtnA Pressed");
+      ui_select_tab(0);
+  } else if (M5.BtnB.wasPressed()) {
+      Serial.println("BtnB Pressed");
+      ui_select_tab(1);
+  } else if (M5.BtnC.wasPressed()) {
+      Serial.println("BtnC Pressed");
+      ui_select_tab(2);
   }
-
-  return;
 
   //xboxController.onLoop();
   now_loop();
@@ -182,8 +184,8 @@ void loop()
       steer = 0;
     }
 
-   // ps_values.setText(0, "p %d", power);
-    //ps_values.setText(1, "s %d", steer);
+    ps_values.setText(0, "p %d", power);
+    ps_values.setText(1, "s %d", steer);
 
     // motor_a = wheel(y + x)
     // motor_b = wheel(y - x)
@@ -266,23 +268,6 @@ void loop()
     power_values.setText(2, "--- mW");
   }
 
-  // Acc
-  int16_t temp = 0;
-  float pitch = 0;
-  float roll = 0;
-  float yaw = 0;
-
-  imu.getTempAdc(&temp);
-  imu.getAhrsData(&pitch, &roll, &yaw);
-
-  log_d("MPU6886 Temp: %d", temp);
-  log_d("MPU6886 pitch: %f roll: %f yaw: %f", pitch, roll, yaw);
-
- // power_values.setText(3, "temp %.2f", temp);
-  power_values.setText(3, "p %.2f", pitch);
-  power_values.setText(4, "r %.2f", roll);
-  power_values.setText(5, "y %.2f", yaw);
-
   // Encoder
   for (int8_t i = 0; i < 4; i++) 
   {
@@ -318,6 +303,20 @@ void loop()
     motors_values.setText(1, "r ---");
   }
 
-  // Update GUI
-  //gui_render();
+//   // Acc
+//   int16_t temp = 0;
+//   float pitch = 0;
+//   float roll = 0;
+//   float yaw = 0;
+
+//   imu.getTempAdc(&temp);
+//   imu.getAhrsData(&pitch, &roll, &yaw);
+
+//   log_d("MPU6886 Temp: %d", temp);
+//   log_d("MPU6886 pitch: %f roll: %f yaw: %f", pitch, roll, yaw);
+
+//  // power_values.setText(3, "temp %.2f", temp);
+//   power_values.setText(3, "p %.2f", pitch);
+//   power_values.setText(4, "r %.2f", roll);
+//   power_values.setText(5, "y %.2f", yaw);
 }

@@ -113,6 +113,11 @@ lv_obj_t *ui_create_screen(uint32_t color_hex)
     return screen;
 }
 
+void ui_main_screen_change_tab(uint8_t index)
+{
+     lv_tabview_set_act(ui_tab_view, index, LV_ANIM_ON);
+}
+
 void ui_main_screen_init(void)
 {
     // Main screen

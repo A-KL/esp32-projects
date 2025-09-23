@@ -1,8 +1,19 @@
 #pragma once
 
-#include <string.h>
 #include <stdio.h>
-#include <vector>
+
+#include <lvgl.h>
+
+//#include "ui_helpers.h"
+//#include "ui_events.h"
+
+// SCREEN: ui_screen
+void ui_main_screen_init(void);
+
+extern lv_obj_t *ui_screen;
+extern lv_obj_t *ui____initial_actions0;
+
+void ui_init(void);
 
 template <std::size_t TSize>
 class WidgetPanel
@@ -15,14 +26,3 @@ class WidgetPanel
             // _list[index] = buff;
          }
 };
-
-WidgetPanel<8> esp_now_values;
-WidgetPanel<8> sbus_values;
-WidgetPanel<8> nrf42_values;
-WidgetPanel<8> ps_values;
-
-WidgetPanel<4> encoder_values;
-WidgetPanel<4> motors_values;
-
-WidgetPanel<6> power_values;
-

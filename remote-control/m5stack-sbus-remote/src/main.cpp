@@ -4,6 +4,7 @@
 #include "M5Unified.h"
 
 #include "NotoSansBold15.h"
+#include "lv_gui.h"
 //#include "gui.h"
 #include "ui/ui.h"
 
@@ -36,6 +37,16 @@
   #define INIT_CONTROLLER log_i("No controller")
   #define CONTROLLER_CONNECTED false
 #endif
+
+WidgetPanel<8> esp_now_values;
+WidgetPanel<8> sbus_values;
+WidgetPanel<8> nrf42_values;
+WidgetPanel<8> ps_values;
+
+WidgetPanel<4> encoder_values;
+WidgetPanel<4> motors_values;
+
+WidgetPanel<6> power_values;
 
 Adafruit_INA219 ina219_output(INA219_ADDRESS);
 Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
@@ -91,14 +102,19 @@ void on_esp_now_message_received(const data_message_t& data) {
 
 void setup() 
 {
-    auto cfg = M5.config();
-    M5.begin(cfg);
+  auto cfg = M5.config();
 
-  Wire.begin();
+  //M5.begin(cfg);
   Serial.begin(115200);
+  Wire.begin();
+  
+  lcd_init();
+  lv_init();
+  lvgl_init();
+  ui_init();
 
+return;
   imu.Init();
-  sound_init();
 
   INIT_CONTROLLER;
 
@@ -134,6 +150,8 @@ void setup()
 
 void loop() 
 {
+  hal_loop();
+
   auto left_speed = 0;
   auto right_speed = 0;
 
@@ -142,6 +160,8 @@ void loop()
   if (M5.BtnA.wasPressed()) {
       Serial.println("BtnA Pressed");
   }
+
+  return;
 
   //xboxController.onLoop();
   now_loop();

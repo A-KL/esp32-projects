@@ -8,9 +8,6 @@
 
 #include "main_screen.h"
 
-lv_obj_t *ui_screen;
-lv_obj_t *ui____initial_actions0;
-
 lv_obj_t *ui_tab_view = NULL;
 
 lv_obj_t *ui_tab_page_inputs = NULL;
@@ -102,28 +99,13 @@ lv_obj_t *ui_create_tabview(lv_obj_t *screen, uint8_t corner_radius = 6)
     return tab_view;
 }
 
-lv_obj_t *ui_create_screen(uint32_t color_hex)
-{
-    auto screen = lv_obj_create(NULL);
-
-    lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(screen, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    return screen;
-}
-
 void ui_main_screen_change_tab(uint8_t index)
 {
      lv_tabview_set_act(ui_tab_view, index, LV_ANIM_ON);
 }
 
-void ui_main_screen_init(void)
+void ui_main_screen_init(lv_obj_t *ui_screen)
 {
-    // Main screen
-
-    ui_screen = ui_create_screen(0x000000);
-
     /* TabView */
 
     ui_tab_view = ui_create_tabview(ui_screen);
@@ -152,10 +134,6 @@ void ui_main_screen_init(void)
 
 void ui_main_screen_destroy()
 {
-    if (ui_screen) {
-        lv_obj_del(ui_screen);
-    }
-
     ui_tab_view = NULL;
 
     ui_tab_page_inputs = NULL;

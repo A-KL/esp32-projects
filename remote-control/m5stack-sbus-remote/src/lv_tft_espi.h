@@ -3,7 +3,11 @@
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 
-#define LVGL_LCD_BUF_SIZE ((TFT_WIDTH*TFT_HEIGHT)/10)
+#ifndef LVGL_BUF_SIZE_PER
+#define LVGL_BUF_SIZE_PER 10
+#endif
+
+#define LVGL_LCD_BUF_SIZE ((TFT_WIDTH*TFT_HEIGHT)/LVGL_BUF_SIZE_PER)
 
 static TFT_eSPI tft = TFT_eSPI();
 
@@ -66,11 +70,13 @@ void lcd_init()
 {
   tft.init();
   tft.setRotation(TFT_ROTATE);
-  tft.fillScreen(TFT_RED); //TFT_BLACK
+  tft.fillScreen(TFT_BLACK);
 }
 
 void hal_init()
 {
+  lcd_init();
+  
 #if LV_USE_LOG != 0
     lv_log_register_print_cb(hal_log_cb); 
 #endif

@@ -16,8 +16,3 @@ void ui_init(void)
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_screen);
 }
-
-void ui_destroy(void)
-{
-    ui_main_screen_destroy();
-}

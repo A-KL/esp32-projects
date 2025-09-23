@@ -9,10 +9,10 @@
 #include "MPU6886.h"
 
 //#include "NotoSansBold15.h"
-#include "lv_hal.h"
+#include "lv_tft_espi.h"
 //#include "gui.h"
 #include "ui/ui.h"
-#include "ui/lvgl_widgets.h"
+#include "ui/lv_widgets.h"
 
 #include "rf24_radio.h"
 #include "now.h"
@@ -108,7 +108,6 @@ void setup()
   auto cfg = M5.config();
   M5.begin(cfg);
   
-//gui_init();
   lcd_init();
   lv_init();
   hal_init();

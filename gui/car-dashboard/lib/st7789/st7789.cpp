@@ -1,11 +1,16 @@
 #include <Arduino.h>
 
-#include "esp_lcd.h"
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_vendor.h"
+
+#include "st7789.h"
 
 #define LCD_MODULE_CMD_1
 
 static esp_lcd_panel_io_handle_t io_handle = NULL;
 static esp_lcd_flush_ready_cb_t on_lcd_flush_ready = NULL;
+static esp_lcd_panel_handle_t panel_handle = NULL;
 
 #if defined(LCD_MODULE_CMD_1)
 typedef struct {
@@ -43,7 +48,7 @@ static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, 
 
 // LilyGo  T-Display-S3  control backlight chip has 16 levels of adjustment range
 // The adjustable range is 0~16, 0 is the minimum brightness, 16 is the maximum brightness
-void setBrightness(uint8_t value)
+void lcd_setBrightness(uint8_t value)
 {
     static uint8_t level = 0;
     static uint8_t steps = 16;
@@ -70,15 +75,19 @@ void setBrightness(uint8_t value)
 
 void lcd_setRotation(uint8_t rotation)
 {
+    //The screen faces you, and the USB is on the left
+    //esp_lcd_panel_mirror(panel_handle, false, true);
 
+    //The screen faces you, the USB is to the right
+    // esp_lcd_panel_mirror(panel_handle, true, false);
 }
 
-void lcd_PushColors(void* user_data,
-                    uint16_t x,
-                    uint16_t y,
-                    uint16_t x2,
-                    uint16_t y2,
-                    uint16_t *data)
+void lcd_display(void* user_data,
+                 uint16_t x,
+                 uint16_t y,
+                 uint16_t x2,
+                 uint16_t y2,
+                 uint16_t *data)
 {
     esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t)user_data;
     esp_lcd_panel_draw_bitmap(panel_handle, x, y, x2 + 1, y2 + 1, data);
@@ -91,6 +100,8 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
 
     pinMode(PIN_LCD_RD, OUTPUT);
     digitalWrite(PIN_LCD_RD, HIGH);
+
+    on_lcd_flush_ready = cb;
 
     esp_lcd_i80_bus_handle_t i80_bus = NULL;
 
@@ -134,11 +145,9 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
         },
     };
 
-    on_lcd_flush_ready = cb;
-
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i80(i80_bus, &io_config, &io_handle));
 
-    esp_lcd_panel_handle_t panel_handle = NULL;
+    
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_LCD_RES,
         .color_space = ESP_LCD_COLOR_SPACE_RGB,

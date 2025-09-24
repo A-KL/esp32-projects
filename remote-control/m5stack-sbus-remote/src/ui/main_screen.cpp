@@ -7,8 +7,19 @@
 #include <string>
 
 #include <lv_ui.h>
+#include "lv_widgets.h"
 
 #include "main_screen.h"
+
+WidgetPanel<8> esp_now_values;
+WidgetPanel<8> sbus_values;
+WidgetPanel<8> nrf42_values;
+WidgetPanel<8> ps_values;
+
+WidgetPanel<4> encoder_values;
+WidgetPanel<4> motor_values;
+
+WidgetPanel<6> power_values;
 
 lv_obj_t *ui_tab_view = NULL;
 
@@ -16,55 +27,16 @@ lv_obj_t *ui_tab_page_inputs = NULL;
 lv_obj_t *ui_tab_page_outputs = NULL;
 lv_obj_t *ui_tab_page_telemetry = NULL;
 
-lv_obj_t *ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100, int16_t h = 155, int16_t border = 3)
-{
-    auto panel = lv_obj_create(parent);
-
-    lv_obj_set_width( panel, w);
-    lv_obj_set_height( panel, h);
-
-    lv_obj_set_align( panel, LV_ALIGN_CENTER );
-    lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(panel, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-    lv_obj_clear_flag( panel, LV_OBJ_FLAG_SCROLLABLE );
-
-    lv_obj_set_style_radius(panel, 6,  LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_border_color(panel, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_border_opa(panel, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(panel, border, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    lv_obj_set_style_pad_left(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_row(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_column(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    return panel;
-}
-
-lv_obj_t *ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color_hex)
-{
-    auto label = lv_label_create(parent);
-
-    lv_obj_set_width(label, lv_pct(100));
-    lv_obj_set_height(label, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_align(label, LV_ALIGN_CENTER );
-    lv_label_set_text(label, title);
-    lv_obj_set_style_bg_color(label, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_bg_opa(label, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    return label;
-}
-
 lv_obj_t *ui_create_tab(lv_obj_t *tab_view, const char* name)
 {
     auto page = lv_tabview_add_tab(tab_view, name);
 
+    lv_obj_set_style_bg_color(tab_view, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
+    lv_obj_set_style_bg_opa(tab_view, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+
     lv_obj_set_flex_flow(page,LV_FLEX_FLOW_COLUMN_WRAP);
     lv_obj_set_flex_align(page, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-    lv_obj_set_style_pad_left(page, 2, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(page, 4, LV_PART_MAIN| LV_STATE_DEFAULT); //2
     lv_obj_set_style_pad_right(page, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_set_style_pad_top(page, 2, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_set_style_pad_bottom(page, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -80,7 +52,9 @@ lv_obj_t *ui_create_tabview(lv_obj_t *screen, uint8_t corner_radius = 6)
 
     lv_obj_set_width(tab_view, lv_pct(100));
     lv_obj_set_height(tab_view, lv_pct(100));
+
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
+    lv_obj_set_style_bg_opa(screen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
     lv_obj_set_style_text_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0x808080),  LV_PART_MAIN | LV_STATE_DEFAULT );
     lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -118,20 +92,19 @@ void lv_ui_main_screen_init(lv_obj_t *ui_screen)
     ui_tab_page_outputs = ui_create_tab(ui_tab_view, "outputs");
     ui_tab_page_telemetry = ui_create_tab(ui_tab_view, "telemetry");
 
-    /* Page SBUS */
+    /* Page Inputs */
 
-    auto sbus_panel = ui_create_panel(ui_tab_page_inputs, 0xD500DF);
-    auto sbus_panel_title = ui_create_panel_title(sbus_panel, "sbus", 0xD500DF);
+    sbus_values.init(ui_tab_page_inputs, "sbus", 0xD500DF, 0x000000);
+    nrf42_values.init(ui_tab_page_inputs, "nrf24", 0xEF0068, 0x000000);
+    esp_now_values.init(ui_tab_page_inputs, "enow", 0x585858, 0x000000);
 
-    /* Page ENOW */
+    /* Page Outputs */
 
-    auto enow_panel = ui_create_panel(ui_tab_page_inputs, 0x585858);
-    auto enow_panel_title = ui_create_panel_title(enow_panel, "enow", 0x585858);
+    motor_values.init(ui_tab_page_outputs, "motors", 0x00EF5E, 0x000000, 85);
+    encoder_values.init(ui_tab_page_outputs, "encoders", 0xEF0035, 0x000000, 85);
 
-    /* Page NRF24 */
-
-    auto nrf24_panel = ui_create_panel(ui_tab_page_inputs, 0xEF0068);
-    auto nrf24_panel_title = ui_create_panel_title(nrf24_panel, "nrf24", 0xEF0068);
+    /* Page Telemetry */
+    encoder_values.init(ui_tab_page_telemetry, "power", 0x255, 0x000000, 85);
 }
 
 void lv_ui_main_screen_destroy()

@@ -34,7 +34,7 @@ static void lv_lcd_log_cb(const char * buf)
 
 void lv_lcd_common_init()
 {
-  //lv_lcd_init();
+  lv_lcd_init();
 
 #if LV_USE_LOG != 0
     lv_log_register_print_cb(lv_lcd_log_cb);

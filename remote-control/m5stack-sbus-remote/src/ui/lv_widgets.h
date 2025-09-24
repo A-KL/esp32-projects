@@ -1,66 +1,39 @@
 #pragma once
 
-#include <stdio.h>
-#include <vector>
-#include <lvgl.h>
+// template <std::size_t TSize>
+// struct ui_panel_widget {
+//     lv_obj_t* content;
+//     lv_obj_t* title;
 
-lv_obj_t* lv_ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100, int16_t h = 155, int16_t border = 3)
-{
-    auto panel = lv_obj_create(parent);
+//     lv_obj_t* labels[TSize];
+//     lv_obj_t* values[TSize];
+// };
 
-    lv_obj_set_width( panel, w);
-    lv_obj_set_height( panel, h);
+lv_obj_t* lv_ui_create_panel(lv_obj_t *parent, uint32_t color, uint32_t bg_color = 0x000000, int16_t w = 100, int16_t h = 155, int16_t border = 3);
+lv_obj_t *lv_ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color);
 
-    lv_obj_set_align( panel, LV_ALIGN_CENTER );
-    lv_obj_set_flex_flow(panel, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(panel, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-    lv_obj_clear_flag( panel, LV_OBJ_FLAG_SCROLLABLE );
-
-    lv_obj_set_style_radius(panel, 6,  LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_border_color(panel, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_border_opa(panel, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(panel, border, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    lv_obj_set_style_pad_left(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_row(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_column(panel, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    return panel;
-}
-
-lv_obj_t *lv_ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color_hex)
-{
-    auto label = lv_label_create(parent);
-
-    lv_obj_set_width(label, lv_pct(100));
-    lv_obj_set_height(label, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_align(label, LV_ALIGN_CENTER );
-    lv_label_set_text(label, title);
-    lv_obj_set_style_bg_color(label, lv_color_hex(color_hex), LV_PART_MAIN | LV_STATE_DEFAULT );
-    lv_obj_set_style_bg_opa(label, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-
-    return label;
-}
-
-template <std::size_t TSize>
-struct ui_panel_widget {
-    lv_obj_t* content;
-    lv_obj_t* title;
-
-    lv_obj_t* labels[TSize];
-    lv_obj_t* values[TSize];
-};
+lv_obj_t* lv_ui_create_panel_label_value(lv_obj_t *parent, const char *text, int w_per = 65);
+lv_obj_t* lv_ui_create_panel_label(lv_obj_t *parent, const char *text, int w_per = 35);
 
 template <std::size_t TSize>
 class WidgetPanel
 {
     public:
-        // WidgetPanel(lv_obj_t* parent) : _parent(parent)
-        // { }
+        void init(lv_obj_t* parent, const char* title, uint32_t color, uint32_t bg_color, uint16_t height = 155)
+        {
+            _panel = lv_ui_create_panel(parent, color, bg_color, 100, height);
+            _panel_title = lv_ui_create_panel_title(_panel, title, color);
+
+            for (auto i=0; i<TSize; i++) {
+                _labels[i] = lv_ui_create_panel_label(_panel, "ch0:");
+                _values[i] = lv_ui_create_panel_label_value(_panel, "---");
+            }
+        }
+
+        void deinit()
+        {
+
+        }
 
          template<typename... Args>
          void setText(int index, const char* format, Args... args) {
@@ -69,11 +42,24 @@ class WidgetPanel
             // _list[index] = buff;
          }
 
+         void setValue(int index, int32_t value) {
+            if (_values[index]) {
+                auto str = std::to_string(value);
+                //std::to_chars(str.data(), str.data() + str.size(), value);
+                lv_label_set_text(_values[index], str.c_str());
+            }
+         }
+
         ~WidgetPanel()
          { }
 
     private:
-         lv_obj_t* _parent;
+         //std::array<char, 10> str;
+        //  const char* _title;
+        //  const uint32_t _color;
+        //  const uint32_t _bg_color
+
+         //lv_obj_t* _parent;
          lv_obj_t* _panel;
          lv_obj_t* _panel_title;
 

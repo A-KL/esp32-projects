@@ -21,7 +21,7 @@ lv_obj_t *lv_ui_create_screen(uint32_t color_hex)
     return screen;
 }
 
-void ui_init()
+void lv_ui_init()
 {
     lv_disp_t *disp = lv_disp_get_default();
 
@@ -36,7 +36,7 @@ void ui_init()
     lv_disp_load_scr(ui_screen);
 }
 
-void ui_destroy()
+void lv_ui_destroy()
 {
     if (ui_screen) {
         lv_obj_del(ui_screen);

@@ -6,10 +6,6 @@
 #include "M5Unified.h"
 #include "MPU6886.h"
 
-//#include "NotoSansBold15.h"
-//#include "lv_tft_espi.h"
-//#include "gui.h"
-
 #include "lv_tft_espi.h"
 #include "lv_common.h"
 
@@ -22,16 +18,6 @@
 #include "controller.h"
 
 #include "motor.h"
-
-WidgetPanel<8> esp_now_values;
-WidgetPanel<8> sbus_values;
-WidgetPanel<8> nrf42_values;
-WidgetPanel<8> ps_values;
-
-WidgetPanel<4> encoder_values;
-WidgetPanel<4> motors_values;
-
-WidgetPanel<6> power_values;
 
 Adafruit_INA219 ina219_output(INA219_ADDRESS);
 Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
@@ -94,16 +80,13 @@ void buttons_loop()
 void setup()
 {
   Serial.begin(115200);
-  Wire.begin();
+
+  lv_init();
+  lv_lcd_common_init();
+  lv_ui_init();
 
   auto cfg = M5.config();
   M5.begin(cfg);
-
-  lv_init();
-  lv_lcd_init();
-
-  //hal_init();
-  lv_ui_init();
 
   now_init();
   setupRadio();
@@ -133,6 +116,8 @@ void loop()
 
   now_loop();
 
+  lv_lcd_loop();
+
   if (controller_loop(left_speed, right_speed))
   {
     ps_values.setText(0, "p %d", left_speed);
@@ -143,7 +128,7 @@ void loop()
     ps_values.setText(0, "ls ---");
     ps_values.setText(1, "rs ---");
   }
-
+  return;
   if (sbus_rx.Read())
   {
     sbus_data = sbus_rx.ch();
@@ -223,7 +208,7 @@ void loop()
     motors_values.setText(1, "r ---");
   }
 
-  lv_lcd_loop();
+  
 
 //   // Acc
 //   int16_t temp = 0;

@@ -75,7 +75,7 @@ void lcd_init()
 
 void hal_init()
 {
-  lcd_init();
+  //lcd_init();
 
 #if LV_USE_LOG != 0
     lv_log_register_print_cb(hal_log_cb);

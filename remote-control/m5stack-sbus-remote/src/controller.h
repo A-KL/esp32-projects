@@ -30,6 +30,10 @@ bool controller_init()
 bool controller_loop(int16_t& left_speed, int16_t& right_speed)
 {
 #ifdef INPUT_PS3
+    if (!Ps3.isConnected()) {
+      return false;
+    }
+    
     Ps3.setPlayer(1);
 
     // if (abs(Ps3.data.analog.stick.ly) > dead_zone) {

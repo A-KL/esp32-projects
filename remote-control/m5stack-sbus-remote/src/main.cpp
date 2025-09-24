@@ -4,39 +4,24 @@
 #include <sbus.h>
 
 #include "M5Unified.h"
-#include "lego_plus_driver.h"
-#include "GoPlus2.h"
 #include "MPU6886.h"
 
 //#include "NotoSansBold15.h"
-#include "lv_tft_espi.h"
+//#include "lv_tft_espi.h"
 //#include "gui.h"
-#include "ui/ui.h"
+
+#include "lv_tft_espi.h"
+#include "lv_common.h"
+
 #include "ui/lv_widgets.h"
+#include <lv_ui.h>
+#include "ui/main_screen.h"
 
 #include "rf24_radio.h"
 #include "now.h"
+#include "controller.h"
 
-#ifdef PS3
-  #include <Ps3Controller.h>
-  #define INIT_CONTROLLER Ps3.begin("b8:27:eb:df:b3:ff")
-  #define CONTROLLER_CONNECTED Ps3.isConnected()
-#elif PS4
-  #include <PS4Controller.h>
-  #define INIT_CONTROLLER PS4.begin("b8:27:eb:df:b3:ff")
-  #define PS4.isConnected()
-#elif XBOX
-  #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
-
-  XboxSeriesXControllerESP32_asukiaaa::Core
-  xboxController("4c:3b:df:a5:1c:42");
-
-  #define INIT_CONTROLLER xboxController.begin()
-  #define CONTROLLER_CONNECTED xboxController.isConnected()
-#else
-  #define INIT_CONTROLLER log_i("No controller")
-  #define CONTROLLER_CONNECTED false
-#endif
+#include "motor.h"
 
 WidgetPanel<8> esp_now_values;
 WidgetPanel<8> sbus_values;
@@ -53,23 +38,15 @@ Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
 
 bool ina219_output_connected = false;
 bool ina219_input_connected = false;
-bool motor_driver_connected = false;
-bool motor_driver_v2_connected = false;
 
 MPU6886 imu;
-GoPlus2 goPlus;
+
 bfs::SbusRx sbus_rx(&Serial1);
 std::array<int16_t, bfs::SbusRx::NUM_CH()> sbus_data;
 
 const int ch_min_value = 200;
 const int ch_max_value = 1800;
 const int ch_max_count = 8;
-
-// motor_a = wheel(y + x)
-// motor_b = wheel(y - x)
-inline float wheel(const float v, const float max_value = 255) {
-    return max_value * constrain(v, -1, 1);
-}
 
 inline int16_t percentage(int16_t value, int16_t min = ch_min_value, int16_t max = ch_max_value) {
   return map(value, min, max, 0, 100);
@@ -100,105 +77,66 @@ void on_esp_now_message_received(const data_message_t& data) {
   // log_w("Commands: %d\t %d", left, right);
 }
 
-void setup() 
+void buttons_loop()
+{
+  if (M5.BtnA.wasPressed()) {
+      Serial.println("BtnA Pressed");
+      lv_ui_change_tab(0);
+  } else if (M5.BtnB.wasPressed()) {
+      Serial.println("BtnB Pressed");
+      lv_ui_change_tab(1);
+  } else if (M5.BtnC.wasPressed()) {
+      Serial.println("BtnC Pressed");
+      lv_ui_change_tab(2);
+  }
+}
+
+void setup()
 {
   Serial.begin(115200);
   Wire.begin();
 
   auto cfg = M5.config();
   M5.begin(cfg);
-  
-  lcd_init();
+
   lv_init();
-  hal_init();
-  ui_init();
+  lv_lcd_init();
+
+  //hal_init();
+  lv_ui_init();
 
   now_init();
   setupRadio();
 
   sbus_rx.Begin(16, 17);
 
-return;
-  imu.Init();
-
-  INIT_CONTROLLER;
+  controller_init();
 
   if (!ina219_output.begin()) {
     log_i("Failed to find output INA219 chip");
     ina219_output_connected = false;
   }
 
-  if (!ina219_input.begin()) {
-    log_i("Failed to find input INA219 chip");
-    ina219_input_connected = false;
-  }
+  motor_init();
 
-  auto version = readVersion();
-  motor_driver_connected = version != 0;
-  log_i("Motor Driver ver: %d\r\n", version);
-
-  goPlus.begin();
-  motor_driver_v2_connected = goPlus.hub1_a_read_value(HUB1_R_ADDR) > 0;
-  log_i("Motor Driver V2 available: %d", motor_driver_v2_connected);
+  //imu.Init();
 }
 
-void loop() 
+void loop()
 {
-  auto left_speed = 0;
-  auto right_speed = 0;
+  static int16_t left_speed = 0;
+  static int16_t right_speed = 0;
 
   M5.update();
 
-  // Update GUI
-  //gui_render();
-  hal_loop();
+  buttons_loop();
 
-  if (M5.BtnA.wasPressed()) {
-      Serial.println("BtnA Pressed");
-      ui_select_tab(0);
-  } else if (M5.BtnB.wasPressed()) {
-      Serial.println("BtnB Pressed");
-      ui_select_tab(1);
-  } else if (M5.BtnC.wasPressed()) {
-      Serial.println("BtnC Pressed");
-      ui_select_tab(2);
-  }
-
-  //xboxController.onLoop();
   now_loop();
 
-  if (CONTROLLER_CONNECTED) 
+  if (controller_loop(left_speed, right_speed))
   {
-    Ps3.setPlayer(1);
-
-    const static int dead_zone = 20;
-    
-    auto power = Ps3.data.analog.button.r2 - Ps3.data.analog.button.l2;
-    auto steer = - Ps3.data.analog.stick.lx;
-
-    if (abs(power) < dead_zone) {
-      power = 0;
-    }
-    if (abs(steer) < dead_zone) {
-      steer = 0;
-    }
-
-    ps_values.setText(0, "p %d", power);
-    ps_values.setText(1, "s %d", steer);
-
-    // motor_a = wheel(y + x)
-    // motor_b = wheel(y - x)
-    
-    left_speed = constrain(power - steer, -255, 255); // constrain((Ps3.data.analog.stick.ry + Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
-    right_speed = constrain(power + steer, -255, 255); // constrain((Ps3.data.analog.stick.ry - Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
-
-    // if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
-    //   left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
-    // }
-
-    // if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
-    //   right_speed = map(Ps3.data.analog.stick.ry, -128, 128, 255, -255);
-    // }
+    ps_values.setText(0, "p %d", left_speed);
+    ps_values.setText(1, "s %d", right_speed);
   }
   else
   {
@@ -214,11 +152,11 @@ void loop()
     {
       sbus_values.setText(i, "ch%d %d%", i, percentage(sbus_data[i]));
 
-      Serial.print(sbus_data[i]);
-      Serial.print("\t");
+      // Serial.print(sbus_data[i]);
+      // Serial.print("\t");
     }
     /* Display lost frames and failsafe data */
-    log_d("%d\t%d", sbus_rx.lost_frame(), sbus_rx.failsafe());
+    //log_d("%d\t%d", sbus_rx.lost_frame(), sbus_rx.failsafe());
 
     left_speed = map(sbus_data[2], ch_min_value, ch_max_value, -255, 255);
     right_speed = map(sbus_data[1], ch_min_value, ch_max_value, 255, -255);
@@ -227,10 +165,10 @@ void loop()
   {
     for (int8_t i = 0; i < ch_max_count; i++) {
       sbus_values.setText(i, "ch%d ---", i);
-    } 
+    }
   }
 
-  if (RF24_IsReceived()) 
+  if (RF24_IsReceived())
   {
     auto ch_left = received.channels[2].value;
     auto ch_right = received.channels[4].value;
@@ -240,7 +178,7 @@ void loop()
 
     nrf42_values.setText(0, "ch0 %d", ch_left);
     nrf42_values.setText(1, "ch1 %d", ch_right);
-  }  
+  }
   else
   {
     nrf42_values.setText(0, "ch0 ---");
@@ -248,7 +186,7 @@ void loop()
   }
 
   // Power
-  if (ina219_output_connected && ina219_input_connected) 
+  if (ina219_output_connected && ina219_input_connected)
   {
     auto shunt_voltage = ina219_output.getShuntVoltage_mV();
     auto bus_voltage = ina219_output.getBusVoltage_V();
@@ -268,39 +206,24 @@ void loop()
   }
 
   // Encoder
-  for (int8_t i = 0; i < 4; i++) 
+  for (int8_t i = 0; i < 4; i++)
   {
-    encoder_values.setText(i, "ch%d %d", i, motor_driver_connected ? readEncoder(i) : 0);
+    encoder_values.setText(i, "ch%d %d", i, motor_read_encoder(i));
   }
 
   // Motor
-  if (motor_driver_connected) 
+  if (motor_loop(left_speed, right_speed))
   {
-    MotorRun(1, -left_speed);
-    MotorRun(2, -left_speed);
-
-    MotorRun(3, right_speed);
-    MotorRun(0, right_speed);
-
     motors_values.setText(0, "l %d", left_speed);
     motors_values.setText(1, "r %d", right_speed);
   }
-  else if (motor_driver_v2_connected)
-  {
-    goPlus.Motor_write_speed(MOTOR_NUM0, -left_speed/2);
-    goPlus.Motor_write_speed(MOTOR_NUM1, -right_speed/2);
-
-    motors_values.setText(0, "l %d", -left_speed/2);
-    motors_values.setText(1, "r %d", -right_speed/2);
-
-    goPlus.Servo_write_angle(SERVO_NUM0,  map(left_speed, -255, 255, 0, 180));
-    goPlus.Servo_write_angle(SERVO_NUM1,  map(right_speed, -255, 255, 0, 180)); 
-  }
-  else 
+  else
   {
     motors_values.setText(0, "l ---");
     motors_values.setText(1, "r ---");
   }
+
+  lv_lcd_loop();
 
 //   // Acc
 //   int16_t temp = 0;

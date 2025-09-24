@@ -1,8 +1,6 @@
-//#include "lvgl.h"
-
-#include "ui.h"
-#include "ui_helpers.h"
-#include "screens/main_screen.h"
+#include "lvgl.h"
+#include "lv_ui.h"
+#include "lv_ui_helpers.h"
 
 lv_obj_t *ui_screen;
 lv_obj_t *ui____initial_actions0;
@@ -12,7 +10,7 @@ lv_theme_t * ui_dark_theme()
     return lv_theme_default_init(lv_disp_get_default(), lv_color_hex(0xff0000), lv_color_hex(0x00ff00), true, LV_FONT_DEFAULT);
 }
 
-lv_obj_t *ui_create_screen(uint32_t color_hex)
+lv_obj_t *lv_ui_create_screen(uint32_t color_hex)
 {
     auto screen = lv_obj_create(NULL);
 
@@ -31,22 +29,17 @@ void ui_init()
     lv_theme_t * theme = ui_dark_theme();
     lv_disp_set_theme(disp, theme);
 
-    ui_screen = ui_create_screen(0x000000);
+    ui_screen = lv_ui_create_screen(0x000000);
     ui____initial_actions0 = lv_obj_create(NULL);
 
-    ui_main_screen_init(ui_screen);
+    lv_ui_main_screen_init(ui_screen);
     lv_disp_load_scr(ui_screen);
 }
 
 void ui_destroy()
-{    
+{
     if (ui_screen) {
         lv_obj_del(ui_screen);
     }
-    ui_main_screen_destroy();
-}
-
-void ui_select_tab(int index)
-{
-    ui_main_screen_change_tab(index);
+    lv_ui_main_screen_destroy();
 }

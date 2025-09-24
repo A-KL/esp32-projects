@@ -6,6 +6,8 @@
 #include <lvgl.h>
 #include <string>
 
+#include <lv_ui.h>
+
 #include "main_screen.h"
 
 lv_obj_t *ui_tab_view = NULL;
@@ -17,7 +19,7 @@ lv_obj_t *ui_tab_page_telemetry = NULL;
 lv_obj_t *ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100, int16_t h = 155, int16_t border = 3)
 {
     auto panel = lv_obj_create(parent);
-    
+
     lv_obj_set_width( panel, w);
     lv_obj_set_height( panel, h);
 
@@ -43,7 +45,7 @@ lv_obj_t *ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100,
 }
 
 lv_obj_t *ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color_hex)
-{    
+{
     auto label = lv_label_create(parent);
 
     lv_obj_set_width(label, lv_pct(100));
@@ -82,29 +84,29 @@ lv_obj_t *ui_create_tabview(lv_obj_t *screen, uint8_t corner_radius = 6)
 
     lv_obj_set_style_text_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0x808080),  LV_PART_MAIN | LV_STATE_DEFAULT );
     lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_MAIN| LV_STATE_DEFAULT);
-    
+
     lv_obj_set_style_text_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0xDEDEDE),  LV_PART_ITEMS | LV_STATE_CHECKED );
     lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
-   
+
     lv_obj_set_style_radius(lv_tabview_get_tab_btns(tab_view), 6,  LV_PART_ITEMS| LV_STATE_CHECKED);
-    
+
     lv_obj_set_style_bg_color(lv_tabview_get_tab_btns(tab_view), lv_color_hex(0x545454),  LV_PART_ITEMS | LV_STATE_CHECKED );
     lv_obj_set_style_bg_opa(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
-    
+
     lv_obj_set_style_bg_main_stop(lv_tabview_get_tab_btns(tab_view), 0,  LV_PART_ITEMS| LV_STATE_CHECKED);
     lv_obj_set_style_bg_grad_stop(lv_tabview_get_tab_btns(tab_view), 255,  LV_PART_ITEMS| LV_STATE_CHECKED);
-    
+
     lv_obj_set_style_border_side(lv_tabview_get_tab_btns(tab_view), LV_BORDER_SIDE_NONE,  LV_PART_ITEMS| LV_STATE_CHECKED);
 
     return tab_view;
 }
 
-void ui_main_screen_change_tab(uint8_t index)
+void lv_ui_change_tab(uint8_t index)
 {
      lv_tabview_set_act(ui_tab_view, index, LV_ANIM_ON);
 }
 
-void ui_main_screen_init(lv_obj_t *ui_screen)
+void lv_ui_main_screen_init(lv_obj_t *ui_screen)
 {
     /* TabView */
 
@@ -132,7 +134,7 @@ void ui_main_screen_init(lv_obj_t *ui_screen)
     auto nrf24_panel_title = ui_create_panel_title(nrf24_panel, "nrf24", 0xEF0068);
 }
 
-void ui_main_screen_destroy()
+void lv_ui_main_screen_destroy()
 {
     ui_tab_view = NULL;
 

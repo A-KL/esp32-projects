@@ -76,9 +76,9 @@ void lcd_init()
 void hal_init()
 {
   lcd_init();
-  
+
 #if LV_USE_LOG != 0
-    lv_log_register_print_cb(hal_log_cb); 
+    lv_log_register_print_cb(hal_log_cb);
 #endif
 
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);

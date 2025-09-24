@@ -7,7 +7,7 @@
 lv_obj_t* lv_ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 100, int16_t h = 155, int16_t border = 3)
 {
     auto panel = lv_obj_create(parent);
-    
+
     lv_obj_set_width( panel, w);
     lv_obj_set_height( panel, h);
 
@@ -33,7 +33,7 @@ lv_obj_t* lv_ui_create_panel(lv_obj_t *parent, uint32_t color_hex, int16_t w = 1
 }
 
 lv_obj_t *lv_ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color_hex)
-{    
+{
     auto label = lv_label_create(parent);
 
     lv_obj_set_width(label, lv_pct(100));
@@ -45,8 +45,6 @@ lv_obj_t *lv_ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t
 
     return label;
 }
-
-
 
 template <std::size_t TSize>
 struct ui_panel_widget {
@@ -71,7 +69,7 @@ class WidgetPanel
             // _list[index] = buff;
          }
 
-        ~WidgetPanel() 
+        ~WidgetPanel()
          { }
 
     private:

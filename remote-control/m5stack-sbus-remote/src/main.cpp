@@ -56,13 +56,14 @@ void hal_buttons_click(int8_t i)
 
 void setup()
 {
+  //Wire.begin();
   Serial.begin(115200);
+
+  hal_buttons_init();
 
   lv_init();
   lv_driver_init();
   lv_ui_init();
-
-  hal_buttons_init();
 
   now_init();
   setupRadio();
@@ -77,13 +78,10 @@ void loop()
 {
   static int16_t left_speed = 0;
   static int16_t right_speed = 0;
-
   static int16_t inputs[8] = { 0 };
 
   hal_buttons_loop();
-
   now_loop();
-
   lv_lcd_loop();
 
   // Game controller
@@ -139,8 +137,6 @@ void loop()
     nrf42_values.clearValues();
   }
 
-  //return;
-
   // Power
   if (ina219_output_connected && ina219_input_connected)
   {
@@ -150,9 +146,9 @@ void loop()
     auto power_mW = ina219_output.getPower_mW();
     auto load_voltage = bus_voltage + (shunt_voltage / 1000);
 
-    power_values.setText(0, "%.2f v", bus_voltage);
-    power_values.setText(1, "%.2f mA", current_mA);
-    power_values.setText(2, "%.2f mW", power_mW);
+    // power_values.setText(0, "%.2f v", bus_voltage);
+    // power_values.setText(1, "%.2f mA", current_mA);
+    // power_values.setText(2, "%.2f mW", power_mW);
   }
   else
   {

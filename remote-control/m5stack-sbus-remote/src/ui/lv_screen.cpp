@@ -105,7 +105,7 @@ void lv_ui_screen_init(lv_obj_t *ui_screen)
     /* Page Telemetry */
     
     power_values.init(ui_tab_page_telemetry, "power", 0x000255, 0x000000, 85);
-    power_values.setLabels(power_labels);
+    //power_values.setLabels(power_labels);
 }
 
 void lv_ui_screen_destroy()

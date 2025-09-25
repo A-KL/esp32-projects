@@ -10,14 +10,41 @@
 
 const static int dead_zone = 20;
 
+void ps3_on_connect() 
+{
+    log_i("PS3 Controller Connected.");
+    Ps3.setPlayer(1);
+}
+
+void ps3_on_disconnect() 
+{
+    log_e("PS3 Controller connection lost.");
+    ps_values.clearValues();
+}
+
+void ps3_on_data_received() 
+{
+}
+
 bool controller_init()
 {
 #ifdef INPUT_PS3
-    Ps3.begin("b8:27:eb:df:b3:ff");
-    return Ps3.isConnected();
+    Ps3.attach(ps3_on_data_received);
+    Ps3.attachOnConnect(ps3_on_connect);
+    Ps3.attachOnDisconnect(ps3_on_disconnect);
+
+    if (Ps3.begin("b8:27:eb:df:b3:ff")) {
+        log_i("Ps3 initialization...OK");
+        return true;
+    } else {
+        log_w("Ps3 initialization...FAIL");
+        return false;
+    }
+
 #elif INPUT_PS4
   PS4.begin("b8:27:eb:df:b3:ff");
   return PS4.isConnected();
+
 #elif INPUT_XBOX
     xboxController.begin();
     return xboxController.isConnected();
@@ -30,13 +57,9 @@ bool controller_init()
 bool controller_loop(int16_t* inputs)
 {
 #ifdef INPUT_PS3
-    if (!Ps3.isConnected()) 
-    {
-      ps_values.clearValues();    
+    if (!Ps3.isConnected()) {
       return false;
     }
-    
-    Ps3.setPlayer(1);
 
     inputs[0] = Ps3.data.analog.button.r2;
     inputs[1] = Ps3.data.analog.button.l2;

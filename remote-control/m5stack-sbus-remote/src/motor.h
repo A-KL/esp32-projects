@@ -19,7 +19,6 @@ Adafruit_INA219 ina219_output(INA219_ADDRESS);
 Adafruit_INA219 ina219_input(INA219_ADDRESS + 1);
 
 MPU6886 imu;
-
 GoPlus2 goPlus;
 
 void motor_init()

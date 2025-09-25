@@ -35,7 +35,7 @@ int MPU6886::Init(void) {
     Gyscale = GFS_2000DPS;
     Acscale = AFS_8G;
 
-    Wire.begin(21, 22);
+   // Wire.begin(21, 22);
 
     I2C_Read_NBytes(MPU6886_ADDRESS, MPU6886_WHOAMI, 1, tempdata);
     imuId = tempdata[0];

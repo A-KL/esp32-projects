@@ -26,21 +26,15 @@ class WidgetPanel
 
         void setLabels(const char** labels) {
             for (auto i=0; i<TSize; i++) {
-                lv_label_set_text(_labels[i], labels[i]);
+                if (_labels[i]) {
+                    lv_label_set_text(_labels[i], labels[i]);
+                }
             }
         }
-
-         template<typename... Args>
-         void setText(int index, const char* format, Args... args) {
-            // char buff[15];
-            // snprintf(buff, sizeof(buff), format, args...);
-            // _list[index] = buff;
-         }
 
          void setValue(int index, int32_t value) {
             if (_values[index]) {
                 auto str = std::to_string(value);
-                //std::to_chars(str.data(), str.data() + str.size(), value);
                 lv_label_set_text(_values[index], str.c_str());
             }
          }
@@ -52,14 +46,23 @@ class WidgetPanel
          }
 
         void clearValues() {
-            for (auto value :_values)
-            if (value) {
-                lv_label_set_text(value, ch_no_value);
+            for (auto value :_values) {
+                if (value) {
+                    lv_label_set_text(value, ch_no_value);
+                }
             }
          }
 
-        ~WidgetPanel()
-         { }
+
+        //  template<typename... Args>
+        //  void setText(int index, const char* format, Args... args) {
+        //     // char buff[15];
+        //     // snprintf(buff, sizeof(buff), format, args...);
+        //     // _list[index] = buff;
+        //  }
+
+        // ~WidgetPanel()
+        //  { }
 
     private:
          //std::array<char, 10> str;

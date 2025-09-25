@@ -9,6 +9,7 @@ lv_obj_t* lv_ui_create_panel_label(lv_obj_t *parent, const char *text, int w_per
 static const char* ch_labels[] = { "ch0:", "ch1:", "ch2:", "ch3:", "ch4:", "ch5:", "ch6:", "ch7:", "ch8:" };
 static const char* ch_no_value = "---";
 
+
 template <std::size_t TSize>
 class WidgetPanel
 {
@@ -53,6 +54,9 @@ class WidgetPanel
             }
          }
 
+        inline std::size_t count() const {
+            return TSize; 
+        }
 
         //  template<typename... Args>
         //  void setText(int index, const char* format, Args... args) {
@@ -61,16 +65,8 @@ class WidgetPanel
         //     // _list[index] = buff;
         //  }
 
-        // ~WidgetPanel()
-        //  { }
-
     private:
          //std::array<char, 10> str;
-        //  const char* _title;
-        //  const uint32_t _color;
-        //  const uint32_t _bg_color
-
-         //lv_obj_t* _parent;
          lv_obj_t* _panel;
          lv_obj_t* _panel_title;
 

@@ -1,15 +1,13 @@
-#ifndef radio_h
-#define radio_h
+#pragma once
 
 #include "printf.h"
 #include "RF24.h"
 
 #define CHANNELS_COUNT 10
+#define PIPE_IN 0xE9E8F0F0E1LL
+#define CHANNEL_VALUE_MAX 4095
 
-const uint64_t pipeIn = 0xE9E8F0F0E1LL;
-RF24 radio(5, 2);
-
-unsigned long lastRecvTime = 0;
+//const uint64_t pipeIn = 0xE9E8F0F0E1LL;
 
 // Protocol
 struct Channel {
@@ -20,14 +18,15 @@ struct Signal {
 };
 Signal received;
 
-#define CHANNEL_VALUE_MAX 4095
+static RF24 radio(5, 2);
+static uint64_t lastRecvTime = 0;
 
 void setupRadio() {
   radio.begin();
   radio.setChannel(115);
   radio.setPALevel(RF24_PA_MAX);
   radio.setDataRate(RF24_2MBPS);
-  radio.openReadingPipe(1, pipeIn);
+  radio.openReadingPipe(1, PIPE_IN);
   radio.startListening();
   printf_begin();
   radio.printDetails();
@@ -62,5 +61,3 @@ bool RF24_IsReceived() {
 
     return !not_ok;
 }
-
-#endif

@@ -7,9 +7,8 @@
 #include "ui/lv_screen.h"
 
 #include "rf24_radio.h"
-#include "now.h"
+#include "enow.h"
 #include "controller.h"
-
 #include "motor.h"
 #include "buttons.h"
 
@@ -30,25 +29,6 @@ inline int16_t speed(int16_t value, int16_t min = ch_min_value, int16_t max = ch
   return map(value, min, max, -255, 255);
 }
 
-void on_esp_now_disconnected() {
-    esp_now_values.clearValues();
-}
-
-void on_esp_now_message_received(const data_message_t& data) {
-    for (uint8_t i = 0; i < ch_count; i++) {
-      esp_now_values.setValue(i, data.channels[i].value);
-    }
-  // auto grab = map(data.channels[0].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 0, 180);
-  // auto left = map(data.channels[3].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 180, 0);
-  // auto right = map(data.channels[5].value, INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX, 10, 180);
-
-  // driver.SetServoAngle(2, left);
-  // driver.SetServoAngle(1, right);
-  // driver.SetServoAngle(4, grab);
-
-  // log_w("Commands: %d\t %d", left, right);
-}
-
 void hal_buttons_click(int8_t i)
 {
   lv_ui_change_tab(i);
@@ -65,7 +45,7 @@ void setup()
   lv_driver_init();
   lv_ui_init();
 
-  now_init();
+  enow_init();
   setupRadio();
   sbus_rx.Begin(16, 17);
   controller_init();
@@ -81,7 +61,6 @@ void loop()
   static int16_t inputs[8] = { 0 };
 
   hal_buttons_loop();
-  now_loop();
   lv_lcd_loop();
 
   // Game controller
@@ -100,6 +79,12 @@ void loop()
 
     left_speed = constrain(power - steer, -255, 255);
     right_speed = constrain(power + steer, -255, 255);
+  }
+
+  // ESP-NOW
+  if (enow_receive(inputs))
+  {
+    
   }
 
   // SBUS 
@@ -123,11 +108,13 @@ void loop()
 
   if (RF24_IsReceived())
   {
-    auto ch_left = received.channels[2].value;
-    auto ch_right = received.channels[4].value;
+    for (uint8_t i=0; i<ch_count; i++)
+    {
+      nrf42_values.setValue(i, received.channels[i].value);
+    }
 
-    nrf42_values.setValue(0, ch_left);
-    nrf42_values.setValue(1, ch_right);
+    auto ch_left = received.channels[5].value;
+    auto ch_right = received.channels[3].value;
 
     left_speed = map(ch_left, ch_min_value, ch_max_value, 255, -255);
     right_speed = map(ch_right, ch_min_value, ch_max_value, 255, -255);
@@ -140,11 +127,15 @@ void loop()
   // Power
   if (ina219_output_connected && ina219_input_connected)
   {
-    auto shunt_voltage = ina219_output.getShuntVoltage_mV();
+    //auto shunt_voltage = ina219_output.getShuntVoltage_mV();
     auto bus_voltage = ina219_output.getBusVoltage_V();
     auto current_mA = ina219_output.getCurrent_mA();
     auto power_mW = ina219_output.getPower_mW();
-    auto load_voltage = bus_voltage + (shunt_voltage / 1000);
+    //auto load_voltage = bus_voltage + (shunt_voltage / 1000);
+
+    power_values.setValue(0, bus_voltage);
+    power_values.setValue(1, current_mA);
+    power_values.setValue(2, power_mW);
 
     // power_values.setText(0, "%.2f v", bus_voltage);
     // power_values.setText(1, "%.2f mA", current_mA);

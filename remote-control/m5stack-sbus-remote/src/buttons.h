@@ -32,7 +32,7 @@ void hal_buttons_loop()
   // button_b.tick();
   // button_c.tick();
 
- M5.update();
+  M5.update();
 
   if (M5.BtnA.wasPressed()) {
       Serial.println("BtnA Pressed");

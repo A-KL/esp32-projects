@@ -27,14 +27,32 @@ bool controller_init()
 #endif
 }
 
-bool controller_loop(int16_t& left_speed, int16_t& right_speed)
+bool controller_loop(int16_t* inputs)
 {
 #ifdef INPUT_PS3
-    if (!Ps3.isConnected()) {
+    if (!Ps3.isConnected()) 
+    {
+      ps_values.clearValues();    
       return false;
     }
     
     Ps3.setPlayer(1);
+
+    inputs[0] = Ps3.data.analog.button.r2;
+    inputs[1] = Ps3.data.analog.button.l2;
+    inputs[2] = Ps3.data.analog.stick.lx;
+    inputs[3] = Ps3.data.analog.stick.ly;
+    inputs[4] = Ps3.data.analog.button.l1;
+    inputs[5] = Ps3.data.analog.button.l2;
+    inputs[6] = Ps3.data.analog.stick.rx;
+    inputs[7] = Ps3.data.analog.stick.ry;
+
+    for (uint8_t i = 0; i < 8; i++) {
+      ps_values.setValue(i, inputs[i]);
+    }
+
+    // auto power = Ps3.data.analog.button.r2 - Ps3.data.analog.button.l2;
+    // auto steer = - Ps3.data.analog.stick.lx;
 
     // if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
     //   left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
@@ -43,19 +61,6 @@ bool controller_loop(int16_t& left_speed, int16_t& right_speed)
     // if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
     //   right_speed = map(Ps3.data.analog.stick.ry, -128, 128, 255, -255);
     // }
-    auto power = Ps3.data.analog.button.r2 - Ps3.data.analog.button.l2;
-    auto steer = - Ps3.data.analog.stick.lx;
-
-    if (abs(power) < dead_zone) {
-      power = 0;
-    }
-
-    if (abs(steer) < dead_zone) {
-      steer = 0;
-    }
-
-    left_speed = constrain(power - steer, -255, 255);
-    right_speed = constrain(power + steer, -255, 255);
 
     return true;
 #else

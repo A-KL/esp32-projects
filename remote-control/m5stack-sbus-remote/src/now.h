@@ -8,7 +8,7 @@
 #define ESP_NOW_CHANNELS_COUNT 10
 
 struct channel_t {
-unsigned short value;
+    unsigned short value;
 };
 
 struct data_message_t {

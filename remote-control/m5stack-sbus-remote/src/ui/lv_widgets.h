@@ -1,19 +1,13 @@
 #pragma once
 
-// template <std::size_t TSize>
-// struct ui_panel_widget {
-//     lv_obj_t* content;
-//     lv_obj_t* title;
-
-//     lv_obj_t* labels[TSize];
-//     lv_obj_t* values[TSize];
-// };
-
 lv_obj_t* lv_ui_create_panel(lv_obj_t *parent, uint32_t color, uint32_t bg_color = 0x000000, int16_t w = 100, int16_t h = 155, int16_t border = 3);
 lv_obj_t *lv_ui_create_panel_title(lv_obj_t *parent, const char* title, uint32_t color);
 
 lv_obj_t* lv_ui_create_panel_label_value(lv_obj_t *parent, const char *text, int w_per = 65);
 lv_obj_t* lv_ui_create_panel_label(lv_obj_t *parent, const char *text, int w_per = 35);
+
+static const char* ch_labels[] = { "ch0:", "ch1:", "ch2:", "ch3:", "ch4:", "ch5:", "ch6:", "ch7:", "ch8:" };
+static const char* ch_no_value = "---";
 
 template <std::size_t TSize>
 class WidgetPanel
@@ -25,14 +19,15 @@ class WidgetPanel
             _panel_title = lv_ui_create_panel_title(_panel, title, color);
 
             for (auto i=0; i<TSize; i++) {
-                _labels[i] = lv_ui_create_panel_label(_panel, "ch0:");
-                _values[i] = lv_ui_create_panel_label_value(_panel, "---");
+                _labels[i] = lv_ui_create_panel_label(_panel, ch_labels[i]);
+                _values[i] = lv_ui_create_panel_label_value(_panel, ch_no_value);
             }
         }
 
-        void deinit()
-        {
-
+        void setLabels(const char** labels) {
+            for (auto i=0; i<TSize; i++) {
+                lv_label_set_text(_labels[i], labels[i]);
+            }
         }
 
          template<typename... Args>
@@ -47,6 +42,19 @@ class WidgetPanel
                 auto str = std::to_string(value);
                 //std::to_chars(str.data(), str.data() + str.size(), value);
                 lv_label_set_text(_values[index], str.c_str());
+            }
+         }
+
+        void clearValue(int index) {
+            if (_values[index]) {
+                lv_label_set_text(_values[index], ch_no_value);
+            }
+         }
+
+        void clearValues() {
+            for (auto value :_values)
+            if (value) {
+                lv_label_set_text(value, ch_no_value);
             }
          }
 

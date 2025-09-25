@@ -32,7 +32,7 @@ static void lv_lcd_log_cb(const char * buf)
 }
 #endif
 
-void lv_lcd_common_init()
+void lv_driver_init()
 {
   lv_lcd_init();
 

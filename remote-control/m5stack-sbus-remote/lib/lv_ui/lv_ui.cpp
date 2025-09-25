@@ -32,7 +32,7 @@ void lv_ui_init()
     ui_screen = lv_ui_create_screen(0x000000);
     ui____initial_actions0 = lv_obj_create(NULL);
 
-    lv_ui_main_screen_init(ui_screen);
+    lv_ui_screen_init(ui_screen);
     lv_disp_load_scr(ui_screen);
 }
 
@@ -41,5 +41,5 @@ void lv_ui_destroy()
     if (ui_screen) {
         lv_obj_del(ui_screen);
     }
-    lv_ui_main_screen_destroy();
+    lv_ui_screen_destroy();
 }

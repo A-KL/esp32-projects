@@ -66,7 +66,7 @@ void i2s_setpin() {
         .mck_io_num = I2S_PIN_NO_CHANGE,
     #endif
        // .mck_io_num   = I2S_MCLK,
-        .bck_io_num   = I2S_SCK,
+        .bck_io_num   = I2S_BCK,
         .ws_io_num    = I2S_WS,
         .data_out_num = I2S_PIN_NO_CHANGE,
         .data_in_num  = I2S_SD

@@ -16,6 +16,7 @@ StreamCopy copier(decoded_out, i2s);
 
 void setup(){
     Serial.begin(115200);
+    AudioLogger::instance().begin(Serial, AudioLogger::Debug);
 
     tft.init();
     tft.setRotation(TFT_ROTATE);
@@ -44,9 +45,7 @@ void setup(){
     //decoded_out.add(csv);
 
     i2s.begin(cfg);
-
    // nfc.begin(I2S_BPS, 16);
-
    // csv.begin(info);
     vu.begin(info);
 

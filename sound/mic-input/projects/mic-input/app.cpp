@@ -2,13 +2,27 @@ void gui_progress_bars_update();
 
 #ifdef ARDUINO
     #include <Arduino.h>
-
     #ifdef ESP_PLATFORM
         #include "hal_esp32.h"
-
     #endif
 #else
     #include "hal_arduino.h"
+#endif
+
+//#include <LGFX_TFT_eSPI.hpp>
+#include <LovyanGFX.h>
+#include <LGFX_AUTODETECT.hpp>
+using TFT_eSPI = LGFX;
+
+#include <TFT_eSprite_GFX.h>
+using TFT_eSprite = TFT_eSprite_GFX;
+
+#include <TFT_eGUI.h>
+
+#if defined ( SDL_h_ )
+    static TFT_eSPI tft ( 320, 240, 2 );
+#else
+    static TFT_eSPI tft;
 #endif
 
 #include <math.h>

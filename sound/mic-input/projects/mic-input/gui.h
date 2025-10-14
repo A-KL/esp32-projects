@@ -1,19 +1,5 @@
 #pragma once
 
-#include <LovyanGFX.h>
-#include <LGFX_AUTODETECT.hpp>
-
-using TFT_eSprite = LGFX_Sprite;
-using TFT_eSPI = LGFX;
-
-#include <TFT_eGUI.h>
-
-#if defined ( SDL_h_ )
-    static LGFX tft ( 320, 240, 2 );
-#else
-    static LGFX tft;
-#endif
-
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
 #include "NotoSansMonoSCB20.h"

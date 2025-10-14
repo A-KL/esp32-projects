@@ -95,8 +95,7 @@ class TFT_eSpectrum : public TFT_eWidget
                 _canvas.fillSprite(background_color);
 
                 //_canvas->fillRect(0, 0, bar_w, bar_h - y, background_color);
-                _canvas.fillGradientRect(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to, lgfx::HLINEAR);
-                //fillRectHGradient
+                _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
 
                 push(left + bar_w * i + band_segment_padding * i, top);
             }

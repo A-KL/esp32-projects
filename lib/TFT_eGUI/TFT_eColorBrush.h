@@ -93,7 +93,7 @@ class TFT_eGradientBrush : public TFT_eColorBrush
                 sprite->fillRect(x, y + h/2, w, h/2, _color2);
             }
             else {
-                sprite->fillGradientRect(x, y, w, h, _color1, _color2, lgfx::VLINEAR); //fillRectVGradient
+                sprite->fillRectVGradient(x, y, w, h, _color1, _color2);
             }
         }
 

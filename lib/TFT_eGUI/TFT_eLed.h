@@ -66,12 +66,9 @@ void gui_led_update(const TFT_eLed& led)
     } 
     else 
     {
-        //fillRectVGradient
-        led.canvas->fillGradientRect(padding, padding, led_size, led_size, 
+        led.canvas->fillRectVGradient(padding, padding, led_size, led_size, 
         led.value ? led.on_color : led.off_color,
-        led.value ? led.on_color_to : led.off_color
-        , lgfx::VLINEAR);
-
+        led.value ? led.on_color_to : led.off_color);
     }
 
     led.canvas->pushSprite(led.left, led.top);
@@ -89,8 +86,7 @@ void gui_led_begin(const TFT_eLed& led)
         if (led.bg_color == led.bg_color_to)
             led.canvas->fillRect(0, 0, led.width, led.width, led.bg_color);
         else
-            led.canvas->fillGradientRect(0, 0, led.width, led.width, led.bg_color, led.bg_color_to, lgfx::VLINEAR);
-            //fillRectVGradient
+            led.canvas->fillRectVGradient(0, 0, led.width, led.width, led.bg_color, led.bg_color_to);
     }
     gui_led_update(led);
 }

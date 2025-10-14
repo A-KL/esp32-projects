@@ -53,7 +53,7 @@ TFT_Rect resize(const TFT_Rect& rect, int left, int top, int right, int bottom) 
 
 inline void not_null(const void* object) {
     if (object == NULL) {
-        //log_e("Canvas can't b e NULL");
+        log_e("Canvas can't b e NULL");
     }
 }
 

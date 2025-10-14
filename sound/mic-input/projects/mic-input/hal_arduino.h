@@ -1,6 +1,12 @@
 #pragma once 
 
+#include <stdout.h>
 #include <string>
+
+void log_e(const char* text)
+{
+  std::cout << text << std::endl;
+}
 
 class String
 {

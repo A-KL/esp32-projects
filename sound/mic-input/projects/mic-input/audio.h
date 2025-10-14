@@ -10,10 +10,10 @@
 #define I2S_BUFFER_SIZE 128
 #define I2S_SAMPLES_PER_MS I2S_SAMPLE_RATE / 1000
 
-audio_envelope_context_t right_envelope_context;
-audio_envelope_context_t left_envelope_context;
+static audio_envelope_context_t right_envelope_context;
+static audio_envelope_context_t left_envelope_context;
 
-uint8_t sample_size = sizeof(int32_t); // int16_t
+static uint8_t sample_size = sizeof(int32_t); // int16_t
 
 int32_t samples[I2S_BUFFER_SIZE]; // int16_t
 
@@ -152,4 +152,13 @@ void update_i2s() {
             log_e("i2s_read error: %d", result);
         }
     }
+}
+
+void hal_audio_init() {
+    envelope_init(right_envelope_context, I2S_SAMPLE_RATE);
+    envelope_init(left_envelope_context, I2S_SAMPLE_RATE);
+
+    i2s_install();
+    i2s_setpin();
+    i2s_start(I2S_PORT);
 }

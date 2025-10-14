@@ -1,7 +1,5 @@
 #pragma once
 
-#include <TFT_eSPI.h>
-
 struct TFT_Rect
 {
     int top;
@@ -54,8 +52,8 @@ TFT_Rect resize(const TFT_Rect& rect, int left, int top, int right, int bottom) 
 }
 
 inline void not_null(const void* object) {
-    if (not_null == NULL) {
-        log_e("Canvas can't b e NULL");
+    if (object == NULL) {
+        //log_e("Canvas can't b e NULL");
     }
 }
 
@@ -65,5 +63,5 @@ void fillRect(TFT_eSprite& sprite, const TFT_Rect& rect, int color) {
 
 void fillRectChevron(TFT_eSprite& sprite, int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color, uint32_t bg_color) {
     sprite.fillRect(x, y, w, h, bg_color);
-    sprite.drawWideLine(x, y + h, x + w, y, w, color, bg_color);
+    sprite.drawWideLine(x, y + h, x + w, y, w, color);
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <TFT_eSPI.h>
-
 #include "TFT_eProgressBar_ValueStyle.h"
 
 struct TFT_eProgressBar

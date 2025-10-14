@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <TFT_eSPI.h> 
 #include "TFT_eSPI_Ex.h"
 
 enum TFT_eScale_Indicators {
@@ -63,6 +62,8 @@ int gui_scale_get_indicator_length_horizontal(const TFT_eScale& scale) {
             return scale.height - scale.canvas->fontHeight() - 12;
         case Both:
             return (scale.height - scale.canvas->fontHeight())/ 2 - 12;
+        default:
+            break;
     }
     return 0;
 }
@@ -105,7 +106,7 @@ int gui_scale_get_text_max_width(const TFT_eScale& scale, std::vector<String>& r
 
 void gui_scale_get_text_values(const TFT_eScale& scale, std::vector<String>& results) {
     for(const int &i : scale._values) {
-        auto text = String(scale._values[i]);
+        auto text = String(i);
         results.push_back(text);
     }
 }
@@ -133,6 +134,8 @@ int gui_scale_get_text_center(const TFT_eScale& scale)
             return (length + padding / 2);
         case Bottom:
             return (padding / 2);
+        default:
+            break;
     }
 
     return scale.height / 2;      
@@ -151,7 +154,7 @@ void gui_scale_begin(const TFT_eScale& scale)
     int long_start_padding = scale.start_padding;
     int short_start_padding = long_start_padding + long_marks_interval / 2;
 
-    if (long_marks_length > 0 & scale.show_intervals) {
+    if (long_marks_length > 0 && scale.show_intervals) {
         for (auto i = 0; i < marks_count; i++)
         {
             if (scale.interval_layout == Top || scale.interval_layout == Both)
@@ -205,7 +208,7 @@ void gui_scale_begin(const TFT_eScale& scale)
         }
     }
 
-    if (long_marks_length > 1 & scale.show_sub_intervals) 
+    if (long_marks_length > 1 && scale.show_sub_intervals) 
     {
         for (auto i = 0; i < marks_count - 1; i++)
         {

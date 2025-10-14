@@ -1,9 +1,6 @@
 #pragma once
 
 #include <vector>
-
-#include <TFT_eSPI.h> 
-
 #include "TFT_eSPI_Ex.h"
 
 struct TFT_eLabel

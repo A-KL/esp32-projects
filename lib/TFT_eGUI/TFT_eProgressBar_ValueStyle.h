@@ -2,7 +2,6 @@
 
 #include <map>
 #include <vector>
-#include <TFT_eSPI.h>
 
 #include "TFT_eColorBrush.h"
 

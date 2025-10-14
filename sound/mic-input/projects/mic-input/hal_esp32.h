@@ -12,6 +12,15 @@ void IRAM_ATTR OnRightButtonPressed()
   //digitalWrite(LED_pin, !digitalRead(LED_pin));
 }
 
+void gui_update_task(void *arg)  
+{
+    while (1) 
+    {
+        gui_progress_bars_update();
+        vTaskDelay(100 / portTICK_RATE_MS);
+    }
+}
+
 void hal_gui_start() {
   xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 1, NULL);
 }

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <SPI.h>
-#include <TFT_eSPI.h>
-
 #include "TFT_eSPI_Ex.h"
 
 class TFT_eWidget
@@ -53,7 +50,7 @@ class TFT_eWidget
             if (_parent == nullptr) {
                 _canvas.pushSprite(x, y);
             } else {
-                _canvas.pushToSprite(_parent, x, y);
+                _canvas.pushSprite(_parent, x, y);
             }
         }
 
@@ -62,7 +59,7 @@ class TFT_eWidget
             if (_parent == nullptr) {
                 _canvas.pushSprite(x, y, TFT_TRANSPARENT);
             } else {
-                _canvas.pushToSprite(_parent, x, y, TFT_TRANSPARENT);
+                _canvas.pushSprite(_parent, x, y, TFT_TRANSPARENT);
             }
         }
 

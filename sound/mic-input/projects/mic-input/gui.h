@@ -1,7 +1,18 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <LovyanGFX.h>
+#include <LGFX_AUTODETECT.hpp>
+
+using TFT_eSprite = LGFX_Sprite;
+using TFT_eSPI = LGFX;
+
 #include <TFT_eGUI.h>
+
+#if defined ( SDL_h_ )
+    static LGFX tft ( 320, 240, 2 );
+#else
+    static LGFX tft;
+#endif
 
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
@@ -234,16 +245,7 @@ void gui_progress_bars_update()
     // } 
 }
 
-void gui_update_task(void *arg)  
-{
-    while (1) 
-    {
-        gui_progress_bars_update();
-        vTaskDelay(100 / portTICK_RATE_MS);
-    }
-}
-
-void gui_run(int core) 
-{
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
-}
+// void gui_run(int core) 
+// {
+//     xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
+// }

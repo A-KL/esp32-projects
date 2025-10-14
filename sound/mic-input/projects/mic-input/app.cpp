@@ -1,16 +1,20 @@
+void gui_progress_bars_update();
+
+#ifdef ARDUINO
+    #include <Arduino.h>
+
+    #ifdef ESP_PLATFORM
+        #include "hal_esp32.h"
+
+    #endif
+#else
+    #include "hal_arduino.h"
+#endif
+
 #include <math.h>
-
-// #define LGFX_AUTODETECT
-// #include <LovyanGFX.h>
-// #include <LGFX_AUTODETECT.hpp>
-
 #include "gui.h"
 #include "audio.h"
 #include "network.h"
-
-#ifdef ESP_PLATFORM
-    #include "hal_esp32.h"
-#endif
 
 enum audio_input_t {
     ADC = 0,

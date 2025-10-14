@@ -1,7 +1,5 @@
 #pragma once
 
-#include <TFT_eSPI.h> 
-
 #include "TFT_eSPI_Ex.h"
 #include "TFT_eColorBrush.h"
 

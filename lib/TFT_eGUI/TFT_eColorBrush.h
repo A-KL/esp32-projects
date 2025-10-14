@@ -1,8 +1,5 @@
 #pragma once
 
-#include <SPI.h>
-#include <TFT_eSPI.h>
-
 #include "TFT_eSPI_Ex.h"
 
 class TFT_eColorBrush
@@ -19,11 +16,11 @@ class TFT_eColorBrush
 class TFT_eSolidBrush : public TFT_eColorBrush
 {
     public:
-        TFT_eSolidBrush(uint32_t color) 
+        TFT_eSolidBrush(int color) 
             : _color(color)
             { }
 
-        TFT_eSolidBrush(uint32_t color, uint8_t luminance) 
+        TFT_eSolidBrush(int color, uint8_t luminance) 
             : _color(tft_luminance(color, luminance))
             { }
 
@@ -33,7 +30,7 @@ class TFT_eSolidBrush : public TFT_eColorBrush
         }
 
     private:
-        uint32_t _color;
+        int _color;
 };
 
 class TFT_eChevronBrush : public TFT_eColorBrush
@@ -96,7 +93,7 @@ class TFT_eGradientBrush : public TFT_eColorBrush
                 sprite->fillRect(x, y + h/2, w, h/2, _color2);
             }
             else {
-                sprite->fillRectVGradient(x, y, w, h, _color1, _color2);
+                sprite->fillGradientRect(x, y, w, h, _color1, _color2, lgfx::VLINEAR); //fillRectVGradient
             }
         }
 

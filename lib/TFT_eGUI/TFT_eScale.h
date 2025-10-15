@@ -195,7 +195,7 @@ void gui_scale_begin(const TFT_eScale& scale)
                 scale.text_rotation->setSwapBytes(true);
                 scale.text_rotation->setTextColor(scale.foreground_color, scale.background_color);
 
-                scale.text_rotation->drawString(label, 0, 0, 1);
+                scale.text_rotation->drawString(label, 0, 0); //,1
                 scale.canvas->setPivot(scale.start_padding + long_marks_interval * i - mark_w/2, text_center); //long_marks_length + text_h
 
                 scale.text_rotation->pushRotated(scale.canvas, 90);

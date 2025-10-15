@@ -204,7 +204,7 @@ void gui_init()
     tft.setSwapBytes(true);
 
     //tft.setFreeFont(&Orbitron_Medium_20);
-    tft.loadFont(NotoSansBold15);
+    //tft.loadFont(NotoSansBold15);
 
     tft.fillScreen(TFT_BLACK);
 

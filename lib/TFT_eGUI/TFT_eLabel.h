@@ -81,7 +81,7 @@ void gui_label_update(const TFT_eLabel& label)
     auto text_string = String(label.text);
 
     label.canvas->setTextColor(label.foreground_color);
-    label.canvas->drawCentreString(text_string, label.width/2, label.default_padding_h + label.borders_thickness[1], 1);
+    label.canvas->drawCenterString(text_string, label.width/2, label.default_padding_h + label.borders_thickness[1]); //, 1
     
     label.canvas->pushSprite(label.left, label.top);
 }

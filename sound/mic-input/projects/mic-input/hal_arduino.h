@@ -1,6 +1,6 @@
 #pragma once 
 
-#include <stdout.h>
+#include <iostream>
 #include <string>
 
 void log_e(const char* text)

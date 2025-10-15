@@ -9,10 +9,12 @@ __attribute__((weak))
 int user_func(bool* running)
 {
   setup();
-  do
-  {
+  
+  do {
     loop();
-  } while (*running);
+  } 
+  while (*running);
+
   return 0;
 }
 

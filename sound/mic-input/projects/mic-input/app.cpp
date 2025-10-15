@@ -18,17 +18,15 @@ using TFT_eSPI = LGFX;
 using TFT_eSprite = TFT_eSprite_GFX;
 
 #include <TFT_eGUI.h>
-
-#if defined ( SDL_h_ )
-    static TFT_eSPI tft ( 320, 240, 2 );
-#else
-    static TFT_eSPI tft;
-#endif
-
 #include <math.h>
 #include "gui.h"
-#include "audio.h"
-#include "network.h"
+
+#if defined ( SDL_h_ )
+    #include "hal_local.h"
+#else
+    #include "hal_esp32_audio.h"
+#endif
+
 
 enum audio_input_t {
     ADC = 0,

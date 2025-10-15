@@ -1,5 +1,11 @@
 #pragma once
 
+#if defined ( SDL_h_ )
+    static TFT_eSPI tft ( 320, 240, 2 );
+#else
+    static TFT_eSPI tft;
+#endif
+
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
 #include "NotoSansMonoSCB20.h"
@@ -115,8 +121,8 @@ void gui_notify_init() {
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.top = 10;
-    left_pb.left = 15;
+    left_pb.top = 5;
+    left_pb.left = 10;
     left_pb.width = tft.width() - left_pb.left;
     left_pb.max = 1200;
 
@@ -124,11 +130,10 @@ void gui_meter_init() {
     left_pb.value_style = &lime_segmented_pb_style;
     left_pb.background_color = TFT_BLACK;
 
-    // Scale
     scale.left = 0;
     scale.top = 35;
     scale.width = tft.width();
-    scale.height = 60;
+    scale.height = 65;
     scale.interval_layout = Both;
     scale.show_labels = true;
     scale.horizontal_labels = false;
@@ -137,8 +142,8 @@ void gui_meter_init() {
     scale_text_sprite.loadFont(NotoSansBold15);
 
     // Right progress bar
-    right_pb.top = 100;
-    right_pb.left = 15;
+    right_pb.top = 110;
+    right_pb.left = 10;
     right_pb.width = tft.width() - right_pb.left;
     right_pb.max = 1200;
 

@@ -102,7 +102,8 @@ void update_analog() {
     vTaskDelay(100 / portTICK_RATE_MS); 
 }
 
-void update_i2s() {
+void update_i2s() 
+{
     size_t bytes_read = 0;
 
     esp_err_t result = i2s_read(I2S_PORT, &samples, I2S_BUFFER_SIZE, &bytes_read, portMAX_DELAY);

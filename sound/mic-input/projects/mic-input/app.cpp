@@ -27,7 +27,6 @@ using TFT_eSprite = TFT_eSprite_GFX;
     #include "hal_esp32_audio.h"
 #endif
 
-
 enum audio_input_t {
     ADC = 0,
     I2S = 1, 
@@ -39,14 +38,11 @@ audio_input_t audio_input = I2S;
 void setup() 
 {
     hal_init();
+    hal_audio_init();
+    hal_buttons_init();
 
     gui_init();
     gui_set_input((int)audio_input);
-
-    hal_audio_init();
-
-    hal_buttons_init();
-
     hal_gui_start();
 }
 
@@ -59,7 +55,6 @@ void loop()
     Serial.print(rangelimit);
     Serial.print(" ");
 #endif
-
     switch (audio_input)
     {
         case ADC:

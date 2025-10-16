@@ -203,7 +203,7 @@ void gui_scale_begin(const TFT_eScale& scale)
             }
             else
             {
-                scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2, 1);
+                scale.canvas->drawCentreString(label, scale.start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2);
             }
         }
     }

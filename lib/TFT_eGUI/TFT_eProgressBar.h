@@ -1,13 +1,16 @@
 #pragma once
 
+#include "TFT_eSPI_Ex.h"
+#include "TFT_eColorBrush.h"
+
 #include "TFT_eProgressBar_ValueStyle.h"
 
-struct TFT_eProgressBar
+class TFT_eProgressBar : public TFT_eWidget
 {
-    int left = 0;
-    int top = 0;
-    int height = 20;
-    int width = 100;
+    public:
+        TFT_eProgressBar(TFT_eSPI* tft, const TFT_eProgressBar_ValueStyle* style, const int16_t width = 200, const int16_t height = 20, int16_t left = 0, const int16_t top = 0)
+        : TFT_eWidget(tft, width, height, top, left), value_style(style)
+        { }
 
     int borders_thickness[4] = {0, 0, 0, 0};
 
@@ -15,74 +18,65 @@ struct TFT_eProgressBar
     float min = 0;
     float max = 100;
 
-    int background_color = 0x39C7;
-    int border_color = TFT_WHITE;
+    uint16_t background_color = 0x39C7;
+    uint16_t border_color = TFT_WHITE;
 
-    const TFT_eProgressBar_ValueStyle* value_style;
+    //value_styleTFT_eProgressBar_ValueStyle* bar_style = NULL;
+    const TFT_eProgressBar_ValueStyle* value_style = NULL;
 
-    TFT_eSprite* canvas = NULL;
+    inline void init()
+    {   
+        create(width, height, background_color);
+    }
 
-    const int border_padding = 1;
+    void update() 
+    {
+        auto left_act= border_with_padding(borders_thickness[0], border_padding);
+        auto top_act = border_with_padding(borders_thickness[1], border_padding);
+        auto right_act = border_with_padding(borders_thickness[2], border_padding);
+        auto bottom_act = border_with_padding(borders_thickness[3], border_padding);
+
+        auto w = width - left_act - right_act;
+        auto h = height - top_act - bottom_act;
+
+        _canvas.fillRect(left_act, top_act, w, h, background_color);
+
+        int value_w = map(value, min, max, 0, w);
+
+        value_style->render(&_canvas, left_act, top_act, w, h, value_w);
+        
+        push();
+    }
+
+    void begin() 
+    {
+        if (borders_thickness[0] > 0) {
+            _canvas.drawWideLine(0, 0, 0, 0 + height, 
+                borders_thickness[0], 
+                border_color);
+        }
+
+        if (borders_thickness[1] > 0) {
+            _canvas.drawWideLine(0, 0, 0 + width, 0, 
+                borders_thickness[1], 
+                border_color);
+        }
+
+        if (borders_thickness[2] > 0) {
+            _canvas.drawWideLine(0 + width - 1, 0, 0 + width - 1, 0 + height, 
+                borders_thickness[2], 
+                border_color);
+        }
+
+        if (borders_thickness[3] > 0) {
+            _canvas.drawWideLine(0, 0 + height - 1, 1 + width, 0 + height - 1, 
+                borders_thickness[3], 
+                border_color);
+        }
+
+        update();
+    }
+
+    private:
+        const int border_padding = 1;
 };
-
-void gui_pb_init(const TFT_eProgressBar& pb) 
-{
-    not_null(pb.canvas);
-
-    pb.canvas->setColorDepth(16);
-    pb.canvas->createSprite(pb.width, pb.height);
-    pb.canvas->setSwapBytes(true);
-    pb.canvas->fillSprite(pb.background_color);
-}
-
-void gui_pb_update(const TFT_eProgressBar& pb) 
-{
-    not_null(pb.canvas);
-
-    auto left = border_with_padding(pb.borders_thickness[0], pb.border_padding);
-    auto top = border_with_padding(pb.borders_thickness[1], pb.border_padding);
-    auto right = border_with_padding(pb.borders_thickness[2], pb.border_padding);
-    auto bottom = border_with_padding(pb.borders_thickness[3], pb.border_padding);
-
-    auto w = pb.width - left - right;
-    auto h = pb.height - top - bottom;
-
-    pb.canvas->fillRect(left, top, w, h, pb.background_color);
-
-    int value_w = map(pb.value, pb.min, pb.max, 0, w);
-
-    pb.value_style->render(pb.canvas, left, top, w, h, value_w);
-    
-    pb.canvas->pushSprite(pb.left, pb.top);
-}
-
-void gui_pb_begin(const TFT_eProgressBar& pb) 
-{
-    not_null(pb.canvas);
-
-    if (pb.borders_thickness[0] > 0) {
-        pb.canvas->drawWideLine(0, 0, 0, 0 + pb.height, 
-            pb.borders_thickness[0], 
-            pb.border_color);
-    }
-
-    if (pb.borders_thickness[1] > 0) {
-        pb.canvas->drawWideLine(0, 0, 0 + pb.width, 0, 
-            pb.borders_thickness[1], 
-            pb.border_color);
-    }
-
-    if (pb.borders_thickness[2] > 0) {
-        pb.canvas->drawWideLine(0 + pb.width - 1, 0, 0 + pb.width - 1, 0 + pb.height, 
-            pb.borders_thickness[2], 
-            pb.border_color);
-    }
-
-    if (pb.borders_thickness[3] > 0) {
-        pb.canvas->drawWideLine(0, 0 + pb.height - 1, 1 + pb.width, 0 + pb.height - 1, 
-            pb.borders_thickness[3], 
-            pb.border_color);
-    }
-
-    gui_pb_update(pb);
-}

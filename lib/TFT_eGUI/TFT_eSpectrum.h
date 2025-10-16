@@ -44,8 +44,9 @@ class TFT_eSpectrum : public TFT_eWidget
             return *this;
         }
 
-        //uint16_t foreground_color = TFT_DARK_DARK_GRAY;
         uint16_t background_color = TFT_DARK_DARK_GRAY;
+
+        const TFT_eProgressBar_ValueStyle* bar_style = NULL;
 
         uint16_t bar_color_gradient_from = TFT_GREENYELLOW;
         uint16_t bar_color_gradient_to = TFT_GREEN;
@@ -87,15 +88,23 @@ class TFT_eSpectrum : public TFT_eWidget
 
                 _values[i] = _values_new[i];
 
-                auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
+                //auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
 
                 auto y = map(_values[i], _min, _max, bar_h, 0);
 
                 //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
-                _canvas.fillSprite(background_color);
+                //_canvas.fillSprite(background_color);
 
-                //_canvas->fillRect(0, 0, bar_w, bar_h - y, background_color);
-                _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
+                if (bar_style)
+                {
+                    //bar_style->render(&_canvas, 0, y, bar_w, bar_h - y, bar_w);
+                    bar_style->render(&_canvas, 0, 0, bar_w, bar_h, bar_h - y);
+                }
+                else
+                {
+                    _canvas.fillRect(0, 0, bar_w, y, background_color);  
+                    _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
+                }
 
                 push(left + bar_w * i + band_segment_padding * i, top);
             }

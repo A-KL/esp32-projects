@@ -42,8 +42,6 @@ void setup(){
    // nfc.begin(I2S_BPS, 16);
    // csv.begin(info);
     vu.begin(info);
-
-    gui_begin();
 }
 
 void loop(){

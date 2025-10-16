@@ -3,36 +3,26 @@
 #include "TFT_eSPI_Ex.h"
 #include "TFT_eColorBrush.h"
 
-struct TFT_ePanel
+class TFT_ePanel : public TFT_eWidget
 {
-    int left = 0;
-    int top = 0;
-    int width = 40;
-    int height = 20;
+    public:
+        TFT_ePanel(TFT_eSPI* tft, const TFT_eColorBrush* bg_brush, int16_t top = 0, int16_t left = 0, const int16_t width = 40, const int16_t height = 20) 
+        : TFT_eWidget(tft, width, height, top, left), background(bg_brush)
+        { }
 
-    const TFT_eColorBrush* background = NULL;
+        const TFT_eColorBrush* background = NULL;
 
-    TFT_eSprite* canvas = NULL;
+        inline void init() {
+            create(width, height, TFT_BLACK);
+        }
+
+        inline void update() 
+        {
+            if (background == NULL) {
+                return;
+            }
+
+            background->fillRect(_canvas, 0, 0, width, height);
+            push();
+        }
 };
-
-void gui_panel_init(const TFT_ePanel& panel) 
-{
-    not_null(panel.canvas);
-    not_null(panel.background);
-
-    panel.canvas->setColorDepth(16);
-    panel.canvas->createSprite(panel.width, panel.height);
-    panel.canvas->setSwapBytes(true);
-}
-
-void gui_panel_update(const TFT_ePanel& panel) 
-{ 
-    panel.background->fillRect(panel.canvas, 0, 0, panel.width, panel.height);
-
-    panel.canvas->pushSprite(panel.left, panel.top);
-}
-
-void gui_panel_begin(const TFT_ePanel& led) 
-{
-    gui_panel_update(led);
-}

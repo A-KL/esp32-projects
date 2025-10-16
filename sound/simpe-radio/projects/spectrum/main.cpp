@@ -1,4 +1,3 @@
-#include "Creds.h"
 #include "AudioTools.h"
 #include "AudioTools/AudioLibs/AudioSourceSD.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"

@@ -2,8 +2,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <TFT_eSPI.h>
-
 #include <vector>
 
 const int corner_radius = 0;

@@ -1,7 +1,19 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <LovyanGFX.h>
+#include <LGFX_AUTODETECT.hpp>
+using TFT_eSPI = LGFX;
+
+#include <TFT_eSprite_GFX.h>
+using TFT_eSprite = TFT_eSprite_GFX;
+
 #include <TFT_eGUI.h>
+
+#if defined ( SDL_h_ )
+    static TFT_eSPI tft ( 320, 240, 2 );
+#else
+    static TFT_eSPI tft;
+#endif
 
 #include "Orbitron_Bold_12.h"
 #include "NotoSansBold15.h"
@@ -118,8 +130,8 @@ void gui_notify_init() {
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.top = 10;
-    left_pb.left = 15;
+    left_pb.top = 5;
+    left_pb.left = 10;
     left_pb.width = tft.width() - left_pb.left;
     left_pb.max = 1200;
 
@@ -131,7 +143,7 @@ void gui_meter_init() {
     scale.left = 0;
     scale.top = 35;
     scale.width = tft.width();
-    scale.height = 60;
+    scale.height = 65;
     scale.interval_layout = Both;
     scale.show_labels = true;
     scale.horizontal_labels = false;
@@ -140,8 +152,8 @@ void gui_meter_init() {
     scale_text_sprite.loadFont(NotoSansBold15);
 
     // Right progress bar
-    right_pb.top = 100;
-    right_pb.left = 15;
+    right_pb.top = 110;
+    right_pb.left = 10;
     right_pb.width = tft.width() - right_pb.left;
     right_pb.max = 1200;
 
@@ -200,10 +212,6 @@ void gui_init()
     tft.init();
     tft.setRotation(TFT_ROTATE);
     tft.setSwapBytes(true);
-
-    //tft.setFreeFont(&Orbitron_Medium_20);
-    tft.loadFont(NotoSansBold15);
-
     tft.fillScreen(TFT_BLACK);
 
     gui_meter_init();
@@ -243,33 +251,28 @@ void gui_update_task(void *arg)
     }
 }
 
-void gui_run(int core) 
-{
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
-}
-
 int gui_cpu_get_cores() 
 {
     esp_chip_info_t info;
     esp_chip_info(&info);
 
-    log_d("CPU CORES: %d", info.cores);
+    //log_d("CPU CORES: %d", info.cores);
     
     return info.cores;
 }
 
-inline void gui_update()
+void gui_update()
 {
-    if (gui_cpu_get_cores() > 1) {
-        return;
-    }
+    // if (gui_cpu_get_cores() > 1) {
+    //     return;
+    // }
     gui_progress_bars_update();
 }
 
 void gui_begin() 
 {
-    if (gui_cpu_get_cores() < 1) {
+    if (gui_cpu_get_cores() <= 1) {
         return;
     }
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
+   // xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <LGFX_TFT_eSPI.hpp>
 #include <LovyanGFX.h>
 #include <LGFX_AUTODETECT.hpp>
 using TFT_eSPI = LGFX;
@@ -252,33 +251,28 @@ void gui_update_task(void *arg)
     }
 }
 
-void gui_run(int core) 
-{
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
-}
-
 int gui_cpu_get_cores() 
 {
     esp_chip_info_t info;
     esp_chip_info(&info);
 
-    log_d("CPU CORES: %d", info.cores);
+    //log_d("CPU CORES: %d", info.cores);
     
     return info.cores;
 }
 
-inline void gui_update()
+void gui_update()
 {
-    if (gui_cpu_get_cores() > 1) {
-        return;
-    }
+    // if (gui_cpu_get_cores() > 1) {
+    //     return;
+    // }
     gui_progress_bars_update();
 }
 
 void gui_begin() 
 {
-    if (gui_cpu_get_cores() < 1) {
+    if (gui_cpu_get_cores() <= 1) {
         return;
     }
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
+   // xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
 }

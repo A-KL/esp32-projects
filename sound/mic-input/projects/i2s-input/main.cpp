@@ -3,7 +3,7 @@
 #include <VuOutput.h>
 
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
-AudioInfo info_out(I2S_SAMPLE_RATE, 2, 16);
+AudioInfo info_out(I2S_SAMPLE_RATE, I2S_CHANNELS, 16);
 
 I2SStream i2s;
 MultiOutput decoded_out;
@@ -16,21 +16,15 @@ StreamCopy copier(decoded_out, i2s);
 
 void setup(){
     Serial.begin(115200);
-    AudioLogger::instance().begin(Serial, AudioLogger::Debug);
+    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     tft.init();
     tft.setRotation(TFT_ROTATE);
     tft.setSwapBytes(true);
-
-    //tft.setFreeFont(&Orbitron_Medium_20);
-    tft.loadFont(NotoSansBold15);
-
     tft.fillScreen(TFT_BLACK);
 
     gui_init();
-    //gui_set_input((int)1);
-
-    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+    gui_set_input((int)1);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);

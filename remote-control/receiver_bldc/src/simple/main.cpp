@@ -64,17 +64,16 @@ void loop()
 
     if ( abs(thr) >  INPUT_ADC_DEADZONE)
     {
-        output = map(abs(input_raw), INPUT_ADC_MIN, INPUT_ADC_MAX, OUTPUT_PWM_MIN, OUTPUT_PWM_MAX);
+      log_d("Speed:\t%d\t%d", output, output);
+      output = motor_speed.update();
+      //output = map(abs(input_raw), INPUT_ADC_MIN, INPUT_ADC_MAX, OUTPUT_PWM_MIN, OUTPUT_PWM_MAX);
     }
 
-    Serial.print(output);
+    Serial.print(input_raw);
     Serial.print('\t');
-    Serial.println(input_raw);
+    Serial.println(output);
 
     ledcWrite(0, output);
-
-    //log_d("Speed:\t%d\t%d", output, output);
-    //motor_speed.update();
 
     delay(50);
 }

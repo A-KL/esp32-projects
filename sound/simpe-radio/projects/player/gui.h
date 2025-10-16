@@ -1,6 +1,9 @@
 #pragma once
 
+#include <TFT_eSPI.h>
 #include <TFT_eGUI.h>
+
+TFT_eSPI tft = TFT_eSPI();
 
 #ifdef DEFAULT_FONT
   #define stringify(x) #x

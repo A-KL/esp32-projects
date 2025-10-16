@@ -3,6 +3,8 @@
 #include <TFT_eSPI.h>
 #include "TFT_eGUI.h"
 
+TFT_eSPI tft = TFT_eSPI();
+
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
 #else

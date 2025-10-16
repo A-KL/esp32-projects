@@ -2,91 +2,88 @@
 
 #include "TFT_eSPI_Ex.h"
 
-struct TFT_eLed 
+class TFT_eLed : public TFT_eWidget
 {
-    int left = 0;
-    int top = 0;
-    int width = 20;
+    public:
+        TFT_eLed(TFT_eSPI* tft, uint16_t left = 0, uint16_t top = 0, uint16_t width = 20)
+        : TFT_eWidget(tft, width, width, top, left)
+        {}
 
-    bool round = true;
+        bool round = true;
+        bool checked = false;
+        uint16_t padding = 0;
 
-    bool value = false;
+        uint32_t on_color = TFT_GREENYELLOW;
+        uint32_t on_color_to = TFT_GREEN;
 
-    int on_color = TFT_GREENYELLOW;
-    int on_color_to = TFT_GREEN;
+        uint32_t off_color = TFT_DARKGREEN;
 
-    int off_color = TFT_DARKGREEN;
+        uint32_t bg_color = TFT_DARK_GRAY;
+        uint32_t bg_color_to = TFT_DARK_DARK_GRAY;
 
-    int bg_color = TFT_WHITE;
-    int bg_color_to = TFT_DARKGREY;
+        inline void init()
+        {
+            create(width, height, round ? TFT_TRANSPARENT : bg_color);
+        }
 
-    TFT_eSprite* canvas = NULL;
+        void begin()
+        {
+            if (round) 
+            {
+                auto center = width / 2;
+                _canvas.fillSmoothCircle(center, center, center - 1, bg_color);
+            } 
+            else 
+            {
+                if (bg_color == bg_color_to)
+                    _canvas.fillScreen(bg_color);
+                else
+                    _canvas.fillRectVGradient(0, 0, width, width, bg_color, bg_color_to);
+            }
+
+            update();
+        }
+
+        void update() 
+        {
+            if (round) 
+                update_round();
+            else
+                update_rect();
+        }
+
+    private:
+        inline void update_round() 
+        {
+            auto center = width / 2;
+            auto r = (width - padding) / 2 - 1;
+
+            _canvas.fillSmoothCircle(center, center, r, checked ? on_color : off_color);
+
+            push_transparent(left, top);
+        }
+
+        inline void update_rect()
+        {
+            auto left = padding / 2;
+            auto led_size = width - padding;
+
+            if (bg_color == bg_color_to) 
+            {
+                _canvas.fillRect(
+                    left, left, 
+                    led_size, led_size, 
+                    checked ? on_color : off_color);
+            } 
+            else 
+            {
+                _canvas.fillRectVGradient(
+                    left, left, 
+                    led_size, led_size, 
+                    checked ? on_color : off_color,
+                    checked ? on_color_to : off_color);
+            }
+            push();
+        }
 };
 
-void gui_led_init(const TFT_eLed& led) 
-{
-    led.canvas->setColorDepth(16);
-    led.canvas->createSprite(led.width, led.width);
-    led.canvas->setSwapBytes(true);
-}
-
-void gui_led_round_update(const TFT_eLed& led) 
-{
-    auto padding = led.width / 10;
-    auto center = led.width / 2;
-
-    if (padding <= 0)
-        padding = 1;
-
-    auto r = (led.width - padding) / 2 - 1;
-
-    led.canvas->fillCircle(center, center, r, led.value ? led.on_color : led.off_color);
-    led.canvas->pushSprite(led.left, led.top);
-}
-
-void gui_led_update(const TFT_eLed& led) 
-{
-    if (led.round) 
-    {
-        gui_led_round_update(led);
-        return;
-    }
-
-    auto padding = led.width / 10;
-
-    if (padding <= 0)
-        padding = 1;
-
-    auto led_size = led.width - padding * 2;
-
-    if (led.bg_color == led.bg_color_to) 
-    {
-        led.canvas->fillRect(padding, padding, led_size, led_size, 
-        led.value ? led.on_color : led.off_color);
-    } 
-    else 
-    {
-        led.canvas->fillRectVGradient(padding, padding, led_size, led_size, 
-        led.value ? led.on_color : led.off_color,
-        led.value ? led.on_color_to : led.off_color);
-    }
-
-    led.canvas->pushSprite(led.left, led.top);
-}
-
-void gui_led_begin(const TFT_eLed& led) 
-{
-    if (led.round) 
-    {
-        auto center = led.width / 2;
-        led.canvas->fillSmoothCircle(center, center, led.width / 2 - 1, led.bg_color);
-    } 
-    else 
-    {
-        if (led.bg_color == led.bg_color_to)
-            led.canvas->fillRect(0, 0, led.width, led.width, led.bg_color);
-        else
-            led.canvas->fillRectVGradient(0, 0, led.width, led.width, led.bg_color, led.bg_color_to);
-    }
-    gui_led_update(led);
-}

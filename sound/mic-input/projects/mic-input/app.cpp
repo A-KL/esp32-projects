@@ -9,16 +9,6 @@ void gui_progress_bars_update();
     #include "hal_arduino.h"
 #endif
 
-//#include <LGFX_TFT_eSPI.hpp>
-#include <LovyanGFX.h>
-#include <LGFX_AUTODETECT.hpp>
-using TFT_eSPI = LGFX;
-
-#include <TFT_eSprite_GFX.h>
-using TFT_eSprite = TFT_eSprite_GFX;
-
-#include <TFT_eGUI.h>
-#include <math.h>
 #include "gui.h"
 
 #if defined ( SDL_h_ )

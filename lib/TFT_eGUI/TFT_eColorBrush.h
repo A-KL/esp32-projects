@@ -7,7 +7,7 @@ class TFT_eColorBrush
     public:
         virtual void fillRect(TFT_eSprite* sprite, int32_t x, int32_t y, int32_t w, int32_t h) const = 0;
 
-        virtual void fillRect(TFT_eSprite& sprite, int32_t x, int32_t y, int32_t w, int32_t h)
+        virtual void fillRect(TFT_eSprite& sprite, int32_t x, int32_t y, int32_t w, int32_t h) const
         {
             fillRect(&sprite, x, y, w, h);
         }

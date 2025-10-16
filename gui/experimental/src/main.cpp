@@ -1,4 +1,6 @@
-#include <lgfx/v1/platforms/sdl/Panel_sdl.hpp>
+#ifdef LGFX_AUTODETECT
+  #include <lgfx/v1/platforms/sdl/Panel_sdl.hpp>
+#endif
 
 #if defined ( SDL_h_ )
 
@@ -9,12 +11,10 @@ __attribute__((weak))
 int user_func(bool* running)
 {
   setup();
-  
-  do {
+  do
+  {
     loop();
-  } 
-  while (*running);
-
+  } while (*running);
   return 0;
 }
 

@@ -81,7 +81,8 @@ public:
         _right_envelope_context, 
         _left_envelope_context);
 
-        LOGD("Results. Left: %f Right: %f", 
+        //LOGD("Results. Left: %f Right: %f", 
+        log_d("Results. Left: %f Right: %f",
           _left_envelope_context.envelope_out,
           _right_envelope_context.envelope_out);
 

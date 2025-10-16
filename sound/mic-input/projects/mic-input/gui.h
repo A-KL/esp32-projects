@@ -202,10 +202,6 @@ void gui_init()
     tft.init();
     tft.setRotation(TFT_ROTATE);
     tft.setSwapBytes(true);
-
-    //tft.setFreeFont(&Orbitron_Medium_20);
-    //tft.loadFont(NotoSansBold15);
-
     tft.fillScreen(TFT_BLACK);
 
     gui_meter_init();
@@ -235,8 +231,3 @@ void gui_progress_bars_update()
     //     gui_panel_update(main_panel);
     // } 
 }
-
-// void gui_run(int core) 
-// {
-//     xTaskCreate(gui_update_task, "gui_run", 2048, NULL, core, NULL);
-// }

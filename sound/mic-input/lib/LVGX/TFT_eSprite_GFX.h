@@ -19,6 +19,11 @@ class TFT_eSprite_GFX : public LGFX_Sprite
         this->pushSprite(sprite, x, y);
     }
 
+    inline size_t drawCentreString(const char* string, int32_t x, int32_t y, uint8_t font)
+    {
+        return LGFX_Sprite::drawCentreString(string, x, y);
+    }
+
     inline void fillRectVGradient(int32_t x, int32_t y, uint32_t w, uint32_t h, const int start, const int end)
     {
         this->fillGradientRect(x, y, w, h, start, end, lgfx::VLINEAR);

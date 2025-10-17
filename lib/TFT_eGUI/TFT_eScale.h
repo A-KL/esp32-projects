@@ -109,7 +109,7 @@ class TFT_eScale : public TFT_eWidget
                     }
                     else
                     {
-                        _canvas.drawCentreString(label, start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2);
+                        _canvas.drawCentreString(label.c_str(), start_padding + long_marks_interval * i - mark_w/2, text_center - text_h / 2, 1);
                     }
                 }
             }

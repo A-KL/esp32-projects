@@ -66,7 +66,7 @@ class TFT_eLabel : public TFT_eWidget
             auto text_string = String(_text);
 
             _canvas.setTextColor(foreground_color);
-            _canvas.drawCentreString(text_string, width/2, default_padding_h + borders_thickness[1]);
+            _canvas.drawCentreString(text_string.c_str(), width/2, default_padding_h + borders_thickness[1], 1);
             
             _canvas.pushSprite(left, top);
         }

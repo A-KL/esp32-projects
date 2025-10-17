@@ -147,11 +147,11 @@ class TFT_eCassette : public TFT_eWidget
                 auto text_top = cassette_header/2 - canvas->fontHeight()/2;
                 auto text_left = width/2;
 
-                canvas->drawCentreString(_top_text, text_left, text_top);
+                canvas->drawCentreString(_top_text, text_left, text_top, 1);
                 push(left, top);
 
                 canvas->fillSprite(_color_header_footer_bg);
-                canvas->drawCentreString(_bottom_text, text_left, text_top);
+                canvas->drawCentreString(_bottom_text, text_left, text_top, 1);
                 push(left, top +  cassette_header + cassette_height + 1);
 
                 del();
@@ -170,12 +170,12 @@ class TFT_eCassette : public TFT_eWidget
 
                 auto text_top = sprite_h / 2 - canvas->fontHeight() / 2;
 
-                canvas->drawCentreString(_format_text, text_left, text_top);
+                canvas->drawCentreString(_format_text, text_left, text_top, 1);
                 push_transparent(left + sprite_left, top + cassette_header);
 
                 canvas->fillSprite(TFT_TRANSPARENT);
 
-                canvas->drawCentreString(_freq_text, text_left, text_top);
+                canvas->drawCentreString(_freq_text, text_left, text_top, 1);
                 push_transparent(left + sprite_left, top + cassette_header + sprite_h);
 
                 del();

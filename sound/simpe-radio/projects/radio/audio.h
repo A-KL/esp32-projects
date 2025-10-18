@@ -6,13 +6,11 @@
 
 #include "gui.h"
 #include "VuOutput.h"
-
-//                                                                   -> I2SStream
-//                                                                   -> VuMeter
-//                                                                   -> SPDIFOutput
-//                            -> EncodedAudioStream -> MultiOutput -|                                                                  
-// URLStream -> MultiOutput -|
-//                            -> MetaDataOutput
+                                                                  
+//                                                                  |-> SPDIFOutput
+//                           |-> EncodedAudioStream -> MultiOutput -|-> I2SStream                                                              
+// URLStream -> MultiOutput -|                                      |-> VuMeter
+//                           |-> MetaDataOutput
 
 // Output 
 const int output_format = 16;

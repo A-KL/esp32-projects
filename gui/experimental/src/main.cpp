@@ -18,8 +18,9 @@ int user_func(bool* running)
   return 0;
 }
 
-int main(int, char**)
+int main(int, char** argv)
 {
+  printf("Path relative to the working directory is: %s\n", argv[0]);
   return lgfx::Panel_sdl::main(user_func);
 }
 

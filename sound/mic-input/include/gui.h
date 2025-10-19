@@ -1,9 +1,17 @@
 #pragma once
 
-#include <TFT_eSPI.h>
-#include "TFT_eGUI.h"
+#include <LovyanGFX.h>
+#include <LGFX_AUTODETECT.hpp>
+#include <TFT_eSprite_GFX.h>
 
-TFT_eSPI tft = TFT_eSPI();
+using TFT_eSPI = LGFX;
+using TFT_eSprite = TFT_eSprite_GFX;
+
+#if defined ( SDL_h_ )
+    static TFT_eSPI tft ( 320, 240, 2 );
+#else
+    static TFT_eSPI tft;
+#endif
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -12,6 +20,8 @@ TFT_eSPI tft = TFT_eSPI();
 #endif
 
 #include "NotoSansMonoSCB20.h"
+
+#include <TFT_eGUI.h>
 
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
@@ -28,9 +38,6 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     3, 
     60);
 
-TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 10, 15);
-TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 100, 15);
-
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
 
@@ -41,15 +48,11 @@ TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
 
-TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 35);
+TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, TFT_HEIGHT - 10, 20, 5, 10);
+TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, TFT_HEIGHT, 65, 0, 35);
+TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, TFT_HEIGHT - 10, 20, 110, 10);
 
-int gui_cpu_get_cores() 
-{
-    esp_chip_info_t info;
-    esp_chip_info(&info);
-    
-    return info.cores;
-}
+
 
 void gui_set_input(int input)
 {
@@ -104,7 +107,8 @@ void gui_notify_init()
     main_panel.begin();
 }
 
-void gui_meter_init() {
+void gui_meter_init() 
+{
     // Left progress bar
     left_pb.max = 1200;
     left_pb.background_color = TFT_BLACK;
@@ -167,23 +171,14 @@ void gui_labels_init()
     ovr_label.begin();
 }
 
-void gui_init() 
-{
-    gui_meter_init();
-    //gui_labels_init();
-    //gui_led_init();
-
-    //gui_notify_init();
-    //gui_init_spectrum();
-}
-
 void gui_progress_bars_update()
 {
-    //ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
+    ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
 
     left_pb.update();
     right_pb.update();
-    //ovr_label.update();
+
+    ovr_label.update();
 
     // if (last_update_ms - millis() > 100) {
     //     last_update_ms = millis();
@@ -197,27 +192,24 @@ void gui_progress_bars_update()
     // } 
 }
 
-void gui_update_task(void *arg)  
+void gui_init() 
 {
-    while (1) 
-    {
-        gui_progress_bars_update();
-        vTaskDelay(100 / portTICK_RATE_MS);
-    }
+    tft.init();
+    tft.setRotation(TFT_ROTATE);
+    tft.setSwapBytes(true);
+    tft.fillScreen(TFT_BLACK);
+
+    gui_meter_init();
+    gui_labels_init();
+
+    //gui_notify_init();
+    //gui_init_spectrum();
 }
 
-inline void gui_update()
+void gui_update()
 {
-    if (gui_cpu_get_cores() > 1) {
-        return;
-    }
+    // if (gui_cpu_get_cores() > 1) {
+    //     return;
+    // }
     gui_progress_bars_update();
-}
-
-void gui_begin() 
-{
-    if (gui_cpu_get_cores() < 1) {
-        return;
-    }
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
 }

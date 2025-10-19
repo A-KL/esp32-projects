@@ -1,11 +1,12 @@
 #include <Arduino.h>
+#include <Ramp.h> 
 
 #ifndef MOTOR_INPUT_DEAD_ZONE
 #define MOTOR_INPUT_DEAD_ZONE 10
 #endif
 
 #ifndef MOTOR_PWM_FQC
-#define MOTOR_PWM_FQC         15000 // Hz
+#define MOTOR_PWM_FQC         15000 // Hz 1-20kHz
 #endif
 
 #ifndef MOTOR_PWM_RESOLUTION
@@ -33,8 +34,11 @@ static const int16_t dead_zone = 20;
 static motor_driver_t motor_left(25, 33, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 static motor_driver_t motor_right(19, 21, 18, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 
-static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
-static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
+static rampInt left_value;
+static rampInt right_value;
+
+// static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
+// static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
 
 bfs::SbusTx sbus_tx(sbus_serial, sbus_rx_tx_pins[0], sbus_rx_tx_pins[1], true);
 bfs::SbusData sbus_data;
@@ -49,8 +53,8 @@ static inline void write(const int16_t power, const int16_t steer)
   int16_t left_speed = constrain(power - steer, Power_Min, Power_Max);
   int16_t right_speed = constrain(power + steer, Power_Min, Power_Max);
 
-  left_value.write(left_speed);
-  right_value.write(right_speed);
+  left_value.go(left_speed);
+  right_value.go(right_speed);
 }
 
 static void on_ps3_lost()
@@ -90,8 +94,8 @@ void setup()
 
 void loop() 
 {
-  auto left = left_value.read();
-  auto right = right_value.read();
+  static auto left = left_value.update();
+  static auto right = right_value.update();
 
   log_i("Speed:\t%d\t%d", left, right);
 

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <TFT_eSPI.h>
 #include <TFT_eGUI.h>
+
+TFT_eSPI tft = TFT_eSPI();
 
 #ifdef DEFAULT_FONT
   #define stringify(x) #x
@@ -48,7 +51,7 @@ void gui_update()
     cassette.rotate_tape(angle+=angle_d);
 
     if (angle >= 360)
-    angle = 0;
+      angle = 0;
 
 #ifdef RM67162_DRIVER
     lcd_PushColors(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lcd_buffer.getPointer());

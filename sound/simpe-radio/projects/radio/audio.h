@@ -1,19 +1,16 @@
 #pragma once
 
-#include "Creds.h"
 #include "AudioTools.h"
 #include "AudioTools/AudioLibs/SPDIFOutput.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 
 #include "gui.h"
 #include "VuOutput.h"
-
-//                                                                   -> I2SStream
-//                                                                   -> VuMeter
-//                                                                   -> SPDIFOutput
-//                            -> EncodedAudioStream -> MultiOutput -|                                                                  
-// URLStream -> MultiOutput -|
-//                            -> MetaDataOutput
+                                                                  
+//                                                                  |-> SPDIFOutput
+//                           |-> EncodedAudioStream -> MultiOutput -|-> I2SStream                                                              
+// URLStream -> MultiOutput -|                                      |-> VuMeter
+//                           |-> MetaDataOutput
 
 // Output 
 const int output_format = 16;

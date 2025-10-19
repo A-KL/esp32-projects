@@ -47,7 +47,9 @@ public:
 
 	 void DrawImage(int x, int y, int w, int h, const unsigned short* data)
 	 {
-			_display->drawBitmap(x, y, (uint8_t*)data, w, h, TFT_WHITE); //, (uint16_t)_background
+			_display->setSwapBytes(true);
+			_display->pushImage(x, y, w, h, data); //, (uint16_t)_background
+			_display->setSwapBytes(false);
 	 }
 
 	 void DrawText(int x, int y, int w, int h, const char* text, const Color& color)

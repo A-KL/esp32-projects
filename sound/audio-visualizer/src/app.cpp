@@ -44,8 +44,7 @@ void setup()
 {
   log_init();
 
-  static auto _selectedAudioSource = 0;
-  static auto _selectedAudioTarget = 1;
+
 
   canvas.Init(Color::White);
   canvas.SetFont(0, 1);
@@ -57,21 +56,21 @@ void setup()
 
   canvas.Clear(Color::Black);
   startUI((void*)&canvas);
-
-  while (true)
-  {
-    selectAudio(_selectedAudioTarget, _selectedAudioSource);
-
-    form.setIcon(_selectedAudioTarget, 1);
-    form.setIcon(_selectedAudioSource + 2, 1);
-
-    while (true)
-    {
-      loopAudio();
-      loopControls();
-    }
-  }
 }
 
-void loop() {
+void loop() 
+{
+  static auto _selectedAudioSource = 0;
+  static auto _selectedAudioTarget = 1;
+
+  selectAudio(_selectedAudioTarget, _selectedAudioSource);
+
+  form.setIcon(_selectedAudioTarget, 1);
+  form.setIcon(_selectedAudioSource + 2, 1);
+
+ // while (true)
+  {
+    loopAudio();
+    loopControls();
+  }
 }

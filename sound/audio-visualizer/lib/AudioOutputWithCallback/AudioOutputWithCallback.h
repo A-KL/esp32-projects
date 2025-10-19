@@ -1,9 +1,5 @@
 #pragma once
 
-#include "AudioOutputI2S.h"
-#include "AudioOutputSPDIF.h"
-#include "AudioFrame.h"
-
 typedef void (*SampleDelegate)(const AudioFrame& frame);
 
 class AudioOutputWithCallback : public AudioOutput

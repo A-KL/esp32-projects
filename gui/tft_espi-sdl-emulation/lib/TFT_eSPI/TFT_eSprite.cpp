@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
 
 #include "TFT_eSPI.h"
 #include "TFT_eSprite.h"

@@ -14,7 +14,7 @@ public:
 		const Color& background = {0, 0, 0, 0}, 
 		const Color& border = {0, 0, 0, 0}, 
 		int borderSize = 0, 
-		const UIElement* parent = NULL);
+		const UIElement* parent = nullptr);
 
 	inline void setParent(const UIElement* parent)
 	{

@@ -4,6 +4,8 @@
 //#include <EasyButton.h>
 #include "ES9018K2M.h"
 
+#include "Radio.h"
+
 #define VOLUME_PIN_A  35
 #define VOLUME_PIN_B  34
 #define VOLUME_BUTTON 32
@@ -31,6 +33,8 @@ const int stationIndex = 4;
 
 AiEsp32RotaryEncoder encoder_left = AiEsp32RotaryEncoder(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 4);
 AiEsp32RotaryEncoder encoder_right = AiEsp32RotaryEncoder(MENU_PIN_A, MENU_PIN_B, MENU_BUTTON, -1, 4);
+
+InternetRadio radio;
 
 void IRAM_ATTR readEncoderISR()
 {
@@ -86,6 +90,11 @@ void loopControls()
 	{
 
 	}  
+}
+
+void log_init()
+{
+  Serial.begin(115200);
 }
 
 void setupAudio()

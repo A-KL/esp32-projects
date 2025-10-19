@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseGraphics/Canvas.h"
+#include <Canvas.h>
 
 class SDLCanvas : public Canvas<Color>
 {
@@ -24,7 +24,7 @@ public:
 		return _h;
 	}
 
-	inline int Witdth() const
+	inline int Width() const
 	{
 		return _w;
 	}

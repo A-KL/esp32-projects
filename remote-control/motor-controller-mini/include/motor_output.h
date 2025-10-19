@@ -4,11 +4,6 @@
 #include <types.h>
 #include <Arduino.h>
 
-#ifndef MOTOR_INPUT_DEAD_ZONE
-#define MOTOR_INPUT_DEAD_ZONE 10
-#endif
-
-
 #ifndef MOTOR_PWM_FQC
 #define MOTOR_PWM_FQC         2500 // Hz
 #endif
@@ -21,13 +16,8 @@
 #define INPUT_MOTOR_MAX_LIMIT 1
 #endif
 
-const static int motor_duty_cycle = (255 * INPUT_MOTOR_MAX_LIMIT); // with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
-
-// Utils
-
-inline bool near_zero(const int value) {
-  return (abs(value) < MOTOR_INPUT_DEAD_ZONE);
-}
+// with 8 (0-255), 12 (0-4095), or 16 (0-65535) bit resolution
+constexpr static unsigned motor_duty_cycle = ((1 << MOTOR_PWM_RESOLUTION) - 1) * INPUT_MOTOR_MAX_LIMIT;
 
 // Run motors
 
@@ -76,7 +66,7 @@ void motor_run_a_b_en(const uint8_t pin_a, const uint8_t pin_b, const uint8_t ch
 
 void motor_run(const motor_config_t& config, const int16_t speed)
 {
-#ifdef OUTPUT_MOTOR_DEBUG
+#ifdef OUTPUT_MOTORS_DEBUG
    log_d("[MOTOR] (%d) Speed: %d", config.mode, speed);
 #endif
     switch (config.mode)
@@ -134,7 +124,7 @@ void write_motors(const int16_t* outputs, const uint8_t count)
 
 // Init motors
 
-void motor_init_a_en(const motor_pins_t& pins)
+void motor_init_a_en(const dc_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
 
@@ -142,7 +132,7 @@ void motor_init_a_en(const motor_pins_t& pins)
   ledcAttachPin(pins.en, pins.en_channel);
 }
 
-void motor_init_a_b_en(const motor_pins_t& pins)
+void motor_init_a_b_en(const dc_pins_t& pins)
 {
   pinMode(pins.a, OUTPUT);
   pinMode(pins.b, OUTPUT);
@@ -151,7 +141,7 @@ void motor_init_a_b_en(const motor_pins_t& pins)
   ledcAttachPin(pins.en, pins.en_channel);
 }
 
-void motor_init_a_b(const motor_pins_t& pins)
+void motor_init_a_b(const dc_pins_t& pins)
 {
   ledcSetup(pins.a_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
   ledcSetup(pins.b_channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
@@ -160,20 +150,20 @@ void motor_init_a_b(const motor_pins_t& pins)
   ledcAttachPin(pins.b, pins.b_channel);
 }
 
-void motor_init(const motor_config_t& motor)
+void motor_init(const motor_config_t& config)
 {
-     switch (motor.mode)
+     switch (config.mode)
      {
       case a_b_en:
-          motor_init_a_b_en(motor.pins);
+          motor_init_a_b_en(config.pins);
           break;
 
       case a_b:
-          motor_init_a_b(motor.pins);
+          motor_init_a_b(config.pins);
           break;
 
       case dir_en:
-          motor_init_a_en(motor.pins);
+          motor_init_a_en(config.pins);
           break;
      
       default:
@@ -185,6 +175,13 @@ void motors_init()
 {
   for (auto i=0; i<motors_count; ++i) {
       motor_init(motors[i]);
+      motor_run(motors[i], 0);
+  }
+}
+
+void motors_stop()
+{
+    for (auto i=0; i<motors_count; ++i) {
       motor_run(motors[i], 0);
   }
 }

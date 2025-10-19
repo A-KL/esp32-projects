@@ -101,7 +101,7 @@ private:
   const uint8_t _pin_b;
   const uint8_t _pin_en;
   const uint8_t _channel;
-  const motor_mode_t _mode;
+  const dc_mode_t _mode;
   int16_t _attached_pin = -1;
 
   inline bool near_zero(const int16_t value) {

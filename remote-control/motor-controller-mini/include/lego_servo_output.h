@@ -4,133 +4,98 @@
 #include <Arduino.h>
 #include <types.h>
 
-#define SERVO_FREQ        50
-#define SERVO_RES         14
+#ifndef DC_PWM_RESOLUTION
+#define LEGO_SERVO_RES      8    // Bit
+#endif
 
-#define LEGO_SERVO_LOW  0
-#define LEGO_SERVO_HIGH (long)(pow(2, SERVO_RES) - 1)
+#ifndef DC_PWM_FREQUENCY
+#define LEGO_SERVO_FREQ     2500  // Hz
+#endif
 
-template<uint8_t PWM_CHANNELS_COUNT>
-class EspArduinoHalDriver
+constexpr static unsigned DC_SPEED_MAX = (1 << LEGO_SERVO_RES) - 1;
+
+class lego_servo_driver_t
 {
-protected:
-    EspArduinoHalDriver()
-    {
+    public:
+        lego_servo_driver_t(uint8_t pin_a, uint8_t pin_b, uint8_t pwm_channel) 
+            : _pin_a(pin_a), _pin_b(_pin_b), _pwm_channel(pwm_channel)
+        { }
 
-    }
-
-    inline void init_pin(uint8_t pin, uint8_t direction) {
-        pinMode(pin, direction);
-    }
-
-    inline void init_pwm_pin(uint8_t pin, uint8_t& channel = -1) {
-        if (channel == -1)
-        {
-            channel = get_or_assign_channel(pin);
+        void init() {
+            pinMode(_pin_a, OUTPUT);
+            pinMode(_pin_b, OUTPUT);  
         }
-        ledcAttachPin(pin, channel);
-    }
 
-    inline void write(uint8_t pin, int value, uint8_t& channel = -1) {
-        if (channel == -1)
+        bool attach(bool attach = true)
         {
-            channel = get_or_assign_channel(pin);
-        }
-        ledcWrite(channel, value);
-    }
-
-    inline void write(uint8_t pin, bool value) {
-        digitalWrite(pin, value);
-    }
-
-
-
-private:
-    static uint8_t pwm_channels[PWM_CHANNELS_COUNT];
-
-    int find_channel(uint8_t pin) {
-        for (auto i=0; i<PWM_CHANNELS_COUNT; ++i) {
-            if (pwm_channels[i] == pin) {
-                return i;
+            if (_state == middle) {
+                return true;
             }
-        }
-    }
 
-    int get_or_assign_channel(uint8_t pin) {
-        for (auto i=0; i<PWM_CHANNELS_COUNT; ++i) {
-            if (pwm_channels[i] == pin) {
-                return i;
-            }
-        }
-    }
-};
-
-class LegoServo
-{
-public:
-    LegoServo(uint8_t pin_a, uint8_t pin_b, uint8_t pwm_channel) 
-    : _pin_a(pin_a), _pin_b(_pin_b), _pwm_channel(pwm_channel)
-    { }
-
-    void init() {
-        pinMode(_pin_a, OUTPUT);
-        pinMode(_pin_b, OUTPUT);  
-    }
-
-    template<int16_t TMin, int16_t TMax>
-    inline void write(int value)
-    {
-        //auto value = map();
-        write(value);
-    }
-
-    void write(int value)
-    {
-        if (value == 0) 
-        {
-            if (_direction == backwards) {
-                ledcDetachPin(_pin_a);
-            } 
-            else if(_direction = forward) {
+            if (!attach && _state == forward) {
                 ledcDetachPin(_pin_b);
             }
-            _direction = stop;
-            digitalWrite(_pin_a, false);
-            digitalWrite(_pin_b, false);
-        } 
-        else
-        {
-            if (_direction != forward && value < 0) {
+
+            if (!attach && _state == backwards) {
                 ledcDetachPin(_pin_a);
-                ledcAttachPin(_pin_b, _pwm_channel);
+            }
+
+            return true;
+        }
+
+        template<int16_t TMin, int16_t TMax>
+        inline void write(int speed)
+        {
+            write(map(constrain(speed, TMin, TMax), TMin, TMax, -DC_SPEED_MAX, DC_SPEED_MAX));
+        }
+
+        void write(int value)
+        {
+            if (value == 0) 
+            {
+                if (_state == backwards) {
+                    ledcDetachPin(_pin_a);
+                } 
+                else if(_state = forward) {
+                    ledcDetachPin(_pin_b);
+                }
+                _state = middle;
                 digitalWrite(_pin_a, false);
-                _direction = forward;
-            }
-            else if (_direction != backwards && value > 0) {
-                ledcDetachPin(_pin_b);
-                ledcAttachPin(_pin_a, _pwm_channel);
                 digitalWrite(_pin_b, false);
-                _direction = backwards; 
+            } 
+            else
+            {
+                if (_state != forward && value < 0) {
+                    ledcDetachPin(_pin_a);
+                    ledcAttachPin(_pin_b, _pwm_channel);
+                    digitalWrite(_pin_a, false);
+                    _state = forward;
+                }
+                else if (_state != backwards && value > 0) {
+                    ledcDetachPin(_pin_b);
+                    ledcAttachPin(_pin_a, _pwm_channel);
+                    digitalWrite(_pin_b, false);
+                    _state = backwards; 
+                }
+
+                ledcWrite(_pwm_channel, abs(value));                 
             }
-
-            ledcWrite(_pwm_channel, abs(value));                 
         }
-    }
 
-private:
-    uint8_t _pin_a, _pin_b;
-    uint8_t _pwm_channel;
-    lego_servo_dir_t _direction = stop;
+    private:
+        uint8_t _pin_a, _pin_b;
+        uint8_t _pwm_channel;
+        lego_servo_position_t _state = middle;
 };
 
-inline void lego_servo_init(const lego_servo_t& servo)
+void lego_servo_init(const lego_servo_t& servo)
 {
     pinMode(servo.pin_a, OUTPUT);
     pinMode(servo.pin_b, OUTPUT);
     ledcSetup(servo.channel, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 }
 
-inline void lego_servos_init()
+void lego_servos_init()
 {
     for (auto& servo : lego_servos) {
         lego_servo_init(servo);
@@ -139,7 +104,7 @@ inline void lego_servos_init()
 
 void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
-    if (value == 0) 
+    if (near_zero(value))
     {
         if (servo.direction == forward) 
         {
@@ -150,7 +115,7 @@ void lego_servo_write(lego_servo_t& servo, int16_t value)
             ledcDetachPin(servo.pin_b);
         }
 
-        servo.direction = stop;
+        servo.direction = middle;
         digitalWrite(servo.pin_a, false);
         digitalWrite(servo.pin_b, false);
     } 
@@ -173,10 +138,10 @@ void lego_servo_write(lego_servo_t& servo, int16_t value)
     }
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 inline void lego_servo_write(lego_servo_t& servo, int16_t value)
 {
-    lego_servo_write(servo, map(value, TMin, TMax, LEGO_SERVO_LOW, LEGO_SERVO_HIGH));
+    lego_servo_write(servo, map(constrain(value, TMin, TMax), TMin, TMax, -DC_SPEED_MAX, DC_SPEED_MAX));
 }
 
 inline void lego_servo_write(uint8_t index, int16_t output)
@@ -184,7 +149,7 @@ inline void lego_servo_write(uint8_t index, int16_t output)
     lego_servo_write(lego_servos[index], output);
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 inline void lego_servo_write(uint8_t index, int16_t output)
 {
     lego_servo_write<TMin, TMax>(lego_servos[index], output);
@@ -197,10 +162,17 @@ void lego_servos_write(int16_t* outputs, uint8_t count)
   }
 }
 
-template<short TMin, short TMax>
+template<int TMin, int TMax>
 void lego_servos_write(int16_t* outputs, uint8_t count)
 {
   for (auto i = 0; i<count; ++i) {
     lego_servo_write<TMin, TMax>(i, outputs[i]);
   }
+}
+
+void lego_servos_stop()
+{
+    for (auto& servo : lego_servos) {
+        lego_servo_write(servo, 0);
+    }
 }

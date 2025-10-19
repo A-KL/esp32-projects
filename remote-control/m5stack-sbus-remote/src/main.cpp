@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <esp_log.h>
 #include <Adafruit_INA219.h>
+#include "M5Unified.h"
 
 #include "NotoSansBold15.h"
 #include "gui.h"
@@ -89,6 +90,9 @@ void on_esp_now_message_received(const data_message_t& data) {
 
 void setup() 
 {
+    auto cfg = M5.config();
+    M5.begin(cfg);
+
   Wire.begin();
   Serial.begin(115200);
 
@@ -132,6 +136,12 @@ void loop()
   auto left_speed = 0;
   auto right_speed = 0;
 
+  M5.update();
+
+  if (M5.BtnA.wasPressed()) {
+      Serial.println("BtnA Pressed");
+  }
+
   //xboxController.onLoop();
   now_loop();
 
@@ -139,22 +149,33 @@ void loop()
   {
     Ps3.setPlayer(1);
 
-    ps_values.setText(0, "ls %d", Ps3.data.analog.stick.ly);
-    ps_values.setText(1, "rs %d", Ps3.data.analog.stick.ry);
-
     const static int dead_zone = 20;
+    
+    auto power = Ps3.data.analog.button.r2 - Ps3.data.analog.button.l2;
+    auto steer = - Ps3.data.analog.stick.lx;
+
+    if (abs(power) < dead_zone) {
+      power = 0;
+    }
+    if (abs(steer) < dead_zone) {
+      steer = 0;
+    }
+
+    ps_values.setText(0, "p %d", power);
+    ps_values.setText(1, "s %d", steer);
 
     // motor_a = wheel(y + x)
     // motor_b = wheel(y - x)
-    left_speed = constrain((Ps3.data.analog.stick.ry + Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
-    right_speed = constrain((Ps3.data.analog.stick.ry - Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
+    
+    left_speed = constrain(power - steer, -255, 255); // constrain((Ps3.data.analog.stick.ry + Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
+    right_speed = constrain(power + steer, -255, 255); // constrain((Ps3.data.analog.stick.ry - Ps3.data.analog.stick.rx), -128, 128) / 128 * 255;
 
     // if (abs(Ps3.data.analog.stick.ly) > dead_zone) {
     //   left_speed = map(Ps3.data.analog.stick.ly, -128, 128, -255, 255);
     // }
 
     // if (abs(Ps3.data.analog.stick.ry) > dead_zone) {
-    //   right_speed = map(Ps3.data.analog.stick.ry, 128, -128, 255, -255);
+    //   right_speed = map(Ps3.data.analog.stick.ry, -128, 128, 255, -255);
     // }
   }
   else
@@ -213,7 +234,7 @@ void loop()
     auto power_mW = ina219_output.getPower_mW();
     auto load_voltage = bus_voltage + (shunt_voltage / 1000);
 
-    power_values.setText(0, "%.2f V", bus_voltage);
+    power_values.setText(0, "%.2f v", bus_voltage);
     power_values.setText(1, "%.2f mA", current_mA);
     power_values.setText(2, "%.2f mW", power_mW);
   }
@@ -248,9 +269,9 @@ void loop()
   }
 
   // Sound
-  if (left_speed > 0 && right_speed < 0) {
-    sound_on(true);
-  }
+  // if (left_speed > 0 && right_speed < 0) {
+  //   sound_on(true);
+  // }
 
   // Motor
   if (motor_driver_connected) 
@@ -267,10 +288,10 @@ void loop()
   else if (motor_driver_v2_connected)
   {
     goPlus.Motor_write_speed(MOTOR_NUM0, -left_speed/2);
-    goPlus.Motor_write_speed(MOTOR_NUM1, right_speed/2);
+    goPlus.Motor_write_speed(MOTOR_NUM1, -right_speed/2);
 
     motors_values.setText(0, "l %d", -left_speed/2);
-    motors_values.setText(1, "r %d", right_speed/2);
+    motors_values.setText(1, "r %d", -right_speed/2);
 
     goPlus.Servo_write_angle(SERVO_NUM0,  map(left_speed, -255, 255, 0, 180));
     goPlus.Servo_write_angle(SERVO_NUM1,  map(right_speed, -255, 255, 0, 180)); 
@@ -280,7 +301,7 @@ void loop()
     motors_values.setText(0, "l ---");
     motors_values.setText(1, "r ---");
 
-    sound_on(false);
+    //sound_on(false);
   }
 
   //Speaker.update();

@@ -1,80 +1,26 @@
-#include <math.h>
+#include <lgfx/v1/platforms/sdl/Panel_sdl.hpp>
 
-#include "gui.h"
-#include "audio.h"
+#if defined ( SDL_h_ )
 
-enum audio_input_t {
-    ADC = 0,
-    I2S = 1, 
-    Optical = 3
-};
+void setup(void);
+void loop(void);
 
-//#define DEBUG_OUTPUT
-
-audio_input_t audio_input = I2S;
-
-void IRAM_ATTR OnLeftButtonPressed()
+__attribute__((weak))
+int user_func(bool* running)
 {
-    log_w("Left button Pressed!");
-  //digitalWrite(LED_pin, !digitalRead(LED_pin));
+  setup();
+  
+  do {
+    loop();
+  } 
+  while (*running);
+
+  return 0;
 }
 
-void IRAM_ATTR OnRightButtonPressed()
+int main(int, char**)
 {
-    log_w("Right button Pressed!");
-  //digitalWrite(LED_pin, !digitalRead(LED_pin));
+  return lgfx::Panel_sdl::main(user_func);
 }
 
-void buttons_init(){
-    pinMode(0, INPUT_PULLUP);
-    pinMode(35, INPUT_PULLUP);
-    attachInterrupt(0, OnLeftButtonPressed, RISING);
-    attachInterrupt(35, OnRightButtonPressed, RISING);
-}
-
-void setup() 
-{
-    Serial.begin(115200);
-
-    delay(1000);
-
-    gui_init();
-    gui_set_input((int)audio_input);
-
-    envelope_init(right_envelope_context, I2S_SAMPLE_RATE);
-    envelope_init(left_envelope_context, I2S_SAMPLE_RATE);
-
-    i2s_install();
-    i2s_setpin();
-    i2s_start(I2S_PORT);
-
-    buttons_init();
-
-    xTaskCreate(gui_update_task, "gui_task", 2048, NULL, 1, NULL);
-}
-
-void loop() 
-{
-#ifdef DEBUG_OUTPUT
-    auto rangelimit = 3000;
-    Serial.print(rangelimit * -1);
-    Serial.print(" ");
-    Serial.print(rangelimit);
-    Serial.print(" ");
 #endif
-
-    switch (audio_input)
-    {
-        case ADC:
-            update_analog();
-            break;
-        
-        case I2S:
-            update_i2s();
-        
-        default:
-            break;
-    }
-
-    // vTaskDelay(1000 / portTICK_RATE_MS);  // otherwise the main task wastes half of the cpu cycles
-}

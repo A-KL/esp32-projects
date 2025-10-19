@@ -11,8 +11,8 @@ void ui_main_screen_init(void);
 extern lv_obj_t *ui_screen;
 extern lv_obj_t *ui____initial_actions0;
 
-LV_FONT_DECLARE( ui_font_conthraxfont26);
-LV_FONT_DECLARE( ui_font_conthraxfont48);
+LV_FONT_DECLARE(ui_font_conthraxfont26);
+LV_FONT_DECLARE(ui_font_conthraxfont48);
 
 void ui_init(void);
 

@@ -92,6 +92,11 @@ void loopControls()
 	}  
 }
 
+void log_init()
+{
+  Serial.begin(115200);
+}
+
 void setupAudio()
 { 
     //initDac();

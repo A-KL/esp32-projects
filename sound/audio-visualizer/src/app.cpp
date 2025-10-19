@@ -1,6 +1,3 @@
-// #include <limits.h>
-// #include <sstream>
-
 #ifdef ARDUINO
     #include <Arduino.h>
     #ifdef ESP_PLATFORM
@@ -21,11 +18,14 @@
 #include <LGFX_TFT_eSPI.h>
 #include <LGFX_AUTODETECT.hpp>
 
+static MainForm form({ 0, 0, 320, 240 });
+
 #if defined ( SDL_h_ )
-  #include "SDLCanvas.h"
+  #include "LovyanGFXCanvas.h"
+  #include "hal_app.h"
 
   static TFT_eSPI lcd ( 320, 240, 2 );
-  static SDLCanvas canvas(&lcd);
+  static LovyanGFXCanvas canvas(lcd);
 #else
   #include "TFTCanvas.h"
   #include "Network.h"
@@ -42,10 +42,10 @@
 
 void setup() 
 {
+  log_init();
+
   static auto _selectedAudioSource = 0;
   static auto _selectedAudioTarget = 1;
-
-  Serial.begin(115200);
 
   canvas.Init(Color::White);
   canvas.SetFont(0, 1);

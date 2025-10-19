@@ -16,8 +16,6 @@ static double vImag_r[SAMPLES];
 
 static unsigned int samplig_rate = 44100;
 
-MainForm form({ 0, 0, 320, 240 });
-
 void loopUI(void * args)
 {
     auto canvas = *(TFTCanvas*)args;

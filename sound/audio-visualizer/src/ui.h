@@ -3,8 +3,20 @@
 #include <arduinoFFT.h>
 #include "bands.h"
 
+MainForm form({ 0, 0, 320, 240 });
+
+#define SAMPLES 512
+
 static TaskHandle_t uiHandle;
 static xQueueHandle audioFrameQueue = xQueueCreate(SAMPLES, sizeof(AudioFrame));
+
+static double vReal_l[SAMPLES];
+static double vReal_r[SAMPLES];
+
+static double vImag_l[SAMPLES];
+static double vImag_r[SAMPLES];
+
+static unsigned int samplig_rate = 44100;
 
 void loopUI(void * args)
 {
@@ -147,12 +159,12 @@ float binToFreq(int index, unsigned int sample_count, unsigned int samplig_rate 
 void startUI(void * args)
 {
   xTaskCreatePinnedToCore(
-                    loopUI,  /* Task function. */
+                    loopUI,         /* Task function. */
                     "UI",           /* name of task. */
                     20000,          /* Stack size of task */
                     args,           /* parameter of the task */
                     1,              /* priority of the task */
-                    &uiHandle,/* Task handle to keep track of created task */
+                    &uiHandle,      /* Task handle to keep track of created task */
                     0);             /* pin task to core 0 */                  
   delay(500);
 }

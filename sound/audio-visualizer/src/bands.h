@@ -1,3 +1,5 @@
+#pragma once
+
 #define BANDS_COUNT 30
 
 struct bandData

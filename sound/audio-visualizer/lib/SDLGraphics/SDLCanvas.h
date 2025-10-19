@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseGraphics/Canvas.h"
+#include <Canvas.h>
 
 class SDLCanvas : public Canvas<Color>
 {

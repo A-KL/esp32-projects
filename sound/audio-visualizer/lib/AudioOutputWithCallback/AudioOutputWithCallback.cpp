@@ -1,3 +1,7 @@
+#include "AudioFrame.h"
+#include "AudioOutputI2S.h"
+#include "AudioOutputSPDIF.h"
+
 #include "AudioOutputWithCallback.h"
 
 void AudioOutputWithCallback::SampleCallback(SampleDelegate delegate) 

@@ -18,12 +18,14 @@
 #include "AudioFrame.h"
 #include "RadioStation.h"
 
-//#include "TFT_eSPI.h"
 #include <LGFX_TFT_eSPI.h>
 #include <LGFX_AUTODETECT.hpp>
 
 #if defined ( SDL_h_ )
-static TFT_eSPI lcd ( 320, 240, 2 );
+  #include "SDLCanvas.h"
+
+  static TFT_eSPI lcd ( 320, 240, 2 );
+  static SDLCanvas canvas(&lcd);
 #else
   #include "TFTCanvas.h"
   #include "Network.h"
@@ -33,29 +35,27 @@ static TFT_eSPI lcd ( 320, 240, 2 );
   #include "audio.h"
 
   static TFT_eSPI lcd;
+  static TFTCanvas canvas(&lcd);
 #endif
-
-TFTCanvas canvas(&lcd);
 
 //AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 
-int _selectedAudioSource = 0;
-int _selectedAudioTarget = 1;
-
 void setup() 
 {
+  static auto _selectedAudioSource = 0;
+  static auto _selectedAudioTarget = 1;
+
   Serial.begin(115200);
 
   canvas.Init(Color::White);
   canvas.SetFont(0, 1);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
-
   setupWiFi();
   setupControls();
   setupAudio();
 
-  //canvas.Clear(Color::Black);
+  canvas.Clear(Color::Black);
   startUI((void*)&canvas);
 
   while (true)

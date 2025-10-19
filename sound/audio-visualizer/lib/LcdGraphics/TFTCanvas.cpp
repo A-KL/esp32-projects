@@ -1,8 +1,10 @@
-#include "TFT_eSPI.h"
-#include "../fonts/NotoSansBold15.h"
-#include "../BaseGraphics/Color.h"
+#include <LGFX_TFT_eSPI.h>
+#include <LGFX_AUTODETECT.hpp>
 
-#include "Canvas.h"
+#include "NotoSansBold15.h"
+#include <Color.h>
+#include <Canvas.h>
+
 #include "TFTCanvas.h"
 
 void TFTCanvas::Init(const Color& color)
@@ -42,14 +44,14 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
 
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
-    if (index == 0) {
-      _tft->setFreeFont(1);
-    }
-    else {
-      _tft->setFreeFont(index);
-    }
+    // if (index == 0) {
+    //   _tft->setFreeFont(1);
+    // }
+    // else {
+    //   _tft->setFreeFont(index);
+    // }
 
-    _tft->setTextSize(size);
+    // _tft->setTextSize(size);
 }
 
 void TFTCanvas::DrawText(int x, int y, int w, int h, const char* text, const Color& color)

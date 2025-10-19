@@ -3,8 +3,6 @@
 #include <arduinoFFT.h>
 #include "bands.h"
 
-MainForm form({ 0, 0, 320, 240 });
-
 #define SAMPLES 512
 
 static TaskHandle_t uiHandle;
@@ -17,6 +15,8 @@ static double vImag_l[SAMPLES];
 static double vImag_r[SAMPLES];
 
 static unsigned int samplig_rate = 44100;
+
+MainForm form({ 0, 0, 320, 240 });
 
 void loopUI(void * args)
 {

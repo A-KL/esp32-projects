@@ -1,15 +1,13 @@
-#include "Creds.h"
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 
 #include "gui.h"
 #include "VuOutput.h"
 
-//                                                                    -> I2SStream
-//                            -> EncodedAudioStream -> MultiOutput -|
-//                                                                    -> VuMeter
-// URLStream -> MultiOutput -|
-//                            -> MetaDataOutput
+//                                                                  |-> I2SStream
+//                           |-> EncodedAudioStream -> MultiOutput -|
+// URLStream -> MultiOutput -|                                      |-> VuMeter
+//                           |-> MetaDataOutput
 
 URLStream url(LOCAL_SSID, LOCAL_PASSWORD);
 

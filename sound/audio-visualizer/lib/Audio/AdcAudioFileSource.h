@@ -1,13 +1,12 @@
-#ifndef _ADCAUDIOFILESOURCE_H
-#define _ADCAUDIOFILESOURCE_H
-
-#include <Arduino.h>
-#include "AudioStatus.h"
+#pragma once
 
 #include <driver/i2s.h>
 #include <driver/adc.h>
 
-class AdcAudioFileSource : public AudioFileSource{
+#include "AudioStatus.h"
+
+class AdcAudioFileSource : public AudioFileSource
+{
     public:
         AdcAudioFileSource(const i2s_port_t port = I2S_NUM_0, int samples = 1024, unint Frequency = 44100) :
             _port(port)
@@ -49,5 +48,3 @@ class AdcAudioFileSource : public AudioFileSource{
         int16_t samples[samples];
 
 };
-
-#endif

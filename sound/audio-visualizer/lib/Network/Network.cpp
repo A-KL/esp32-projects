@@ -1,19 +1,18 @@
 #include <WiFi.h>
 
 #include "Network.h"
-#include "Creds.h"
 
 void setupWiFi()
 {
   WiFi.disconnect();
   WiFi.softAPdisconnect(true);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   int i = 0;
 
   Serial.print("WiFi [Connecting \'");
-  Serial.print(SSID);
+  Serial.print(WIFI_SSID);
   Serial.println("\']");
 
   while (WiFi.status() != WL_CONNECTED) 

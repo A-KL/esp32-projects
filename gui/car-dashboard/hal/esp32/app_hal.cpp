@@ -12,7 +12,7 @@
 #ifdef LCD_USB_QSPI_DREVER
 #include "rm67162.h"
 #else
-#include "esp_lcd.h"
+#include "st7789.h"
 #endif
 
 #include "app_hal.h"
@@ -68,16 +68,11 @@ void hal_display_flush_cb(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
 #ifdef LCD_USB_QSPI_DREVER
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
-    lcd_PushColors(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
+    lcd_display(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
     lv_disp_flush_ready(disp);
 #else
-    lcd_PushColors(disp->user_data, area->x1, area->y1, area->x2, area->y2, (uint16_t *)&color_p->full);
+    lcd_display(disp->user_data, area->x1, area->y1, area->x2, area->y2, (uint16_t *)&color_p->full);
 #endif
-}
-
-static uint32_t hal_lvgl_timer_tick_get_cb(void) 
-{ 
-  return millis(); 
 }
 
 static void hal_timer_tick(void * pvParameters)
@@ -164,7 +159,7 @@ void hal_setup(void)
   delay(1000);
   
 #ifdef LCD_USB_QSPI_DREVER
-  rm67162_init();
+  lcd_init();
   lcd_setRotation(1);
 #endif
 
@@ -197,8 +192,6 @@ void hal_setup(void)
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, LVGL_LCD_BUF_SIZE);
 
   /*Initialize the display*/
-
-
   lv_disp_drv_init(&disp_drv);
 
   /*Change the following line to your display resolution*/

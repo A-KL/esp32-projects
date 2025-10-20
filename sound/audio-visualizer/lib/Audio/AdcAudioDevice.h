@@ -3,7 +3,7 @@
 class AdcAudioDevice
 {
 public: 
-  AdcAudioDevice(float real[], float img[], int size = 512, uint f = 44100, int pin = 36) :
+  AdcAudioDevice(float real[], float img[], int size = 512, int f = 44100, int pin = 36) :
     _mutex(xSemaphoreCreateMutex()),
     _real_l(real),
     _img_l(img),

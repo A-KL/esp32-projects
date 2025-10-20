@@ -92,7 +92,7 @@ static void lcd_send_cmd(uint32_t cmd, uint8_t *dat, uint32_t len)
 #endif
 }
 
-void rm67162_init(void)
+void lcd_init(void)
 {
     pinMode(TFT_CS, OUTPUT);
     pinMode(TFT_RES, OUTPUT);
@@ -193,31 +193,25 @@ void lcd_address_set(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
     }
 }
 
-void lcd_fill(uint16_t xsta,
-              uint16_t ysta,
-              uint16_t xend,
-              uint16_t yend,
+void lcd_fill(uint16_t x0,
+              uint16_t y0,
+              uint16_t x1,
+              uint16_t y1,
               uint16_t color)
 {
 
-    uint16_t w = xend - xsta;
-    uint16_t h = yend - ysta;
+    uint16_t w = x1 - x0;
+    uint16_t h = y1 - y0;
     uint16_t *color_p = (uint16_t *)ps_malloc(w * h * 2);
     if (!color_p) {
         return;
     }
     memset(color_p, color, w * h * 2);
-    lcd_PushColors(xsta, ysta, w, h, color_p);
+    lcd_display(x0, y0, w, h, color_p);
     free(color_p);
 }
 
-void lcd_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
-{
-    lcd_address_set(x, y, x + 1, y + 1);
-    lcd_PushColors(&color, 1);
-}
-
-void lcd_PushColors(uint16_t x,
+void lcd_display(uint16_t x,
                     uint16_t y,
                     uint16_t width,
                     uint16_t high,
@@ -271,7 +265,7 @@ void lcd_PushColors(uint16_t x,
 #endif
 }
 
-void lcd_PushColors(uint16_t *data, uint32_t len)
+void lcd_display(uint16_t *data, uint32_t len)
 {
 #if LCD_USB_QSPI_DREVER == 1
     bool first_send = 1;
@@ -315,6 +309,12 @@ void lcd_PushColors(uint16_t *data, uint32_t len)
     SPI.endTransaction();
     TFT_CS_H;
 #endif
+}
+
+void lcd_drawPoint(uint16_t x, uint16_t y, uint16_t color)
+{
+    lcd_address_set(x, y, x + 1, y + 1);
+    lcd_display(&color, 1);
 }
 
 void lcd_sleep()

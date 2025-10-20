@@ -2,6 +2,16 @@
 
 #include <types.h>
 
+/* Generic */
+
+#define WIFI_ENABLED
+#define HAS_BLE
+#define LED_PIN 8
+
+/* Debug */
+// #define OUTPUT_SERVOS_DEBUG
+// #define INPUT_ESP_NOW_DEBUG
+
 /* Inputs */
 
 /* ADC  */

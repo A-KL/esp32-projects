@@ -2,7 +2,6 @@
 
 #include <WiFi.h>
 
-//#include <sbus.h>
 #include <esp_now.h>
 #include <esp32-hal-log.h>
 
@@ -105,13 +104,17 @@ void enow_on_received(const uint8_t * mac, const uint8_t *data, int len)
 
 void enow_init() 
 {
+#ifndef WIFI_ENABLED
+  return;
+#endif
+
   if (esp_now_init() != ESP_OK) 
   {
     log_e("ESP-NOW Initializing...FAILED");
     return;
   }
 
-  queue_init(enow_input_queue);
+  queue_init(enow_input_queue, 10);
 
   esp_now_register_recv_cb(esp_now_recv_cb_t(enow_on_received));
 
@@ -120,12 +123,14 @@ void enow_init()
 
 uint8_t enow_receive(int16_t* outputs)
 {
+#ifndef WIFI_ENABLED
+  return 0;
+#endif
     static enow_message_t data;
 
     if (queue_receive(enow_input_queue, data))
     {
           memcpy(outputs, data.channels, sizeof(data));
-
           return sizeof(data.channels) / sizeof(unsigned short);
     }
 

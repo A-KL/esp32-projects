@@ -7,26 +7,41 @@
 #include "FS.h"
 #include <LittleFS.h>
 
-#ifndef STORAGE_DEFAULT_CONFIG
-#define STORAGE_DEFAULT_CONFIG "/default_v2.json"
+#ifndef DEVICE_ID
+#error "Device-ID is not defined!"
 #endif
 
-inline void storage_init() 
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+#define CONCAT2(a, b) /a.b
+#define CONCAT(a, b) CONCAT2(a, b)
+
+#ifndef DEVICE_CONFIG_FILE
+// #define DEVICE_CONFIG_FILE_FORMAT(x) QUOTE("/config_ ## x ## .json")
+// #define DEVICE_CONFIG_FILE DEVICE_CONFIG_FILE_FORMAT(qwewq)
+#define DEVICE_CONFIG_FILE QUOTE(CONCAT(DEVICE_ID, json)) 
+// "/default_v2.json"
+#endif
+
+#include <serialize.h>
+
+void storage_init() 
 {
   if (!LittleFS.begin(true)) {
-    log_e("[STORAGE] An error has occurred while mounting LittleFS");
+    log_e("An error has occurred while mounting LittleFS");
   } else {
-    log_i("[STORAGE] LittleFS mounted successfully");
+    log_i("LittleFS mounted successfully");
   }
 }
 
-String setting_read_key(const String& key, const char* fileName = "/default.json")
+String setting_read_key(const String& key, const char* fileName)
 {
     File file = LittleFS.open(fileName, FILE_READ);
 
     if (!file)
     {
-        log_e("[STORAGE] There was an error opening '%s' file", "/default_v2.json");
+        log_e("[STORAGE] There was an error opening '%s' file", fileName);
         file.close();
         return "";
     }
@@ -49,20 +64,22 @@ String setting_read_key(const String& key, const char* fileName = "/default.json
     return result;
 }
 
-bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFAULT_CONFIG)
+bool settings_load(global_config_t& config, const char* file_name = DEVICE_CONFIG_FILE)
 {
+    log_i("Loading json configuration from %s", file_name);
+
     File file = LittleFS.open(file_name, FILE_READ);
     if (!file) {
-        log_e("[STORAGE] There was an error opening %s file", file_name);
+        log_e("[Error] There was an error opening %s file", file_name);
         file.close();
         return false;
     }
     
-    StaticJsonDocument<2048> doc;
+    StaticJsonDocument<4048> doc;
     DeserializationError error = deserializeJson(doc, file);
 
     if (error) {
-        log_e("[STORAGE] There was an error deserializing json from %s", file_name);
+        log_e("[Error] There was an error deserializing json: %s", error.c_str());
         doc.clear();
         file.close();
         return false;
@@ -71,102 +88,43 @@ bool settings_load(global_config_t& config, const char* file_name = STORAGE_DEFA
     auto root = doc.as<JsonObject>();
 
     for (JsonPair kv : root) {
-        auto& input_configs = config[kv.key().c_str()];
+
+        auto key = to_enum<input_type_t>(kv.key().c_str(), input_type_strings);
+        auto& input_configs = config[key];
         auto values = kv.value().as<JsonArray>();
 
-        log_i("[STORAGE] Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
+        log_i("Found %d configuration(s) for %s:", values.size(), kv.key().c_str());
 
-        for (auto value : values) {
+        for (const auto& value : values) {
             input_config_t config;
             config.in_channel = value["in_ch"].as<short>();
             config.out_channel = value["out_ch"].as<short>();
-            config.out_type = string_to_output_type(value["out_type"].as<String>());
+            config.out_type = to_enum<output_type_t>(value["out_type"].as<String>(), output_type_strings);
             input_configs.push_back(config);
 
-            log_d("[STORAGE] %d (in_ch:%d\tout_type:%d\tout_ch:%d)", kv.key().c_str(), config.in_channel, config.out_type, config.out_channel);
+            log_d(" - %s (in_ch:%d\tout_type:%d\tout_ch:%d)", kv.key().c_str(), config.in_channel, config.out_type, config.out_channel);
         }
     }
 
     doc.clear();
     file.close();
 
-    log_i("Configuration loading...\tDONE");
+    log_i("Configuration loaded!");
 
     return true;
 }
 
-void settings_map_inputs(global_config_t& configs, const String input, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, uint8_t inputs_count)
+void settings_map_inputs(global_config_t& configs, const input_type_t input_type, const int16_t* inputs, const output_type_t output_type, int16_t* outputs, const uint8_t inputs_count)
 {
     if (inputs_count == 0) {
         return;
     }
-    for (auto& config : configs[input])
-    {
-        if (config.out_type == output_type)
-        {
+    for (const auto& config : configs[input_type]) {
+        if (config.out_type == output_type) {
             outputs[config.out_channel] = inputs[config.in_channel];
         }
     }
 }
-
-// bool settings_load(motor_config_t motors[], const int count)
-// {
-//     File file = LittleFS.open("/default.json", FILE_READ);
-//     if (!file)
-//     {
-//         Serial.println("There was an error opening default.json file");
-//         file.close();
-//         return false;
-//     }
-    
-//     StaticJsonDocument<512> doc;
-//     DeserializationError error = deserializeJson(doc, file);
-
-//     if (error) {       
-//         doc.clear();
-//         file.close();
-//         return false;
-//     }
-
-//     auto root = doc.as<JsonObject>();
-//     auto motors_json = root["motors"].as<JsonArray>();
-
-//     if (count > motors_json.size())
-//     {
-//         Serial.print("Configuration doesn't cover all motors: ");
-//         Serial.println(motors_json.size());
-//         file.close();
-//         return false;
-//     }
-
-//     auto i = 0;
-
-//     for (JsonVariant motor_json : motors_json) 
-//     {
-//         motors[i].mode = motor_json["mode"].as<motor_mode_t>();
-//         motors[i].inverted = motor_json["inv"].as<bool>();
-//         motors[i].input_channel =  motor_json["ch"].as<int>();
-
-//         auto input_type_str = motor_json["type"].as<String>();
-//         auto input_type_iter = drive_input_map.find(input_type_str);
-
-//         if (input_type_iter == drive_input_map.end())
-//         {
-//             Serial.print("Unable to map value: ");
-//             Serial.println(input_type_str);
-//             //log_e("Netif Get IP Failed!");
-//             file.close();
-//             return false;
-//         }
-
-//         motors[i].input_type = input_type_iter->second;
-
-//         i++;
-//     }
-
-//     file.close();
-//     return true;
-// }
 
 void settings_save(const char* fileName, uint8_t *data, size_t len, size_t index, size_t total)
 {

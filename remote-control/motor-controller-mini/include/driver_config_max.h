@@ -2,6 +2,10 @@
 
 #include <types.h>
 
+/* Debug */
+
+// #define OUTPUT_SERVO_DEBUG
+
 /* Inputs */
 
 /* ADC */
@@ -17,25 +21,25 @@ const auto sbus_serial = &Serial1;
 /* Outputs */
 
 /* PWM */
-const uint8_t servos_pins[] = { 7, 14, 15, 16, 17, 18 };
+const uint8_t servos_pins[] = { 7, 14, 15, 16 }; //, 17, 18
 
 /* LEGO */
 lego_servo_t lego_servos[] = {
-    { 1, 2, 8 }, //a, b, channel
-    { 3, 4, 9 }  //a, b, channel
+    { 1, 2, 4 }, //a, b, channel
+    { 3, 4, 5 }  //a, b, channel
 };
 
 /* Motors */
 motor_config_t motors[] = {
-    { motor_mode_t::a_b_en, { 40, 39, 41, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
-    { motor_mode_t::a_b_en, { 42, 45,  6, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 40, 39, 41, -1, -1, 6 } }, //a, b, en, pwm_a, pwm_b, pwm_en
+    { dc_mode_t::a_b_en, { 42, 45,  6, -1, -1, 7 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
 /* Misc */
 
-const uint8_t switch_input_button = 13;
+// const uint8_t switch_input_button = 13;
 
-const uint8_t led_output = -1;
-const uint8_t rgb_output = 21;
+// const uint8_t led_output = -1;
+// const uint8_t rgb_output = 21;
 
-const bool enable_lcd = true; // i2c 8 and 9
+// const bool enable_lcd = true; // i2c 8 and 9

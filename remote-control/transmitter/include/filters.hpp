@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include <config_esp32.hpp>
 #include <ResponsiveAnalogRead.h>
 
 #ifdef __cplusplus

@@ -25,7 +25,7 @@ uint8_t adc_receive(int16_t* outputs)
   }
 
 #ifdef INPUT_ADC_DEBUG
-  trace_values("ADC: ", outputs, adc_inputs_count);
+  log_d_values("ADC: ", outputs, adc_inputs_count);
 #endif
 
   return changed;

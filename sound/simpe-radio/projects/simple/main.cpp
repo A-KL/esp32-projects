@@ -14,14 +14,14 @@ void setup(){
   
   //nfc.addNotifyAudioChange(i2s);
   // convert 16 bits to 32, you could also change the gain
-  nfc.begin(16, 32);
+  nfc.begin(16, I2S_BPS);
   // setup i2s
   auto config = i2s.defaultConfig(TX_MODE);
   // you could define e.g your pins and change other settings
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
   config.pin_data = I2S_SD;
-  config.bits_per_sample = 32;
+  config.bits_per_sample = I2S_BPS;
 
   i2s.begin(config);
 

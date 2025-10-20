@@ -8,7 +8,7 @@
  
 #include "AudioTools.h"
 
-AudioInfo info(48000, 2, 16); //48000
+AudioInfo info(I2S_SAMPLE_RATE, 2, I2S_BPS);
 
 SineWaveGenerator<int16_t> sineWave(32000);          // subclass of SoundGenerator with max amplitude of 32000
 GeneratedSoundStream<int16_t> sound(sineWave);       // Stream generated from sine wave
@@ -23,7 +23,7 @@ void setup(void) {
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Error);
 
   //nfc.addNotifyAudioChange(out); 
-  nfc.begin(16, 32);
+  nfc.begin(16, I2S_BPS);
 
   // start I2S
   Serial.println("starting I2S...");
@@ -33,7 +33,7 @@ void setup(void) {
   config.pin_ws = I2S_WS;
   config.pin_bck = I2S_BCK;
   config.pin_data = I2S_SD;
-  config.bits_per_sample = 32;
+  config.bits_per_sample = I2S_BPS;
 
   out.begin(config);
 
@@ -42,7 +42,6 @@ void setup(void) {
   Serial.println("started...");
 }
 
-// Arduino loop - copy sound to out 
 void loop() {
   copier.copy();
 }

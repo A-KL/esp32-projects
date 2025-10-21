@@ -29,9 +29,9 @@ public:
         TRACED();
         cfg.channels = channels;
 
-        log_w("CH: %d", cfg.channels);
-        log_w("SR: %d", cfg.sample_rate);
-        log_w("BPS: %d", cfg.bits_per_sample);
+        LOGW("CH: %d", cfg.channels);
+        LOGW("SR: %d", cfg.sample_rate);
+        LOGW("BPS: %d", cfg.bits_per_sample);
 
         return begin();
     }
@@ -82,9 +82,9 @@ public:
         _left_envelope_context);
 
         //LOGD("Results. Left: %f Right: %f", 
-        log_d("Results. Left: %f Right: %f",
-          _left_envelope_context.envelope_out,
-          _right_envelope_context.envelope_out);
+        // LOGD("Results. Left: %f Right: %f",
+        //   _left_envelope_context.envelope_out,
+        //   _right_envelope_context.envelope_out);
 
       return len;
     }

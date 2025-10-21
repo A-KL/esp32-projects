@@ -140,11 +140,11 @@ private:
     UILabel rightTextValue;
 
     UILabel icons[6] {
-        {{ 0, 0, 50, 18 },                                 "COAX", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2, 0, 42, 18 },                            "AUX",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2, 0, 42, 18 },                   "Web",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2, 0, 50, 18 },          "LINE", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2, 0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 0,                                          0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2,                                     0, 42, 18 }, "AUX",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2,                            0, 42, 18 }, "Web",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
     };
 

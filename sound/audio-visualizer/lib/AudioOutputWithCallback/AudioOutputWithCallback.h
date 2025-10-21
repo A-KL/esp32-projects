@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AudioFrame.h"
+
 typedef void (*SampleDelegate)(const AudioFrame& frame);
 
 class AudioOutputWithCallback : public AudioOutput

@@ -1,8 +1,6 @@
 #pragma once
 
-#define BANDS_COUNT 30
-
-struct bandData
+struct band_data_t
 {  
   int start;
   int witdth;
@@ -21,7 +19,7 @@ struct bandData
   }
 };
 
-bandData bands[BANDS_COUNT] = {
+band_data_t bands[FTT_BANDS_COUNT] = {
     {2, 1, 0, 0, 0},
     {3, 1, 0, 0, 0},
     {4, 1, 0, 0, 0},

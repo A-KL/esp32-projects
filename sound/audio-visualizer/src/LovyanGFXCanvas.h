@@ -25,6 +25,11 @@ public:
 		}
 	}
 
+	void LoadFont(const uint8_t array[])
+	{
+		_display->loadFont(array);
+	}
+
 	void DrawPoint(int x, int y, const Color& color)
 	{
 		_display->drawPixel(x, y, (unsigned short)color);
@@ -55,26 +60,7 @@ public:
 	 void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
    {
 			_display->setTextColor((unsigned short)color);
-
-			int16_t  x0=0, y0=0;
-			int16_t  x1, y1;
-			uint16_t w1, h1;
-
-			//_tft->getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
-
-			if (w > w1)
-			{
-				x += (w - w1) / 2.0;
-			}
-
-			if (h > h1)
-			{
-				y += (h - h1) / 2.0 - 1;
-			}
-
-			_display->setCursor(x, y + h1);
-
-			_display->println(text);
+			_display->drawCenterString(text, x + w/2, y + h/6);
 	 }
 
 	 void SetFont(int index, unsigned char size)
@@ -101,7 +87,7 @@ public:
 
 	inline unsigned int Bpp() const
 	{
-		return 24;
+		return 16;
 	}
 
 	inline void Clear(const Color& color)

@@ -12,42 +12,45 @@
 #include "Color.h"
 #include "Canvas.h"
 #include "MainForm.h"
-#include "AudioFrame.h"
 #include "RadioStation.h"
 
 #include <LGFX_TFT_eSPI.h>
 #include <LGFX_AUTODETECT.hpp>
 
-static MainForm form({ 0, 0, 320, 240 });
+static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 
 #if defined ( SDL_h_ )
   #include "LovyanGFXCanvas.h"
   #include "hal_app.h"
 
-  static TFT_eSPI lcd ( 320, 240, 2 );
+  static TFT_eSPI lcd ( TFT_WIDTH, TFT_HEIGHT, 2 );
   static LovyanGFXCanvas canvas(lcd);
 #else
   #include "TFTCanvas.h"
   #include "Network.h"
 
   //#include "AdcAudioDevice.h"
-  #include "ui.h"
+  #include "gui.h"
   #include "audio.h"
 
   static TFT_eSPI lcd;
   static TFTCanvas canvas(&lcd);
+
+  //AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 #endif
 
-//AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
+#if (TFT_HEIGHT > 320)
+    #include "Orbitron_Bold_12.h"
+#else
+    #include "NotoSansBold15.h"
+#endif
 
 void setup() 
 {
   log_init();
 
-
-
   canvas.Init(Color::White);
-  canvas.SetFont(0, 1);
+  canvas.LoadFont(NotoSansBold15);
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
   setupWiFi();
@@ -55,7 +58,10 @@ void setup()
   setupAudio();
 
   canvas.Clear(Color::Black);
-  startUI((void*)&canvas);
+
+  form.Update(canvas);
+
+ // startUI((void*)&canvas);
 }
 
 void loop() 
@@ -73,4 +79,6 @@ void loop()
     loopAudio();
     loopControls();
   }
+
+  form.Update(canvas);
 }

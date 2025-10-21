@@ -1,6 +1,7 @@
 #pragma once
 
 #include <arduinoFFT.h>
+#include "AudioFrame.h"
 #include "bands.h"
 
 #define SAMPLES 512
@@ -149,10 +150,10 @@ void loopUI(void * args)
     vTaskDelete(NULL);
 }
 
-float binToFreq(int index, unsigned int sample_count, unsigned int samplig_rate = 44100)
-{
-  return index * samplig_rate / (float)sample_count;
-}
+// float binToFreq(int index, unsigned int sample_count, unsigned int samplig_rate = 44100)
+// {
+//   return index * samplig_rate / (float)sample_count;
+// }
 
 void startUI(void * args)
 {

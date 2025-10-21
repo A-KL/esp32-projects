@@ -3,6 +3,9 @@
 //#define USE_A2DP
 #define USE_I2S
 
+
+#include "AudioOutputI2S.h"
+#include "AudioOutputSPDIF.h"
 #include <AudioFileSourceBuffer.h>
 #include <AudioFileSourceICYStream.h>
 // #include <AudioGeneratorTalkie.h>
@@ -10,7 +13,7 @@
 #include <AudioOutputI2S.h>
 #include <AudioOutputI2SNoDAC.h>
 // //#include "BluetoothA2DPSource.h"
-#include "AudioOutputWithCallback.h"
+#include <AudioOutputWithCallback.h>
 
 // #include "AudioConfig.h"
 // #include "AudioTimer/AudioTimer.h"

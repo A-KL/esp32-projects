@@ -44,7 +44,7 @@ void envelope_calculate_right_left(const uint8_t* samples, const float gain, con
 
     audio_sample_t<T>* sample = NULL;
 
-    LOGI("Samples count: %d", samples_count);
+    LOGI("Samples count: %zu", samples_count);
 
     for (auto i=0; i<samples_count; i++)
     {

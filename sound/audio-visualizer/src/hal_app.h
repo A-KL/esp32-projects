@@ -1,14 +1,20 @@
 #pragma once
 
-using namespace lgfx;
+//using namespace lgfx;
 
-#include <AudioTools.h>
+#include "AudioTools.h"
+//#include "AudioTools/Communication/AudioHttp.h"
+#include "AudioTools/AudioCodecs/CodecMP3Helix.h"
+
+
 #include <AudioTools/AudioLibs/PortAudioStream.h>
 #include <AudioTools/AudioLibs/AudioRealFFT.h> // using RealFFT
 
 #include <VuOutput.h>
 
 AudioRealFFT fft; // or AudioKissFFT or others
+
+//URLStream url(WIFI_SSID, WIFI_PASSWORD);
 
 MultiOutput out_mix;
 VuMeter<int16_t> vu(AUDIO_VU_RATIO);

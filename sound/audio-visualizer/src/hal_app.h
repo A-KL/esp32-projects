@@ -1,17 +1,22 @@
 #pragma once
 
 #include "AudioTools.h"
-//#include "AudioTools/Communication/AudioHttp.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 #include "AudioTools/AudioLibs/PortAudioStream.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
-#include "AudioTools/AudioLibs/Desktop/File.h"
 
 #include <VuOutput.h>
 
+#ifdef ARDUINO
+  #include "AudioTools/Communication/AudioHttp.h"
+  URLStream in(WIFI_SSID, WIFI_PASSWORD);
+#else
+  #include "AudioTools/AudioLibs/Desktop/File.h"
+  File in("./sound/file_example_MP3_700KB.mp3");
+#endif
+
 AudioInfo info(44100, 1, 16);
 
-File file_in("./sound/file_example_MP3_700KB.mp3");
 // SineWaveGenerator<int16_t> sineWave(32000); // subclass of SoundGenerator with max amplitude of 32000
 // GeneratedSoundStream<int16_t> in(sineWave);               // Stream generated from sine wave
 
@@ -27,7 +32,7 @@ MP3DecoderHelix helix;
 EncodedAudioStream decoder(&out_mix, &helix); // output to decoder
 
 //StreamCopy copier(out, in); // copy in to out
-StreamCopy copier(decoder, file_in); // copy in to out
+StreamCopy copier(decoder, in); // copy in to out
 
 void startUI(void* args)
 {
@@ -90,6 +95,8 @@ void setupAudio()
   decoder.begin();
 
   out_mix.begin(info);
+
+  in.begin();
   // Setup sine wave
   //sineWave.begin(info, N_B4);
 }

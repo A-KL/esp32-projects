@@ -3,19 +3,19 @@
 struct band_data_t
 {  
   int start;
-  int witdth;
+  int width;
   int peak;
   int amplitude;
   int amplitude_old;
 
   inline int amplitude_avg()
   {
-    return amplitude / witdth;
+    return amplitude / width;
   }
 
   inline bool inRange(int index) const
   {
-    return (start <= index) && (index < (start + witdth));
+    return (start <= index) && (index < (start + width));
   }
 };
 

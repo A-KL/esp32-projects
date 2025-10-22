@@ -1,43 +1,43 @@
 #pragma once
 
-//using namespace lgfx;
-
 #include "AudioTools.h"
 //#include "AudioTools/Communication/AudioHttp.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
-
-
-#include <AudioTools/AudioLibs/PortAudioStream.h>
-#include <AudioTools/AudioLibs/AudioRealFFT.h> // using RealFFT
+#include "AudioTools/AudioLibs/PortAudioStream.h"
+#include "AudioTools/AudioLibs/AudioRealFFT.h"
+#include "AudioTools/AudioLibs/Desktop/File.h"
 
 #include <VuOutput.h>
 
+AudioInfo info(44100, 1, 16);
+
+File file_in("./sound/file_example_MP3_700KB.mp3");
+// SineWaveGenerator<int16_t> sineWave(32000); // subclass of SoundGenerator with max amplitude of 32000
+// GeneratedSoundStream<int16_t> in(sineWave);               // Stream generated from sine wave
+
+VuMeter<int16_t> vu(AUDIO_VU_RATIO);
+PortAudioStream out_speakers;
 AudioRealFFT fft; // or AudioKissFFT or others
 
-//URLStream url(WIFI_SSID, WIFI_PASSWORD);
+//MetaDataOutput metadata; // final output of metadata
 
 MultiOutput out_mix;
-VuMeter<int16_t> vu(AUDIO_VU_RATIO);
 
-AudioInfo info(44100, 1, 16);
-SineWaveGenerator<int16_t> sineWave(32000);               // subclass of SoundGenerator with max amplitude of 32000
-GeneratedSoundStream<int16_t> in(sineWave);               // Stream generated from sine wave
-PortAudioStream out;                                        // On desktop we use 
+MP3DecoderHelix helix;
+EncodedAudioStream decoder(&out_mix, &helix); // output to decoder
+
 //StreamCopy copier(out, in); // copy in to out
-
-StreamCopy copier(out_mix, in); // copy in to out
+StreamCopy copier(decoder, file_in); // copy in to out
 
 void startUI(void* args)
 {
 }
 
-void setupWiFi()
-{
+void setupWiFi() {
   delay(1000);
 }
 
-void setupControls()
-{
+void setupControls() {
   delay(1000);
 }
 
@@ -49,7 +49,7 @@ void fftResult(AudioFFTBase &fft)
 
     if (result.magnitude>100)
     {
-      form.equalizer.bands.setBand(0, map(result.magnitude, 0, 255, 0, 3200));
+      //form.equalizer.bands.setBand(0, map(result.magnitude, 0, 255, 0, 3200));
 
       // printf(">> %f %f => %s diff: %f\r\n", 
       //   result.frequency, 
@@ -79,35 +79,31 @@ void setupAudio()
   fft.begin(tcfg);
 
   // open output
-  auto config = out.defaultConfig();
+  auto config = out_speakers.defaultConfig();
   config.copyFrom(info);
-  out.begin(config);
+  out_speakers.begin(config);
 
   out_mix.add(vu);
-  out_mix.add(out);
+  out_mix.add(out_speakers);
   out_mix.add(fft);
+
+  decoder.begin();
 
   out_mix.begin(info);
   // Setup sine wave
-  sineWave.begin(info, N_B4);
+  //sineWave.begin(info, N_B4);
 }
 
-void selectAudio(int dest, int src)
-{
-
+void selectAudio(int dest, int src) {
 }
 
-void loopControls()
-{
-  
+void loopControls() {
 }
 
 void loopAudio()
 {
-  if (out) {
-    copier.copy();
+  copier.copy();
 
-    form.levelLeft.setValueOf(vu.value_left());
-    form.levelRight.setValueOf(vu.value_right());
-  }
+  form.levelLeft.setValueOf(vu.value_left());
+  form.levelRight.setValueOf(vu.value_right());
 }

@@ -75,10 +75,10 @@ void loop()
   form.setIcon(_selectedAudioSource + 2, 1);
 
  // while (true)
-  {
+  //{
     loopAudio();
     loopControls();
-  }
+  //}
 
   form.Update(canvas);
 }

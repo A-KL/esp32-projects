@@ -42,6 +42,11 @@ void TFTCanvas::DrawRect(int x0, int y0, int w, int h, const Color& color)
     _tft->drawRect(x0, y0, w, h, (unsigned short)color);
 }
 
+void TFTCanvas::LoadFont(const uint8_t array[])
+{
+    _tft->loadFont(array);
+}
+
 void TFTCanvas::SetFont(int index, unsigned char size)
 {
     // if (index == 0) {

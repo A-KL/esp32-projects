@@ -39,6 +39,11 @@ void onStreamChanged(const char *type, const char *value)
   }
 }
 
+void log_init()
+{
+  Serial.begin(115200);
+}
+
 void setupControls()
 {
   encoder_left.begin();
@@ -48,7 +53,7 @@ void setupControls()
 
   encoder_right.begin();
 	encoder_right.setup(readEncoderISR);
-  encoder_right.setBoundaries(0, stationsCount-1, true);
+  encoder_right.setBoundaries(0, RadioStationsCount-1, true);
   encoder_right.setEncoderValue(0);
 }
 
@@ -86,7 +91,7 @@ void selectAudio(int dest, int src)
   switch (src)
   {
     case 0:
-      radio.selectStation(Stations[stationIndex]);
+      radio.selectStation(RadioStations[stationIndex].Url);
       radio.StreamChanged = onStreamChanged;
       radio.Play(dest, src);
       radio.SampleCallback(onAudioFrameCallback);

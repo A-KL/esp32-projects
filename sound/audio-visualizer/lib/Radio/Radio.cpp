@@ -1,4 +1,3 @@
-#include "RadioStation.h"
 #include "Radio.h"
 #include "driver/i2s.h"
 
@@ -33,7 +32,7 @@ void InternetRadio::Play(int output, int input)
     switch (input)
     {
         case 0:
-            _stream = new AudioFileSourceICYStream(_station->Url);
+            _stream = new AudioFileSourceICYStream(_station);
             _stream->RegisterMetadataCB(MDCallback, (void*)"ICY");
             break;
     }

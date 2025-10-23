@@ -28,12 +28,12 @@ class InternetRadio
 public:
     InternetRadio();   
 
-    inline void selectStation(const RadioStation& station)
+    inline void selectStation(const char* station)
     {
-        _station = &station;
+        _station = station;
 
         if(_stream != NULL){
-            _stream->open(_station->Url);
+            _stream->open(_station);
         }
     }
 
@@ -91,7 +91,7 @@ private:
     bool _muted = false;
     float _gain = 1;
 
-    const RadioStation* _station;
+    const char* _station;
     
     const int _bufferSize = 16 * 1024; // buffer in byte, default 16 * 1024 = 16kb
         

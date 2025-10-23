@@ -21,6 +21,8 @@ public:
 
 	void DrawImage(int x, int y, int w, int h, const unsigned short* data);
 
+	void LoadFont(const uint8_t array[]);
+	
 	void SetFont(int index, unsigned char size);
 
 	inline int Height() const

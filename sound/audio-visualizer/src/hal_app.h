@@ -34,6 +34,14 @@ EncodedAudioStream decoder(&out_mix, &helix); // output to decoder
 //StreamCopy copier(out, in); // copy in to out
 StreamCopy copier(decoder, in); // copy in to out
 
+void log_init()
+{
+#ifdef ARDUINO
+  Serial.begin(115200);
+#endif
+  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
+}
+
 void startUI(void* args)
 {
 }
@@ -46,29 +54,16 @@ void setupControls() {
   delay(1000);
 }
 
-// display fft result
 void fftResult(AudioFFTBase &fft)
 {
-    float diff;
-    auto result = fft.result();
+    //float diff;
+    //auto result = fft.result();
+    auto d = fft.size();
 
-    if (result.magnitude>100)
+    for (auto i=1; i<31; i++)
     {
-      //form.equalizer.bands.setBand(0, map(result.magnitude, 0, 255, 0, 3200));
-
-      // printf(">> %f %f => %s diff: %f\r\n", 
-      //   result.frequency, 
-      //   result.magnitude, 
-      //   result.frequencyAsNote(diff), 
-      //   diff);
-
-        // Serial.print(result.frequency);
-        // Serial.print(" ");
-        // Serial.print(result.magnitude);  
-        // Serial.print(" => ");
-        // Serial.print(result.frequencyAsNote(diff));
-        // Serial.print( " diff: ");
-        // Serial.println(diff);
+        auto d = fft.magnitude(i);
+        form.equalizer.bands.setBand(i-1, d); //map(result.magnitude, 0, 255, 0, 3200)
     }
 }
 

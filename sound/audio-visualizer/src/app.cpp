@@ -23,7 +23,7 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
   #include "LovyanGFXCanvas.h"
   #include "hal_app.h"
 
-  static TFT_eSPI lcd ( TFT_WIDTH, TFT_HEIGHT, 2 );
+  static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, 3);
   static LovyanGFXCanvas canvas(lcd);
 #else
   #include "TFTCanvas.h"
@@ -58,10 +58,7 @@ void setup()
   setupAudio();
 
   canvas.Clear(Color::Black);
-
   form.Update(canvas);
-
- // startUI((void*)&canvas);
 }
 
 void loop() 

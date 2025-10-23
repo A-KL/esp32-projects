@@ -23,18 +23,27 @@ public:
 
 	inline void setBorderColor(const Color& color)
 	{
+		if (color == _borderColor) {
+			return;
+		}
 		_borderColor = color;
 		Invalidate();
 	}
 
 	inline void setBackgroundColor(const Color& color)
 	{
+		if (color == _backgroundColor) {
+			return;
+		}
 		_backgroundColor = color;
 		Invalidate();
 	}
 
 	inline void setBorderSize(int size)
 	{
+		if (size == _borderSize) {
+			return;
+		}
 		_borderSize = size;
 		Invalidate();
 	}

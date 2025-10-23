@@ -13,21 +13,6 @@
 #define MENU_PIN_B  02
 #define MENU_BUTTON 15
 
-RadioStation Stations[] { 
-  {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
-  {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
-  {"KPop Radio", "http://streamer.radio.co/s06b196587/listen"},
-
-  {"Classic FM", "http://media-ice.musicradio.com:80/ClassicFMMP3"},
-  {"Lite Favorites", "http://naxos.cdnstream.com:80/1255_128"},
-  {"MAXXED Out", "http://149.56.195.94:8015/steam"},
-  {"SomaFM Xmas", "http://ice2.somafm.com/christmas-128-mp3"},
-
-  {"SWISS Jazz", "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
-  {"Veronica ", "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
-};
-
-const int stationsCount = (sizeof(Stations)/sizeof(RadioStation) - 1);
 const int stationIndex = 4;
 
 AiEsp32RotaryEncoder encoder_left = AiEsp32RotaryEncoder(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 4);
@@ -89,11 +74,6 @@ void loopControls()
 	{
 
 	}  
-}
-
-void log_init()
-{
-  Serial.begin(115200);
 }
 
 void setupAudio()

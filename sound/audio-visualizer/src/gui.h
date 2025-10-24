@@ -2,6 +2,7 @@
 
 #include <arduinoFFT.h>
 #include "AudioFrame.h"
+#include "Canvas.h"
 #include "bands.h"
 
 #define SAMPLES 512
@@ -19,7 +20,7 @@ static unsigned int samplig_rate = 44100;
 
 void loopUI(void * args)
 {
-    auto canvas = *(TFTCanvas*)args;
+    auto canvas = (Canvas<Color>*)args;
 
     AudioFrame frame = {0, 0};
 
@@ -142,7 +143,7 @@ void loopUI(void * args)
         //   vTaskDelay(2);
         // }
     
-      form.Update(canvas);
+      form.Update(*canvas);
 
       vTaskDelay(pdMS_TO_TICKS(1));
     }

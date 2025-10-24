@@ -1,42 +1,36 @@
 #ifdef ARDUINO
     #include <Arduino.h>
-    #ifdef ESP_PLATFORM
-//        #include "hal_esp32.h"
-    #endif
 #else
     #include "hal_arduino.h"
 #endif
 
-#include "espressif_logo.h"
+#include <map>
 
+#ifdef ILI9341_DRIVER
+  #include "LGFX_ESP32_ILI9341.hpp"
+#endif
+
+#include <LGFX_TFT_eSPI.h>
+  
+#include "espressif_logo.h"
 #include "Color.h"
 #include "Canvas.h"
 #include "MainForm.h"
 #include "RadioStation.h"
-
-#include <LGFX_TFT_eSPI.h>
-#include <LGFX_AUTODETECT.hpp>
+#include "LovyanGFXCanvas.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 
+#include "hal_app.h"
+
 #if defined ( SDL_h_ )
-  #include "LovyanGFXCanvas.h"
-  #include "hal_app.h"
-
   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, 3);
-  static LovyanGFXCanvas canvas(lcd);
 #else
-  #include "TFTCanvas.h"
-  #include "Network.h"
-
-  //#include "AdcAudioDevice.h"
-  #include "gui.h"
-  #include "audio.h"
+  // #include "Network.h"
+  // #include "gui.h"
+  // #include "audio.h"
 
   static TFT_eSPI lcd;
-  static TFTCanvas canvas(&lcd);
-
-  //AdcAudioDevice adc((float*)vReal_l, (float*)vImag_l, SAMPLES, samplig_rate);
 #endif
 
 #if (TFT_HEIGHT > 320)
@@ -44,6 +38,8 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 #else
     #include "NotoSansBold15.h"
 #endif
+
+static LovyanGFXCanvas canvas(lcd);
 
 void setup() 
 {

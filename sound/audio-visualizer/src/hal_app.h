@@ -2,30 +2,35 @@
 
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
-#include "AudioTools/AudioLibs/PortAudioStream.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
 
 #include <VuOutput.h>
 
 #ifdef ARDUINO
   #include "AudioTools/Communication/AudioHttp.h"
+
+  I2SStream speakers_out;
   URLStream in(WIFI_SSID, WIFI_PASSWORD);
 #else
+  #include "AudioTools/AudioLibs/PortAudioStream.h"
   #include "AudioTools/AudioLibs/Desktop/File.h"
-  File in("/Users/anatolii.klots/Documents/Sources/esp32-projects/sound/audio-visualizer/sound/file_example_MP3_700KB.mp3");
+
+  PortAudioStream speakers_out;
+  File in("./sound/file_example_MP3_700KB.mp3");
 #endif
 
 AudioInfo info(44100, 1, 16);
 
 // SineWaveGenerator<int16_t> sineWave(32000); // subclass of SoundGenerator with max amplitude of 32000
 // GeneratedSoundStream<int16_t> in(sineWave);               // Stream generated from sine wave
+// NumberFormatConverterStream nfc(decoded_out);
 
 //                                                           |-> AudioRealFFT
 //                    |-> EncodedAudioStream -> MultiOutput -|-> PortAudioStream
 // In -> MultiOutput -|                                      |-> VuMeter
 //                    |-> MetaDataOutput
 
-PortAudioStream speakers_out;
+
 VuMeter<int16_t> vu_out(AUDIO_VU_RATIO);
 AudioRealFFT fft_out; // or AudioKissFFT or others
 MetaDataOutput metadata_out; // final output of metadata
@@ -78,7 +83,12 @@ void printMetaData(MetaDataType type, const char* str, int len)
 
 void setupAudio()
 {
+  // Input: File or stream
+#ifdef ARDUINO
+  in.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
+#else
   in.begin();
+#endif
 
   // Decoder
   decoder.begin();
@@ -87,8 +97,17 @@ void setupAudio()
   vu_out.begin();
 
   // Out - Speakers
+#ifdef ARDUINO
+  auto config = speakers_out.defaultConfig(TX_MODE);
+  config.copyFrom(info);
+  config.pin_ws = I2S_WS;
+  config.pin_bck = I2S_BCK;
+  config.pin_data = I2S_SD;
+  config.is_master = I2S_MASTER;
+#else
   auto config = speakers_out.defaultConfig();
   config.copyFrom(info);
+#endif
   speakers_out.begin(config);
 
   // Out - FFT

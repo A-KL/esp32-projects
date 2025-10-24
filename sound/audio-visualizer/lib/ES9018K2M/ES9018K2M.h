@@ -2,22 +2,17 @@
 
 uint8_t dac_address = 0x48;
 
-bool readI2c(uint8_t address, uint8_t reg, uint8_t& value) {
+bool readI2c(uint8_t address, uint8_t reg, uint8_t& value) 
+{
   Wire.beginTransmission(address);
   Wire.write(byte(reg));
+
   auto error = Wire.endTransmission();
 
   if (error) {
-    Serial.print("I2C error ");
-    Serial.print(address);
-    Serial.print(" reg ");
-    Serial.print(reg);
-    Serial.print(" code: ");
-    Serial.print(error);
-    
+    log_e("I2C error %d reg %d code: %d", address, reg, error);    
     return false;
   }
-
   auto to_receive = sizeof(value);
   error = Wire.requestFrom(address, to_receive);
 
@@ -35,13 +30,7 @@ bool writeI2c(uint8_t address, uint8_t reg, uint8_t value) {
   auto error = Wire.endTransmission();
 
   if (error) {
-    Serial.print("I2C error ");
-    Serial.print(address);
-    Serial.print(" reg ");
-    Serial.print(reg);
-    Serial.print(" code: ");
-    Serial.print(error);
-    
+    log_e("I2C error %d reg %d code: %d", address, reg, error);    
     return false;
   }
 
@@ -54,11 +43,9 @@ void volumeDac(uint8_t volume)
     writeI2c(dac_address, 0x10, 0xFF - volume);
 }
 
-uint8_t volumeDac()
-{
+uint8_t volumeDac() {
     uint8_t res = 0;
     readI2c(dac_address, 0xFF, res);
-
     return res;
 }
 

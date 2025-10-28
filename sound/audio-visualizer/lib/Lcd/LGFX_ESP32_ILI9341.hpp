@@ -64,7 +64,7 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Bus_Parallel8 _bus_instance;   // 8-bit parallel bus instance (ESP32 only)
 
 // Prepare an instance if backlight control is possible.  (remove if not needed)
-  lgfx::Light_PWM     _light_instance;
+//  lgfx::Light_PWM     _light_instance;
 
 // Prepare an instance that matches the type of touch screen.  (remove if not needed)
 //lgfx::Touch_FT5x06           _touch_instance; // FT5206, FT5306, FT5406, FT6206, FT6236, FT6336, FT6436
@@ -75,7 +75,7 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Touch_GT911            _touch_instance;
 //lgfx::Touch_STMPE610         _touch_instance;
 //lgfx::Touch_TT21xxx          _touch_instance; // TT21100
-  lgfx::Touch_XPT2046          _touch_instance;
+//lgfx::Touch_XPT2046          _touch_instance;
 
 public:
 
@@ -87,16 +87,17 @@ public:
 
       auto cfg = _bus_instance.config();    // Get a structure for bus settings.
 
-      // SPI bus settings
+      // SPI bus settings 
+      // VSPI_HOST
       cfg.spi_host = VSPI_HOST;          // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
       // * Due to the ESP-IDF version upgrade, VSPI_HOST and HSPI_HOST descriptions are deprecated,
       // so if an error occurs, use SPI2_HOST and SPI3_HOST instead.
       cfg.spi_mode    = 0;               // Set SPI communication mode (0 ~ 3)
       cfg.freq_write  = 40000000;        // SPI clock when sending (up to 80MHz, rounded to 80MHz divided by an integer)
-      cfg.freq_read   = 16000000;        // SPI clock when receiving
+      cfg.freq_read   = 20000000;        // SPI clock when receiving
       cfg.spi_3wire   = false;           // Set true if receiving on the MOSI 
       cfg.use_lock    = true;            // Set true to use transaction lock
-      cfg.dma_channel = SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)
+      cfg.dma_channel = SPI_DMA_CH1;// SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)
       // * With the ESP-IDF version upgrade, SPI_DMA_CH_AUTO (automatic setting) is recommended for the DMA channel.  
       // Specifying 1ch and 2ch is deprecated.
       cfg.pin_sclk = TFT_SCK;  // 18;            // SPI SCLK
@@ -130,7 +131,6 @@ public:
 //
       _bus_instance.config(cfg);               // Reflect the setting value to the bus.
       _panel_instance.setBus(&_bus_instance);  // Sets the bus to the panel.
-
     }
     { // Set display panel controls.
 
@@ -153,12 +153,12 @@ public:
       cfg.invert           = false;  // if panel light and dark are inverted set to true
       cfg.rgb_order        = false;  // if panel red and blue are reversed set to true
       cfg.dlen_16bit       = false;  // Set to true for panels that transmit data length in 16-bit units with 16-bit parallel or SPI
-      cfg.bus_shared       =  true;  // If the bus is shared with the SD card, set to true (bus control with drawJpgFile etc.)
+      cfg.bus_shared       = false;  // If the bus is shared with the SD card, set to true (bus control with drawJpgFile etc.)
 
       // Please set below only with drivers that can change the number of pixels such as ST7735 and ILI9163.
       // Please set the following only when the display shifts with a driver with a variable number of pixels such as ST7735 or ILI9163.
-      //cfg.memory_width     =   240;  // Maximum width supported by the driver IC
-      //cfg.memory_height    =   320;  // Maximum height supported by the driver IC
+      cfg.memory_width     =   240;  // Maximum width supported by the driver IC
+      cfg.memory_height    =   320;  // Maximum height supported by the driver IC
 
       _panel_instance.config(cfg);
     }
@@ -166,36 +166,36 @@ public:
 //*
     { // Set backlight control.  (delete if not necessary)
 
-      auto cfg   = _light_instance.config(); // Get the structure for backlight configuration.
+      // auto cfg   = _light_instance.config(); // Get the structure for backlight configuration.
 
-      cfg.pin_bl = TFT_BLK; //32;   // pin number to which the backlight is connected 
-      cfg.invert = false;           // true to invert the brightness of the backlight
-      cfg.freq   = 44100;           // Backlight PWM frequency
-      cfg.pwm_channel = 7;          // PWM channel number to use
+      // cfg.pin_bl = TFT_BLK; //32;   // pin number to which the backlight is connected 
+      // cfg.invert = false;           // true to invert the brightness of the backlight
+      // cfg.freq   = 44100;           // Backlight PWM frequency
+      // cfg.pwm_channel = 7;          // PWM channel number to use
 
-      _light_instance.config(cfg);
-      _panel_instance.setLight(&_light_instance); // Sets the backlight to the panel.
+      // _light_instance.config(cfg);
+      // _panel_instance.setLight(&_light_instance); // Sets the backlight to the panel.
     }
 //
     { // Configure settings for touch screen control.  (delete if not necessary)
 
-      auto cfg = _touch_instance.config();
+//       auto cfg = _touch_instance.config();
 
-      cfg.x_min      = 0;       // Minimum X value (raw value) obtained from the touchscreen
-      cfg.x_max      = 127;     // Maximum X value (raw value) obtained from the touchscreen
-      cfg.y_min      = 0;       // Minimum Y value obtained from touchscreen (raw value)
-      cfg.y_max      = 159;     // Maximum Y value (raw value) obtained from touchscreen
-    //cfg.pin_int    = -1;      // Pin number to which INT is connected (-1 = not connected)
-      cfg.bus_shared = true;    // Set true when using a common bus with the screen
-      cfg.offset_rotation = 0;  // Adjustment when the orientation does not match Set with a value from 0 to 7
+//       cfg.x_min      = 0;       // Minimum X value (raw value) obtained from the touchscreen
+//       cfg.x_max      = 127;     // Maximum X value (raw value) obtained from the touchscreen
+//       cfg.y_min      = 0;       // Minimum Y value obtained from touchscreen (raw value)
+//       cfg.y_max      = 159;     // Maximum Y value (raw value) obtained from touchscreen
+//     //cfg.pin_int    = -1;      // Pin number to which INT is connected (-1 = not connected)
+//       cfg.bus_shared = true;    // Set true when using a common bus with the screen
+//       cfg.offset_rotation = 0;  // Adjustment when the orientation does not match Set with a value from 0 to 7
 
-// For SPI connection
-      cfg.spi_host = VSPI_HOST; // Select SPI to use (HSPI_HOST or VSPI_HOST)
-      cfg.freq     = 2500000;   // SPI Clock frequency 1000000 -> 2500000
-      cfg.pin_sclk = 18;        // SCLK
-      cfg.pin_mosi = 23;        // MOSI
-      cfg.pin_miso = 19;        // MISO
-      cfg.pin_cs   =  4;        // CS
+// // For SPI connection
+//       cfg.spi_host = VSPI_HOST; // Select SPI to use (HSPI_HOST or VSPI_HOST)
+//       cfg.freq     = 2500000;   // SPI Clock frequency 1000000 -> 2500000
+//       cfg.pin_sclk = 18;        // SCLK
+//       cfg.pin_mosi = 23;        // MOSI
+//       cfg.pin_miso = 19;        // MISO
+//       cfg.pin_cs   =  4;        // CS
 
 // For I2C connection
       //cfg.i2c_port = 1;         // Select I2C to use (0 or 1)
@@ -204,8 +204,8 @@ public:
       //cfg.pin_sc l = 32;        // SCL
       //cfg.freq     = 400000;    // set I2C clock fruequency
 
-      _touch_instance.config(cfg);
-      _panel_instance.setTouch(&_touch_instance); // Set the touchscreen to the panel.
+      // _touch_instance.config(cfg);
+      // _panel_instance.setTouch(&_touch_instance); // Set the touchscreen to the panel.
     }
 //
     setPanel(&_panel_instance); // Sets the panel to use.

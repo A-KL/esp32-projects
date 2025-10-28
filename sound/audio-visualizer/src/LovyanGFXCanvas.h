@@ -6,12 +6,13 @@
 class LovyanGFXCanvas : public Canvas<Color>
 {
 public:
-	LovyanGFXCanvas(LGFX& display) : _display(&display)
+	LovyanGFXCanvas(TFT_eSPI* display) : _display(display)
 	{ }
 
 	void Init(const Color& color = Color::Black)
 	{
 		_display->init();
+		_display->setColorDepth(16);
 		_display->startWrite();
 		_display->fillScreen((unsigned short)color);
 
@@ -106,7 +107,7 @@ public:
 	}
 
 private:
-	LGFX* _display;
+	TFT_eSPI* _display;
 
 	const Color _background = Color::Black;
 };

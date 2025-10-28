@@ -1,4 +1,7 @@
+#if defined ( LGFX_BACKEND )
+#define PROGMEM 
 #include <lgfx/v1/platforms/sdl/Panel_sdl.hpp>
+#endif
 
 #if defined ( SDL_h_ )
 

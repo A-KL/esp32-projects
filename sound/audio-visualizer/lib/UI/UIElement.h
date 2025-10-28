@@ -10,9 +10,9 @@ class UIElement
 {
 public:
 	UIElement(
-		const UIRect& rect, 
-		const Color& background = {0, 0, 0, 0}, 
-		const Color& border = {0, 0, 0, 0}, 
+		const UIRect rect, 
+		const Color background = {0, 0, 0, 0}, 
+		const Color border = {0, 0, 0, 0}, 
 		int borderSize = 0, 
 		const UIElement* parent = nullptr);
 
@@ -21,7 +21,7 @@ public:
 		_parent = parent;
 	}
 
-	inline void setBorderColor(const Color& color)
+	inline void setBorderColor(const Color color)
 	{
 		if (color == _borderColor) {
 			return;
@@ -30,7 +30,7 @@ public:
 		Invalidate();
 	}
 
-	inline void setBackgroundColor(const Color& color)
+	inline void setBackgroundColor(const Color color)
 	{
 		if (color == _backgroundColor) {
 			return;

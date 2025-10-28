@@ -1,36 +1,31 @@
-#ifdef ARDUINO
-    #include <Arduino.h>
-#else
-    #include "hal_arduino.h"
-#endif
+//#include <Arduino.h>
+//#include <map>
 
-#include <map>
+#include <Lcd.h>
 
-#ifdef ILI9341_DRIVER
-  #include "LGFX_ESP32_ILI9341.hpp"
-#endif
-
-#include <LGFX_TFT_eSPI.h>
-  
-#include "espressif_logo.h"
 #include "Color.h"
 #include "Canvas.h"
 #include "MainForm.h"
 #include "RadioStation.h"
-#include "LovyanGFXCanvas.h"
+#include "espressif_logo.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 
 #include "hal_app.h"
 
 #if defined ( SDL_h_ )
+  #include "LovyanGFXCanvas.h"
+
   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, 3);
+  static LovyanGFXCanvas canvas(&lcd);
 #else
+  #include "TFT_eSPI_Canvas.h"
   // #include "Network.h"
   // #include "gui.h"
   // #include "audio.h"
 
-  static TFT_eSPI lcd;
+  static TFT_eSPI lcd(TFT_CS, TFT_DC, TFT_RES);
+  static TFT_eSPI_Canvas canvas(&lcd);
 #endif
 
 #if (TFT_HEIGHT > 320)
@@ -38,8 +33,6 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 #else
     #include "NotoSansBold15.h"
 #endif
-
-static LovyanGFXCanvas canvas(lcd);
 
 void setup() 
 {
@@ -54,6 +47,8 @@ void setup()
   setupAudio();
 
   canvas.Clear(Color::Black);
+  canvas.DrawFilledRect(20, 20, 50, 20, Color::Blue);
+
   form.Update(canvas);
 }
 
@@ -67,11 +62,8 @@ void loop()
   form.setIcon(_selectedAudioTarget, 1);
   form.setIcon(_selectedAudioSource + 2, 1);
 
- // while (true)
-  //{
-    loopAudio();
-    loopControls();
-  //}
+  loopAudio();
+  loopControls();
 
   form.Update(canvas);
 }

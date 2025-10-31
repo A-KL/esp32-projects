@@ -19,8 +19,6 @@
   File in("./sound/file_example_MP3_700KB.mp3");
 #endif
 
-AudioInfo info(44100, 1, 16);
-
 // SineWaveGenerator<int16_t> sineWave(32000); // subclass of SoundGenerator with max amplitude of 32000
 // GeneratedSoundStream<int16_t> in(sineWave);               // Stream generated from sine wave
 // NumberFormatConverterStream nfc(decoded_out);
@@ -30,6 +28,8 @@ AudioInfo info(44100, 1, 16);
 // In -> MultiOutput -|                                      |-> VuMeter
 //                    |-> MetaDataOutput
 
+
+AudioInfo info(44100, 2, 16);
 
 VuMeter<int16_t> vu_out(AUDIO_VU_RATIO);
 AudioRealFFT fft_out; // or AudioKissFFT or others
@@ -65,8 +65,6 @@ void setupControls() {
 
 void fftResult(AudioFFTBase &fft)
 {
-    //float diff;
-    //auto result = fft.result();
     auto d = fft.size();
 
     for (auto i=1; i<31; i++)
@@ -78,7 +76,14 @@ void fftResult(AudioFFTBase &fft)
 
 void printMetaData(MetaDataType type, const char* str, int len)
 {
+#ifdef ARDUINO
+  log_w("%s: %s", toStr(type), str);
+#else
   printf("==> %s: %s\r\n", toStr(type), str);
+#endif
+  if (type == Title) {
+    form.track.setText(str);
+  }
 }
 
 void setupAudio()

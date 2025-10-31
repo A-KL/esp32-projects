@@ -16,6 +16,8 @@ public:
 
 	virtual void SetFont(int index, unsigned char size) = 0;
 
+	//virtual void SetFont(const GFXfont& font) = 0;
+
 	virtual int Height() const = 0;
 
 	virtual int Width() const = 0;

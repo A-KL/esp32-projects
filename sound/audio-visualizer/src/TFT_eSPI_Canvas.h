@@ -42,15 +42,20 @@ public:
 			_tft->drawRect(x0, y0, w, h, (unsigned short)color);
 	}
 
-	void LoadFont(const uint8_t array[])
-	{
-			//_tft->setFont(array);
+	void LoadFont(const uint8_t* array)
+	{	
+	#ifdef LOVYANGFX_HPP_
+			_tft->loadFont(array);
+	#endif
 	}
 
 	void DrawImage(int x, int y, int w, int h, const unsigned short* data)
 	{
-			_tft->drawRGBBitmap(x, y, data, w, h);
-			//_tft->drawBitmap(x, y, (uint8_t*)data, w, h, (uint16_t)_background);
+	#ifdef LOVYANGFX_HPP_
+		_tft->drawBitmap(x, y, (uint8_t*)data, w, h, (uint16_t)_background);
+	#else
+		_tft->drawRGBBitmap(x, y, data, w, h);
+	#endif
 	}
 
 	void DrawText(int x, int y, int w, int h, const char* text, const Color& color)

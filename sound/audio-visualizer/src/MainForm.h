@@ -116,18 +116,18 @@ public:
     }
 
 protected:
-	void Draw(Canvas<Color>& canvas)
-	{
-        if (!levelLeft.IsValid()) {
-            //leftTextValue.setInt(levelLeft.value());
-        }
+	// void Draw(Canvas<Color>& canvas)
+	// {
+    //     if (!levelLeft.IsValid()) {
+    //         //leftTextValue.setInt(levelLeft.value());
+    //     }
 
-        if (!levelRight.IsValid()) {
-            //rightTextValue.setInt(levelRight.value());
-        }        
+    //     if (!levelRight.IsValid()) {
+    //         //rightTextValue.setInt(levelRight.value());
+    //     }        
 
-        UIContainer::Draw(canvas);
-    }
+    //     UIContainer::Draw(canvas);
+    // }
 
 private:
     UIContainer header;

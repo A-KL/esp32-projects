@@ -3,6 +3,8 @@
 #include <Color.h>
 #include <Canvas.h>
 
+//#include <OpenFontRender.h>
+
 class LovyanGFXCanvas : public Canvas<Color>
 {
 public:
@@ -13,7 +15,7 @@ public:
 	{
 		_display->init();
 		_display->setColorDepth(16);
-		_display->startWrite();
+		//_display->startWrite();
 		_display->fillScreen((unsigned short)color);
 
 		if (_display->isEPD())
@@ -26,8 +28,9 @@ public:
 		}
 	}
 
-	void LoadFont(const uint8_t array[])
+	void LoadFont(const uint8_t* array, const size_t size)
 	{
+		//_font_renderer.loadFont(array, size);
 		_display->loadFont(array);
 	}
 
@@ -61,19 +64,21 @@ public:
 	 void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
    {
 			_display->setTextColor((unsigned short)color);
-			_display->drawCenterString(text, x + w/2, y + h/6);
+			_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2 );
+
+			// _font_renderer.setFontColor((unsigned short)color);
+			// _font_renderer.setCursor(x + w/2, y + h/2);
+			// _font_renderer.printf(text);
 	 }
 
 	 void SetFont(int index, unsigned char size)
 	 {
-    // if (index == 0) {
-    //   _tft->setFreeFont(1);
-    // }
-    // else {
-    //   _tft->setFreeFont(index);
-    // }
 
-    // _tft->setTextSize(size);
+	 }
+
+	 void SetFont(const GFXfont& font)
+	 {
+    _display->setFont(&font);
 	 }
 
 	inline int Height() const
@@ -108,6 +113,7 @@ public:
 
 private:
 	TFT_eSPI* _display;
+	//OpenFontRender _font_renderer;
 
 	const Color _background = Color::Black;
 };

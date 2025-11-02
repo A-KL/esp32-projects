@@ -29,7 +29,7 @@ void setup()
 
   lcd.loadFont(NotoSansBold15); // If I try to load the font
 
-  lcd.setTextColor(TFT_CYAN);
+  lcd.setTextColor(TFT_CYAN, TFT_BLACK);
   lcd.drawCenterString("TEST string!", 50, 50); // this line doesn't draw anything
 
   lcd.fillRect(120, 20, 100, 100, TFT_BLUE); // nor this one

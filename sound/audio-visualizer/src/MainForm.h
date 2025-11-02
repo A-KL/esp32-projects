@@ -115,7 +115,7 @@ public:
         icons[index].setBorderColor(color);
     }
 
-protected:
+//protected:
 	// void Draw(Canvas<Color>& canvas)
 	// {
     //     if (!levelLeft.IsValid()) {

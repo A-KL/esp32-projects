@@ -3,6 +3,7 @@
 #define LGFX_USE_V1
 
 #include <LovyanGFX.hpp>
+#include "Panel_ILI9341_IPS.hpp"
 
 // copy this file to Arduino\libraries\LovyanGFX\src\
 
@@ -40,7 +41,7 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Panel_HX8357B     _panel_instance;
 //lgfx::Panel_HX8357D     _panel_instance;
 //lgfx::Panel_ILI9163     _panel_instance;
-  lgfx::Panel_ILI9341     _panel_instance;
+  lgfx::Panel_ILI9341_IPS     _panel_instance;
 //lgfx::Panel_ILI9342     _panel_instance;
 //lgfx::Panel_ILI9481     _panel_instance;
 //lgfx::Panel_ILI9486     _panel_instance;
@@ -149,7 +150,7 @@ public:
       cfg.offset_rotation  =     2;  // Rotation direction value offset 0~7 (4~7 is upside down)
       cfg.dummy_read_pixel =     8;  // Number of dummy read bits before pixel read
       cfg.dummy_read_bits  =     1;  // Number of dummy read bits before non-pixel data read
-      cfg.readable         =  true;  // Data can be read set to true
+      cfg.readable         = false;  // Data can be read set to true
       cfg.invert           = false;  // if panel light and dark are inverted set to true
       cfg.rgb_order        = false;  // if panel red and blue are reversed set to true
       cfg.dlen_16bit       = false;  // Set to true for panels that transmit data length in 16-bit units with 16-bit parallel or SPI
@@ -157,8 +158,8 @@ public:
 
       // Please set below only with drivers that can change the number of pixels such as ST7735 and ILI9163.
       // Please set the following only when the display shifts with a driver with a variable number of pixels such as ST7735 or ILI9163.
-      cfg.memory_width     =   240;  // Maximum width supported by the driver IC
-      cfg.memory_height    =   320;  // Maximum height supported by the driver IC
+      // cfg.memory_width     =   240;  // Maximum width supported by the driver IC
+      // cfg.memory_height    =   320;  // Maximum height supported by the driver IC
 
       _panel_instance.config(cfg);
     }

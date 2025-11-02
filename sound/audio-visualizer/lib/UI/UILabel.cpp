@@ -25,18 +25,18 @@ UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, c
 
 void UILabel::Draw(Canvas<Color>& canvas)
 {
-    Clear(canvas);
+    Clear(canvas, false);
 
-    if (_text.c_str() == NULL) {
-        return;
+    if (_text.c_str())
+    {
+        auto origin_x = _rect.x;
+        auto origin_y = _rect.y;
+
+        AbsolutePosition(origin_x, origin_y);
+
+        canvas.SetFont(_fontIndex, 1);
+        canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _forecolor);
     }
-
-    auto origin_x = _rect.x;
-    auto origin_y = _rect.y;
-
-    AbsolutePosition(origin_x, origin_y);
-
-    canvas.SetFont(_fontIndex, 1);
-
-    canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _forecolor);
+    
+    UIElement::Draw(canvas);
 }

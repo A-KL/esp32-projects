@@ -35,14 +35,12 @@ public:
 	inline void setTextF(const char* format, ...)
 	{		
 		va_list args;
-    	va_start(args, format);
+		va_start(args, format);
 		char buffer[100];
-		memset(&buffer[0], 0, sizeof(buffer));
-		//sprintf(&buffer[0], format, args);
+		memset(buffer, 0, sizeof(buffer));
+		snprintf(buffer, sizeof(buffer), format, args);
 		va_end(args);
-
-		_text = &buffer[0];
-
+		_text = buffer;
 		Invalidate();
 	}
 

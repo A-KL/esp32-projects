@@ -7,6 +7,7 @@
 
 void setup(void);
 void loop(void);
+void cleanup(void);
 
 __attribute__((weak))
 int user_func(bool* running)
@@ -17,6 +18,8 @@ int user_func(bool* running)
     loop();
   } 
   while (*running);
+
+  cleanup();
 
   return 0;
 }

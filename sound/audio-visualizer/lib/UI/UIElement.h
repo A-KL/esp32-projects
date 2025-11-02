@@ -54,19 +54,18 @@ public:
 
 	void Update(Canvas<Color>& canvas);	
 
-	virtual void Clear(Canvas<Color>& canvas) const;
+	virtual void Clear(Canvas<Color>& canvas, bool draw = true);
 
 protected:
 	const UIRect _rect;
 	
-	inline virtual void Invalidate()
-	{
+	inline virtual void Invalidate() {
 		_valid = false;
 	}
 
-	virtual void Draw(Canvas<Color>& canvas) = 0;
-
 	void AbsolutePosition(int& x, int& y) const;
+
+	virtual void Draw(Canvas<Color>& canvas);
 
 	Color _backgroundColor;
 	Color _borderColor;

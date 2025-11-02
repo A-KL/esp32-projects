@@ -3,8 +3,6 @@
 #include <Color.h>
 #include <Canvas.h>
 
-//#include <OpenFontRender.h>
-
 class LovyanGFXCanvas : public Canvas<Color>
 {
 public:
@@ -14,10 +12,12 @@ public:
 	void Init(const Color& color = Color::Black)
 	{
 		_display->init();
+		//_display->setSwapBytes(true);
 		_display->setColorDepth(16);
+		// _display->setTextDatum(CC_DATUM);
+		// _display->initDMA();
 		//_display->startWrite();
-		_display->fillScreen((unsigned short)color);
-
+		
 		if (_display->isEPD())
 		{
 			_display->setEpdMode(epd_mode_t::epd_fastest);
@@ -26,11 +26,12 @@ public:
 		{
 			_display->setRotation(_display->getRotation() ^ 1);
 		}
+
+		_display->fillScreen((unsigned short)color);
 	}
 
 	void LoadFont(const uint8_t* array, const size_t size)
 	{
-		//_font_renderer.loadFont(array, size);
 		_display->loadFont(array);
 	}
 
@@ -57,28 +58,20 @@ public:
 	 void DrawImage(int x, int y, int w, int h, const unsigned short* data)
 	 {
 			_display->setSwapBytes(true);
-			_display->pushImage(x, y, w, h, data); //, (uint16_t)_background
+			_display->pushImage(x, y, w, h, data);
 			_display->setSwapBytes(false);
 	 }
 
 	 void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
    {
-			_display->setTextColor((unsigned short)color);
-			_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2 );
-
-			// _font_renderer.setFontColor((unsigned short)color);
-			// _font_renderer.setCursor(x + w/2, y + h/2);
-			// _font_renderer.printf(text);
+			_display->setTextColor((unsigned short)color, TFT_BLACK);
+			//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
+			_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	 }
 
 	 void SetFont(int index, unsigned char size)
 	 {
 
-	 }
-
-	 void SetFont(const GFXfont& font)
-	 {
-    _display->setFont(&font);
 	 }
 
 	inline int Height() const
@@ -108,7 +101,7 @@ public:
 
 	inline void Update()
 	{
-			_display->display();
+			//_display->display();
 	}
 
 private:

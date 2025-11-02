@@ -25,7 +25,7 @@ void UIElement::Update(Canvas<Color>& canvas)
     _valid = true;
 }
 
-void UIElement::Clear(Canvas<Color>& canvas) const
+void UIElement::Clear(Canvas<Color>& canvas, bool draw)
 {
     auto x = _rect.x;
     auto y = _rect.y;
@@ -33,7 +33,19 @@ void UIElement::Clear(Canvas<Color>& canvas) const
     AbsolutePosition(x, y);
     
     canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _backgroundColor);
+    
+    if (draw) {
+        UIElement::Draw(canvas);
+    }
+}
 
+void UIElement::Draw(Canvas<Color>& canvas)
+{
+    auto x = _rect.x;
+    auto y = _rect.y;
+
+    AbsolutePosition(x, y);
+    
     if (_borderSize > 0) {
         for (auto i = 0; i < _borderSize; i++) {
             canvas.DrawRect(x+i, y+i, _rect.w - (i*2) - 1, _rect.h - (i*2) - 1, _borderColor);

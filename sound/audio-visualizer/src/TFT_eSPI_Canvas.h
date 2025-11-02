@@ -42,10 +42,12 @@ public:
 			_tft->drawRect(x0, y0, w, h, (unsigned short)color);
 	}
 
-	void LoadFont(const uint8_t* array)
+	void LoadFont(const uint8_t* array, const size_t size)
 	{	
 	#ifdef LOVYANGFX_HPP_
 			_tft->loadFont(array);
+	#else
+		 // _tft->setFont();
 	#endif
 	}
 
@@ -66,7 +68,7 @@ public:
 		int16_t  x1, y1;
 		uint16_t w1, h1;
 
-		//_tft->getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
+		_tft->getTextBounds(text, x0, y0, &x1, &y1, &w1, &h1);
 
 		if (w > w1)
 		{
@@ -78,8 +80,7 @@ public:
 			y += (h - h1) / 2.0 - 1;
 		}
 
-		_tft->setCursor(x, y + h1);
-
+		_tft->setCursor(x, y);
 		_tft->println(text);
 	}
 	

@@ -36,9 +36,10 @@ public:
 	{		
 		va_list args;
 		va_start(args, format);
-		char buffer[100];
-		memset(buffer, 0, sizeof(buffer));
-		snprintf(buffer, sizeof(buffer), format, args);
+		char buffer[50];
+		const auto size = sizeof(buffer);
+		memset(buffer, 0, size);
+		vsnprintf(buffer, size, format, args);
 		va_end(args);
 		_text = buffer;
 		Invalidate();

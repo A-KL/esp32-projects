@@ -12,7 +12,7 @@ class UILabel : public UIElement
 public:
 	UILabel(const UIRect& rect, const char* text, int fontIndex = 0);
 
-	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize);
+	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize = 0);
 
 	inline void setText(const char* text)
 	{		
@@ -46,10 +46,10 @@ public:
 
 	inline void setForecolor(const Color& color)
 	{
-		if (color == _forecolor) {
+		if (color == _fcolor) {
 			return;
 		}
-		_forecolor = color;
+		_fcolor = color;
 		Invalidate();
 	}
 
@@ -63,7 +63,7 @@ protected:
 	void Draw(Canvas<Color>& canvas);
 
 private:
-	Color _forecolor;
+	Color _fcolor;
 	std::string _text;
 	int _fontIndex = 0;
 };

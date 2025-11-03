@@ -55,21 +55,51 @@ void setupWiFi() {
   delay(1000);
 }
 
-void setupControls() {
-  delay(1000);
-}
-
-void loopControls() {
-}
+// 4096 / 2 = 2048 bins
+// 44100 / 2048 = 21.5 Hz per bin
+int ftt_bin_map[FTT_BANDS_COUNT] = {
+  1, // 21.5 Hz
+  2, // 43 Hz
+  3, // 64 Hz
+  5, // 105 Hz
+  6,
+  7, // 157 Hz
+  10,
+  12, // 250 Hz
+  15,
+  18, // 400 Hz
+  23,
+  29, // 630 Hz
+  35,
+  46, // 1kHz
+  55,
+  74, // 1k6
+  100,
+  116, // 2k5
+  150,
+  186, // 4k
+  200,
+  250,
+  293, // 6k3
+  350,
+  400,
+  465, // 10k
+  500,
+  550,
+  600,
+  744, // 16k
+};   
 
 void fftResult(AudioFFTBase &fft)
 {
-    auto d = fft.size();
-
-    for (auto i=1; i<31; i++)
+    //auto d = fft.size();
+    auto size = form.equalizer.bands.count();
+    //sizeof(ftt_bin_map)
+    for (auto i=0; i<size; i++)
     {
-        auto d = fft.magnitude(i);
-        form.equalizer.bands.setBand(i-1, d); //map(result.magnitude, 0, 255, 0, 3200)
+        auto bin_index = ftt_bin_map[i];
+        auto bin_value = fft.magnitude(bin_index);
+        form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 3200)
     }
 }
 

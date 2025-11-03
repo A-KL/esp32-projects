@@ -13,14 +13,14 @@ public:
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
         bands({ 30, 10, rect.w - 50, rect.h - 120 - 23})
     {
-        for (int i=0; i< (sizeof(level_lables) / sizeof(level_lables[0])); i++)
+        for (int i=0; i< (sizeof(level_labels) / sizeof(level_labels[0])); i++)
         {
-            Add(level_lables[i]);
+            Add(level_labels[i]);
         }
         
-        for (int i=0; i< (sizeof(freq_lables) / sizeof(freq_lables[0])); i++)
+        for (int i=0; i< (sizeof(freq_labels) / sizeof(freq_labels[0])); i++)
         {
-            Add(freq_lables[i]);
+            Add(freq_labels[i]);
         }
          Add(bands);
     }
@@ -28,7 +28,7 @@ public:
     UISoundAnalyzer<TChannels> bands;
 
 private:
-    UILabel level_lables[7] {
+    UILabel level_labels[7] {
         {{ 17, 0,     10, 16 }, "0"},
         {{ 5, 20 * 1, 20, 16 }, "-10"},
         {{ 5, 20 * 2, 20, 16 }, "-20"},
@@ -38,13 +38,22 @@ private:
         {{ 5, 20 * 6, 20, 16 }, "-60"}
     };
 
-    UILabel freq_lables[5] {
-        {{ 25,          20 * 7 + 3,  20, 16 }, "25",  1},
-        {{ 25 + 20 * 1, 20 * 6 + 10, 20, 16 }, "40",  1},
-        {{ 25 + 20 * 2, 20 * 7 + 3,  20, 16 }, "63",  1},
-        {{ 25 + 20 * 3, 20 * 6 + 10, 25, 16 }, "100", 1},
-        {{ 25 + 20 * 4, 20 * 7 + 3,  25, 16 }, "157", 1},
-
+    UILabel freq_labels[15] {
+        {{ 25,           20 * 7 + 3,  20, 16 }, "25",  Color::Gray, Color::Black },
+        {{ 25 + 20 * 1,  20 * 6 + 10, 20, 16 }, "40",  Color::Gray, Color::Black },
+        {{ 25 + 20 * 2,  20 * 7 + 3,  20, 16 }, "63",  Color::Gray, Color::Black },
+        {{ 25 + 20 * 3,  20 * 6 + 10, 25, 16 }, "100", Color::Gray, Color::Black },
+        {{ 25 + 20 * 4,  20 * 7 + 3,  25, 16 }, "157", Color::Gray, Color::Black },
+        {{ 25 + 20 * 5,  20 * 6 + 10, 25, 16 }, "250", Color::Gray, Color::Black },
+        {{ 25 + 20 * 6,  20 * 7 + 3,  25, 16 }, "400", Color::Gray, Color::Black },
+        {{ 25 + 20 * 7,  20 * 6 + 10, 25, 16 }, "630", Color::Gray, Color::Black },
+        {{ 25 + 20 * 8,  20 * 7 + 3,  25, 16 }, "1k",  Color::Gray, Color::Black },
+        {{ 25 + 20 * 9,  20 * 6 + 10, 25, 16 }, "1k6", Color::Gray, Color::Black },
+        {{ 25 + 20 * 10, 20 * 7 + 3,  25, 16 }, "2k5", Color::Gray, Color::Black },
+        {{ 25 + 20 * 11, 20 * 6 + 10, 25, 16 }, "4k",  Color::Gray, Color::Black },
+        {{ 25 + 20 * 12, 20 * 7 + 3,  25, 16 }, "6k3", Color::Gray, Color::Black },
+        {{ 25 + 20 * 13, 20 * 6 + 10, 25, 16 }, "10k", Color::Gray, Color::Black },
+        {{ 25 + 20 * 14, 20 * 7 + 3,  25, 16 }, "16k", Color::Gray, Color::Black }
     };
 };
 
@@ -87,7 +96,7 @@ public:
         Add(leftTextValue);
         Add(rightTextValue);
 
-        for (int i=0; i<icons_count; i++)
+        for (auto i=0; i<icons_count; i++)
         {
             footer.Add(icons[i]);
         }
@@ -115,20 +124,6 @@ public:
         icons[index].setBorderColor(color);
     }
 
-//protected:
-	// void Draw(Canvas<Color>& canvas)
-	// {
-    //     if (!levelLeft.IsValid()) {
-    //         //leftTextValue.setInt(levelLeft.value());
-    //     }
-
-    //     if (!levelRight.IsValid()) {
-    //         //rightTextValue.setInt(levelRight.value());
-    //     }        
-
-    //     UIContainer::Draw(canvas);
-    // }
-
 private:
     UIContainer header;
     UIContainer footer;
@@ -141,11 +136,11 @@ private:
 
     UILabel icons[6] {
         {{ 0,                                          0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2,                                     0, 42, 18 }, "AUX",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2,                            0, 42, 18 }, "Web",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 42 + 2 + 42 + 2 + 50 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
+        {{ 50 + 2,                                     0, 50, 18 }, "AUX",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2,                            0, 42, 18 }, "Web",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
     };
 
     const Color icons_state_on[6] {

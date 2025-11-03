@@ -11,14 +11,13 @@
 #include "UILabel.h"
 
 UILabel::UILabel(const UIRect& rect, const char* text, int fontIndex)
-		: UILabel(rect, text, Color::White, Color::White, 0)
+    : UILabel(rect, text, Color::White, Color::Black, 0)
 { 
     _fontIndex = fontIndex;
-    //setBackgroundColor(Color::Red);
 }
 
 UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize)
-		: UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _forecolor(foreColor), _fontIndex(0)
+    : UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _fcolor(foreColor), _fontIndex(0)
 {
     setText(text);
 }
@@ -35,7 +34,7 @@ void UILabel::Draw(Canvas<Color>& canvas)
         AbsolutePosition(origin_x, origin_y);
 
         canvas.SetFont(_fontIndex, 1);
-        canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _forecolor);
+        canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _fcolor);
     }
     
     UIElement::Draw(canvas);

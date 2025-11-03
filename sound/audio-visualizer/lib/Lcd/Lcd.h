@@ -16,7 +16,11 @@
     #include "LGFX_ESP32_ILI9341.hpp"
   #endif
 
-    #include <LGFX_TFT_eSPI.h>
+  #ifdef ILI9341_IPS_DRIVER
+    #include "LGFX_ESP32_IPS_ILI9341.hpp"
+  #endif
+
+  #include <LGFX_TFT_eSPI.h>
 
   // #if defined ( SDL_h_ )
   //   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
@@ -29,7 +33,7 @@
 // Adafruit's ILI9341 driver
 /************************************************************************/
 #ifdef AGFX_BACKEND
-  #if defined(ILI9341_DRIVER) or () //__has_include ( header-name )
+  #if defined(ILI9341_DRIVER) or (ILI9341_IPS_DRIVER)
     #include "Adafruit_ILI9341.h"
     using TFT_eSPI = Adafruit_ILI9341;
   #else

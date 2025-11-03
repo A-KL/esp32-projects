@@ -1,6 +1,3 @@
-//#include <Arduino.h>
-//#include <map>
-
 #include <Lcd.h>
 
 #include "Color.h"
@@ -16,10 +13,6 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
   static LovyanGFXCanvas canvas(&lcd);
 #else
-  // #include "Network.h"
-  // #include "audio.h"
-  //#include "controls.h"
-  
   #if defined(LOVYANGFX_HPP_) or defined(_TFT_eSPIH_)
     #include "LovyanGFXCanvas.h"
     static TFT_eSPI lcd;
@@ -31,6 +24,7 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
   #endif
 #endif
 
+#include "controls.h"
 #include "audio.h"
 #include "gui.h"
 
@@ -49,7 +43,7 @@ void setup()
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
   // setupWiFi();
-  // setupControls();
+  setupControls();
   setupAudio();
 
   canvas.Clear(Color::Black);
@@ -60,6 +54,7 @@ void setup()
 
 #ifdef ARDUINO
   //log_e("Free heap (KB): %f", (esp_get_free_heap_size()/1024.0));
+  log_w("Device ready..");
 #endif
 }
 
@@ -73,7 +68,7 @@ void loop()
   // form.setIcon(_selectedAudioTarget, 1);
   // form.setIcon(_selectedAudioSource + 2, 1);
 
-  loopAudio();
+  //loopAudio();
   loopControls();
   //loopUI();
 

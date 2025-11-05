@@ -8,13 +8,17 @@
 
 #ifdef ARDUINO
   #include "AudioTools/Communication/AudioHttp.h"
+  #define INIT_VOLUME 0.6
 
   I2SStream speakers_out;
   URLStream in(WIFI_SSID, WIFI_PASSWORD);
 #else
+  #include <iostream>
+
   #include "AudioTools/AudioLibs/PortAudioStream.h"
   #include "AudioTools/AudioLibs/Desktop/File.h"
 
+  #define INIT_VOLUME 1.0
   PortAudioStream speakers_out;
   File in("./sound/file_example_MP3_700KB.mp3");
 #endif
@@ -24,12 +28,12 @@
 // NumberFormatConverterStream nfc(decoded_out);
 
 //                                                           |-> AudioRealFFT
-//                    |-> EncodedAudioStream -> MultiOutput -|-> PortAudioStream
+//                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream
 // In -> MultiOutput -|                                      |-> VuMeter
 //                    |-> MetaDataOutput
 
-
 AudioInfo info(44100, 2, 16);
+LogarithmicVolumeControl lvc(0.1);
 
 VuMeter<int16_t> vu_out(AUDIO_VU_RATIO);
 AudioRealFFT fft_out; // or AudioKissFFT or others
@@ -39,6 +43,7 @@ MultiOutput all_out;
 MultiOutput raw_out;
 
 MP3DecoderHelix helix;
+VolumeStream volume_out(speakers_out);
 EncodedAudioStream decoder(&all_out, &helix);
 
 StreamCopy copier(raw_out, in);
@@ -92,14 +97,15 @@ int ftt_bin_map[FTT_BANDS_COUNT] = {
 
 void fftResult(AudioFFTBase &fft)
 {
-    //auto d = fft.size();
-    auto size = form.equalizer.bands.count();
-    //sizeof(ftt_bin_map)
-    for (auto i=0; i<size; i++)
+    //fft.magnitudesFast()
+    //fft.frequencyToBin()
+    //auto d = fft.result();
+    
+    for (auto i=0; i<FTT_BANDS_COUNT; i++)
     {
-        auto bin_index = ftt_bin_map[i];
+        auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
-        form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 3200)
+       //form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 4700)
     }
 }
 
@@ -157,13 +163,19 @@ void setupAudio()
   metadata_out.setCallback(printMetaData);
   metadata_out.begin();
 
+  // Out - Volume
+
+  volume_out.setVolumeControl(lvc);
+  volume_out.setVolume(INIT_VOLUME);
+
   // Out - Mixer
   raw_out.add(decoder);
   raw_out.add(metadata_out);
   raw_out.begin();
 
   all_out.add(vu_out);
-  all_out.add(speakers_out);
+  //all_out.add(speakers_out);
+  all_out.add(volume_out);
   all_out.add(fft_out);
 
   all_out.begin(info);
@@ -171,10 +183,20 @@ void setupAudio()
   //sineWave.begin(info, N_B4);
 }
 
+void setVolume(long long value) 
+{
+    if (volume_out.setVolume(value / 255.0)){
+      auto dbs = (int)(value* 0.5 - 127.5);
+      form.volume.setTextF("%ddb", dbs);
+    }
+
+    // volumeDac(value);
+}
+
 void selectAudio(int dest, int src) {
 }
 
-void loopAudio()
+inline void loopAudio()
 {
   copier.copy();
 

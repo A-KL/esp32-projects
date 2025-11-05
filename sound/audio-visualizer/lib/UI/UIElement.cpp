@@ -14,6 +14,19 @@ bool UIElement::IsValid() const
     return _valid || !visible;
 }
 
+// bool UIElement::Update(Canvas<Color>& canvas)
+// {
+//     if (IsValid()) {
+//         return false;
+//     }
+
+//     Draw(canvas);
+
+//     _valid = true;
+
+//     return true;
+// }
+
 void UIElement::Update(Canvas<Color>& canvas)
 {
     if (IsValid()) {

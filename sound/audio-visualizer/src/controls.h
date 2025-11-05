@@ -10,7 +10,7 @@
 #define MENU_BUTTON 32
 
 #define VOLUME_PIN_A  04
-#define VOLUME_PIN_B  02
+#define VOLUME_PIN_B  21
 #define VOLUME_BUTTON 15
 
 static AiEsp32RotaryEncoder encoder_left(MENU_PIN_A, MENU_PIN_B, MENU_BUTTON, -1, 4);
@@ -55,10 +55,8 @@ void loopControls()
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
+      setVolume(value);
       log_e("Volume: %d", value);
-      auto dbs = (int)(value* 0.5 - 127.5);
-      // volumeDac(value);
-      form.volume.setTextF("%ddb", dbs);
 	}
 
 	if (encoder_left.isEncoderButtonClicked())

@@ -24,9 +24,9 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
   #endif
 #endif
 
-#include "controls.h"
 #include "audio.h"
 #include "gui.h"
+#include "controls.h"
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -43,34 +43,32 @@ void setup()
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
   // setupWiFi();
-  setupControls();
+  //setupControls();
   setupAudio();
 
   canvas.Clear(Color::Black);
 
- // setupUI();
+  setupUI();
 
-  form.Update(canvas);
+  //form.Update(canvas);
 
 #ifdef ARDUINO
-  //log_e("Free heap (KB): %f", (esp_get_free_heap_size()/1024.0));
-  log_w("Device ready..");
+  log_w("Core %d. Free heap (KB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0));
 #endif
 }
 
 void loop() 
 {
-  static auto _selectedAudioSource = 0;
-  static auto _selectedAudioTarget = 1;
+  // static auto _selectedAudioSource = 0;
+  // static auto _selectedAudioTarget = 1;
 
-  selectAudio(_selectedAudioTarget, _selectedAudioSource);
+  //selectAudio(_selectedAudioTarget, _selectedAudioSource);
 
   // form.setIcon(_selectedAudioTarget, 1);
   // form.setIcon(_selectedAudioSource + 2, 1);
 
-  //loopAudio();
-  loopControls();
-  //loopUI();
+  loopAudio();
+  //loopControls();
 
-  form.Update(canvas);
+  //form.Update(canvas);
 }

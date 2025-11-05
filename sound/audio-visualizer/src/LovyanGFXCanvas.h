@@ -12,11 +12,10 @@ public:
 	void Init(const Color& color = Color::Black)
 	{
 		_display->init();
-		//_display->setSwapBytes(true);
+		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
-		// _display->setTextDatum(CC_DATUM);
-		// _display->initDMA();
-		//_display->startWrite();
+		_display->initDMA();
+		_display->startWrite();
 		
 		if (_display->isEPD())
 		{
@@ -106,8 +105,6 @@ public:
 
 private:
 	TFT_eSPI* _display;
-	//OpenFontRender _font_renderer;
-
 	const Color _background = Color::Black;
 };
 

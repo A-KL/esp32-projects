@@ -72,6 +72,6 @@ protected:
 	int _borderSize;
 
 private:
-	bool _valid;
+	volatile bool _valid;
 	const UIElement* _parent;
 };

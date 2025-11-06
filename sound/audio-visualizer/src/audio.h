@@ -97,15 +97,12 @@ int ftt_bin_map[FTT_BANDS_COUNT] = {
 
 void fftResult(AudioFFTBase &fft)
 {
-    //fft.magnitudesFast()
     //fft.frequencyToBin()
-    //auto d = fft.result();
-    
     for (auto i=0; i<FTT_BANDS_COUNT; i++)
     {
         auto bin_index = ftt_bin_map[i]; 
-        auto bin_value = fft.magnitude(bin_index);
-       //form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 4700)
+        auto bin_value = fft.magnitudeFast(bin_index);
+        form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 4700)
     }
 }
 
@@ -183,8 +180,30 @@ void setupAudio()
   //sineWave.begin(info, N_B4);
 }
 
+static bool is_muted;
+
 void setVolume(long long value) 
 {
+    if (!is_muted && value == 0) {
+      form.volume.setText("M");
+      form.volume.setBackgroundColor(Color::Red);
+      form.setIcon(5, true);
+      volume_out.setVolume(0);
+      is_muted = true;
+      return;
+    }
+
+    if (is_muted && value == 0) {
+      form.volume.setBackgroundColor(Color::Black);
+      auto dbs = (int)(value* 0.5 - 127.5);       
+      form.volume.setTextF("%ddb", dbs);
+      form.setIcon(5, false);
+      volume_out.setVolume(0.5);
+      is_muted = false;
+      return;
+    }
+
+
     if (volume_out.setVolume(value / 255.0)){
       auto dbs = (int)(value* 0.5 - 127.5);
       form.volume.setTextF("%ddb", dbs);

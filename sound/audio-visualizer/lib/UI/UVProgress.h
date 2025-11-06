@@ -70,8 +70,8 @@ class UVProgress : public UIElement
 		const unsigned short _item_w = 3;
 		const unsigned short _item_fill_w = _item_w - 1;
 
-		unsigned short _newValue;
-		unsigned short _currentValue;
+		volatile unsigned short _newValue;
+		volatile unsigned short _currentValue;
 
 		const Color _activeColor;
 		const Color _activeThresholdColor;

@@ -5,18 +5,10 @@
 #include <AiEsp32RotaryEncoder.h>
 #include "RadioStation.h"
 
-#define MENU_PIN_A  35
-#define MENU_PIN_B  34
-#define MENU_BUTTON 32
-
-#define VOLUME_PIN_A  04
-#define VOLUME_PIN_B  21
-#define VOLUME_BUTTON 15
-
 static AiEsp32RotaryEncoder encoder_left(MENU_PIN_A, MENU_PIN_B, MENU_BUTTON, -1, 4);
 static AiEsp32RotaryEncoder encoder_right(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 4);
 
-void IRAM_ATTR readEncoderISR() //ARDUINO_ISR_ATTR
+void IRAM_ATTR readEncoderISR()
 {
   encoder_left.readEncoder_ISR();
   encoder_right.readEncoder_ISR();
@@ -69,6 +61,7 @@ void loopControls()
 
   if (encoder_right.isEncoderButtonClicked())
 	{
+      setVolume(0);
       log_e("encoder_right");
 	}
 #endif

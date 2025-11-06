@@ -27,7 +27,7 @@ void update_ui_thread(void * args)
       }
 
       form.Update(canvas);     
-      delay(70);
+      delay(20);
 
       //log_w("Redraw: %u", elapsed);
     }

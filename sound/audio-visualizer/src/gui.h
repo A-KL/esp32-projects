@@ -13,23 +13,15 @@ static bool ui_pthread_run = true;
 void update_ui_thread(void * args)
 {
   //auto canvas = (Canvas<Color>*)args;
-
-    while (ui_pthread_run) {
-     // auto currentMillis = millis();
-      // form.levelLeft.setValueOf(vu_out.value_left());
-      // form.levelRight.setValueOf(vu_out.value_right());
-      // auto elapsed = millis() - currentMillis;
-
-
+    while (ui_pthread_run) 
+    {
       if (form.IsValid()){
         delay(5);
         continue;
       }
-
       form.Update(canvas);     
-      delay(20);
+      delay(40);
 
-      //log_w("Redraw: %u", elapsed);
     }
   //  return NULL;
 }
@@ -48,13 +40,12 @@ void setupUI(void * args = NULL)
 
   xTaskCreatePinnedToCore(
                     update_ui_thread, /* Task function. */
-                    "UI",           /* name of task. */
-                    15 * 1024,          /* Stack size of task */
-                    args,           /* parameter of the task */
-                    0,              /* priority of the task */
-                    &ui_handle,      /* Task handle to keep track of created task */
-                    0);             /* pin task to core 0 */                  
-  //delay(500);
+                    "UI",             /* name of task. */
+                    15 * 1024,        /* Stack size of task */
+                    args,             /* parameter of the task */
+                    0,                /* priority of the task */
+                    &ui_handle,       /* Task handle to keep track of created task */
+                    0);               /* pin task to core 0 */                  
 }
 
 inline void loopUI()

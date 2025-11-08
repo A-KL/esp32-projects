@@ -41,7 +41,9 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Panel_HX8357B     _panel_instance;
 //lgfx::Panel_HX8357D     _panel_instance;
 //lgfx::Panel_ILI9163     _panel_instance;
-  lgfx::Panel_ILI9341_IPS     _panel_instance;
+#ifdef ILI9341_IPS_DRIVER
+ lgfx::Panel_ILI9341_IPS _panel_instance;
+#endif
 //lgfx::Panel_ILI9342     _panel_instance;
 //lgfx::Panel_ILI9481     _panel_instance;
 //lgfx::Panel_ILI9486     _panel_instance;
@@ -56,7 +58,9 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Panel_SSD1963     _panel_instance;
 //lgfx::Panel_ST7735      _panel_instance;
 //lgfx::Panel_ST7735S     _panel_instance;
-//lgfx::Panel_ST7789      _panel_instance;
+#ifdef ST7789_DRIVER
+  lgfx::Panel_ST7789      _panel_instance;
+#endif
 //lgfx::Panel_ST7796      _panel_instance;
 
 // Prepare an instance that matches the type of bus that connects the panels.

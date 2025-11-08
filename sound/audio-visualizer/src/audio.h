@@ -3,15 +3,17 @@
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
-
+//#include "AudioTools/Concurrency/RTOS.h"
 #include <VuOutput.h>
 
 #ifdef ARDUINO
   #include "AudioTools/Communication/AudioHttp.h"
-  #define INIT_VOLUME 0.6
+  #define INIT_VOLUME 0.8
 
   I2SStream speakers_out;
   URLStream in(WIFI_SSID, WIFI_PASSWORD);
+
+  I2SStream in_i2s;  // Audio source
 #else
   #include <iostream>
 
@@ -28,7 +30,7 @@
 // NumberFormatConverterStream nfc(decoded_out);
 
 //                                                           |-> AudioRealFFT
-//                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream
+//                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
 // In -> MultiOutput -|                                      |-> VuMeter
 //                    |-> MetaDataOutput
 
@@ -37,7 +39,7 @@ LogarithmicVolumeControl lvc(0.1);
 
 VuMeter<int16_t> vu_out(AUDIO_VU_RATIO);
 AudioRealFFT fft_out; // or AudioKissFFT or others
-MetaDataOutput metadata_out; // final output of metadata
+MetaDataOutput metadata_out;
 
 MultiOutput all_out;
 MultiOutput raw_out;
@@ -47,6 +49,19 @@ VolumeStream volume_out(speakers_out);
 EncodedAudioStream decoder(&all_out, &helix);
 
 StreamCopy copier(raw_out, in);
+
+// VolumeMeter out;
+//
+// auto cfg_out = out.defaultConfig();
+// cfg_out.copyFrom(info);
+// out.begin(cfg_out);
+//
+// Serial.print("Volume: ");
+// Serial.print(out.volume());
+// Serial.print(" left: ");
+// Serial.print(out.volume(0));
+// Serial.print(" right: ");
+// Serial.println(out.volume(1));
 
 void log_init()
 {
@@ -102,7 +117,7 @@ void fftResult(AudioFFTBase &fft)
     {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitudeFast(bin_index);
-        form.equalizer.bands.setBand(i, bin_value); //map(result.magnitude, 0, 255, 0, 4700)
+        form.equalizer.bands.setBand(i, bin_value); // static_cast<unsigned char>(map(result.magnitude, 0, 255, 0, 4700)
     }
 }
 
@@ -153,6 +168,8 @@ void setupAudio()
   tcfg.channels = info.channels;
   tcfg.sample_rate = info.sample_rate;
   tcfg.bits_per_sample = info.bits_per_sample;
+  //tcfg.window_function = new BufferedWindow(new Hamming());
+  //tcfg.window_function = new Hamming();
   tcfg.callback = &fftResult;
   fft_out.begin(tcfg);
 
@@ -185,8 +202,7 @@ static bool is_muted;
 void setVolume(long long value) 
 {
     if (!is_muted && value == 0) {
-      form.volume.setText("M");
-      form.volume.setBackgroundColor(Color::Red);
+      form.volume.setForecolor(Color::Gray);
       form.setIcon(5, true);
       volume_out.setVolume(0);
       is_muted = true;
@@ -194,7 +210,7 @@ void setVolume(long long value)
     }
 
     if (is_muted && value == 0) {
-      form.volume.setBackgroundColor(Color::Black);
+      form.volume.setForecolor(Color::White);
       auto dbs = (int)(value* 0.5 - 127.5);       
       form.volume.setTextF("%ddb", dbs);
       form.setIcon(5, false);

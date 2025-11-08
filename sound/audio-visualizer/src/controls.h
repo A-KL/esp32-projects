@@ -7,6 +7,7 @@
 
 static AiEsp32RotaryEncoder encoder_left(MENU_PIN_A, MENU_PIN_B, MENU_BUTTON, -1, 4);
 static AiEsp32RotaryEncoder encoder_right(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 4);
+static TaskHandle_t controls_task_t;
 
 void IRAM_ATTR readEncoderISR()
 {
@@ -16,7 +17,17 @@ void IRAM_ATTR readEncoderISR()
 
 #endif
 
-void setupControls()
+void loopControls();
+
+void read_inputs_task(void * args)
+{
+  while (true) {
+    loopControls();
+    delay(20);
+  }
+}
+
+void setupControls(bool async = false)
 {
 #ifdef ARDUINO
   encoder_left.begin();
@@ -32,6 +43,18 @@ void setupControls()
   encoder_right.setEncoderValue(200);
   encoder_right.disableAcceleration();
   encoder_right.enable();
+
+  if (async)
+  {
+    xTaskCreatePinnedToCore(
+                    read_inputs_task,      /* Task function. */
+                    "input_controls_task", /* name of task. */
+                    10 * 1024,              /* Stack size of task */
+                    NULL,                  /* parameter of the task */
+                    0,                     /* priority of the task */
+                    &controls_task_t,      /* Task handle to keep track of created task */
+                    0);                    /* pin task to core 0 */        
+  }
 #endif
 }
 

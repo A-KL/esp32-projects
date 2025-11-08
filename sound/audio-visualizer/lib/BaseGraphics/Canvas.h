@@ -4,8 +4,6 @@ template <typename TColor>
 class Canvas
 {
 public:
-	virtual void DrawPoint(int x, int y, const TColor& color) = 0;
-
 	virtual void DrawLine(int x0, int y0, int x1, int y1, const TColor& color) = 0;
 
 	virtual void DrawFilledRect(int x0, int y0, int w, int h, const TColor& color) = 0;
@@ -16,7 +14,10 @@ public:
 
 	virtual void SetFont(int index, unsigned char size) = 0;
 
-	//virtual void SetFont(const GFXfont& font) = 0;
+	virtual void SpriteBegin(int w, int h, const Color& color) = 0;
+	virtual void SpriteDrawLine(int x0, int y0, int x1, int y1, const Color& color) = 0;
+	virtual void SpritePush(int x, int y) = 0;
+	virtual void SpriteEnd() = 0;
 
 	virtual int Height() const = 0;
 

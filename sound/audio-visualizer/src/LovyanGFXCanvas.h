@@ -6,7 +6,7 @@
 class LovyanGFXCanvas : public Canvas<Color>
 {
 public:
-	LovyanGFXCanvas(TFT_eSPI* display) : _display(display)
+	LovyanGFXCanvas(TFT_eSPI* display) : _display(display), _sprite(display)
 	{ }
 
 	void Init(const Color& color = Color::Black)
@@ -34,14 +34,46 @@ public:
 		_display->loadFont(array);
 	}
 
-	void DrawPoint(int x, int y, const Color& color)
+	void SpriteBegin(int w, int h, const Color& color)
 	{
-		_display->drawPixel(x, y, (unsigned short)color);
+		_sprite.createSprite(w, h);
+		// _sprite.setColorDepth(16);
+		// _sprite.setSwapBytes(true);
+		// _sprite.fillSprite((unsigned short)color);
+	}
+
+	void SpritePush(int x, int y) 
+	{
+			_sprite.pushSprite(x, y);
+			//_sprite.fillSprite(TFT_BLACK);
+	}
+
+	void SpriteDrawLine(int x0, int y0, int x1, int y1, const Color& color)
+	{
+		if (y0 == y1) {
+			_sprite.drawFastHLine(x0, y0, x1 - x0, (unsigned short)color);
+		} else if (x0 == x1) {
+			_sprite.drawFastVLine(x0, y0, y1 - y0, (unsigned short)color);
+		} else {
+			_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
+		}
+		//_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
+	}
+
+	void SpriteEnd()
+	{
+		_sprite.deleteSprite();
 	}
 
 	void DrawLine(int x0, int y0, int x1, int y1, const Color& color)
 	{
-		_display->drawLine(x0, y0, x1, y1, (unsigned short)color);
+		if (y0 == y1) {
+			_display->drawFastHLine(x0, y0, x1 - x0, (unsigned short)color);
+		} else if (x0 == x1) {
+			_display->drawFastVLine(x0, y0, y1 - y0, (unsigned short)color);
+		} else {
+			_display->drawLine(x0, y0, x1, y1, (unsigned short)color);
+		}
 	}
 
 	void DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
@@ -105,6 +137,8 @@ public:
 
 private:
 	TFT_eSPI* _display;
+	TFT_eSprite _sprite;
+
 	const Color _background = Color::Black;
 };
 

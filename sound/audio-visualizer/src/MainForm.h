@@ -72,7 +72,7 @@ public:
         levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
-        footer({ 0, 240-18, 320, 18 }),
+        footer({ 10, 240-18, 320, 18 }),
 
         leftTextL({ 0, 181, 20, 15 }, "L"),
         rightTextL({ 0, 181 + 15 + 3, 20, 15 }, "R"),
@@ -135,7 +135,7 @@ private:
     UILabel rightTextValue;
 
     UILabel icons[6] {
-        {{ 0,                                          0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},
+        {{ 00,                                         0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},
         {{ 50 + 2,                                     0, 50, 18 }, "AUX",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2,                            0, 42, 18 }, "Web",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
@@ -165,22 +165,3 @@ private:
 
     const int icons_count = sizeof(icons) / sizeof(icons[0]);
 };
-
-// class InternetRadioView : public UIContainer
-// {
-// public: 
-//   InternetRadioView(const RadioStation* stations) 
-//     : UIContainer({ 0, 0, 320, 240 - 23 })
-//   {
-//     UIList<RadioStation> stationsList({ 0, 0, 320, 240 - 23 });
-
-//     // for (auto i=0; i < sizeof(Stations)/sizeof(Stations[0]); i++)
-//     // {
-//     //     stations.Add(Stations[i]);
-//     // } 
-//     Add(stationsList);
-//   }
-
-// private:
-//     RadioStation* _stations;
-// };

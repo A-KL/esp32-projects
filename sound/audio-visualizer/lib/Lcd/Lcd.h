@@ -12,20 +12,22 @@
     #include <LGFX_AUTODETECT.hpp>
   #endif
 
-  #ifdef ILI9341_DRIVER
-    #include "LGFX_ESP32_ILI9341.hpp"
-  #endif
+  // #ifdef ILI9341_DRIVER
+  //   #include "LGFX_ESP32_ILI9341.hpp"
+  // #endif
 
-  #ifdef ILI9341_IPS_DRIVER
+  // #ifdef ILI9341_IPS_DRIVER
+  //  #include "LGFX_ESP32_IPS_ILI9341.hpp"
+  // #endif
+
+  // #ifdef ST7789_DRIVER
+  //   #ifdef TFT_PARALLEL_8_BIT
+  //     #include "LGFX_ESP32_ST7789_P8B.hpp"
+  //   #endif
+  // #endif
+  #if not defined ( SDL_h_ ) 
     #include "LGFX_ESP32_IPS_ILI9341.hpp"
   #endif
-
-  #ifdef ST7789_DRIVER
-    #ifdef TFT_PARALLEL_8_BIT
-      #include "LGFX_ESP32_ST7789_P8B.hpp"
-    #endif
-  #endif
-  
   #include <LGFX_TFT_eSPI.h>
 
   // #if defined ( SDL_h_ )

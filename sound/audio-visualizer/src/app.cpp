@@ -25,7 +25,7 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 #endif
 
 #include "audio.h"
-#include "gui.h"
+//#include "gui.h"
 #include "controls.h"
 
 #if (TFT_HEIGHT > 320)
@@ -42,15 +42,15 @@ void setup()
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
-  // setupWiFi();
-  //setupControls();
+  setupControls(true);
   setupAudio();
 
   canvas.Clear(Color::Black);
 
-  setupUI();
+  //setupUI();
 
-  //form.Update(canvas);
+  form.setIcon(2, true);
+  form.Update(canvas);
 
 #ifdef ARDUINO
   log_w("Core %d. Free heap (KB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0));
@@ -70,5 +70,8 @@ void loop()
   loopAudio();
   //loopControls();
 
-  //form.Update(canvas);
+  //auto d = millis();
+  form.Update(canvas);
+  // auto elapsed = millis() - d;
+  // LOGW("UI: %u", elapsed);
 }

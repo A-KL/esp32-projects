@@ -3,7 +3,7 @@
 #endif
 
 #ifdef ARDUINO
-  #include "LGFX_ESP32_ILI9341.hpp"
+  #include "LGFX_ESP32_IPS_ILI9341.hpp"
 #endif
 
 #include <LGFX_TFT_eSPI.h>
@@ -23,16 +23,37 @@ void setup()
 #endif
 
   lcd.init();
-  // lcd.setColorDepth(16);
-  // lcd.startWrite();
+  //lcd.setRotation(1);
+  lcd.setColorDepth(16);
+  lcd.startWrite();
   lcd.fillScreen(TFT_BLACK);
 
-  lcd.loadFont(NotoSansBold15); // If I try to load the font
+  auto left = 10;
+  auto top = 10;
+  auto w = 200;
+  auto h = 100;
 
-  lcd.setTextColor(TFT_CYAN, TFT_BLACK);
-  lcd.drawCenterString("TEST string!", 50, 50); // this line doesn't draw anything
+  TFT_eSprite sprite(&lcd);
+  sprite.createSprite(w, 1);
+  // sprite.setColorDepth(16);
+	// sprite.setSwapBytes(true);
+	// sprite.fillSprite(TFT_BLACK);
 
-  lcd.fillRect(120, 20, 100, 100, TFT_BLUE); // nor this one
+  sprite.drawLine(0, 0, 100, 0, TFT_YELLOW);
+  sprite.pushSprite(left, top);
+
+  sprite.deleteSprite();
+  sprite.createSprite(w, 2);
+  // sprite.setColorDepth(16);
+	// sprite.setSwapBytes(true);
+	// sprite.fillSprite(TFT_BLACK);
+
+  //sprite.fillSprite(TFT_BLACK);
+
+  sprite.drawLine(0, 0, 100, 0, TFT_GREEN);
+  sprite.pushSprite(left, top + 5);
+
+  sprite.deleteSprite();
 }
 
 void loop() 

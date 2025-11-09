@@ -34,6 +34,9 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
    #include "NotoSansBold15.h"
 #endif
 
+#include "AudioTools/Concurrency/RTOS.h"
+Task task("write", 5 * 1024, 10, 0);
+
 void setup() 
 {
   log_init();
@@ -42,7 +45,8 @@ void setup()
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
-  setupControls(true);
+  //setupControls(true);
+  setupControls();
   setupAudio();
 
   canvas.Clear(Color::Black);
@@ -51,6 +55,9 @@ void setup()
 
   form.setIcon(2, true);
   form.Update(canvas);
+
+ // task.begin([](){form.Update(canvas);});
+  task.begin([](){loopAudio(); delay(5);});
 
 #ifdef ARDUINO
   log_w("Core %d. Free heap (KB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0));
@@ -66,12 +73,11 @@ void loop()
 
   // form.setIcon(_selectedAudioTarget, 1);
   // form.setIcon(_selectedAudioSource + 2, 1);
-
-  loopAudio();
-  //loopControls();
-
-  //auto d = millis();
+ //auto d = millis();
+  //loopAudio();
+  loopControls();
   form.Update(canvas);
+  //delay(100);
   // auto elapsed = millis() - d;
-  // LOGW("UI: %u", elapsed);
+  // LOGW("AUDIO: %u", elapsed);
 }

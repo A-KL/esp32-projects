@@ -6,9 +6,11 @@
 //#include "AudioTools/Concurrency/RTOS.h"
 #include <VuOutput.h>
 
+#include "bands.h"
+
 #ifdef ARDUINO
   #include "AudioTools/Communication/AudioHttp.h"
-  #define INIT_VOLUME 0.8
+  #define INIT_VOLUME 0.6
 
   I2SStream speakers_out;
   URLStream in(WIFI_SSID, WIFI_PASSWORD);
@@ -71,53 +73,14 @@ void log_init()
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 }
 
-void setupWiFi() {
-  delay(1000);
-}
-
-// 4096 / 2 = 2048 bins
-// 44100 / 2048 = 21.5 Hz per bin
-int ftt_bin_map[FTT_BANDS_COUNT] = {
-  1, // 21.5 Hz
-  2, // 43 Hz
-  3, // 64 Hz
-  5, // 105 Hz
-  6,
-  7, // 157 Hz
-  10,
-  12, // 250 Hz
-  15,
-  18, // 400 Hz
-  23,
-  29, // 630 Hz
-  35,
-  46, // 1kHz
-  55,
-  74, // 1k6
-  100,
-  116, // 2k5
-  150,
-  186, // 4k
-  200,
-  250,
-  293, // 6k3
-  350,
-  400,
-  465, // 10k
-  500,
-  550,
-  600,
-  744, // 16k
-};   
-
 void fftResult(AudioFFTBase &fft)
 {
     //fft.frequencyToBin()
-    for (auto i=0; i<FTT_BANDS_COUNT; i++)
+    for (auto i=0; i < FTT_BANDS_COUNT; i++)
     {
         auto bin_index = ftt_bin_map[i]; 
-        auto bin_value = fft.magnitudeFast(bin_index);
-        form.equalizer.bands.setBand(i, bin_value); // static_cast<unsigned char>(map(result.magnitude, 0, 255, 0, 4700)
+        auto bin_value = fft.magnitude(bin_index);
+        form.equalizer.bands.setBand(i, sqrt(bin_value)*10); // static_cast<unsigned char>(map(result.magnitude, 0, 255, 0, 4700)
     }
 }
 
@@ -169,7 +132,7 @@ void setupAudio()
   tcfg.sample_rate = info.sample_rate;
   tcfg.bits_per_sample = info.bits_per_sample;
   //tcfg.window_function = new BufferedWindow(new Hamming());
-  //tcfg.window_function = new Hamming();
+  tcfg.window_function = new Hamming();
   tcfg.callback = &fftResult;
   fft_out.begin(tcfg);
 

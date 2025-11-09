@@ -37,15 +37,15 @@ public:
 	void SpriteBegin(int w, int h, const Color& color)
 	{
 		_sprite.createSprite(w, h);
-		// _sprite.setColorDepth(16);
-		// _sprite.setSwapBytes(true);
-		// _sprite.fillSprite((unsigned short)color);
+		//_sprite.setColorDepth(16);
+		//_sprite.setSwapBytes(true);
+		//_sprite.fillSprite((unsigned short)color);
+		//log_w("sprite %d x %d created: %d", w, h, res != nullptr);
 	}
 
 	void SpritePush(int x, int y) 
 	{
 			_sprite.pushSprite(x, y);
-			//_sprite.fillSprite(TFT_BLACK);
 	}
 
 	void SpriteDrawLine(int x0, int y0, int x1, int y1, const Color& color)

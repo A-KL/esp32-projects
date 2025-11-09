@@ -8,8 +8,7 @@ class UISoundAnalyzer : public UIElement
 public:
 	UISoundAnalyzer(const UIRect& rect) : UIElement(rect)
 	{ 
-		for (int j = 0; j < count(); j++)
-		{
+		for (int j = 0; j < count(); j++){
 			_channels[j] = 0;
 		}
 	}
@@ -54,36 +53,40 @@ protected:
 		AbsolutePosition(origin_x, origin_y);
 
 		const auto last_row_index = _vertical_elements_count - 1;
-		auto y = origin_y - 4; // TMP
 
-		for (auto i = 0; i < _vertical_elements_count; i++)
-		{
-			canvas.SpriteBegin(_rect.w, 1, TFT_BLACK);
+		auto x = origin_x;
+		
 
-			auto x = 0;
-			auto color_off = _colorDarkGreen;
-			auto color_on = _colorGreen;
-			auto main_color = color_off;
+		for (int j = 0; j < TChannels; j++) 
+		{	
+			auto y = 0;
 
-			if (i % 10 == 0 || i == last_row_index) {
-				color_off = _colorDarkYellow;
-				color_on = _colorYellow;
-			}
+			x += _element_padding_x;
 
-			for (int j = 0; j < TChannels; j++) {
-				main_color = ((_vertical_elements_count - _channels[j]) <= i) ? color_on : color_off;
-
-				x += _element_padding_x;
-
-				canvas.SpriteDrawLine(x, 0, x + _element_width, 0, main_color);
-
-				x += _element_width;
-			}
-
-			canvas.SpritePush(origin_x, y);
 			canvas.SpriteEnd();
+			canvas.SpriteBegin(_element_width, _rect.h, TFT_BLACK);
 
-			y += (1 + _element_padding_y);
+			for (auto i = 0; i < _vertical_elements_count; i++)
+			{
+				auto color_off = _colorDarkGreen;
+				auto color_on = _colorGreen;
+				auto main_color = color_off;
+
+				if (i % 10 == 0 || i == last_row_index) {
+					color_off = _colorDarkYellow;
+					color_on = _colorYellow;
+				}
+
+				main_color = ((_vertical_elements_count - _channels[j]) <= i) ? color_on : color_off;		
+
+				canvas.SpriteDrawLine(0, y, _element_width, y, main_color);
+
+				y += (1 + _element_padding_y);
+			}
+	
+			canvas.SpritePush(x, origin_y);
+			lgfx::delayMicroseconds(250);
+			x += _element_width;
 		}
 	}
 

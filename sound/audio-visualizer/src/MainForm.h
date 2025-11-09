@@ -11,7 +11,7 @@ class UISoundEqualizer : public UIContainer
 {
 public:    
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
-        bands({ 30, 10, rect.w - 50, rect.h - 120 - 23})
+        bands({ 30, 7, rect.w - 50, rect.h - 75})
     {
         for (int i=0; i< (sizeof(level_labels) / sizeof(level_labels[0])); i++)
         {
@@ -63,7 +63,7 @@ public:
   MainForm(const UIRect& rect) : 
         UIContainer(rect),
 
-        volume({ 320 - 40, 0, 40, 20 }, "-20db"),
+        volume({ 320 - 50, 0, 50, 20 }, "-20db"),
         track({ 0, 0, 320 - 40, 20 }, "[Title]"),
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),

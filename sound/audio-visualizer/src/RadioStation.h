@@ -14,7 +14,7 @@ struct RadioStation
     }
 };
 
-RadioStation RadioStations[] { 
+static RadioStation RadioStations[] { 
   {"Local", "http://192.168.1.85:49868/stream/swyh.mp3"},
   {"Asia Dream", "https://igor.torontocast.com:1025/;.mp3"},
   {"KPop Radio", "http://streamer.radio.co/s06b196587/listen"},
@@ -28,4 +28,4 @@ RadioStation RadioStations[] {
   {"Veronica ", "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
 };
 
-static constexpr int RadioStationsCount = (sizeof(RadioStations)/sizeof(RadioStation) - 1);
+static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(RadioStation) - 1);

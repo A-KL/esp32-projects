@@ -11,30 +11,17 @@
   #ifdef LGFX_AUTODETECT
     #include <LGFX_AUTODETECT.hpp>
   #endif
-
-  // #ifdef ILI9341_DRIVER
-  //   #include "LGFX_ESP32_ILI9341.hpp"
-  // #endif
-
-  // #ifdef ILI9341_IPS_DRIVER
-  //  #include "LGFX_ESP32_IPS_ILI9341.hpp"
-  // #endif
-
-  // #ifdef ST7789_DRIVER
-  //   #ifdef TFT_PARALLEL_8_BIT
-  //     #include "LGFX_ESP32_ST7789_P8B.hpp"
-  //   #endif
-  // #endif
-  #if not defined ( SDL_h_ ) 
-    #include "LGFX_ESP32_IPS_ILI9341.hpp"
+  
+  #if not defined ( SDL_h_ )
+    #include "LGFX_ESP32_LCD.hpp"
   #endif
   #include <LGFX_TFT_eSPI.h>
 
-  // #if defined ( SDL_h_ )
-  //   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
-  // #else
-    //static TFT_eSPI lcd;
-  // #endif
+  #if defined ( SDL_h_ )
+    static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
+  #else
+    static TFT_eSPI lcd;
+  #endif
 #endif
 
 /************************************************************************/
@@ -48,7 +35,7 @@
     #error Select on of the suported Adafruit_GFX display drivers
   #endif
 
-  TFT_eSPI lcd(TFT_CS, TFT_DC, TFT_RES);
+  static TFT_eSPI lcd(TFT_CS, TFT_DC, TFT_RES);
 #endif
 
 /************************************************************************/
@@ -57,6 +44,6 @@
 #ifdef TFT_eSPI_BACKEND
   #include <SPI.h>
   #include <TFT_eSPI.h>
-  //static TFT_eSPI lcd;
+  static TFT_eSPI lcd;
 #endif
 

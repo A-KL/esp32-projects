@@ -76,9 +76,7 @@ void loopControls()
 
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    // auto muted = !radio.muted();
-    // radio.setMute(muted);
-    // form.setIcon(5, muted);
+    changeAudioInput();
     log_e("encoder_left");
 	}
 

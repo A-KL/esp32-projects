@@ -68,8 +68,8 @@ public:
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
-        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
+        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
+        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 10, 240-18, 320, 18 }),
@@ -137,9 +137,9 @@ private:
     UILabel icons[6] {
         {{ 00,                                         0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},
         {{ 50 + 2,                                     0, 50, 18 }, "AUX",  Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 50 + 2,                            0, 42, 18 }, "Web",  Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2,                            0, 42, 18 }, "RDS",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "A2DP", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "USB",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2 + 50 + 2, 0, 50, 18 }, "MUTE", Color::Gray, Color::Gray, 2}
     };
 
@@ -148,8 +148,8 @@ private:
         Color::Green,
 
         Color::Purpule,
-        Color::Purpule,
         Color::LightBlue,
+        Color::Orange,
         
         Color::Red,
     };

@@ -19,7 +19,7 @@ int user_func(bool* running)
   } 
   while (*running);
 
-  //cleanup();
+  cleanup();
 
   return 0;
 }

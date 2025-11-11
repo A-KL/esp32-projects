@@ -5,27 +5,13 @@
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
+#include "LovyanGFXCanvas.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-
-#if defined ( SDL_h_ )
-  #include "LovyanGFXCanvas.h"
-  static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
-  static LovyanGFXCanvas canvas(&lcd);
-#else
-  #if defined(LOVYANGFX_HPP_) or defined(_TFT_eSPIH_)
-    #include "LovyanGFXCanvas.h"
-    static TFT_eSPI lcd;
-    static LovyanGFXCanvas canvas(&lcd);
-  #else
-    #include "TFT_eSPI_Canvas.h"
-    static TFT_eSPI lcd(TFT_CS, TFT_DC, TFT_RES);
-    static TFT_eSPI_Canvas canvas(&lcd);
-  #endif
-#endif
+static LovyanGFXCanvas canvas(&lcd);
 
 #include "audio.h"
-//#include "gui.h"
+#include "concurrent.h"
 #include "controls.h"
 
 #if (TFT_HEIGHT > 320)
@@ -33,9 +19,6 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 #else
    #include "NotoSansBold15.h"
 #endif
-
-#include "AudioTools/Concurrency/RTOS.h"
-Task task("write", 5 * 1024, 10, 0);
 
 void setup() 
 {
@@ -45,39 +28,28 @@ void setup()
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
-  //setupControls(true);
   setupControls();
   setupAudio();
+  delay(1000);
 
   canvas.Clear(Color::Black);
-
-  //setupUI();
 
   form.setIcon(2, true);
   form.Update(canvas);
 
- // task.begin([](){form.Update(canvas);});
-  task.begin([](){loopAudio(); delay(5);});
-
 #ifdef ARDUINO
   log_w("Core %d. Free heap (KB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0));
 #endif
+
+  startTasks();
 }
 
 void loop() 
 {
-  // static auto _selectedAudioSource = 0;
-  // static auto _selectedAudioTarget = 1;
-
-  //selectAudio(_selectedAudioTarget, _selectedAudioSource);
-
-  // form.setIcon(_selectedAudioTarget, 1);
-  // form.setIcon(_selectedAudioSource + 2, 1);
- //auto d = millis();
-  //loopAudio();
-  loopControls();
+  // auto d = millis();
+  // loopAudio();
+ // loopControls();
   form.Update(canvas);
-  //delay(100);
   // auto elapsed = millis() - d;
   // LOGW("AUDIO: %u", elapsed);
 }

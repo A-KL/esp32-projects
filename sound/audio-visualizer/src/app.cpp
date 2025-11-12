@@ -11,6 +11,7 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 static LovyanGFXCanvas canvas(&lcd);
 
 #include "audio.h"
+#include "audio_user.h"
 #include "concurrent.h"
 #include "controls.h"
 
@@ -48,7 +49,7 @@ void loop()
 {
   // auto d = millis();
   // loopAudio();
- // loopControls();
+  loopControls();
   form.Update(canvas);
   // auto elapsed = millis() - d;
   // LOGW("AUDIO: %u", elapsed);

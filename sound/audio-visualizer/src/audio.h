@@ -1,25 +1,39 @@
 #pragma once
-
 // #include "Adafruit_TinyUSB.h"
-
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
-#include <VuOutput.h>
-#include "bands.h"
 #include "RadioStation.h"
+#include "bands.h"
+
+static constexpr RadioStation RadioStations[] { 
+  {"SWISS Jazz",            "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
+
+  {"Radio Roks UA Ballads", "http://radio.d4ua.com:8800/roks_ballads"},
+  {"Radio Roks UA",         "https://online.radioroks.ua/bak_RadioROKS"},
+  {"Radio Roks UA HD",      "https://online.radioroks.ua/bak_RadioROKSTe_HD"},
+
+ // {"Local",                 "http://192.168.1.85:49868/stream/swyh.mp3"},
+  {"Asia Dream",            "https://igor.torontocast.com:1025/;.mp3"},
+  {"KPop Radio",            "http://streamer.radio.co/s06b196587/listen"},
+  {"Classic FM",            "http://media-ice.musicradio.com:80/ClassicFMMP3"},
+  {"Lite Favorites",        "http://naxos.cdnstream.com:80/1255_128"},
+  {"MAXXED Out",            "http://149.56.195.94:8015/steam"},
+  {"SomaFM Xmas",           "http://ice2.somafm.com/christmas-128-mp3"},
+  {"Veronica ",             "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
+};
+static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(RadioStations[0]));
 
 #ifdef ARDUINO
-  #include "AudioTools/Communication/AudioHttp.h"
-  #include "radio.h"
+  #include "RadioStream.h"
   #define INIT_VOLUME 0.6
 
   I2SStream speakers_out;
-  RadioStream in(WIFI_SSID, WIFI_PASSWORD);
-  I2SStream in_i2s;  // Audio source
+  RadioStream in(RadioStations, RadioStationsCount, WIFI_SSID, WIFI_PASSWORD);
+  // I2SStream in_i2s;  // Audio source
 
-  AudioStream* inputs[] = { &in, &in_i2s}; 
-  constexpr int inputs_count = sizeof(inputs) / sizeof(inputs[0]);
+  // AudioStream* inputs[] = { &in, &in_i2s}; 
+  // constexpr int inputs_count = sizeof(inputs) / sizeof(inputs[0]);
 #else
   #include <iostream>
 
@@ -27,27 +41,21 @@
   #include "AudioTools/AudioLibs/Desktop/File.h"
 
   #define INIT_VOLUME 1.0
+
   PortAudioStream speakers_out;
   File in("./sound/file_example_MP3_700KB.mp3");
-
- // AudioStream* inputs[] = { &in }; 
 #endif
 
-// SineWaveGenerator<int16_t> sineWave(32000);    // subclass of SoundGenerator with max amplitude of 32000
-// GeneratedSoundStream<int16_t> in(sineWave);    // Stream generated from sine wave
 // NumberFormatConverterStream nfc(decoded_out);
-
 //                                                           |-> AudioRealFFT
 //                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
-// In -> MultiOutput -|                                      |-> VuMeter
+// In -> MultiOutput -|                                      |-> VolumeMeter
 //                    |-> MetaDataOutput
 
 AudioInfo info(44100, 2, 16);
 LogarithmicVolumeControl lvc(0.1);
 
-VuMeter<int16_t> vu_out(AUDIO_VU_RATIO);
-VolumeMeter meter;
-
+VolumeMeter meter_out;
 AudioRealFFT fft_out; // or AudioKissFFT or others
 MetaDataOutput metadata_out;
 
@@ -60,10 +68,6 @@ EncodedAudioStream decoder(&all_out, &helix);
 
 StreamCopy copier(raw_out, in);
 
-// auto cfg_meter = meter.defaultConfig();
-// cfg_meter.copyFrom(info);
-// out.begin(cfg_meter);
-
 void log_init()
 {
 #ifdef ARDUINO
@@ -74,8 +78,7 @@ void log_init()
 
 void fftResult(AudioFFTBase &fft) {
     //fft.frequencyToBin()
-    for (auto i=0; i < FTT_BANDS_COUNT; i++)
-    {
+    for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
         form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
@@ -98,7 +101,6 @@ void setupAudio()
 {
   // Input: File or stream
 #ifdef ARDUINO
-  in.setPlaylist(RadioStations, RadioStationsCount);
   in.begin();
 #else
   in.begin();
@@ -109,6 +111,7 @@ void setupAudio()
 
   // Out - VU
  // vu_out.begin();
+  meter_out.begin(info);
 
   // Out - Speakers
 #ifdef ARDUINO
@@ -140,13 +143,8 @@ void setupAudio()
   metadata_out.begin();
 
   // Out - Volume
-
   volume_out.setVolumeControl(lvc);
   volume_out.setVolume(INIT_VOLUME);
-
-  // auto cfg_meter = meter.defaultConfig();
-  // cfg_meter.copyFrom(info);
-  meter.begin(info);
 
   // Out - Mixer
   raw_out.add(decoder);
@@ -156,73 +154,18 @@ void setupAudio()
   //all_out.add(vu_out);
   //all_out.add(speakers_out);
   all_out.add(volume_out);
-  all_out.add(meter);
+  all_out.add(meter_out);
   all_out.add(fft_out);
 
   all_out.begin(info);
 }
 
-inline void loopAudio()
+void loopAudio()
 {
   copier.copy();
 
   // form.levelLeft.setValueOf(vu_out.value_left());
   // form.levelRight.setValueOf(vu_out.value_right());
-
-  form.levelLeft.setValueOf(meter.volume(0));
-  form.levelRight.setValueOf(meter.volume(1));
-}
-
-// ----------------------------------------------------//
-static bool is_muted;
-constexpr const char* input_labels[] = { "rds", "USB" };
-static int selected_input = 0;
-
-void setVolume(long long value) 
-{
-    if (!is_muted && value == 0) {
-      form.volume.setForecolor(Color::Gray);
-      form.setIcon(5, true);
-      volume_out.setVolume(0);
-      is_muted = true;
-      return;
-    }
-
-    if (is_muted && value == 0) {
-      form.volume.setForecolor(Color::White);
-      auto dbs = (int)(value* 0.5 - 127.5);       
-      form.volume.setTextF("%ddb", dbs);
-      form.setIcon(5, false);
-      volume_out.setVolume(0.5);
-      is_muted = false;
-      return;
-    }
-
-
-    if (volume_out.setVolume(value / 255.0)){
-      auto dbs = (int)(value* 0.5 - 127.5);
-      form.volume.setTextF("%ddb", dbs);
-    }
-
-    // volumeDac(value);
-}
-
-void changeAudioInput()
-{
-  // inputs[selected_input]->end();
-  // selected_input++;
-
-  // if (inputs_count <= selected_input) {
-  //   selected_input = 0;
-  // }
-  // inputs[selected_input]->begin();
-}
-
-void selectAudio(int dest, int src) 
-{
-  // static auto _selectedAudioSource = 0;
-  // static auto _selectedAudioTarget = 1;
-  // selectAudio(_selectedAudioTarget, _selectedAudioSource);
-  // form.setIcon(_selectedAudioTarget, 1);
-  // form.setIcon(_selectedAudioSource + 2, 1);
+  form.levelLeft.setValueOf(meter_out.volume(0));
+  form.levelRight.setValueOf(meter_out.volume(1));
 }

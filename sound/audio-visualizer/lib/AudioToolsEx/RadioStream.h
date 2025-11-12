@@ -5,9 +5,16 @@
 #include "AudioTools/Communication/AudioHttp.h"
 #include "RadioStation.h"
 
+//using namespace arduino;
+
+namespace audio_tools {
+
 class RadioStream : public URLStream {
   public:
-    RadioStream(const char* network, const char* password, int readBufferSize = DEFAULT_BUFFER_SIZE) 
+    RadioStream(
+      const RadioStation* stations, 
+      const size_t count, 
+      const char* network, const char* password, int readBufferSize = DEFAULT_BUFFER_SIZE) 
       : URLStream(network, password, readBufferSize), _selected_radio(0) {
     }
 
@@ -28,7 +35,7 @@ class RadioStream : public URLStream {
   
   virtual bool begin(int index = -1, MethodID action = GET, const char* reqMime = "", const char* reqData = "") {
     auto& station = _radios[ index != -1 ? index : _selected_radio];
-    auto success = URLStream::begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3", action, reqMime, reqData);
+    auto success = URLStream::begin(station.Url, "audio/mp3", action, reqMime, reqData);
 
     LOGW("Radio: %s (%s) [%s]", station.Name, station.Url, success ? "OK" : "FAILED");
     return success;
@@ -38,3 +45,5 @@ class RadioStream : public URLStream {
     std::vector<RadioStation> _radios;
     int _selected_radio = 0;
 };
+
+}  // namespace audio_tools

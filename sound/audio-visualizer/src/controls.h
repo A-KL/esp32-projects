@@ -85,5 +85,17 @@ void loopControls()
       setVolume(0);
       log_e("encoder_right");
 	}
+#else
+
+	if (lgfx::v1::gpio_in(MENU_BUTTON) == 0) {
+    changeAudioInput();
+    lgfx::delayMicroseconds(100000);
+	}
+
+  if (lgfx::v1::gpio_in(VOLUME_BUTTON) == 0) {
+      setVolume(0);
+      lgfx::delayMicroseconds(100000);
+	}
+  
 #endif
 }

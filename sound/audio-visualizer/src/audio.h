@@ -81,7 +81,8 @@ void fftResult(AudioFFTBase &fft) {
     for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
-        form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
+       // form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
+       //form.equalizer.bands.setBand(i, bin_value);
     }
 }
 
@@ -102,6 +103,7 @@ void setupAudio()
   // Input: File or stream
 #ifdef ARDUINO
   in.begin();
+  form.track.setText(in.getTitle());
 #else
   in.begin();
 #endif
@@ -110,7 +112,6 @@ void setupAudio()
   decoder.begin();
 
   // Out - VU
- // vu_out.begin();
   meter_out.begin(info);
 
   // Out - Speakers
@@ -163,9 +164,7 @@ void setupAudio()
 void loopAudio()
 {
   copier.copy();
-
-  // form.levelLeft.setValueOf(vu_out.value_left());
-  // form.levelRight.setValueOf(vu_out.value_right());
+  
   form.levelLeft.setValueOf(meter_out.volume(0));
   form.levelRight.setValueOf(meter_out.volume(1));
 }

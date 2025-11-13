@@ -11,7 +11,7 @@ static pthread_t system_pthread;
 static bool system_pthread_run = true;
 
 // #include "AudioTools/Concurrency/RTOS.h"
-// Task task("write", 5 * 1024, 10, 0);
+Task task("write", 5 * 1024, 10, 0);
 
 void* run_system_thread(void * args)
 {
@@ -19,7 +19,7 @@ void* run_system_thread(void * args)
     while (system_pthread_run) 
     {
       loopAudio(); 
-      delay(15);
+      delay(5);
       // if (form.IsValid()){
       //   delay(5);
       //   continue;
@@ -40,7 +40,7 @@ void startTasks(void * args = NULL)
     esp_pthread_set_cfg(&cfg);
 #endif
     system_pthread_run = true;
-    pthread_create(&system_pthread, NULL, run_system_thread, nullptr);
+  //  pthread_create(&system_pthread, NULL, run_system_thread, nullptr);
 
   // xTaskCreatePinnedToCore(
   //                   update_ui_thread, /* Task function. */
@@ -51,7 +51,7 @@ void startTasks(void * args = NULL)
   //                   &ui_handle,       /* Task handle to keep track of created task */
   //                   0);               /* pin task to core 0 */      
   
-   //task.begin([](){loopAudio(); delay(5);});
+  task.begin([](){loopAudio(); delay(10);});
 }
 
 void cleanup() {

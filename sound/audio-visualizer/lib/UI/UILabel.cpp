@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "../BaseGraphics/Color.h"
-#include "../BaseGraphics/Canvas.h"
+#include <Color.h>
+#include <Canvas.h>
 
 #include "UIElement.h"
 #include "UILabel.h"

@@ -16,9 +16,10 @@ class RadioStream : public URLStream {
       const size_t count, 
       const char* network, const char* password, int readBufferSize = DEFAULT_BUFFER_SIZE) 
       : URLStream(network, password, readBufferSize), _selected_radio(0) {
+        setPlaylist(stations, count);
     }
 
-  void setStation(int i) {
+  void setStation(const int i) {
     auto channel = constrain(i, 0, _radios.size());
 
     if (_selected_radio != channel && active) {
@@ -28,7 +29,7 @@ class RadioStream : public URLStream {
     _selected_radio = channel;
   }
 
-  void setPlaylist(RadioStation* stations, size_t count) {
+  void setPlaylist(const RadioStation* stations, const size_t count) {
     _radios.clear();
     _radios.insert(_radios.end(), stations, stations+count);
   }
@@ -39,6 +40,10 @@ class RadioStream : public URLStream {
 
     LOGW("Radio: %s (%s) [%s]", station.Name, station.Url, success ? "OK" : "FAILED");
     return success;
+  }
+
+  const char* getTitle() {
+    return  _radios[_selected_radio].Name;
   }
 
   private:

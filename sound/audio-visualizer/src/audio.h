@@ -5,35 +5,36 @@
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
 #include "RadioStation.h"
 #include "bands.h"
+#include "StreamRouter.h"
+#include "VuOutput.h"
 
 static constexpr RadioStation RadioStations[] { 
   {"SWISS Jazz",            "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
-
   {"Radio Roks UA Ballads", "http://radio.d4ua.com:8800/roks_ballads"},
-  {"Radio Roks UA",         "https://online.radioroks.ua/bak_RadioROKS"},
-  {"Radio Roks UA HD",      "https://online.radioroks.ua/bak_RadioROKSTe_HD"},
-
- // {"Local",                 "http://192.168.1.85:49868/stream/swyh.mp3"},
-  {"Asia Dream",            "https://igor.torontocast.com:1025/;.mp3"},
-  {"KPop Radio",            "http://streamer.radio.co/s06b196587/listen"},
+  {"Radio Roks UA",         "http://online.radioroks.ua/bak_RadioROKS"},
+  {"Radio Roks UA HD",      "http://online.radioroks.ua/bak_RadioROKSTe_HD"},
   {"Classic FM",            "http://media-ice.musicradio.com:80/ClassicFMMP3"},
   {"Lite Favorites",        "http://naxos.cdnstream.com:80/1255_128"},
   {"MAXXED Out",            "http://149.56.195.94:8015/steam"},
   {"SomaFM Xmas",           "http://ice2.somafm.com/christmas-128-mp3"},
-  {"Veronica ",             "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
+  {"Veronica ",             "http://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
 };
 static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(RadioStations[0]));
 
+//                                        I2SStream-In                       |-> AudioRealFFT
+//                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
+// RadioStream [File] -> MultiOutput -|                                      |-> VolumeMeter
+//                                    |-> MetaDataOutput
+//
+
 #ifdef ARDUINO
   #include "RadioStream.h"
-  #define INIT_VOLUME 0.6
+  
+  #define INIT_VOLUME 0.8
 
-  I2SStream speakers_out;
-  RadioStream in(RadioStations, RadioStationsCount, WIFI_SSID, WIFI_PASSWORD);
-  // I2SStream in_i2s;  // Audio source
-
-  // AudioStream* inputs[] = { &in, &in_i2s}; 
-  // constexpr int inputs_count = sizeof(inputs) / sizeof(inputs[0]);
+  I2SStream audio_out;
+  RadioStream radio_in(RadioStations, RadioStationsCount, WIFI_SSID, WIFI_PASSWORD);
+  I2SStream stream_in;
 #else
   #include <iostream>
 
@@ -42,51 +43,50 @@ static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(Rad
 
   #define INIT_VOLUME 1.0
 
-  PortAudioStream speakers_out;
-  File in("./sound/file_example_MP3_700KB.mp3");
+  PortAudioStream audio_out;
+  File radio_in("./sound/file_example_MP3_700KB.mp3");
+  File stream_in("./sound/file_example_MP3_700KB.mp3");
 #endif
 
-// NumberFormatConverterStream nfc(decoded_out);
-//                                                           |-> AudioRealFFT
-//                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
-// In -> MultiOutput -|                                      |-> VolumeMeter
-//                    |-> MetaDataOutput
-
+// AudioInfo info(48000, 2, 32);
 AudioInfo info(44100, 2, 16);
-LogarithmicVolumeControl lvc(0.1);
 
+LogarithmicVolumeControl lvc(0.1);
+VuMeter<int32_t> meter_old;
 VolumeMeter meter_out;
-AudioRealFFT fft_out; // or AudioKissFFT or others
+
+AudioRealFFT fft_out;
 MetaDataOutput metadata_out;
 
 MultiOutput all_out;
 MultiOutput raw_out;
 
 MP3DecoderHelix helix;
-VolumeStream volume_out(speakers_out);
+//VolumeStream volume_out(speakers_out);
 EncodedAudioStream decoder(&all_out, &helix);
 
-StreamCopy copier(raw_out, in);
+// StreamCopy copier(raw_out, in1); // Radio
+StreamCopy copier; //(all_out, in2); // USB
 
 void log_init()
 {
 #ifdef ARDUINO
   Serial.begin(115200);
 #endif
-  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
 }
 
-void fftResult(AudioFFTBase &fft) {
+void on_fft_results(AudioFFTBase &fft) {
     //fft.frequencyToBin()
     for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
        // form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
-       //form.equalizer.bands.setBand(i, bin_value);
+        form.equalizer.bands.setBand(i, bin_value);
     }
 }
 
-void printMetaData(MetaDataType type, const char* str, int len)
+void on_print_metadata(MetaDataType type, const char* str, int len)
 {
 #ifdef ARDUINO
   log_w("%s: %s", toStr(type), str);
@@ -98,73 +98,173 @@ void printMetaData(MetaDataType type, const char* str, int len)
   }
 }
 
-void setupAudio()
+void setupOutputs() {
+
+}
+
+void endAudio() {
+  // Copy
+  copier.setActive(false);
+
+  // INs
+  radio_in.end();
+  stream_in.end();
+
+  // OUTs
+  audio_out.end();
+}
+
+AudioOutput* beginAudioOut() 
 {
-  // Input: File or stream
+  // Out - Speakers
 #ifdef ARDUINO
-  in.begin();
-  form.track.setText(in.getTitle());
+  auto config_out = audio_out.defaultConfig(TX_MODE);
+  config_out.copyFrom(info);
+  config_out.pin_ws = I2S_WS;
+  config_out.pin_bck = I2S_BCK;
+  config_out.pin_data = I2S_SD;
+  config_out.is_master = I2S_MASTER;
 #else
-  in.begin();
+  // Out - I2SStream
+  auto config_out = audio_out.defaultConfig();
+  config_out.copyFrom(info);
 #endif
+  audio_out.begin(config_out);
+
+  // Out - VU
+  meter_out.begin(info);
+  meter_old.begin(info);
+
+  // Out - FFT
+  auto tcfg = fft_out.defaultConfig();
+  tcfg.copyFrom(info);
+  tcfg.length = 4096;
+  //tcfg.window_function = new BufferedWindow(new Hamming());
+  tcfg.window_function = new Hamming();
+  tcfg.callback = &on_fft_results;
+  //fft_out.begin(tcfg);
+
+  // Out - Volume
+  // volume_out.setVolumeControl(lvc);
+  // volume_out.setVolume(INIT_VOLUME);
+
+  // Out - Mixer 
+  all_out.begin();
+
+  return &all_out;
+}
+
+#ifdef ARDUINO
+AudioStream*
+#else
+Stream*
+#endif
+  beginAudioIn() {
+  // Input: File or I2SStream
+  #ifdef ARDUINO
+    // I2SStream
+    auto config = stream_in.defaultConfig(RX_MODE);
+    config.copyFrom(info);
+    config.is_master = false;
+    config.pin_ws = I2S_IN_WS;
+    config.pin_bck = I2S_IN_BCK;
+    config.pin_data = I2S_IN_SD;
+    stream_in.begin(config);
+  #else
+    // File
+    stream_in.begin();
+  #endif
+
+  return &stream_in;
+}
+
+#ifdef ARDUINO
+AudioStream*
+#else
+Stream*
+#endif
+ beginRadioIn() {
+  // Input: File or stream
+  radio_in.begin();
+
+  // Metadata
+  metadata_out.setCallback(on_print_metadata);
+  metadata_out.begin();
 
   // Decoder
   decoder.begin();
 
-  // Out - VU
-  meter_out.begin(info);
-
-  // Out - Speakers
-#ifdef ARDUINO
-  auto config = speakers_out.defaultConfig(TX_MODE);
-  config.copyFrom(info);
-  config.pin_ws = I2S_WS;
-  config.pin_bck = I2S_BCK;
-  config.pin_data = I2S_SD;
-  config.is_master = I2S_MASTER;
-#else
-  auto config = speakers_out.defaultConfig();
-  config.copyFrom(info);
-#endif
-  speakers_out.begin(config);
-
-  // Out - FFT
-  auto tcfg = fft_out.defaultConfig();
-  tcfg.length = 4096;
-  tcfg.channels = info.channels;
-  tcfg.sample_rate = info.sample_rate;
-  tcfg.bits_per_sample = info.bits_per_sample;
-  //tcfg.window_function = new BufferedWindow(new Hamming());
-  tcfg.window_function = new Hamming();
-  tcfg.callback = &fftResult;
-  fft_out.begin(tcfg);
-
-  // Out - metadata 
-  metadata_out.setCallback(printMetaData);
-  metadata_out.begin();
-
-  // Out - Volume
-  volume_out.setVolumeControl(lvc);
-  volume_out.setVolume(INIT_VOLUME);
-
-  // Out - Mixer
-  raw_out.add(decoder);
-  raw_out.add(metadata_out);
+  // Out
   raw_out.begin();
 
-  //all_out.add(vu_out);
-  //all_out.add(speakers_out);
-  all_out.add(volume_out);
+  return &radio_in;
+}
+
+void beginAudio(const int mode) {
+  //endAudio();
+  if (mode == 0) // Radio
+  {
+    form.setIcon(2, true);
+  #ifdef ARDUINO
+    form.track.setText(radio_in.getTitle());
+  #endif
+    auto from = beginRadioIn();
+    auto to = beginAudioOut();
+    copier.begin(raw_out, *from);
+  } 
+  else if ( mode == 1) // USB
+  {
+    form.setIcon(4, true);
+    auto from1 = beginAudioIn();
+    auto to1 = beginAudioOut();
+    copier.begin(*to1, *from1);
+  }
+  else if (mode == 2)  // S/PDIF pass
+  {
+    form.setIcon(0, true);
+  } 
+  else 
+  {
+    return;
+  }
+
+  //copier.setActive(true);
+}
+
+void setupAudio()
+{  
+  // Mixers
+  
+  // MP3 output
+  raw_out.add(decoder);
+  raw_out.add(metadata_out);
+
+  // WAV output
+  all_out.add(audio_out); // all_out.add(volume_out);
+  // all_out.add(meter_old);
   all_out.add(meter_out);
   all_out.add(fft_out);
 
-  all_out.begin(info);
+  beginAudio(0);
 }
 
 void loopAudio()
 {
   copier.copy();
+
+  // if (last > meter_out.volumeRatio()) {
+  //   last -= 32*meter_out.volumeRatio();
+  // } else {
+  //   last += 50;
+  // }
+  //last = USHRT_MAX * meter_out.volume(0) / NumberConverter::maxValue(24);;
+  // log_w();
   
-  form.levelLeft.setValueOf(meter_out.volume(0));
-  form.levelRight.setValueOf(meter_out.volume(1));
+  // if (millis() - last_update > 10) {
+  //   // form.levelLeft.setValueOf(meter_out.volume(0));
+  //   // form.levelRight.setValueOf(meter_out.volume(1));
+    form.levelLeft.setValueOf(USHRT_MAX * meter_out.volume(0) / NumberConverter::maxValue(32));
+    form.levelRight.setValueOf(USHRT_MAX * meter_out.volume(1) / NumberConverter::maxValue(32));
+  //   last_update = millis();
+  // }
 }

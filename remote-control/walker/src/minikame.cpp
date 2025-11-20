@@ -1,21 +1,22 @@
+#include <Arduino.h>
+#include <ESP32Servo.h>
+
 #include "minikame.h"
 
 int angToUsec(float value){
     return value/180 * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH) + MIN_PULSE_WIDTH;
 }
 
-void MiniKame::init(){
-
-
-    board_pins[0] = D1; // front left inner
-    board_pins[1] = D4, // front right inner
-    board_pins[2] = D8; // front left outer
-    board_pins[3] = D6; // front right outer
-    board_pins[4] = D7; // back left inner
-    board_pins[5] = D5; // back right inner
-    board_pins[6] = D2; // back left outer
-    board_pins[7] = D3; // back right outer
-    board_pins[8] = D0; // camera
+void MiniKame::init() {
+    board_pins[0] = 1; // D1; // front left inner
+    board_pins[1] = 2; // D4, // front right inner
+    board_pins[2] = 3; // D8; // front left outer
+    board_pins[3] = 4; // D6; // front right outer
+    board_pins[4] = 5; // D7; // back left inner
+    board_pins[5] = 6; // D5; // back right inner
+    board_pins[6] = 7; // D2; // back left outer
+    board_pins[7] = 8; // D3; // back right outer
+    board_pins[8] = 9; // D0; // camera
     
     // inner: 0, 1, 4, 5
 
@@ -30,13 +31,11 @@ void MiniKame::init(){
     trim[8] = 1;
     
     for (int i=0; i<9; i++) reverse[i] = 0;
-
-
-    for(int i=0; i<9; i++) oscillator[i].setTrim(trim[i]);
-    for(int i=0; i<9; i++) servo[i].attach(board_pins[i]);
+    for (int i=0; i<9; i++) oscillator[i].setTrim(trim[i]);
+    for (int i=0; i<9; i++) servo[i].attach(board_pins[i]);
 }
 
-void MiniKame::turnR(float steps, float T=600){
+void MiniKame::turnR(float steps, float T=600) {
     int x_amp = 15;
     int z_amp = 15;
     int ap = 15;
@@ -47,10 +46,9 @@ void MiniKame::turnR(float steps, float T=600){
     int phase[] = {0,180,90,90,180,0,90,90,0};
 
     execute(steps, period, amplitude, offset, phase);
-        
 }
 
-void MiniKame::turnL(float steps, float T=600){
+void MiniKame::turnL(float steps, float T=600) {
     int x_amp = 15;
     int z_amp = 15;
     int ap = 15;
@@ -61,7 +59,6 @@ void MiniKame::turnL(float steps, float T=600){
     int phase[] = {180,0,90,90,0,180,90,90,0};
 
     execute(steps, period, amplitude, offset, phase);
-        
 }
 
 void MiniKame::dance(float steps, float T=600){

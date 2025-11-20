@@ -1,7 +1,7 @@
 #include "octosnake.h"
-#include <Servo.h>
+#include <Arduino.h>
 
-Oscillator::Oscillator(){
+Oscillator::Oscillator() {
     _period = 2000;
     _amplitude = 50;
     _phase = 0;
@@ -12,7 +12,8 @@ Oscillator::Oscillator(){
     _trim = 0;
 }
 
-float Oscillator::refresh(){
+float Oscillator::refresh()
+{
     _delta_time = (millis()-_ref_time) % _period;
     return      (float)_amplitude*sin(time_to_radians(_delta_time)
                 + degrees_to_radians(_phase))

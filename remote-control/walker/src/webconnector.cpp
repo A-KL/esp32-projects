@@ -1,3 +1,6 @@
+// #include <Arduino.h>
+#include <WiFi.h>
+
 #include "webconnector.h"
 
 const char* ssid = "Qwerty";

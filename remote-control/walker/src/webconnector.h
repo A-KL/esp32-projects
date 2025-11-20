@@ -1,10 +1,6 @@
-#ifndef webconnector_h
-#define webconnector_h
+#pragma once
 
-#include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-
-
+#include <Arduino.h>
 
 class WebConnector {
   public:
@@ -17,5 +13,3 @@ class WebConnector {
     String activeCommand;
 
 };
-
-#endif

@@ -1,15 +1,12 @@
-#ifndef octosnake_h
-#define octosnake_h
-
-#include <Servo.h>
+#pragma once
 
 //-- Macro for converting from degrees to radians
 #ifndef DEG2RAD
   #define DEG2RAD(g) ((g)*M_PI)/180
 #endif
 
-class Oscillator{
-
+class Oscillator
+{
     public:
         Oscillator();
         float refresh();
@@ -35,5 +32,3 @@ class Oscillator{
         unsigned long _ref_time = 0;
         float _delta_time = 0;
 };
-
-#endif

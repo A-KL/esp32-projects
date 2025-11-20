@@ -1,7 +1,6 @@
-#ifndef minikame_h
-#define minikame_h
+#pragma once
 
-#include <Servo.h>
+#include <ESP32Servo.h>
 
 #include "octosnake.h"
 
@@ -62,5 +61,3 @@ class MiniKame {
         //int angToUsec(float value);
         void execute(float steps, float period[9], int amplitude[9], int offset[9], int phase[9]);
 };
-
-#endif

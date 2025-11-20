@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mini Kame</title>
+  <style>
+  div {
+    width: 100%;
+    height: 100%px;
+  }
+  div div {
+    width: 33%;
+    height: 33%;
+    outline: 1px solid;
+    float: left;
+    font-size: 36px;
+    color: white;
+    text-align: center;
+    line-height: 500%;
+  }
+  .cB {
+    background-color: blue;
+  }
+  .cBStop {
+    background-color: red;
+  }
+  .cBDir {
+    background-color: orange;
+  }
+  </style>
+  <script type="text/javascript">
+  function fireCommand(value) {
+    document.getElementById(value).style.background = "black";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (xhttp.readyState == 4) {
+        document.getElementById(value).style.background = '';
+      }};
+      xhttp.open("GET", "cmd.html?command="+value, true);
+      xhttp.send();
+    }
+    </script>
+  </head>
+  <body>
+    <div>
+      <div class="cB" id="06" onclick="fireCommand('06')" >Heart</div>
+      <div class="cBDir" id="01" onclick="fireCommand('01')">Walk</div>
+      <div class="cB" id="07" onclick="fireCommand('07')">Fire</div>
+      <div class="cBDir" id="03" onclick="fireCommand('03')">Left</div>
+      <div class="cBStop" id="05" onclick="fireCommand('05')">Stop</div>
+      <div class="cBDir" id="04" onclick="fireCommand('04')">Right</div>
+      <div class="cB" id="09" onclick="fireCommand('09')">Cross</div>
+      <div class="cBDir" id="10" onclick="fireCommand('10')">Back</div>
+      <div class="cB" id="08" onclick="fireCommand('08')">Jump</div>
+
+      <div class="cB" id="11" onclick="fireCommand('11')">Dance</div>
+      <div class="cB" id="12" onclick="fireCommand('12')">Fetch</div>
+      <div class="cB" id="13" onclick="fireCommand('13')">Beer</div>
+    </div>
+  </body>
+  </html>

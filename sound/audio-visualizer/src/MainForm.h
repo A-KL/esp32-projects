@@ -68,8 +68,11 @@ public:
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 
-        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
-        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
+        // levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
+        // levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX/4, USHRT_MAX/4 * 0.95, 0),
+
+        levelLeft({ 24, 181,           246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
+        levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
         footer({ 10, 240-18, 320, 18 }),

@@ -1,7 +1,8 @@
 #pragma once
 
-void setVolume(long long value) 
+void setVolume(float value) 
 {
+  //log_e("Volume: %f", value);
   static bool is_muted;
   static int volume;
 
@@ -24,10 +25,10 @@ void setVolume(long long value)
       form.setIcon(5, false);
       is_muted = false;
       // Turn ON volume
-      volume_out.setVolume(volume / 255.0);
+      volume_out.setVolume(volume);
     } else {
       // Update UI
-      auto dbs = (int)(value* 0.5 - 127.5);
+      auto dbs = (int)(value * 255 - 127.5);
       form.volume.setTextF("%ddb", dbs);
       volume = value;
     }
@@ -35,11 +36,11 @@ void setVolume(long long value)
   else 
   {
       // Update UI
-      auto dbs = (int)(value* 0.5 - 127.5);
+      auto dbs = (int)(value* 255 - 127.5);
       form.volume.setTextF("%ddb", dbs);
       volume = value;
       // Turn ON volume
-      volume_out.setVolume(volume / 255.0);
+      volume_out.setVolume(volume);
   }
     // volumeDac(value);
 }

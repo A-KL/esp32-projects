@@ -11,7 +11,7 @@ static pthread_t system_pthread;
 static bool system_pthread_run = true;
 
 // #include "AudioTools/Concurrency/RTOS.h"
-Task task("write", 5 * 1024, 10, 0);
+//Task task("write", 5 * 1024, 10, 0);
 
 void* run_system_thread(void * args)
 {
@@ -34,13 +34,13 @@ void startTasks(void * args = NULL)
 {
 #ifdef ARDUINO
     esp_pthread_cfg_t cfg = esp_pthread_get_default_config();
-    cfg.stack_size = (10 * 1024);
+    cfg.stack_size = (15 * 1024);
     cfg.pin_to_core = 0;
     cfg.prio = 10;
     esp_pthread_set_cfg(&cfg);
 #endif
-    system_pthread_run = true;
-  //  pthread_create(&system_pthread, NULL, run_system_thread, nullptr);
+   system_pthread_run = true;
+   pthread_create(&system_pthread, NULL, run_system_thread, nullptr);
 
   // xTaskCreatePinnedToCore(
   //                   update_ui_thread, /* Task function. */
@@ -51,7 +51,7 @@ void startTasks(void * args = NULL)
   //                   &ui_handle,       /* Task handle to keep track of created task */
   //                   0);               /* pin task to core 0 */      
   
-  task.begin([](){loopAudio(); delay(10);});
+  //task.begin([](){loopAudio(); delay(10);});
 }
 
 void cleanup() {

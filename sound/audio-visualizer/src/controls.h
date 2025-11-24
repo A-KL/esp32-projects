@@ -66,6 +66,7 @@ void loopControls()
     auto value = encoder_left.readEncoder();
     log_e("Channel: %i", value);
     radio_in.setStation(value);
+    form.track.setText(radio_in.getTitle());
 	}
 
   if (encoder_right.encoderChanged())

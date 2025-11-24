@@ -39,8 +39,8 @@ void setupControls(bool async = false)
 
   encoder_right.begin();
 	encoder_right.setup(readEncoderISR);
-  encoder_right.setBoundaries(0, 255, false);
-  encoder_right.setEncoderValue(200);
+  encoder_right.setBoundaries(0, 100, false);
+  encoder_right.setEncoderValue(50);
   encoder_right.disableAcceleration();
   encoder_right.enable();
 
@@ -65,25 +65,25 @@ void loopControls()
 	{
     auto value = encoder_left.readEncoder();
     log_e("Channel: %i", value);
+    radio_in.setStation(value);
 	}
 
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
-      setVolume(value);
-      log_e("Volume: %d", value);
+      setVolume(value/100.0);
 	}
 
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    changeAudioInput();
-    log_e("encoder_left");
+    //changeAudioInput();
+    //log_e("encoder_left");
 	}
 
   if (encoder_right.isEncoderButtonClicked())
 	{
       setVolume(0);
-      log_e("encoder_right");
+     // log_e("encoder_right");
 	}
 #else
 

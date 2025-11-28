@@ -11,12 +11,16 @@ public:
 
 	void Init(const Color& color = Color::Black)
 	{
-		_display->init();
+		if (!_display->init())
+		{
+			log_e("TFT ERROR");
+			return;
+		}
 		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
 		_display->initDMA();
 		_display->startWrite();
-		
+	
 		if (_display->isEPD())
 		{
 			_display->setEpdMode(epd_mode_t::epd_fastest);
@@ -27,6 +31,8 @@ public:
 		}
 
 		_display->fillScreen((unsigned short)color);
+
+		log_e("TFT OK");
 	}
 
 	void LoadFont(const uint8_t* array, const size_t size)
@@ -81,23 +87,23 @@ public:
 		_display->fillRect(x0, y0, w, h, (unsigned short)color);
 	}
 
-	 void DrawRect(int x0, int y0, int w, int h, const Color& color)
-	 {
-			_display->drawRect(x0, y0, w, h, (unsigned short)color);
-	 }
+	void DrawRect(int x0, int y0, int w, int h, const Color& color)
+	{
+		_display->drawRect(x0, y0, w, h, (unsigned short)color);
+	}
 
-	 void DrawImage(int x, int y, int w, int h, const unsigned short* data)
-	 {
-			_display->setSwapBytes(true);
-			_display->pushImage(x, y, w, h, data);
-			_display->setSwapBytes(false);
-	 }
+	void DrawImage(int x, int y, int w, int h, const unsigned short* data)
+	{
+		_display->setSwapBytes(true);
+		_display->pushImage(x, y, w, h, data);
+		_display->setSwapBytes(false);
+	}
 
-	 void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
-   {
-			_display->setTextColor((unsigned short)color, TFT_BLACK);
-			//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
-			_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
+	void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
+   	{
+		_display->setTextColor((unsigned short)color, TFT_BLACK);
+		//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
+		_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	 }
 
 	 void SetFont(int index, unsigned char size)
@@ -132,7 +138,7 @@ public:
 
 	inline void Update()
 	{
-			//_display->display();
+		//_display->display();
 	}
 
 private:

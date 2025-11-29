@@ -1,6 +1,6 @@
 #include "FreqCountESP.h"
 
-int inputPin = I2S_BCK; 
+int inputPin = 47; 
 // int inputPin = I2S_WS;
 int timerMs = 1000;
 

@@ -13,7 +13,7 @@ public:
 	{
 		if (!_display->init())
 		{
-			log_e("TFT ERROR");
+			//log_e("TFT ERROR");
 			return;
 		}
 		_display->setSwapBytes(true);
@@ -32,7 +32,7 @@ public:
 
 		_display->fillScreen((unsigned short)color);
 
-		log_e("TFT OK");
+		//log_e("TFT OK");
 	}
 
 	void LoadFont(const uint8_t* array, const size_t size)

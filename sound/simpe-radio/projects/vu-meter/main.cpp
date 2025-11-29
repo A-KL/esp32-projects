@@ -1,4 +1,5 @@
 #include "AudioTools.h"
+#include "AudioTools/Communication/AudioHttp.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 
 #include "gui.h"

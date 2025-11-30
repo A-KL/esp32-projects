@@ -6,8 +6,7 @@ template <typename T>
 class VuMeter : public AudioOutput 
 {
 public:
-    VuMeter(const float gain = 1, bool active = true) 
-    {
+    VuMeter(const float gain = 1, bool active = true) {
         this->_gain = gain;
         this->is_active = active;
     }
@@ -18,24 +17,20 @@ public:
         AudioInfo info;
         info.channels = 2;
         info.sample_rate = 44100;
-        info.bits_per_sample = sizeof(T) * 8;
+        info.bits_per_sample = 16;
         return info;
     }
 
-    bool begin(AudioInfo info) override { return begin(info.channels); }
-
-    /// Starts the processing with the defined number of channels
-    bool begin(int channels) {
-        TRACED();
-        cfg.channels = channels;
-        return begin();
+    bool begin(AudioInfo info) override { 
+      setAudioInfo(info);
+      return begin(); 
     }
 
-    /// (Re)start (e.g. if channels is set in constructor)
     bool begin() override {
+      TRACEI();
       this->is_active = true;
       envelope_init(_right_envelope_context, cfg.sample_rate);
-      envelope_init(_left_envelope_context, cfg.sample_rate);
+      envelope_init(_left_envelope_context, cfg.sample_rate);   
       return true;
     }
 
@@ -46,13 +41,12 @@ public:
         cfg = info;
     };
 
-    /// Writes the data - formatted as CSV -  to the output stream
     virtual size_t write(const uint8_t *data, size_t len) override 
     {
-      LOGD("VuMeter::write: %d", (int)len);
+      LOGD("VuMeter::write: %zu", len);
 
       if (!is_active) {
-        LOGE("is not active");
+        LOGW("is not active");
         return 0;
       }
 
@@ -65,9 +59,9 @@ public:
         cfg.channels = 2;
       }
 
-      size_t samples_read = len / (sizeof(T) * cfg.channels);
+      size_t samples_read = len / (cfg.bits_per_sample / 8 * cfg.channels);
 
-      LOGI("Got %d samples to process", samples_read);
+      LOGD("Data size: %zu | BPS: %d | Samples: %zu", len, cfg.bits_per_sample, samples_read);
 
       envelope_calculate_right_left<T>(
         data,
@@ -76,7 +70,7 @@ public:
         _right_envelope_context, 
         _left_envelope_context);
 
-        LOGD("Results. Left: %f Right: %f", 
+      LOGD("Results. Left: %f Right: %f",
           _left_envelope_context.envelope_out,
           _right_envelope_context.envelope_out);
 

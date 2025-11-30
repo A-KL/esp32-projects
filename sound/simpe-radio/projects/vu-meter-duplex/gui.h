@@ -28,13 +28,13 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     3, 
     60);
 
-TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 10, 15);
+TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 150, 15);
 TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 100, 15);
 
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
 
-TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, TFT_HEIGHT, 20);
+TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, tft.height(), 20);
 
 TFT_eLabel adc_label(&tft, "ADC", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
@@ -106,7 +106,7 @@ void gui_notify_init()
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.max = 1200;
+    left_pb.max = INT16_MAX * 200;// 1200;
     left_pb.background_color = TFT_BLACK;
 
     // Scale
@@ -116,7 +116,7 @@ void gui_meter_init() {
     scale.horizontal_labels = false;
 
     // Right progress bar
-    right_pb.max = 1200;
+    right_pb.max =  INT16_MAX * 200;//1200;
     right_pb.background_color = TFT_BLACK;
 
     // right_pb.borders_thickness[0] = 1;

@@ -6,6 +6,8 @@
 #include "RadioStation.h"
 #include "bands.h"
 
+#include "VuOutput.h"
+
 //                                        I2SStream-In                       |-> AudioRealFFT
 //                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
 // RadioStream [File] -> MultiOutput -|                                      |-> VolumeMeter

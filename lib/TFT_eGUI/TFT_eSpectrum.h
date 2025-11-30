@@ -28,6 +28,10 @@ class TFT_eSpectrum : public TFT_eWidget
             }
         }
 
+        inline int size() const {
+            return TSize;
+        }
+
         void begin()
         {
             update(true);

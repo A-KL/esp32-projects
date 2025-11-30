@@ -20,7 +20,9 @@ const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY
 const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
+
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
+const static TFT_eProgressBar_SegmentedValueStyle white_segmented_pb_style(&WhiteBrush, &RedBrush, &DarkGreenBrush, &DarkWhiteBrush, 2, 46);
 
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     { {0, &YellowBrush}, {1, &GreenBrush}, {10, &YellowBrush}, {11, &GreenBrush}},
@@ -28,11 +30,13 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     3, 
     60);
 
-TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 150, 15);
-TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15, 20, 100, 15);
+TFT_eProgressBar left_pb(&tft, &white_segmented_pb_style, tft.height() - 15, 20, 150, 15);
+TFT_eProgressBar right_pb(&tft, &white_segmented_pb_style, tft.height() - 15, 20, 100, 15);
 
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
+
+TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
 
 TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, tft.height(), 20);
 
@@ -167,9 +171,20 @@ void gui_labels_init()
     ovr_label.begin();
 }
 
+void gui_spectrum_init()
+{
+  spectrum.band_segment_padding = 2;
+  spectrum.bar_style = &lime_segmented_pb_style;
+
+  spectrum.init();
+  spectrum.begin();
+}
+
 void gui_init() 
 {
     gui_meter_init();
+    gui_spectrum_init();
+    
     //gui_labels_init();
     //gui_led_init();
 
@@ -183,6 +198,8 @@ void gui_progress_bars_update()
 
     left_pb.update();
     right_pb.update();
+
+    spectrum.update();
     //ovr_label.update();
 
     // if (last_update_ms - millis() > 100) {
@@ -195,6 +212,8 @@ void gui_progress_bars_update()
     //     }
     //     gui_panel_update(main_panel);
     // } 
+
+    
 }
 
 void gui_update_task(void *arg)  

@@ -6,4 +6,6 @@ const static TFT_eSolidBrush RedBrush(TFT_RED);
 const static TFT_eSolidBrush DarkRedBrush(TFT_RED, 20);
 const static TFT_eSolidBrush YellowBrush(TFT_YELLOW);
 const static TFT_eSolidBrush GreenBrush(TFT_GREEN);
+const static TFT_eSolidBrush WhiteBrush(TFT_WHITE);
+const static TFT_eSolidBrush DarkWhiteBrush(TFT_WHITE, 20);
 const static TFT_eSolidBrush DarkGreenBrush(TFT_DARKGREEN, 20);

@@ -24,7 +24,7 @@ void fftResult(AudioFFTBase &fft) {
         auto bin_index = i;// ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
        // form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
-        //form.equalizer.bands.setBand(i, bin_value * 3);
+        spectrum.set_value(i, bin_value * 3);
     }
 }
 

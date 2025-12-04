@@ -17,6 +17,9 @@
   #endif
   #include <LGFX_TFT_eSPI.h>
 
+  #include "TFT_eSprite_GFX.h"
+  #define TFT_eSprite TFT_eSprite_GFX
+
   #if defined ( SDL_h_ )
     static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
   #else

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <Lcd.h>
+// #include <TFT_eSPI.h>
 #include "TFT_eGUI.h"
 
-TFT_eSPI tft = TFT_eSPI();
+// TFT_eSPI tft = TFT_eSPI();
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -24,19 +25,21 @@ const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBru
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
 const static TFT_eProgressBar_SegmentedValueStyle white_segmented_pb_style(&WhiteBrush, &RedBrush, &DarkGreenBrush, &DarkWhiteBrush, 2, 46);
 
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_sp_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 2, 15);
+
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     { {0, &YellowBrush}, {1, &GreenBrush}, {10, &YellowBrush}, {11, &GreenBrush}},
     { {0, &DarkGreenBrush} },
     3, 
     60);
 
-TFT_eProgressBar left_pb(&tft, &white_segmented_pb_style, tft.height() - 15, 20, 150, 15);
-TFT_eProgressBar right_pb(&tft, &white_segmented_pb_style, tft.height() - 15, 20, 100, 15);
+TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15 * 2, 20, 10, 15);
+TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15 * 2, 20, 100, 15);
 
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
 
-TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
+TFT_eSpectrum<15> spectrum(&tft, 300, 110, 10, 130);
 
 TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, tft.height(), 20);
 
@@ -111,7 +114,7 @@ void gui_notify_init()
 void gui_meter_init() {
     // Left progress bar
     left_pb.max = INT16_MAX * 200;// 1200;
-    left_pb.background_color = TFT_BLACK;
+   left_pb.background_color = TFT_BLACK;
 
     // Scale
     scale.load_font(NotoSansBold15);
@@ -121,7 +124,7 @@ void gui_meter_init() {
 
     // Right progress bar
     right_pb.max =  INT16_MAX * 200;//1200;
-    right_pb.background_color = TFT_BLACK;
+   right_pb.background_color = TFT_BLACK;
 
     // right_pb.borders_thickness[0] = 1;
     // right_pb.borders_thickness[1] = 1;
@@ -173,11 +176,16 @@ void gui_labels_init()
 
 void gui_spectrum_init()
 {
+  spectrum.background_color = TFT_BLACK;
   spectrum.band_segment_padding = 2;
-  spectrum.bar_style = &lime_segmented_pb_style;
+  spectrum.bar_style = &lime_segmented_sp_style;
 
   spectrum.init();
   spectrum.begin();
+
+  for (auto i=0; i<spectrum.size(); i++) {
+    spectrum.set_value(i, 100);
+  }
 }
 
 void gui_init() 

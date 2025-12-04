@@ -3,7 +3,10 @@
 #define LGFX_USE_V1
 
 #include <LovyanGFX.hpp>
+
+#ifdef ILI9341_IPS_DRIVER
 #include "Panel_ILI9341_IPS.hpp"
+#endif
 
 // copy this file to Arduino\libraries\LovyanGFX\src\
 
@@ -67,10 +70,12 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Panel_ST7796      _panel_instance;
 
 // Prepare an instance that matches the type of bus that connects the panels.
+#ifndef TFT_PARALLEL_8_BIT
   lgfx::Bus_SPI       _bus_instance;   // SPI bus instance 
+#endif
 //lgfx::Bus_I2C       _bus_instance;   // I2C bus instance (ESP32 only)
 #ifdef TFT_PARALLEL_8_BIT
-//lgfx::Bus_Parallel8 _bus_instance;   // 8-bit parallel bus instance (ESP32 only)
+  lgfx::Bus_Parallel8 _bus_instance;   // 8-bit parallel bus instance (ESP32 only)
 #endif
 
 // Prepare an instance if backlight control is possible.  (remove if not needed)
@@ -104,12 +109,17 @@ public:
       //cfg.spi_host = VSPI_HOST;          // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
       // * Due to the ESP-IDF version upgrade, VSPI_HOST and HSPI_HOST descriptions are deprecated,
       // so if an error occurs, use SPI2_HOST and SPI3_HOST instead.
+      #ifdef USE_HSPI_PORT
+      cfg.spi_host   = SPI2_HOST;
+      #else
+      cfg.spi_host   = SPI1_HOST;
+      #endif
       cfg.spi_mode    = 0;               // Set SPI communication mode (0 ~ 3)
       cfg.freq_write  = 65000000;        // SPI clock when sending (up to 80MHz, rounded to 80MHz divided by an integer)
       cfg.freq_read   = 20000000;        // SPI clock when receiving
-      cfg.spi_3wire   = true;           // Set true if receiving on the MOSI 
+      cfg.spi_3wire   = true;            // Set true if receiving on the MOSI 
       cfg.use_lock    = true;            // Set true to use transaction lock
-      cfg.dma_channel = SPI_DMA_CH_AUTO;// SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)
+      cfg.dma_channel = SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)
       // * With the ESP-IDF version upgrade, SPI_DMA_CH_AUTO (automatic setting) is recommended for the DMA channel.  
       // Specifying 1ch and 2ch is deprecated.
       cfg.pin_sclk = TFT_SCLK;  // 18;            // SPI SCLK
@@ -148,14 +158,14 @@ public:
 
       auto cfg = _panel_instance.config(); // Get the structure for display panel settings.
 
-      cfg.pin_cs           =    TFT_CS;  // 15;  // CS    (-1 = disable)
-      cfg.pin_rst          =    TFT_RST; // -1;  // RST   (-1 = disable)
-      cfg.pin_busy         =    -1;  // BUSY  (-1 = disable)
+      cfg.pin_cs           = TFT_CS;  // 15;  // CS    (-1 = disable)
+      cfg.pin_rst          = TFT_RST; // -1;  // RST   (-1 = disable)
+      cfg.pin_busy         =      -1; // BUSY  (-1 = disable)
 
       // * The following setting values ​​are general initial values ​​for each panel, so please comment out any unknown items and try them.
 
-      cfg.panel_width      =   240;  // actual visible width
-      cfg.panel_height     =   320;  // actual visible height
+      cfg.panel_width      = TFT_WIDTH;  // actual visible width
+      cfg.panel_height     = TFT_HEIGHT;  // actual visible height
       cfg.offset_x         =     0;  // Panel offset amount in X direction
       cfg.offset_y         =     0;  // Panel offset amount in Y direction
       cfg.offset_rotation  =     2;  // Rotation direction value offset 0~7 (4~7 is upside down)

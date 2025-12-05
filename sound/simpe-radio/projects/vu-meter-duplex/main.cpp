@@ -5,6 +5,8 @@
 #include "VuOutput.h"
 #include "gui.h"
 
+#include "SmoothFilter.h"
+
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
 
 I2SStream i2s;
@@ -14,18 +16,26 @@ VuMeter<int32_t> vu(AUDIO_VU_RATIO);
 // VolumeMeter meter_out;
 AudioRealFFT fft_out;
 
-StreamCopy copier(decoded_out, i2s);
+SineWaveGenerator<int16_t> sineWave(32000);               // subclass of SoundGenerator with max amplitude of 32000
+GeneratedSoundStream<int16_t> gen_in(sineWave);               // Stream generated from sine wave
+
+SmoothFilter<float, 19> filter;
+
+StreamCopy copier(decoded_out, i2s); //gen_in
 
 Task task("write", 5 * 1024, 10, 0);
 
 void fftResult(AudioFFTBase &fft) {
     //fft.frequencyToBin()
     for (auto i = 0; i < spectrum.size(); i++) {
-        auto bin_index = i;// ftt_bin_map[i]; 
-        auto bin_value = fft.magnitude(bin_index);
-       // form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
-        spectrum.set_value(i, bin_value * 3);
+        auto bin_index = i * 2 + 2;// ftt_bin_map[i]; 
+        auto bin_value = fft.magnitude(bin_index) * 15;
+
+        filter.add(i, bin_value);
+        spectrum.set_value(i, filter.get(i));
     }
+
+   // log_e("Bins: %f\t%f\t%f", filter.get(3), filter.get(4) , filter.get(0));
 }
 
 void setup() {
@@ -51,7 +61,7 @@ void setup() {
   tcfg.sample_rate = info.sample_rate;
   tcfg.bits_per_sample = info.bits_per_sample;
   //tcfg.window_function = new BufferedWindow(new Hamming());
-  //tcfg.window_function = new Hamming();
+  tcfg.window_function = new Hamming();
   tcfg.callback = &fftResult;
   fft_out.begin(tcfg);
 
@@ -69,11 +79,17 @@ void setup() {
   decoded_out.add(vu);
   decoded_out.add(i2s);
   decoded_out.add(fft_out);
+
   decoded_out.begin(info);
 
   // VU
   vu.begin(info);
   vu.setAudioInfo(info);
+
+  // Generate
+  //sineWave.begin(info, N_G3);
+  
+  filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
   task.begin([](){gui_progress_bars_update(); delay(10);});
@@ -83,8 +99,4 @@ void loop() {
   copier.copy();
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
-
-  // left_pb.value = meter_out.volumeRatio(0) * left_pb.max;
-  // right_pb.value = meter_out.volumeRatio(1) * right_pb.max;
-  // gui_progress_bars_update();
 }

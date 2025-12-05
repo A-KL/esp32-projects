@@ -39,7 +39,7 @@ TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15 * 2,
 TFT_eLed main_led(&tft);
 TFT_eLed second_led(&tft);
 
-TFT_eSpectrum<15> spectrum(&tft, 300, 110, 10, 130);
+TFT_eSpectrum<19> spectrum(&tft, 300, 110, 10, 130);
 
 TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, tft.height(), 20);
 
@@ -113,7 +113,7 @@ void gui_notify_init()
 
 void gui_meter_init() {
     // Left progress bar
-    left_pb.max = INT16_MAX * 200;// 1200;
+   left_pb.max = INT16_MAX * 200;// 1200;
    left_pb.background_color = TFT_BLACK;
 
     // Scale
@@ -124,7 +124,7 @@ void gui_meter_init() {
 
     // Right progress bar
     right_pb.max =  INT16_MAX * 200;//1200;
-   right_pb.background_color = TFT_BLACK;
+    right_pb.background_color = TFT_BLACK;
 
     // right_pb.borders_thickness[0] = 1;
     // right_pb.borders_thickness[1] = 1;

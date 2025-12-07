@@ -21,6 +21,10 @@ class String
       return _text.c_str();
     }
 
+    inline const char* c_str() const {
+      return _text.c_str();
+    }
+
   private:
     std::string _text;
 };

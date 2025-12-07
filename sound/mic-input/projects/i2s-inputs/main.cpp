@@ -10,7 +10,7 @@ VuMeter<int16_t> vu(AUDIO_VU_RATIO);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
-void setup(){
+void setup() {
     Serial.begin(115200);
     AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 

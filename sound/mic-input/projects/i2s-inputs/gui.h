@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <Lcd.h>
 #include <TFT_eGUI.h>
 
 #include "Orbitron_Bold_12.h"

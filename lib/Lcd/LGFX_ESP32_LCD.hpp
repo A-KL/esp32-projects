@@ -114,9 +114,21 @@ public:
       #else
       cfg.spi_host   = SPI1_HOST;
       #endif
+
       cfg.spi_mode    = 0;               // Set SPI communication mode (0 ~ 3)
+
+      #ifdef SPI_FREQUENCY
+      cfg.freq_write  = SPI_FREQUENCY;
+      #else
       cfg.freq_write  = 65000000;        // SPI clock when sending (up to 80MHz, rounded to 80MHz divided by an integer)
+      #endif
+      
+      #ifdef SPI_READ_FREQUENCY
+      cfg.freq_read  = SPI_READ_FREQUENCY;
+      #else
       cfg.freq_read   = 20000000;        // SPI clock when receiving
+      #endif
+
       cfg.spi_3wire   = true;            // Set true if receiving on the MOSI 
       cfg.use_lock    = true;            // Set true to use transaction lock
       cfg.dma_channel = SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)

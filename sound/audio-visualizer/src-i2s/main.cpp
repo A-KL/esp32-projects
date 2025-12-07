@@ -1,9 +1,13 @@
 #include "AudioTools.h"
 #include <Adafruit_NeoPixel.h> 
 
+// #include "I2SAutoStream.h"
+#include "AutoAudioInfo.h"
+
 #define RGB_LED_PIN 21
 
 AudioInfo info(48000, 2, 16);
+AutoAudioInfo detector(info);
 
 // // I2SStream in;
 // // I2SStream out;
@@ -45,6 +49,8 @@ void setup(void) {
 //   // config_out.pin_data = I2S_SD;
 //   // out.begin(config_out);
 
+  detector.begin(47, 48);
+
   // start I2S in
   Serial.println("starting I2S...");
   auto config = i2s.defaultConfig(RXTX_MODE);
@@ -61,12 +67,12 @@ void setup(void) {
   // rgb.clear();
   // rgb.setPixelColor(0, rgb.Color(0, 100, 50));
   // rgb.show();
-
- Serial.println("I2S started...");
+  Serial.println("I2S started...");
 }
 
 void loop() {
   copier.copy();
+  detector.loop();
 }
 
 // #include "AudioTools.h"

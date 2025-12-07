@@ -1,32 +1,20 @@
 #include "AudioTools.h"
 
-#include "Creds.h"
 #include "gui.h"
 #include <VuOutput.h>
 
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
 
 I2SStream i2s;
-//CsvOutput<int16_t> csv(Serial);
 VuMeter<int16_t> vu(AUDIO_VU_RATIO);
 MultiOutput decoded_out;
 StreamCopy copier(decoded_out, i2s);
 
 void setup(){
     Serial.begin(115200);
-
-    tft.init();
-    tft.setRotation(TFT_ROTATE);
-    tft.setSwapBytes(true);
-
-    //tft.setFreeFont(&Orbitron_Medium_20);
-    tft.loadFont(NotoSansBold15);
-
-    tft.fillScreen(TFT_BLACK);
+    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     gui_init();
-
-    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
@@ -49,9 +37,7 @@ void setup(){
    // decoded_out.add(vban);
      //decoded_out.add(csv);
 
-    
     i2s.begin(cfg);
-   // csv.begin(info);
     vu.begin(info);
 
     // if (!vban.begin(vban_cfg)) {

@@ -66,7 +66,7 @@ void setup(void) {
   // rgb.begin();
   // rgb.clear();
   // rgb.setPixelColor(0, rgb.Color(0, 100, 50));
-  // rgb.show();
+  // rgb.show();  
   Serial.println("I2S started...");
 }
 

@@ -50,8 +50,7 @@ void setup() {
 
   // GUI
   gui_init();
-  gui_set_input((int)1);
-  gui_progress_bars_update();
+  gui_update();
 
   // Audio
   // FFT
@@ -92,7 +91,7 @@ void setup() {
   filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
-  task.begin([](){gui_progress_bars_update(); delay(10);});
+  task.begin([](){gui_update(); delay(10);});
 }
 
 void loop() {

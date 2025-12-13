@@ -8,8 +8,8 @@
 class TFT_eProgressBar : public TFT_eWidget
 {
     public:
-        TFT_eProgressBar(TFT_eSPI* tft, const TFT_eProgressBar_ValueStyle* style, const int16_t width = 200, const int16_t height = 20, int16_t left = 0, const int16_t top = 0)
-        : TFT_eWidget(tft, width, height, top, left), value_style(style)
+        TFT_eProgressBar(TFT_eSPI* tft, const TFT_eProgressBar_ValueStyle* style, int16_t left = 0, const int16_t top = 0, const int16_t width = 200, const int16_t height = 20)
+        : TFT_eWidget(tft, width, height, left, top), value_style(style)
         { }
 
     int borders_thickness[4] = {0, 0, 0, 0};

@@ -1,10 +1,7 @@
 #pragma once
 
 #include <Lcd.h>
-// #include <TFT_eSPI.h>
 #include "TFT_eGUI.h"
-
-// TFT_eSPI tft = TFT_eSPI();
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -22,10 +19,14 @@ const static TFT_eProgressBar_SimpleValueStyle lime_gradient_pb_style(GreenGradi
 const static TFT_eProgressBar_SimpleValueStyle red_gradient_pb_style(RedGradientBrush);
 const static TFT_eProgressBar_SimpleValueStyle chevron_pb_style(YellowChevronBrush);
 
-const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
-const static TFT_eProgressBar_SegmentedValueStyle white_segmented_pb_style(&WhiteBrush, &RedBrush, &DarkGreenBrush, &DarkWhiteBrush, 2, 46);
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_pb_style(
+    &GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 3, 32);
 
-const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_sp_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 2, 15);
+const static TFT_eProgressBar_SegmentedValueStyle white_segmented_pb_style(
+    &WhiteBrush, &RedBrush, &DarkGreenBrush, &DarkWhiteBrush, 2, 46);
+
+const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_sp_style(
+    &GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 2, 15);
 
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     { {0, &YellowBrush}, {1, &GreenBrush}, {10, &YellowBrush}, {11, &GreenBrush}},
@@ -33,20 +34,16 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_vertical_style(
     3, 
     60);
 
-TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, tft.height() - 15 * 2, 20, 10, 15);
-TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, tft.height() - 15 * 2, 20, 100, 15);
+TFT_eSpectrum<19> spectrum(&tft, 300, 120, 10, 10);
 
-TFT_eLed main_led(&tft);
-TFT_eLed second_led(&tft);
+TFT_eLabel sample_size_label(&tft, "32bit", 0, TFT_DARK_DARK_GRAY, 10, 160, 95, 25);
+TFT_eLabel sample_res_label(&tft, "48K", 0, TFT_DARK_DARK_GRAY, 110, 160, 95, 25);
+TFT_eLabel input_label(&tft, "COAX", 0, TFT_DARK_DARK_GRAY, 210, 160, 95, 25);
 
-TFT_eSpectrum<19> spectrum(&tft, 300, 110, 10, 130);
-
-TFT_ePanel main_panel(&tft, &YellowChevronBrush, 0, 100, tft.height(), 20);
-
-TFT_eLabel adc_label(&tft, "ADC", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
-TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
-TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
+TFT_eLabel l_label(&tft, "L", 0, TFT_DARKGREY, 0, 195, 20, 15);
+TFT_eLabel r_label(&tft, "R", 0, TFT_DARKGREY, 0, 215, 20, 15);
+TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, 20, 195, 290, 15);
+TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, 20, 215, 290, 15);
 
 TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 35);
 
@@ -56,59 +53,6 @@ int gui_cpu_get_cores()
     esp_chip_info(&info);
     
     return info.cores;
-}
-
-void gui_set_input(int input)
-{
-    adc_label.foreground_color = TFT_DARK_DARK_GRAY;
-    i2s_label.foreground_color = TFT_DARK_DARK_GRAY;
-    disabled_label.foreground_color = TFT_DARK_DARK_GRAY;
-
-    switch (input)
-    {
-    case 0:
-        adc_label.foreground_color = TFT_CYAN;
-        break;
-     case 1:
-        i2s_label.foreground_color = TFT_GREEN;
-        break;
-    case 2:
-        disabled_label.foreground_color = TFT_YELLOW;
-        break;
-    }
-
-    adc_label.update();
-    i2s_label.update();
-    disabled_label.update();
-}
-
-void gui_led_init() 
-{
-    main_led.top = 130;
-    main_led.left = 15;
-    main_led.padding = 4;
-    main_led.checked = true;
-
-    second_led.top = 130;
-    second_led.left = 40;
-    second_led.padding = 4;
-    second_led.checked = false;
-    second_led.round = false;
-    second_led.on_color = TFT_RED;
-    second_led.on_color_to = TFT_DARK_RED_12;
-    second_led.off_color = TFT_DARK_RED_8;
-
-    main_led.init();
-    second_led.init();
-
-    main_led.begin();
-    second_led.begin();
-}
-
-void gui_notify_init() 
-{
-    main_panel.init();
-    main_panel.begin();
 }
 
 void gui_meter_init() {
@@ -137,41 +81,35 @@ void gui_meter_init() {
     left_pb.begin();
     right_pb.begin();
 
-    scale.init();
-    scale.begin();
+    l_label.init();
+    r_label.init();
+
+    l_label.begin();
+    r_label.begin();
+
+    // scale.init();
+    // scale.begin();
 }
 
 void gui_labels_init() 
 {
-    auto top = TFT_HEIGHT - 40;
+    sample_size_label.load_font(NotoSansMonoSCB20);
+    sample_size_label.background_color = TFT_DARK_DARK_GRAY;
+    sample_size_label.foreground_color = TFT_WHITE;
+    sample_size_label.init();
+    sample_size_label.begin();
 
-    adc_label.left = 15;
-    adc_label.top = top;
+    sample_res_label.load_font(NotoSansMonoSCB20);
+    sample_res_label.background_color = TFT_DARK_DARK_GRAY;
+    sample_res_label.foreground_color = TFT_WHITE;
+    sample_res_label.init();
+    sample_res_label.begin();
 
-    adc_label.load_font(NotoSansMonoSCB20);
-    adc_label.init();
-    adc_label.begin();
-
-    i2s_label.left = adc_label.left + adc_label.width + 5;
-    i2s_label.top = top;
-
-    i2s_label.load_font(NotoSansMonoSCB20);
-    i2s_label.init();
-    i2s_label.begin();
-
-    disabled_label.left = i2s_label.left + i2s_label.width + 5;
-    disabled_label.top = top;
-
-    disabled_label.load_font(NotoSansMonoSCB20);
-    disabled_label.init();
-    disabled_label.begin();
-
-    ovr_label.left = disabled_label.left + disabled_label.width + 5;
-    ovr_label.top = top;
-
-    ovr_label.load_font(NotoSansMonoSCB20);
-    ovr_label.init();
-    ovr_label.begin();
+    input_label.load_font(NotoSansMonoSCB20);
+    input_label.background_color = TFT_DARK_DARK_GRAY;
+    input_label.foreground_color = TFT_WHITE;
+    input_label.init();
+    input_label.begin();
 }
 
 void gui_spectrum_init()
@@ -190,25 +128,21 @@ void gui_spectrum_init()
 
 void gui_init() 
 {
-    gui_meter_init();
     gui_spectrum_init();
-    
-    //gui_labels_init();
-    //gui_led_init();
-
-    //gui_notify_init();
-    //gui_init_spectrum();
+    gui_labels_init();
+    gui_meter_init();
 }
 
-void gui_progress_bars_update()
+void _gui_update()
 {
-    //ovr_label.foreground_color = right_pb.value > 1000 ? TFT_RED : TFT_DARK_DARK_GRAY;
-
     left_pb.update();
     right_pb.update();
 
     spectrum.update();
-    //ovr_label.update();
+
+    sample_size_label.update();
+    sample_res_label.update();
+    input_label.update();
 
     // if (last_update_ms - millis() > 100) {
     //     last_update_ms = millis();
@@ -219,26 +153,24 @@ void gui_progress_bars_update()
     //         YellowChevronBrush.left--;
     //     }
     //     gui_panel_update(main_panel);
-    // } 
-
-    
+    // }
 }
 
 void gui_update_task(void *arg)  
 {
     while (1) 
     {
-        gui_progress_bars_update();
+        _gui_update();
         vTaskDelay(100 / portTICK_RATE_MS);
     }
 }
 
-inline void gui_update()
+void gui_update()
 {
     if (gui_cpu_get_cores() > 1) {
         return;
     }
-    gui_progress_bars_update();
+    _gui_update();
 }
 
 void gui_begin() 

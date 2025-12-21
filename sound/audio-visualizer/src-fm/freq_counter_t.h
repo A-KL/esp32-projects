@@ -13,6 +13,9 @@
 #include "esp_attr.h"
 #include "esp_log.h"
 
+#define PCNT_HIGH_LIMIT 32767  // largest +ve value for int16_t.
+#define PCNT_LOW_LIMIT  0
+
 xQueueHandle pcnt_evt_queue;
 pcnt_isr_handle_t user_isr_handle = NULL;
 
@@ -25,6 +28,13 @@ typedef struct {
     unsigned long timeStamp; // The time the event occured
 } pcnt_evt_t;
 
+typedef struct {
+    volatile uint8_t isFrequencyReady = false;
+    volatile uint32_t count = 0;
+    volatile uint32_t frequency = 0;
+    volatile uint32_t last = 0;
+} pcnt_context_t;
+
 /* Decode what PCNT's unit originated an interrupt
  * and pass this information together with the event type
  * and timestamp to the main program using a queue.
@@ -33,11 +43,10 @@ static void IRAM_ATTR pcnt_intr_handler(void *arg)
 {
     unsigned long currentMillis = millis(); //Time at instant ISR was called
     uint32_t intr_status = PCNT.int_st.val;
-    int i = 0;
     pcnt_evt_t evt;
     portBASE_TYPE HPTaskAwoken = pdFALSE;
  
-    for (i = 0; i < PCNT_UNIT_MAX; i++) {
+    for (auto i{0}; i < PCNT_UNIT_MAX; i++) {
         if (intr_status & (BIT(i))) {
             evt.unit = i;
             /* Save the PCNT event type that caused an interrupt
@@ -65,29 +74,41 @@ static void IRAM_ATTR pcnt_intr_handler(void *arg)
  * Channel - Unit input channel, H_LIM - High Limit, L_LIM - Low Limit,
  * THRESH1 - configurable limit 1, THRESH0 - configurable limit 2, 
  */
-void pcnt_init_channel(pcnt_unit_t PCNT_UNIT,int PCNT_INPUT_SIG_IO , int PCNT_INPUT_CTRL_IO = PCNT_PIN_NOT_USED,pcnt_channel_t PCNT_CHANNEL = PCNT_CHANNEL_0, int PCNT_H_LIM_VAL = 19, int PCNT_L_LIM_VAL = -20, int PCNT_THRESH1_VAL = 50, int PCNT_THRESH0_VAL = -50 ) {
+void pcnt_init_channel(
+  pcnt_unit_t PCNT_UNIT, 
+  int PCNT_INPUT_SIG_IO, 
+  int PCNT_INPUT_CTRL_IO = PCNT_PIN_NOT_USED, 
+  pcnt_channel_t PCNT_CHANNEL = PCNT_CHANNEL_0, 
+  int PCNT_H_LIM_VAL = PCNT_HIGH_LIMIT, 
+  int PCNT_L_LIM_VAL = PCNT_LOW_LIMIT, 
+  int PCNT_THRESH1_VAL = 50, 
+  int PCNT_THRESH0_VAL = -50 ) {
+   
     /* Prepare configuration for the PCNT unit */
-    pcnt_config_t pcnt_config; 
-        // Set PCNT input signal and control GPIOs
-        pcnt_config.pulse_gpio_num = PCNT_INPUT_SIG_IO;
-        pcnt_config.ctrl_gpio_num = PCNT_INPUT_CTRL_IO;
-        pcnt_config.channel = PCNT_CHANNEL;
-        pcnt_config.unit = PCNT_UNIT;
-        // What to do on the positive / negative edge of pulse input?
-        pcnt_config.pos_mode = PCNT_COUNT_INC;   // Count up on the positive edge
-        pcnt_config.neg_mode = PCNT_COUNT_DIS;   // Keep the counter value on the negative edge
-        // What to do when control input is low or high?
-        pcnt_config.lctrl_mode = PCNT_MODE_REVERSE; // Reverse counting direction if low
-        pcnt_config.hctrl_mode = PCNT_MODE_KEEP;    // Keep the primary counter mode if high
-        // Set the maximum and minimum limit values to watch
-        pcnt_config.counter_h_lim = PCNT_H_LIM_VAL;
-        pcnt_config.counter_l_lim = PCNT_L_LIM_VAL;
+    pcnt_config_t pcnt_config = {
+      // Set PCNT input signal and control GPIOs
+      .pulse_gpio_num = PCNT_INPUT_SIG_IO,
+      .ctrl_gpio_num = PCNT_INPUT_CTRL_IO,
+      // What to do when control input is low or high?
+      .lctrl_mode = PCNT_MODE_REVERSE, // Reverse counting direction if low
+      .hctrl_mode = PCNT_MODE_KEEP,    // Keep the primary counter mode if high
+      // What to do on the positive / negative edge of pulse input?
+      // .pos_mode = PCNT_COUNT_INC,   // Count up on the positive edge
+      // .neg_mode = PCNT_COUNT_DIS,   // Keep the counter value on the negative edge
+      .pos_mode = PCNT_CHANNEL_EDGE_ACTION_INCREASE,
+      .neg_mode = PCNT_CHANNEL_EDGE_ACTION_HOLD,
+      // Set the maximum and minimum limit values to watch
+      .counter_h_lim = PCNT_H_LIM_VAL,
+      .counter_l_lim = PCNT_L_LIM_VAL,
+      .unit = PCNT_UNIT,
+      .channel = PCNT_CHANNEL,
+    };
     
     /* Initialize PCNT unit */
     pcnt_unit_config(&pcnt_config);
     /* Configure and enable the input filter */
-    pcnt_set_filter_value(PCNT_UNIT, 100);
-    pcnt_filter_enable(PCNT_UNIT);
+    // pcnt_set_filter_value(PCNT_UNIT, 100);  ???
+    // pcnt_filter_enable(PCNT_UNIT);          ???
 
     /* Set threshold 0 and 1 values and enable events to watch */
     // pcnt_set_event_value(PCNT_UNIT, PCNT_EVT_THRES_1, PCNT_THRESH1_VAL);
@@ -95,7 +116,8 @@ void pcnt_init_channel(pcnt_unit_t PCNT_UNIT,int PCNT_INPUT_SIG_IO , int PCNT_IN
     // pcnt_set_event_value(PCNT_UNIT, PCNT_EVT_THRES_0, PCNT_THRESH0_VAL);
     // pcnt_event_enable(PCNT_UNIT, PCNT_EVT_THRES_0);
     /* Enable events on zero, maximum and minimum limit values */
-    pcnt_event_enable(PCNT_UNIT, PCNT_EVT_ZERO);
+
+   // pcnt_event_enable(PCNT_UNIT, PCNT_EVT_ZERO); ???
     pcnt_event_enable(PCNT_UNIT, PCNT_EVT_H_LIM);
     // pcnt_event_enable(PCNT_UNIT, PCNT_EVT_L_LIM);
 
@@ -114,7 +136,7 @@ void pcnt_init_channel(pcnt_unit_t PCNT_UNIT,int PCNT_INPUT_SIG_IO , int PCNT_IN
 static void freqCounterBegin(uint8_t pin)
 {
   pcnt_evt_queue = xQueueCreate(10, sizeof(pcnt_evt_t));
-  pcnt_init_channel(PCNT_UNIT_0, pin); // Initialize Unit 0 to pin 4
+  pcnt_init_channel(PCNT_UNIT_0, pin);
 }
 
 static void freqCounterEnd()
@@ -129,12 +151,10 @@ static void freqCounterEnd()
 static bool freqCounterReceive(pcnt_evt_t &event)
 {
     portBASE_TYPE res;
-
     res = xQueueReceive(pcnt_evt_queue, &event, 1000 / portTICK_PERIOD_MS);
 
     if (res == pdTRUE) {
-
-      log_i("Event PCNT unit[%d]; Status: %u", event.unit, event.unit,evt.status);
+      log_i("Event PCNT unit[%d]; Status: %u", event.unit, event.status);
       return true;
     }
 

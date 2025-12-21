@@ -3,13 +3,9 @@
 volatile uint8_t _FreqCountESP::sIsFrequencyReady = false;
 volatile uint32_t _FreqCountESP::sCount = 0;
 volatile uint32_t _FreqCountESP::sFrequency = 0;
-
-// Thanks to jgustavoam and Rui Viana for tips gleaned from
-// https://www.esp32.com/viewtopic.php?t=17018
-
 volatile uint32_t _FreqCountESP::sLastPcnt = 0;
 
-#define PCNT_HIGH_LIMIT 32767  // largest +ve value for int16_t.
+#define PCNT_HIGH_LIMIT INT16_MAX //32767 largest +ve value for int16_t.
 #define PCNT_LOW_LIMIT  0
 
 #define PCNT_UNIT PCNT_UNIT_0
@@ -44,14 +40,6 @@ void IRAM_ATTR onTimer()
   portEXIT_CRITICAL_ISR(&_FreqCountESP::sMux);
 }
 
-void IRAM_ATTR onRise()
-{
-  portENTER_CRITICAL_ISR(&_FreqCountESP::sMux);
-  _FreqCountESP::sCount++;
-  portEXIT_CRITICAL_ISR(&_FreqCountESP::sMux);
-}
-
-
 static pcnt_isr_handle_t setupPcnt(uint8_t pin, volatile uint32_t *backupCounter) { 
   pcnt_config_t pcntConfig = {
     .pulse_gpio_num = pin,
@@ -81,29 +69,22 @@ static void teardownPcnt(pcnt_isr_handle_t isrHandle)
   pcnt_isr_unregister(isrHandle);
 }
 
-void _FreqCountESP::_begin(uint8_t freqPin, uint8_t freqPinIOMode)
+void _FreqCountESP::begin(uint8_t freqPin, uint16_t timerMs, uint8_t hwTimerId)
 {
+  // Count frequency using internal timer.
+  mTimer = timerBegin(hwTimerId, 80, true);
+  timerAttachInterrupt(mTimer, &onTimer, true);
+  timerAlarmWrite(mTimer, timerMs * 1000, true);
+
   // Configure counting on frequency input pin.
   mPin = freqPin;
   sIsFrequencyReady = false;
   sCount = 0;
   sFrequency = 0;
   sLastPcnt = 0;
+  mIsrHandle = setupPcnt(mPin, &sCount);
 
-  pinMode(mPin, freqPinIOMode);
-  mIsrHandle = setupPcnt(mPin, &_FreqCountESP::sCount);
-}
-
-void _FreqCountESP::begin(uint8_t freqPin, uint16_t timerMs, uint8_t hwTimerId, uint8_t freqPinIOMode)
-{
-  // Count frequency using internal timer.
-  // mTriggerPin == 0 means we're using internal timer.
-  //mTriggerPin = 0;
-  mTimer = timerBegin(hwTimerId, 80, true);
-  timerAttachInterrupt(mTimer, &onTimer, true);
-  timerAlarmWrite(mTimer, timerMs * 1000, true);
-
-  _begin(freqPin, freqPinIOMode);
+  timerAlarmEnable(mTimer);
 }
 
 uint32_t _FreqCountESP::read()

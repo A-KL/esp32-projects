@@ -3,27 +3,14 @@
 
 #include "FreqCountESP.h"
 
-// volatile uint8_t _FreqCountESP::sIsFrequencyReady = false;
-// volatile uint32_t _FreqCountESP::sCount = 0;
-// volatile uint32_t _FreqCountESP::sFrequency = 0;
-// volatile uint32_t _FreqCountESP::sLastPcnt = 0;
-
 #define PCNT_HIGH_LIMIT INT16_MAX //32767 largest +ve value for int16_t.
 #define PCNT_LOW_LIMIT  0
-
-#define PCNT_UNIT PCNT_UNIT_0
+//#define PCNT_UNIT PCNT_UNIT_0
 #define PCNT_CHANNEL PCNT_CHANNEL_0
 
 portMUX_TYPE pcntMux = portMUX_INITIALIZER_UNLOCKED;
 portMUX_TYPE _FreqCountESP::sMux = portMUX_INITIALIZER_UNLOCKED;
-
 volatile pcnt_context_t _FreqCountESP::units[PCNT_UNIT_MAX];
-// = { 
-//   { .isFrequencyReady = false, 0, 0, 0}, 
-//   {false, 0, 0, 0}, 
-//   {false, 0, 0, 0},
-//   {false, 0, 0, 0} 
-// }; 
 
 static void IRAM_ATTR onHLim(void *context)
 {
@@ -52,7 +39,7 @@ void IRAM_ATTR onTimer()
   {
     int16_t pulseCount;
     uint32_t pcntTotal = _FreqCountESP::units[unit_index].count;
-    pcnt_get_counter_value(PCNT_UNIT, &pulseCount);
+    pcnt_get_counter_value((pcnt_unit_t)unit_index, &pulseCount);
     if (pulseCount < 1000) {
       // Maybe counter just rolled over? Re-read 32 bit basis.
       pcntTotal = _FreqCountESP::units[unit_index].count;

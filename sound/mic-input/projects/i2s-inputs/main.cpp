@@ -15,6 +15,7 @@ void setup() {
     AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
     gui_init();
+    gui_set_input((int)1);
 
     auto cfg = i2s.defaultConfig(RX_MODE);
     cfg.copyFrom(info);
@@ -39,12 +40,6 @@ void setup() {
 
     i2s.begin(cfg);
     vu.begin(info);
-
-    // if (!vban.begin(vban_cfg)) {
-    //   stop();
-    // }
-
-    gui_begin();
 }
 
 void loop(){

@@ -52,8 +52,6 @@ TFT_eProgressBar left_pb(&tft, &lime_segmented_pb_style, TFT_HEIGHT - 10, 20, 5,
 TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, TFT_HEIGHT, 65, 0, 35);
 TFT_eProgressBar right_pb(&tft, &lime_segmented_pb_style, TFT_HEIGHT - 10, 20, 110, 10);
 
-
-
 void gui_set_input(int input)
 {
     adc_label.foreground_color = TFT_DARK_DARK_GRAY;

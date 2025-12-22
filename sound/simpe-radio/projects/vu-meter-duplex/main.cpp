@@ -19,7 +19,7 @@ AudioRealFFT fft_out;
 SineWaveGenerator<int16_t> sineWave(32000);               // subclass of SoundGenerator with max amplitude of 32000
 GeneratedSoundStream<int16_t> gen_in(sineWave);               // Stream generated from sine wave
 
-SmoothFilter<float, 19> filter;
+SmoothFilter<float, 20> filter;
 
 StreamCopy copier(decoded_out, i2s); //gen_in
 
@@ -34,6 +34,8 @@ void fftResult(AudioFFTBase &fft) {
         filter.add(i, bin_value);
         spectrum.set_value(i, filter.get(i));
     }
+    auto d  = fft.result();
+    log_w("FFT Result: %d\t%f\t%d", d.frequencyAsInt(), d.magnitude, d.bin);
 
    // log_e("Bins: %f\t%f\t%f", filter.get(3), filter.get(4) , filter.get(0));
 }
@@ -91,7 +93,7 @@ void setup() {
   filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
-  task.begin([](){gui_update(); delay(10);});
+  task.begin([](){_gui_update(); delay(10);});
 }
 
 void loop() {

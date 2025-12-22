@@ -8,7 +8,7 @@
 
 namespace audio_tools {
 
-const uint32_t SampleRates[] = { 8000L, 16000L, 44100L, 48000L, 96000L, 192000L };
+const sample_rate_t SampleRates[] = { 8000L, 16000L, 44100L, 48000L, 96000L, 192000L };
 const uint8_t SampleSizes[] = { 8, 16, 24, 32 };
 
 class AutoAudioInfo {
@@ -50,14 +50,13 @@ class AutoAudioInfo {
             continue;
           }
 
-          if (_info.sample_rate != rate) {
-            _info.sample_rate = rate;
+          if (info.sample_rate != rate) {
+            LOGI("[AutoAudioInfo] Sample Rate Updated '%f' -> '%d'", frequency, rate);
+            info.sample_rate = rate;
             sample_rate_updated = true;
           }
           break;
         }
-        
-        LOGI("AutoAudioInfo. Detected: %u Mapped: %u Updated: %d", frequency, _info.sample_rate, sample_rate_updated);
       }
 
       auto sample_size_updated = false;
@@ -65,7 +64,7 @@ class AutoAudioInfo {
       if (FreqCountESP.available(1)) // SCK
       {
         auto frequency = FreqCountESP.read(1) * _fraction;
-        auto sample_size = frequency / _info.sample_rate / 2;
+        auto sample_size = frequency / info.sample_rate / 2;
 
         for (const auto &sample : SampleSizes) 
         {
@@ -73,8 +72,9 @@ class AutoAudioInfo {
             continue;
           }
 
-          if (_info.bits_per_sample != sample) {
-            _info.bits_per_sample = sample;
+          if (info.bits_per_sample != sample) {
+            LOGI("[AutoAudioInfo] Sample Size Updated '%d' -> '%d'", info.bits_per_sample, sample);
+            info.bits_per_sample = sample;
             sample_size_updated = true;
           }
           break;

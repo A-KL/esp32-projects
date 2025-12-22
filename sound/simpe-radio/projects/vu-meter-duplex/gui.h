@@ -38,6 +38,7 @@ const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_sp_style(
 //     60);
 
 TFT_eSpectrum<20> spectrum(&tft, 300, 120, 10, 10);
+TFT_eLabel spectrum_label(&tft, "20    65   125   250   500  1K  2K  4K  8K  16K", 0, TFT_DARKGREY, 0, 130, 320, 20);
 
 TFT_eLabel sample_size_label(&tft, "32bit", 0, TFT_DARK_DARK_GRAY, 10, 160, 95, 25);
 TFT_eLabel sample_res_label(&tft, "48K", 0, TFT_DARK_DARK_GRAY, 110, 160, 95, 25);
@@ -107,7 +108,7 @@ void gui_labels_init()
 
     sample_res_label.load_font(NotoSansMonoSCB20);
     sample_res_label.background_color = TFT_DARK_DARK_GRAY;
-    sample_res_label.foreground_color = TFT_WHITE;
+    sample_res_label.foreground_color = TFT_RED; // TFT_WHITE
     sample_res_label.init();
     sample_res_label.begin();
 
@@ -116,18 +117,27 @@ void gui_labels_init()
     input_label.foreground_color = TFT_WHITE;
     input_label.init();
     input_label.begin();
+
+    spectrum_label.load_font(NotoSansBold15);
+   // spectrum_label.background_color = TFT_RED;
+    spectrum_label.init();
+    spectrum_label.begin();
 }
 
 void gui_spectrum_init()
 {
   spectrum.background_color = TFT_BLACK;
+  spectrum.bar_background_color = TFT_DARK_DARK_GRAY;
  // spectrum.bar_style = &green_style;
+  // spectrum.bar_style = &green_style;
+
+  srand(time(NULL));
 
   spectrum.init();
   spectrum.begin();
 
   for (auto i=0; i<spectrum.size(); i++) {
-    spectrum.set_value(i, 150);
+    spectrum.set_value(i, rand() % 255);
   }
 }
 

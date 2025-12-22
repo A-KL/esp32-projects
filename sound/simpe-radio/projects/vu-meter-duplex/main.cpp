@@ -15,13 +15,9 @@ MultiOutput decoded_out;
 VuMeter<int32_t> vu(AUDIO_VU_RATIO);
 // VolumeMeter meter_out;
 AudioRealFFT fft_out;
-
-SineWaveGenerator<int16_t> sineWave(32000);               // subclass of SoundGenerator with max amplitude of 32000
-GeneratedSoundStream<int16_t> gen_in(sineWave);               // Stream generated from sine wave
-
 SmoothFilter<float, 20> filter;
 
-StreamCopy copier(decoded_out, i2s); //gen_in
+StreamCopy copier(decoded_out, i2s);
 
 Task task("write", 5 * 1024, 10, 0);
 
@@ -30,12 +26,11 @@ void fftResult(AudioFFTBase &fft) {
     for (auto i = 0; i < spectrum.size(); i++) {
         auto bin_index = i * 2 + 2;// ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index) * 15;
-
-        filter.add(i, bin_value);
-        spectrum.set_value(i, filter.get(i));
+       filter.add(i, bin_value);
+       spectrum.set_value(i, filter.get(i));
     }
-    auto d  = fft.result();
-    log_w("FFT Result: %d\t%f\t%d", d.frequencyAsInt(), d.magnitude, d.bin);
+    // auto d  = fft.result();
+    // log_e("FFT Result: %d\t%f\t%d", d.frequencyAsInt(), d.magnitude, d.bin);
 
    // log_e("Bins: %f\t%f\t%f", filter.get(3), filter.get(4) , filter.get(0));
 }
@@ -43,6 +38,7 @@ void fftResult(AudioFFTBase &fft) {
 void setup() {
   Serial.begin(115200);
   AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+  delay(3000);
 
   // TFT
   tft.init();
@@ -86,14 +82,11 @@ void setup() {
   // VU
   vu.begin(info);
   vu.setAudioInfo(info);
-
-  // Generate
-  //sineWave.begin(info, N_G3);
   
-  filter.begin(SMOOTHED_AVERAGE, 5);
+ filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
-  task.begin([](){_gui_update(); delay(10);});
+ task.begin([](){_gui_update(); delay(10);});
 }
 
 void loop() {

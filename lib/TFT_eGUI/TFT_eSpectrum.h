@@ -22,7 +22,7 @@ class TFT_eSpectrum : public TFT_eWidget
         {   
             create(get_band_w(), get_band_h(), background_color);
 
-            for (auto i=0; i<bands_count; i++) {
+            for (auto i=0; i<size(); i++) {
                 _values[i] = _min;
                 _values_new[i] = _min;
             }
@@ -50,16 +50,14 @@ class TFT_eSpectrum : public TFT_eWidget
 
         uint16_t background_color = TFT_DARK_DARK_GRAY;
 
-        const TFT_eProgressBar_ValueStyle* bar_style = NULL;
+        uint16_t bar_background_color = TFT_DARKGREEN;
+        uint16_t bar_foreground_color = TFT_GREEN;
 
-        uint16_t bar_color_gradient_from = TFT_GREENYELLOW;
-        uint16_t bar_color_gradient_to = TFT_GREEN;
-        
-        const int bands_count = TSize;
+        const TFT_eColorBrush* empty_bar_style = NULL;
+        const TFT_eColorBrush* full_bar_style = NULL;
 
-        uint8_t band_segments = 100;
         uint8_t band_segment_padding = 2;
-        //uint8_t band_segment_height = 2;
+        // uint8_t band_segment_height = 2;
 
     private:
         float _values[TSize];
@@ -68,7 +66,7 @@ class TFT_eSpectrum : public TFT_eWidget
         float _max = 255;
 
         inline int get_band_w() const {
-            return width / bands_count - band_segment_padding;
+            return width / size() - band_segment_padding;
         }
 
         inline int get_band_h() const {
@@ -83,7 +81,7 @@ class TFT_eSpectrum : public TFT_eWidget
             auto actual_top = top + band_segment_padding;
             auto half_segment_padding = band_segment_padding / 2;
 
-            for (auto i = 0; i<bands_count; ++i) 
+            for (auto i = 0; i<size(); ++i) 
             {
                 if (_values_new[i] == _values[i] && !force) 
                 {
@@ -99,18 +97,21 @@ class TFT_eSpectrum : public TFT_eWidget
                 //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
                 //_canvas.fillSprite(background_color);
 
-                if (bar_style)
-                {
-                    //bar_style->render(&_canvas, 0, y, bar_w, bar_h - y, bar_w);
-                    bar_style->render(&_canvas, 0, 0, bar_w, bar_h, bar_h - y);
+                if (empty_bar_style) {
+                    empty_bar_style->fillRect(&_canvas, 0, 0, bar_w, y);
+                } 
+                else {
+                    _canvas.fillRect(0, 0, bar_w, y, bar_background_color);  
                 }
-                else
-                {
-                    _canvas.fillRect(0, 0, bar_w, y, background_color);  
-                    _canvas.fillRectHGradient(0, y, bar_w, bar_h - y, bar_color_gradient_from, bar_color_gradient_to);
+
+                if (full_bar_style) {
+                    full_bar_style->fillRect(&_canvas, 0, y, bar_w, bar_h - y);
+                }
+                else {
+                    _canvas.fillRect(0, y, bar_w, bar_h - y, bar_foreground_color);
                 }
 
                 push(left + bar_w * i + band_segment_padding * i, top);
             }
-        }        
+        }
 };

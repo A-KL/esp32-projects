@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+
 extern "C" {
   #include "soc/pcnt_struct.h"
 }

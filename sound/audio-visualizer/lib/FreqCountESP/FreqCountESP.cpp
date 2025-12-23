@@ -1,7 +1,7 @@
 #include <cstdarg>
 #include <iostream>
 
-#include "FreqCountESP.h"
+#include <FreqCountESP.h>
 
 #define PCNT_HIGH_LIMIT INT16_MAX //32767 largest +ve value for int16_t.
 #define PCNT_LOW_LIMIT  0

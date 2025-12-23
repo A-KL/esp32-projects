@@ -89,11 +89,21 @@ class TFT_eGradientBrush : public TFT_eColorBrush
         void fillRect(TFT_eSprite* sprite, int32_t x, int32_t y, int32_t w, int32_t h) const
         {
             if (_fast) {
-                sprite->fillRect(x, y, w, h/2, _color1);
-                sprite->fillRect(x, y + h/2, w, h/2, _color2);
+                if (w > h)   {
+                    auto half = h / 2.0;
+                    sprite->fillRect(x, y, w, half, _color1);
+                    sprite->fillRect(x, y + half, w, half, _color2);
+                } else {
+                    auto half = w / 2.0;
+                    sprite->fillRect(x, y, half, h, _color1);
+                    sprite->fillRect(x + half, y, half, h, _color2);
+                }
             }
             else {
-                sprite->fillRectVGradient(x, y, w, h, _color1, _color2);
+                if (w > h)         
+                    sprite->fillRectVGradient(x, y, w, h, _color1, _color2);
+                else
+                    sprite->fillRectHGradient(x, y, w, h, _color1, _color2);    
             }
         }
 

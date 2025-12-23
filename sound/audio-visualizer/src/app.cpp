@@ -8,7 +8,7 @@
 #include "LovyanGFXCanvas.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-static LovyanGFXCanvas canvas(&lcd);
+static LovyanGFXCanvas canvas(&tft);
 
 #include "audio.h"
 #include "audio_user.h"

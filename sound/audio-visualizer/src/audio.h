@@ -49,7 +49,7 @@ static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(Rad
 #endif
 
 // AudioInfo info(48000, 2, 32);
-AudioInfo info(44100, 2, 16);
+AudioInfo info(44100, 2, 32);
 
 LogarithmicVolumeControl lvc(0.1);
 
@@ -60,9 +60,11 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
+NumberFormatConverterStream convert(all_out); // write the 16bit data to fc
+
 MP3DecoderHelix helix;
 VolumeStream volume_out(speakers_out);
-EncodedAudioStream decoder(&all_out, &helix);
+EncodedAudioStream decoder(&convert, &helix);
 
 // StreamCopy copier(raw_out, radio_in); // Radio
 StreamCopy copier; //(all_out, stream_in); // USB
@@ -152,6 +154,9 @@ void setupAudio(const int mode = 0)
   raw_out.add(decoder);
   raw_out.add(metadata_out);
   raw_out.begin();
+
+  // Out - Convert
+  convert.begin(16, info.bits_per_sample);
 
   //all_out.add(speakers_out);
   all_out.add(volume_out);

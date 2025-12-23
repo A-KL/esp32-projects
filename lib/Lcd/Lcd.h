@@ -21,9 +21,9 @@
   #define TFT_eSprite TFT_eSprite_GFX
 
   #if defined ( SDL_h_ )
-    static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
+    static TFT_eSPI tft (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
   #else
-    static TFT_eSPI lcd;
+    static TFT_eSPI tft;
   #endif
 #endif
 
@@ -38,7 +38,7 @@
     #error Select on of the suported Adafruit_GFX display drivers
   #endif
 
-  static TFT_eSPI lcd(TFT_CS, TFT_DC, TFT_RES);
+  static TFT_eSPI tft(TFT_CS, TFT_DC, TFT_RES);
 #endif
 
 /************************************************************************/
@@ -47,6 +47,6 @@
 #ifdef TFT_eSPI_BACKEND
   #include <SPI.h>
   #include <TFT_eSPI.h>
-  static TFT_eSPI lcd;
+  static TFT_eSPI tft;
 #endif
 

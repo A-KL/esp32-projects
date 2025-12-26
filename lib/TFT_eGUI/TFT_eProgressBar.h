@@ -41,7 +41,7 @@ class TFT_eProgressBar : public TFT_eWidget
 
         _canvas.fillRect(left_act, top_act, w, h, background_color);
 
-        int value_w = map(value, min, max, 0, w);
+        int value_w = fmap(value, min, max, 0, w);
 
         value_style->render(&_canvas, left_act, top_act, w, h, value_w);
         

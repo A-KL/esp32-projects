@@ -49,7 +49,8 @@ static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(Rad
 #endif
 
 // AudioInfo info(48000, 2, 32);
-AudioInfo info(44100, 2, 32);
+AudioInfo info_in(44100, 2, 16);
+AudioInfo info_out(44100, 2, 32);
 
 LogarithmicVolumeControl lvc(0.1);
 
@@ -60,11 +61,11 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
-NumberFormatConverterStream convert(all_out); // write the 16bit data to fc
+NumberFormatConverterStream convert(speakers_out); // write the 16bit data to fc
 
 MP3DecoderHelix helix;
-VolumeStream volume_out(speakers_out);
-EncodedAudioStream decoder(&convert, &helix);
+VolumeStream volume_out(convert);
+EncodedAudioStream decoder(&all_out, &helix);
 
 // StreamCopy copier(raw_out, radio_in); // Radio
 StreamCopy copier; //(all_out, stream_in); // USB
@@ -114,12 +115,12 @@ void setupAudio(const int mode = 0)
   decoder.begin();
 
   // Out - VU
-  meter_out.begin(info);
+  meter_out.begin(info_in);
 
   // Out - Speakers
 #ifdef ARDUINO
   auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
-  config.copyFrom(info);
+  config.copyFrom(info_out);
   config.pin_ws      = I2S_WS;
   config.pin_bck     = I2S_BCK;
   config.pin_data    = I2S_SD;
@@ -127,16 +128,16 @@ void setupAudio(const int mode = 0)
   config.pin_data_rx = I2S_IN_SD;
 #else
   auto config = speakers_out.defaultConfig();
-  config.copyFrom(info);
+  config.copyFrom(info_out);
 #endif
   speakers_out.begin(config);
 
   // Out - FFT
   auto tcfg = fft_out.defaultConfig();
   tcfg.length = 4096;
-  tcfg.channels = info.channels;
-  tcfg.sample_rate = info.sample_rate;
-  tcfg.bits_per_sample = info.bits_per_sample;
+  tcfg.channels = info_in.channels;
+  tcfg.sample_rate = info_in.sample_rate;
+  tcfg.bits_per_sample = info_in.bits_per_sample;
   //tcfg.window_function = new BufferedWindow(new Hamming());
   //tcfg.window_function = new Hamming();
   tcfg.callback = &fftResult;
@@ -156,7 +157,7 @@ void setupAudio(const int mode = 0)
   raw_out.begin();
 
   // Out - Convert
-  convert.begin(16, info.bits_per_sample);
+  convert.begin(16, 32);
 
   //all_out.add(speakers_out);
   all_out.add(volume_out);
@@ -164,7 +165,7 @@ void setupAudio(const int mode = 0)
   all_out.add(meter_out);
   all_out.add(fft_out);
 
-  all_out.begin(info);
+  all_out.begin(info_in);
 
   copier.setActive(false);
   if (mode == 0) { 

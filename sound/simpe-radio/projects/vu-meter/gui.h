@@ -1,9 +1,7 @@
 #pragma once
 
-#include <TFT_eSPI.h>
+#include <Lcd.h>
 #include "TFT_eGUI.h"
-
-TFT_eSPI tft = TFT_eSPI();
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -41,7 +39,7 @@ TFT_eLabel i2s_label(&tft, "I2S", 4, TFT_GREEN);
 TFT_eLabel disabled_label(&tft, "OPT", 4, TFT_DARK_DARK_GRAY);
 TFT_eLabel ovr_label(&tft, "OVR", 4, TFT_DARK_DARK_GRAY);
 
-TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 35);
+TFT_eScale scale(&tft, {3, 1, 0, -1, -3, -5, -10, -20}, tft.height(), 60, 0, 0);
 
 int gui_cpu_get_cores() 
 {

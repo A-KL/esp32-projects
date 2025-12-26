@@ -1,75 +1,36 @@
-#include "AudioTools.h"
-#include "AudioTools/AudioLibs/AudioSourceSD.h"
-#include "AudioTools/AudioCodecs/CodecMP3Helix.h"
-#include "AudioTools/AudioLibs/AudioRealFFT.h" // or AudioKissFFT or others
+#if defined ( LGFX_BACKEND )
+#define PROGMEM 
+#include <lgfx/v1/platforms/sdl/Panel_sdl.hpp>
+#endif
 
-#include "gui.h"
+#if defined ( SDL_h_ )
 
-URLStream url(LOCAL_SSID, LOCAL_PASSWORD);
-I2SStream i2s;
-AudioRealFFT fft;
-MultiOutput decoded_out;
-NumberFormatConverterStream nfc(decoded_out);
-EncodedAudioStream decoder(&nfc, new MP3DecoderHelix());
-StreamCopy copier(decoder, url);
+void setup(void);
+void loop(void);
+// void cleanup(void);
 
-const uint8_t output_bpp = 16;
-const uint16_t output_format = 16;
-
-void fftResult(AudioFFTBase &fft){
-    float diff;
-    auto result = fft.result();
-    if (result.bin < 11)
-    {
-      spectrum.set_value(result.bin-1, map(result.magnitude, 0, 2000000, 0, 255));
-    }
-    // if (result.magnitude>100){
-    //     Serial.print(result.bin);
-    //     Serial.print(" ");
-    //     Serial.print(result.frequency);
-    //     Serial.print(" ");
-    //     Serial.print(result.magnitude);  
-    //     Serial.print(" => ");
-    //     Serial.print(result.frequencyAsNote(diff));
-    //     Serial.print( " diff: ");
-    //     Serial.println(diff);
-    // }
-}
-
-void setup()
+__attribute__((weak))
+int user_func(bool* running)
 {
-  Serial.begin(115200);
+  setup();
+  
+  do {
+    loop();
+  } 
+  while (*running);
 
-  gui_init();
+  // cleanup();
 
-  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
-
-  nfc.begin(output_bpp, output_format);
-
-  auto config = i2s.defaultConfig(TX_MODE);
-  config.pin_ws = I2S_WS;
-  config.pin_bck = I2S_BCK;
-  config.pin_data = I2S_SD;
-  config.bits_per_sample = output_bpp;
-  i2s.begin(config);
-
-  auto tcfg = fft.defaultConfig();
-  tcfg.copyFrom(config);
-  tcfg.length = 1024;
-  tcfg.bits_per_sample = output_bpp;
-  tcfg.callback = &fftResult;
-  fft.begin(tcfg);
-
-  decoded_out.add(fft);
-  decoded_out.add(i2s);
-
-  decoder.begin();
-
-  url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
-
-  gui_run(0);
+  return 0;
 }
 
-void loop(){
-  copier.copy();
+int main(int, char**)
+{
+  // lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_m, VOLUME_BUTTON);
+  // lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_UP, VOLUME_PIN_A);
+  // lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_DOWN, VOLUME_PIN_B);
+
+  return lgfx::Panel_sdl::main(user_func);
 }
+
+#endif

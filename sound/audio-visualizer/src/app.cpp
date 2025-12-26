@@ -33,7 +33,6 @@ void setup()
   setupAudio();
 
   canvas.Clear(Color::Black);
-
   form.Update(canvas);
 
 #ifdef ARDUINO
@@ -45,10 +44,7 @@ void setup()
 
 void loop() 
 {
-  // auto d = millis();
  // loopAudio();
   loopControls();
   form.Update(canvas);
-  // auto elapsed = millis() - d;
-  // LOGW("UI: %u", elapsed);
 }

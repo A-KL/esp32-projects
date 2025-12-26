@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+// #include <vector>
 #include "TFT_eSPI_Ex.h"
 #include "TFT_eWidget.h"
 
@@ -92,7 +92,7 @@ class TFT_eSpectrum : public TFT_eWidget
 
                 //auto actual_left = left + half_segment_padding + i * (bar_w + band_segment_padding);
 
-                auto y = map(_values[i], _min, _max, bar_h, 0);
+                auto y = fmap(_values[i], _min, _max, bar_h, 0);
 
                 //canvas->fillRectHGradient(0, 0, bar_w, bar_h - y, TFT_DARK_GRAY, TFT_DARK_DARK_GRAY);
                 //_canvas.fillSprite(background_color);

@@ -30,6 +30,8 @@ void print_metadata(MetaDataType type, const char* str, int len){
 
 void setup(){
   Serial.begin(115200);
+  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+  delay(2000);
 
   tft.init();
   tft.setRotation(1);
@@ -38,8 +40,6 @@ void setup(){
 
   gui_init();
   gui_set_input((int)1);
-  
-  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
   //nfc.addNotifyAudioChange(i2s);
   nfc.begin(16, I2S_BPS);
@@ -64,7 +64,7 @@ void setup(){
   i2s.begin(config);
   decoder.begin();
 
-  //gui_run(0);
+  // gui_run(0);
 }
 
 void loop(){

@@ -21,7 +21,14 @@
   #define TFT_eSprite TFT_eSprite_GFX
 
   #if defined ( SDL_h_ )
-    static TFT_eSPI tft (TFT_WIDTH, TFT_HEIGHT, TFT_SDL_SCALE);
+    #if TFT_ROTATE % 2 == 0
+      #define SDL_HEIGHT TFT_WIDTH
+      #define SDL_WIDTH  TFT_HEIGHT
+    #else
+      #define SDL_HEIGHT TFT_HEIGHT
+      #define SDL_WIDTH  TFT_WIDTH
+    #endif
+    static TFT_eSPI tft (SDL_WIDTH, SDL_HEIGHT, TFT_SDL_SCALE);
   #else
     static TFT_eSPI tft;
   #endif

@@ -7,7 +7,7 @@ class TFT_eLabel : public TFT_eWidget
 {
     public:
         TFT_eLabel(TFT_eSPI* tft, const char* text, int16_t border = 0, int16_t color = TFT_DARKGREY, int16_t top = 0, int16_t left = 0, const int16_t width = -1, const int16_t height = -1) 
-        : TFT_eWidget(tft, width, height, top, left), _text(text), borders_thickness{border, border, border, border}, foreground_color(color)
+        : TFT_eWidget(tft, width, height, top, left), _text_updated(text), borders_thickness{border, border, border, border}, foreground_color(color)
         { }
 
         int foreground_color = TFT_DARKGREY;
@@ -22,7 +22,7 @@ class TFT_eLabel : public TFT_eWidget
             height += borders_thickness[3];
             height += default_padding_h;
 
-            width = _canvas.textWidth(_text) > width ? _canvas.textWidth(_text) : width;
+            width = _canvas.textWidth(_text_updated) > width ? _canvas.textWidth(_text_updated) : width;
             width += borders_thickness[0];
             width += borders_thickness[2];
             width += default_padding_w;
@@ -37,6 +37,12 @@ class TFT_eLabel : public TFT_eWidget
 
         void update()
         {
+            if (_text_updated == _text) {
+                return;
+            }
+
+            _text = _text_updated;
+
             _canvas.fillSprite(background_color);
 
             if (borders_thickness[0] > 0) {
@@ -71,8 +77,14 @@ class TFT_eLabel : public TFT_eWidget
             _canvas.pushSprite(left, top);
         }
 
+        void setText(const char* text)
+        {
+            _text_updated = text;
+        }
+
     private:
-        const char* _text;
+        const char* _text = nullptr;
+        const char* _text_updated;
 
         const int default_padding_w = 2;
         const int default_padding_h = 2;

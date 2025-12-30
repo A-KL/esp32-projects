@@ -21,7 +21,7 @@ void setup()
 {
   Serial.begin(115200);
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
-  delay(5000);
+  delay(2000);
 
   pinMode(LCK, INPUT);
   pinMode(BCK, INPUT);

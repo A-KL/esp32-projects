@@ -11,6 +11,22 @@
 
 #include "NotoSansMonoSCB20.h"
 
+std::map<int, const char*> audio_freq_labels = {
+    {16, "16K"},
+    {32, "32K"},
+    {44, "44.1K"},
+    {48, "48K"},
+    {96, "96K"},
+    {192, "192K"}
+};
+
+std::map<int, const char*> audio_bit_labels = {
+    {8, "8bit"},
+    {16, "16bit"},
+    {24, "24bit"},
+    {32, "32bit"}
+};
+
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);
 

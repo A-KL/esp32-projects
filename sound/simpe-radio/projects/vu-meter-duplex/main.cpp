@@ -37,34 +37,66 @@ void fftResult(AudioFFTBase &fft) {
    // log_e("Bins: %f\t%f\t%f", filter.get(3), filter.get(4) , filter.get(0));
 }
 
+void lcd_init() {
+    tft.init();
+    tft.setRotation(TFT_ROTATE);
+    tft.setSwapBytes(true);
+    tft.fillScreen(TFT_BLACK);
+}
+
+void log_init() {
+    Serial.begin(115200);
+    AudioLogger::instance().begin(Serial, AudioLogger::Warning);
+    delay(1000);
+}
+
+void audio_detect_init()
+{
+  pinMode(18, INPUT);
+  pinMode(17, INPUT);
+  auto_info.begin(18, 17);
+}
+
+void audio_detect_update()
+{
+  if (!auto_info.detect(info)) {
+    return;
+  }
+
+  Serial.printf("Audio input: %d, %d, %u\r\n", info.bits_per_sample, info.channels, info.sample_rate);
+
+  vu.setAudioInfo(info);
+  fft_out.setAudioInfo(info);
+  decoded_out.setAudioInfo(info);
+  i2s.setAudioInfo(info);
+
+  auto f =  info.sample_rate/ 1000;
+  auto l1 = audio_freq_labels[f];
+  sample_res_label.setText(l1);
+
+  auto l2 = audio_bit_labels[info.bits_per_sample];
+  sample_size_label.setText(l2);
+}
+
 void setup() {
-  Serial.begin(115200);
-  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
-  delay(3000);
+
+  // Log
+  log_init();
 
   // TFT
-  tft.init();
-  tft.setRotation(TFT_ROTATE);
-  tft.setSwapBytes(true);
-  tft.fillScreen(TFT_BLACK);
+  lcd_init();
 
   // GUI
   gui_init();
   gui_update();
 
   // Audio
-
-  // Detector
-  pinMode(18, INPUT);
-  pinMode(17, INPUT);
-  auto_info.begin(18, 17);
+  audio_detect_init();
 
   // FFT
   auto tcfg = fft_out.defaultConfig();
   tcfg.length = 1024;
-  tcfg.channels = info.channels;
-  tcfg.sample_rate = info.sample_rate;
-  tcfg.bits_per_sample = info.bits_per_sample;
+  tcfg.setAudioInfo(info);
   //tcfg.window_function = new BufferedWindow(new Hamming());
   tcfg.window_function = new Hamming();
   tcfg.callback = &fftResult;
@@ -91,19 +123,18 @@ void setup() {
   vu.begin(info);
   vu.setAudioInfo(info);
   
- filter.begin(SMOOTHED_AVERAGE, 5);
+  filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
- task.begin([](){_gui_update(); delay(10);});
+  task.begin([](){_gui_update(); delay(10);});
 }
 
 void loop() {
+
+  audio_detect_update();
+    
   copier.copy();
+
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
-
-  if (auto_info.detect(info))
-  {
-    Serial.printf("AudioInfo: %d, %d, %u\r\n", info.bits_per_sample, info.channels, info.sample_rate);
-  }
 }

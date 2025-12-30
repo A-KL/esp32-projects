@@ -5,7 +5,7 @@
 class TFT_eWidget
 {
     public:
-        TFT_eWidget(TFT_eSPI* tft, int16_t width, int16_t height, int16_t left, int16_t top) 
+        TFT_eWidget(TFT_eSPI* tft, const int16_t width, const int16_t height, const int16_t left, const int16_t top) 
         : _canvas(tft), width(width), height(height), left(left), top(top)
         { }
 
@@ -33,7 +33,7 @@ class TFT_eWidget
     protected:
         TFT_eSprite _canvas;
 
-        inline TFT_eSprite* create(int16_t w, int16_t h, uint32_t bg_color)
+        inline TFT_eSprite* create(const int16_t w, const int16_t h, const uint16_t bg_color)
         {
             create_sprite(_canvas, w, h, bg_color);
             
@@ -50,7 +50,7 @@ class TFT_eWidget
             push(left, top);
         }
 
-        void push(int32_t x, int32_t y)
+        void push(const int32_t x, const int32_t y)
         {
             if (_parent == nullptr) {
                 _canvas.pushSprite(x, y);
@@ -59,7 +59,7 @@ class TFT_eWidget
             }
         }
 
-        void push_transparent(int32_t x, int32_t y)
+        void push_transparent(const int32_t x, const int32_t y)
         {
             if (_parent == nullptr) {
                 _canvas.pushSprite(x, y, TFT_TRANSPARENT);
@@ -71,7 +71,7 @@ class TFT_eWidget
     private:
         TFT_eSprite* _parent = nullptr;
 
-        static void create_sprite(TFT_eSprite& sprite, int16_t w, int16_t h, uint32_t bg_color)
+        static void create_sprite(TFT_eSprite& sprite, const int16_t w, const int16_t h, const uint16_t bg_color)
         {
             sprite.createSprite(w, h);
             sprite.setColorDepth(16);

@@ -18,46 +18,46 @@ class TFT_eSpectrum : public TFT_eWidget
         : TFT_eWidget(tft, width, height, left, top)
         { }
 
-        inline void init()
-        {   
-            create(get_band_w(), get_band_h(), background_color);
+        inline int size() const {
+            return TSize;
+        }
 
+        void init() {   
             for (auto i=0; i<size(); i++) {
                 _values[i] = _min;
                 _values_new[i] = _min;
             }
         }
 
-        inline int size() const {
-            return TSize;
-        }
-
         void begin()
         {
+            create(width, height, background_color);
+            push(left, top);
+            del();
+
+            create(get_band_w(), get_band_h(), background_color);
+
             update(true);
         }
 
-        void update()
+        inline void update()
         {
             update(false);
         }
 
-        inline TFT_eSpectrum& set_value(uint8_t index, float value)
+        TFT_eSpectrum& set_value(uint8_t index, float value)
         {
             _values_new[index] = constrain(value, _min, _max);
             return *this;
         }
 
+        uint8_t bar_padding = 2;
         uint16_t background_color = TFT_DARK_DARK_GRAY;
-
         uint16_t bar_background_color = TFT_DARKGREEN;
         uint16_t bar_foreground_color = TFT_GREEN;
 
         const TFT_eColorBrush* empty_bar_style = NULL;
         const TFT_eColorBrush* full_bar_style = NULL;
-
-        uint8_t band_segment_padding = 2;
-        // uint8_t band_segment_height = 2;
 
     private:
         float _values[TSize];
@@ -66,11 +66,11 @@ class TFT_eSpectrum : public TFT_eWidget
         float _max = 255;
 
         inline int get_band_w() const {
-            return width / size() - band_segment_padding;
+            return round((float)width/ size()) - bar_padding;
         }
 
         inline int get_band_h() const {
-            return height - band_segment_padding * 2;
+            return height;
         }
 
         void update(bool force)
@@ -78,8 +78,8 @@ class TFT_eSpectrum : public TFT_eWidget
             auto bar_w = get_band_w();
             auto bar_h = get_band_h();
 
-            auto actual_top = top + band_segment_padding;
-            auto half_segment_padding = band_segment_padding / 2;
+            auto actual_top = top + bar_padding;
+            auto half_segment_padding = bar_padding / 2;
 
             for (auto i = 0; i<size(); ++i) 
             {
@@ -111,7 +111,7 @@ class TFT_eSpectrum : public TFT_eWidget
                     _canvas.fillRect(0, y, bar_w, bar_h - y, bar_foreground_color);
                 }
 
-                push(left + bar_w * i + band_segment_padding * i, top);
+                push(left + bar_w * i + bar_padding * i, top);
             }
         }
 };

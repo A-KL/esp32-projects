@@ -2,12 +2,14 @@
 #include "AudioTools/Concurrency/RTOS.h"
 #include "AudioTools/AudioLibs/AudioRealFFT.h"
 
+#include "AutoAudioInfo.h"
 #include "VuOutput.h"
 #include "gui.h"
 
 #include "SmoothFilter.h"
 
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
+AutoAudioInfo auto_info(info);
 
 I2SStream i2s;
 MultiOutput decoded_out;
@@ -51,6 +53,12 @@ void setup() {
   gui_update();
 
   // Audio
+
+  // Detector
+  pinMode(18, INPUT);
+  pinMode(17, INPUT);
+  auto_info.begin(18, 17);
+
   // FFT
   auto tcfg = fft_out.defaultConfig();
   tcfg.length = 1024;
@@ -68,7 +76,7 @@ void setup() {
   cfg.is_master = false;
   cfg.pin_ws = I2S_WS;
   cfg.pin_bck = I2S_BCK;
-  cfg.pin_data = I2S_SD;
+  cfg.pin_data = I2S_SDO;
   cfg.pin_data_rx = I2S_SDI;
   i2s.begin(cfg);
 
@@ -93,4 +101,9 @@ void loop() {
   copier.copy();
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
+
+  if (auto_info.detect(info))
+  {
+    Serial.printf("AudioInfo: %d, %d, %u\r\n", info.bits_per_sample, info.channels, info.sample_rate);
+  }
 }

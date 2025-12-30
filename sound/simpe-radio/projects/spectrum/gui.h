@@ -14,7 +14,7 @@ const static TFT_eChevronBrush YellowChevronBrush(TFT_YELLOW, TFT_DARK_DARK_GRAY
 const static TFT_eProgressBar_SimpleValueStyle spectrum_style(YellowChevronBrush);
 const static TFT_eProgressBar_SegmentedValueStyle lime_segmented_style(&GreenBrush, &RedBrush, &DarkGreenBrush, &DarkRedBrush, 2, 16);
 
-TFT_eSpectrum<15> spectrum(&tft, 250, 150, 0, 0);
+TFT_eSpectrum<15> spectrum(&tft, 250, 150, 10, 10);
 
 // float value = 0;
 
@@ -26,7 +26,8 @@ void gui_init()
   tft.fillScreen(TFT_BLACK);
 
   //spectrum.load_font(DEFAULT_FONT);
-  spectrum.band_segment_padding = 2;
+  spectrum.background_color = TFT_BLACK;
+  spectrum.bar_padding = 4;
   //spectrum.bar_style = &lime_segmented_style;
 
   spectrum.init();

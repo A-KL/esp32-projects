@@ -28,24 +28,12 @@ StreamCopy copier(decoder, in);
 const uint8_t output_bpp = 16;
 const uint16_t output_format = 16;
 
-void fftResult(AudioFFTBase &fft){
-    float diff;
-    auto result = fft.result();
-    if (result.bin < 11)
-    {
-      spectrum.set_value(result.bin-1, fmap(result.magnitude, 0, 2000000, 0, 255));
-    }
-    // if (result.magnitude>100){
-    //     Serial.print(result.bin);
-    //     Serial.print(" ");
-    //     Serial.print(result.frequency);
-    //     Serial.print(" ");
-    //     Serial.print(result.magnitude);  
-    //     Serial.print(" => ");
-    //     Serial.print(result.frequencyAsNote(diff));
-    //     Serial.print( " diff: ");
-    //     Serial.println(diff);
-    // }
+void fftResult(AudioFFTBase &fft)
+{
+  for(auto i=0; i<spectrum.size(); i++)
+  {
+    spectrum.set_value(i, fft.magnitude((i+1) * 2)*2);
+  }
 }
 
 void setup()
@@ -89,9 +77,10 @@ void setup()
   in.begin();
 #endif
 
-  gui_run();
+  //gui_run();
 }
 
 void loop(){
   copier.copy();
+  gui_update();
 }

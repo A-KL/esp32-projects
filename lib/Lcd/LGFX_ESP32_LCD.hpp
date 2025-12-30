@@ -112,7 +112,7 @@ public:
       #ifdef USE_HSPI_PORT
       cfg.spi_host   = SPI2_HOST;
       #else
-      cfg.spi_host   = SPI1_HOST;
+      //cfg.spi_host   = SPI1_HOST;
       #endif
 
       cfg.spi_mode    = 0;               // Set SPI communication mode (0 ~ 3)

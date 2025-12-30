@@ -107,8 +107,8 @@ void gui_labels_init()
     sample_size_label.begin();
 
     sample_res_label.load_font(NotoSansMonoSCB20);
-    sample_res_label.background_color = TFT_DARK_DARK_GRAY;
-    sample_res_label.foreground_color = TFT_RED; // TFT_WHITE
+    sample_res_label.background_color = TFT_RED;
+    sample_res_label.foreground_color = TFT_WHITE;
     sample_res_label.init();
     sample_res_label.begin();
 

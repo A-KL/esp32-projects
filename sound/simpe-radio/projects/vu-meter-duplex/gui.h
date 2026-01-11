@@ -200,7 +200,7 @@ void gui_update_task(void *arg)
     while (1) 
     {
         _gui_update();
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_RATE_MS);
     }
 }
 
@@ -209,5 +209,5 @@ void gui_begin()
     if (gui_cpu_get_cores() < 1) {
         return;
     }
-    xTaskCreate(gui_update_task, "gui_run", 2048, NULL, 0, NULL);
+    xTaskCreatePinnedToCore(gui_update_task, "gui_run", 2048, NULL, 32, NULL, 0);
 }

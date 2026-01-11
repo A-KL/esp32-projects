@@ -7,6 +7,7 @@
 #include "gui.h"
 
 #include "SmoothFilter.h"
+#include <WiFi.h>
 
 AudioInfo info(I2S_SAMPLE_RATE, I2S_CHANNELS, I2S_BPS);
 AutoAudioInfo auto_info(info);
@@ -29,12 +30,8 @@ void fftResult(AudioFFTBase &fft) {
         auto bin_index = i * 2 + 2;// ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index) * 15;
        filter.add(i, bin_value);
-       spectrum.set_value(i, filter.get(i));
+      spectrum.set_value(i, filter.get(i));
     }
-    // auto d  = fft.result();
-    // log_e("FFT Result: %d\t%f\t%d", d.frequencyAsInt(), d.magnitude, d.bin);
-
-   // log_e("Bins: %f\t%f\t%f", filter.get(3), filter.get(4) , filter.get(0));
 }
 
 void lcd_init() {
@@ -52,9 +49,9 @@ void log_init() {
 
 void audio_detect_init()
 {
-  pinMode(18, INPUT);
-  pinMode(17, INPUT);
-  auto_info.begin(18, 17);
+  pinMode(I2S_BCK_2, INPUT);
+  pinMode(I2S_WS_2, INPUT);
+  auto_info.begin(I2S_WS_2, I2S_BCK_2);
 }
 
 void audio_detect_update()
@@ -70,7 +67,7 @@ void audio_detect_update()
   decoded_out.setAudioInfo(info);
   i2s.setAudioInfo(info);
 
-  auto f =  info.sample_rate/ 1000;
+  auto f =  info.sample_rate / 1000;
   auto l1 = audio_freq_labels[f];
   sample_res_label.setText(l1);
 
@@ -82,6 +79,11 @@ void setup() {
 
   // Log
   log_init();
+
+  // Stop WiFi
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);
+  //esp_err_t results = esp_wifi_stop();
 
   // TFT
   lcd_init();
@@ -126,15 +128,15 @@ void setup() {
   filter.begin(SMOOTHED_AVERAGE, 5);
 
   // Task
-  task.begin([](){_gui_update(); delay(10);});
+  gui_begin();
 }
 
 void loop() {
 
-  audio_detect_update();
-    
-  copier.copy();
+ // audio_detect_update();
 
   left_pb.value = vu.value_left();
   right_pb.value = vu.value_right();
+
+  copier.copy();
 }

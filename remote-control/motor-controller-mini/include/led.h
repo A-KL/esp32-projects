@@ -21,7 +21,7 @@ class rgb_animation_t
         _timer.cancel(_task);
         _task = NULL;
 
-        _rgb.setPixelColor(0, _rgb.Color(0, 255, 0));
+        _rgb.setPixelColor(0, _rgb.Color(255, 0, 0));
         _rgb.show();
       }
     }
@@ -44,7 +44,7 @@ class rgb_animation_t
       if (rgb->getPixelColor(0)) {
         rgb->clear();
       } else {
-        rgb->setPixelColor(0, rgb->Color(255, 0, 0));
+        rgb->setPixelColor(0, rgb->Color(0, 255, 0));
       }
       rgb->show();
 

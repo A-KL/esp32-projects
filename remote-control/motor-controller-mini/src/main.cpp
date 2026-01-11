@@ -24,7 +24,7 @@
 //#include <button_input.h>
 
 #include <sbus_input.h>
-#include <ps_input.h>
+#include <ps3_input.h>
 #include <adc_input.h>
 #include <pwm_input.h>
 #include <enow_input.h>

@@ -32,6 +32,7 @@
         { "in_ch": 2, "out_type": "servo", "out_ch": 2 },
         { "in_ch": 3, "out_type": "servo", "out_ch": 3 },
         { "in_ch": 4, "out_type": "servo", "out_ch": 4 },
-        { "in_ch": 3, "out_type": "servo", "out_ch": 5 }
+        { "in_ch": 5, "out_type": "servo", "out_ch": 5 },
+        { "in_ch": 6, "out_type": "servo", "out_ch": 6 }
     ]
 }

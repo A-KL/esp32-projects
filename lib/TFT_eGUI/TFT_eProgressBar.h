@@ -31,6 +31,11 @@ class TFT_eProgressBar : public TFT_eWidget
 
     void update() 
     {
+        if (_value == value) {
+            return;
+        }
+        _value = value;
+        
         auto left_act= border_with_padding(borders_thickness[0], border_padding);
         auto top_act = border_with_padding(borders_thickness[1], border_padding);
         auto right_act = border_with_padding(borders_thickness[2], border_padding);
@@ -79,4 +84,5 @@ class TFT_eProgressBar : public TFT_eWidget
 
     private:
         const int border_padding = 1;
+        float _value = 0;
 };

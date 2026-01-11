@@ -9,7 +9,7 @@
 #define INPUT_PS_MIN        0
 #define INPUT_PS_MAX        (INPUT_PS_MIN + INPUT_PS_RANGE)
 
-#define INPUT_PS_DEAD_ZONE  15
+#define INPUT_PS_DEAD_ZONE  16
 
 #ifdef HAS_BLUETOOTH
 
@@ -35,44 +35,9 @@ void ps3_on_disconnect()
 
 void ps3_on_data_received() 
 {
-#ifdef INPUT_PS3_DEBUG
-    log_d("CPU Core: (%d) ANALOG: Left (%d,%d) Right (%d,%d) TRIGGER: Left (%d) Right (%d)", 
-        xPortGetCoreID(),
-
-        Ps3.data.analog.stick.lx,
-        Ps3.data.analog.stick.ly,
-        
-        Ps3.data.analog.stick.rx,
-        Ps3.data.analog.stick.ry,
-        
-        Ps3.data.analog.button.l2,
-        Ps3.data.analog.button.r2);
-#endif
-
-    // Data_t data = { 
-    //     Ps3.data.analog.stick.lx, 
-    //     Ps3.data.analog.stick.ly,
-    //     Ps3.data.analog.stick.rx,
-    //     Ps3.data.analog.stick.ry,
-
-    //     Ps3.data.analog.button.l2,
-    //     Ps3.data.analog.button.r2,
-    //     Ps3.data.analog.button.l1,
-    //     Ps3.data.analog.button.r1,
-
-    //     Ps3.data.analog.button.left,
-    //     Ps3.data.analog.button.up,
-    //     Ps3.data.analog.button.right,
-    //     Ps3.data.analog.button.down,
-
-    //     Ps3.data.analog.button.square,
-    //     Ps3.data.analog.button.triangle,
-    //     Ps3.data.analog.button.circle,
-    //     Ps3.data.analog.button.cross 
-    // };
-
-    queue_send(ps_input_queue, Ps3.data);
+   queue_send(ps_input_queue, Ps3.data);
 }
+
 #endif
 
 inline void ps3_init() 
@@ -96,30 +61,60 @@ inline void ps3_init()
 uint8_t ps3_receive(int16_t* outputs)
 {
 #ifdef HAS_BLUETOOTH
-    if (!Ps3.isConnected()) 
-    {
+    if (!Ps3.isConnected()) {
         return 0;
     }
-
     ps3_t data;
-
+    
     if (queue_receive(ps_input_queue, data))
     {
+    #ifdef INPUT_PS3_DEBUG
+        log_d("CPU%d Sticks: Left (%d,%d) Right (%d,%d) DPAD: (%d,%d)", 
+            xPortGetCoreID(),
+
+            data.analog.stick.lx,
+            data.analog.stick.ly,
+            
+            data.analog.stick.rx,
+            data.analog.stick.ry,
+            
+            data.analog.button.up,
+            data.analog.button.down);
+    #endif
+
+        // Data_t data = { 
+        //     Ps3.data.analog.stick.lx, 
+        //     Ps3.data.analog.stick.ly,
+        //     Ps3.data.analog.stick.rx,
+        //     Ps3.data.analog.stick.ry,
+
+        //     Ps3.data.analog.button.l2,
+        //     Ps3.data.analog.button.r2,
+        //     Ps3.data.analog.button.l1,
+        //     Ps3.data.analog.button.r1,
+
+        //     Ps3.data.analog.button.left,
+        //     Ps3.data.analog.button.up,
+        //     Ps3.data.analog.button.right,
+        //     Ps3.data.analog.button.down,
+
+        //     Ps3.data.analog.button.square,
+        //     Ps3.data.analog.button.triangle,
+        //     Ps3.data.analog.button.circle,
+        //     Ps3.data.analog.button.cross 
+        // };
+
         int16_t values[] = {
             ps3_trim(data.analog.stick.lx), 
             ps3_trim(data.analog.stick.ly),
             ps3_trim(data.analog.stick.rx),
             ps3_trim(data.analog.stick.ry),
 
-             ps3_trim(data.analog.button.l2),
-             ps3_trim(data.analog.button.r2),
-            data.analog.button.l1,
-            data.analog.button.r1,
+            (ps3_trim(data.analog.button.l2) - ps3_trim(data.analog.button.r2)) / 2,
+            (ps3_trim(data.analog.button.l1) - ps3_trim(data.analog.button.r1)) / 2,
 
-            data.analog.button.left,
-            data.analog.button.up,
-            data.analog.button.right,
-            data.analog.button.down,
+            (data.analog.button.up - data.analog.button.down) / 2,
+            (data.analog.button.left - data.analog.button.right) / 2,
 
             data.analog.button.square,
             data.analog.button.triangle,

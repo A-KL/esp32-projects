@@ -8,7 +8,7 @@
 
 // #define WIFI_ENABLED
 #define HAS_BLE
-#define RGB_LED_PIN 8
+#define RGB_LED_PIN 27
 
 /* Inputs */
 

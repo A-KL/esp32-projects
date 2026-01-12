@@ -56,23 +56,23 @@ void enow_on_received(const uint8_t * mac, const uint8_t *data, int len)
 
   memcpy(&message, data, sizeof(message));
 
-#ifdef INPUT_ESP_NOW_DEBUG
-  log_d("CPU Core: (%d) Values: %d %d %d %d %d %d %d %d %d %d ",
-    xPortGetCoreID(),
+// #ifdef INPUT_ESP_NOW_DEBUG
+//   log_d("CPU Core: (%d) Values: %d %d %d %d %d %d %d %d %d %d ",
+//     xPortGetCoreID(),
 
-    message.channels[0],
-    message.channels[1],
-    message.channels[2],
-    message.channels[3],
+//     message.channels[0],
+//     message.channels[1],
+//     message.channels[2],
+//     message.channels[3],
 
-    message.channels[4],
-    message.channels[5],
-    message.channels[6],
-    message.channels[7],
+//     message.channels[4],
+//     message.channels[5],
+//     message.channels[6],
+//     message.channels[7],
     
-    message.channels[8],
-    message.channels[9]);
-#endif
+//     message.channels[8],
+//     message.channels[9]);
+// #endif
 
   queue_send(enow_input_queue, message);
 
@@ -104,10 +104,7 @@ void enow_on_received(const uint8_t * mac, const uint8_t *data, int len)
 
 void enow_init() 
 {
-#ifndef WIFI_ENABLED
-  return;
-#endif
-
+#ifdef WIFI_ENABLED
   if (esp_now_init() != ESP_OK) 
   {
     log_e("ESP-NOW Initializing...FAILED");
@@ -119,13 +116,13 @@ void enow_init()
   esp_now_register_recv_cb(esp_now_recv_cb_t(enow_on_received));
 
   log_i("ESP-NOW Initializing...OK");
+
+#endif
 }
 
 uint8_t enow_receive(int16_t* outputs)
 {
-#ifndef WIFI_ENABLED
-  return 0;
-#endif
+#ifdef WIFI_ENABLED
     static enow_message_t data;
 
     if (queue_receive(enow_input_queue, data))
@@ -133,6 +130,6 @@ uint8_t enow_receive(int16_t* outputs)
           memcpy(outputs, data.channels, sizeof(data));
           return sizeof(data.channels) / sizeof(unsigned short);
     }
-
+#endif
     return 0;
 }

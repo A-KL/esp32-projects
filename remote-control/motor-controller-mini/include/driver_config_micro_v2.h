@@ -7,7 +7,6 @@
 // #define INPUT_ESP_NOW_DEBUG
 
 // #define WIFI_ENABLED
-#define HAS_BLE
 #define RGB_LED_PIN 27
 
 /* Inputs */
@@ -35,3 +34,5 @@ const motor_config_t motors [] = { };
 
 /* LEGO */
 static lego_servo_t lego_servos[] = { };
+
+// const short rgb_output = 27;

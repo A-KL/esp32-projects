@@ -68,10 +68,10 @@ void setup() {
 
   config_init();
   init_wifi();  
-  lcd_init();
+  //lcd_init();
 
   pwm_in_init();
-  sbus_init();
+ // sbus_init();
   enow_init();
   ps3_init();
   xbox_init();

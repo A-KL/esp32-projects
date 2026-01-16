@@ -99,53 +99,53 @@ void loop()
   if (sbus_receive(inputs) > 0) 
   {
     // Motors
-    controls_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
+    config_map_inputs(sbus, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    controls_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
+    config_map_inputs(sbus, inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
-    // controls_map_inputs(sbus, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
+    // config_map_inputs(sbus, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
     //lego_servos_write<INPUT_SBUS_MIN, INPUT_SBUS_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (enow_receive(inputs) > 0)
   {
     // Motors
-    controls_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
+    config_map_inputs(esp_now, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    controls_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
+    config_map_inputs(esp_now, inputs, servo, outputs_servo, servos_count);
     servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
-    // controls_map_inputs(esp_now, inputs, servo_lego, outputs_lego_servo, servos_count);
+    // config_map_inputs(esp_now, inputs, servo_lego, outputs_lego_servo, servos_count);
     // lego_servos_write<INPUT_ESP_NOW_MIN, INPUT_ESP_NOW_MAX>(outputs_lego_servo, lego_servos_count);
   } 
   else if (pwm_receive(inputs))
   {
     // Motors
-    controls_map_inputs(pwm, inputs, dc, outputs_motors, motors_count);
+    config_map_inputs(pwm, inputs, dc, outputs_motors, motors_count);
     write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
 
     // Lego Servo
-    // controls_map_inputs(pwm, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
+    // config_map_inputs(pwm, inputs, servo_lego, outputs_lego_servo, lego_servos_count);
     // lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
     delay(15);
   }
   else if (ps3_receive(inputs))
   {
     // Motors
-    controls_map_inputs(ps3, inputs, dc, outputs_motors, motors_count);
+    config_map_inputs(ps3, inputs, dc, outputs_motors, motors_count);
     write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    controls_map_inputs(ps3, inputs, servo, outputs_servo, servos_count);
+    config_map_inputs(ps3, inputs, servo, outputs_servo, servos_count);
     servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
   }
   else if (xbox_receive(inputs))

@@ -10,7 +10,7 @@ void config_init() {
     settings_load(global_config);
 }
 
-void controls_map_inputs(
+void config_map_inputs(
     const input_type_t input_type, 
     const int16_t* inputs, 
     const output_type_t output_type, 

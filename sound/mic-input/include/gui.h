@@ -1,17 +1,7 @@
 #pragma once
 
-#include <LovyanGFX.h>
-#include <LGFX_AUTODETECT.hpp>
-#include <TFT_eSprite_GFX.h>
-
-using TFT_eSPI = LGFX;
-using TFT_eSprite = TFT_eSprite_GFX;
-
-#if defined ( SDL_h_ )
-    static TFT_eSPI tft ( 320, 240, 2 );
-#else
-    static TFT_eSPI tft;
-#endif
+#include <Lcd.h>
+#include <TFT_eGUI.h>
 
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
@@ -20,8 +10,6 @@ using TFT_eSprite = TFT_eSprite_GFX;
 #endif
 
 #include "NotoSansMonoSCB20.h"
-
-#include <TFT_eGUI.h>
 
 const static TFT_eGradientBrush GreenGradientBrush(TFT_GREENYELLOW, TFT_GREEN, true);
 const static TFT_eGradientBrush RedGradientBrush(TFT_RED, TFT_DARK_RED_12, true);

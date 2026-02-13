@@ -46,7 +46,7 @@ struct lego_servo_t {
     short pin_a;
     short pin_b;
     short channel;
-    lego_servo_position_t direction;// = lego_servo_position_t::middle;
+    lego_servo_position_t direction; // = lego_servo_position_t::middle;
 };
 
 // Input config

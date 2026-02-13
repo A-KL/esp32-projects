@@ -4,9 +4,9 @@
 #include <driver_config.h>
 #include <pwm_in.h>
 
-#define INPUT_PWM_MAX  1996 // 2000
+#define INPUT_PWM_MAX  1996 // 2000 //2481
 #define INPUT_PWM_MIN   970 // 1024
-#define INPUT_PWM_ZERO  800 // 1020
+#define INPUT_PWM_ZERO  470 // 1020 //489
 #define INPUT_PWM_MID (INPUT_PWM_MIN + (INPUT_PWM_MAX - INPUT_PWM_MIN) / 2.0);
 
 static pwm_input_t input_pwm[pwm_inputs_count];
@@ -32,7 +32,9 @@ bool pwm_receive(const uint8_t index, int16_t* outputs)
   auto pwm_value = input_pwm[index].value();
   auto pwm_detected = pwm_value > INPUT_PWM_ZERO && pwm_value < 5000;
 
-  //log_d("PWN %u", pwm_value);
+  // if (index==1) {
+  //  log_d("PWN %u", pwm_value);
+  // }
 
   if (pwm_detected)
   {

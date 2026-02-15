@@ -4,10 +4,14 @@
 #include <driver_config.h>
 #include <pwm_in.h>
 
-#define INPUT_PWM_MAX  1996 // 2000 //2481
-#define INPUT_PWM_MIN   970 // 1024
-#define INPUT_PWM_ZERO  470 // 1020 //489
-#define INPUT_PWM_MID (INPUT_PWM_MIN + (INPUT_PWM_MAX - INPUT_PWM_MIN) / 2.0);
+// 470 (360 degree rotation) 400?
+// 800 (180 degree rotation)
+#define INPUT_PWM_LOW 470
+#define INPUT_PWM_HI  5000
+
+#define INPUT_PWM_MID 1500  // usec
+#define INPUT_PWM_MAX 1996  // 2481 (360 degree rotation)
+#define INPUT_PWM_MIN 1020  //  480 (360 degree rotation)
 
 static pwm_input_t input_pwm[pwm_inputs_count];
 
@@ -30,7 +34,7 @@ bool pwm_receive(const uint8_t index, int16_t* outputs)
   }
 
   auto pwm_value = input_pwm[index].value();
-  auto pwm_detected = pwm_value > INPUT_PWM_ZERO && pwm_value < 5000;
+  auto pwm_detected = INPUT_PWM_LOW < pwm_value && pwm_value < INPUT_PWM_HI;
 
   // if (index==1) {
   //  log_d("PWN %u", pwm_value);

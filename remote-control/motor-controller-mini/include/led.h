@@ -3,7 +3,11 @@
 #include <arduino-timer.h>
 
 #ifdef RGB_LED_PIN
-#include <Adafruit_NeoPixel.h> 
+#include <Adafruit_NeoPixel.h>
+
+#ifndef RGB_TYPE
+  #define RGB_TYPE NEO_RGB
+#endif
 
 class rgb_animation_t
 {
@@ -52,7 +56,7 @@ class rgb_animation_t
     }
 };
 
-static auto rgb_led = Adafruit_NeoPixel(1, RGB_LED_PIN, NEO_RGB + NEO_KHZ800);
+static auto rgb_led = Adafruit_NeoPixel(1, RGB_LED_PIN, RGB_TYPE + NEO_KHZ800);
 
 #define indicator_t(X) rgb_animation_t(rgb_led, X)
 

@@ -141,12 +141,12 @@ void loop()
   {
     // Motors
     config_map_inputs(ps3, inputs, dc, outputs_motors, motors_count);
-    write_motors<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_motors, motors_count);
+    write_motors<INPUT_PS_MIN, INPUT_PS_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
     config_map_inputs(ps3, inputs, servo, outputs_servo, servos_count);
-    servos_write<-INPUT_PS_HALF_RANGE, INPUT_PS_HALF_RANGE>(outputs_servo, servos_count);
+    servos_write<INPUT_PS_MIN, INPUT_PS_MAX>(outputs_servo, servos_count);
   }
   else if (xbox_receive(inputs))
   {

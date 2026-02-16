@@ -5,9 +5,9 @@
 #include <inputs_queue.h>
 
 #define INPUT_PS_RANGE      255
-#define INPUT_PS_HALF_RANGE (INPUT_PS_RANGE/2)
-#define INPUT_PS_MIN        0
-#define INPUT_PS_MAX        (INPUT_PS_MIN + INPUT_PS_RANGE)
+#define INPUT_PS_HALF_RANGE 0
+#define INPUT_PS_MIN        -127
+#define INPUT_PS_MAX        127
 
 #define INPUT_PS_DEAD_ZONE  16
 
@@ -19,7 +19,7 @@ static queue_t<ps3_t> ps_input_queue;
 
 inline int16_t ps3_trim(int16_t value)
 {
-    return abs(value) > INPUT_PS_DEAD_ZONE ? value : 0;
+    return abs(value) > INPUT_PS_DEAD_ZONE ? value : INPUT_PS_HALF_RANGE;
 }
 
 void ps3_on_connect() 
@@ -68,8 +68,8 @@ uint8_t ps3_receive(int16_t* outputs)
     
     if (queue_receive(ps_input_queue, data))
     {
-    #ifdef INPUT_PS3_DEBUG
-        log_d("CPU%d Sticks: Left (%d,%d) Right (%d,%d) DPAD: (%d,%d)", 
+    #ifdef INPUT_PS3_RAW_DEBUG
+        log_d("CPU%d Sticks: Left (%d,%d) Right (%d,%d) Triggers: (%d,%d)", 
             xPortGetCoreID(),
 
             data.analog.stick.lx,
@@ -78,8 +78,9 @@ uint8_t ps3_receive(int16_t* outputs)
             data.analog.stick.rx,
             data.analog.stick.ry,
             
-            data.analog.button.up,
-            data.analog.button.down);
+            data.analog.button.l2,
+            data.analog.button.r2
+        );
     #endif
 
         // Data_t data = { 
@@ -122,10 +123,15 @@ uint8_t ps3_receive(int16_t* outputs)
             data.analog.button.cross 
         };
 
+        auto values_count = sizeof(values) / sizeof(int16_t);
+
+    #ifdef INPUT_PS3_DEBUG
+        log_d_values("[PS3] ", values, values_count);
+    #endif
+
         // TODO: test this
         memcpy(outputs, values, sizeof(values));
-
-        return sizeof(values) / sizeof(int16_t);
+        return values_count;
     }
 
     return false;

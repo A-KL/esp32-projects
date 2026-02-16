@@ -10,8 +10,8 @@
 #define INPUT_PWM_HI  5000
 
 #define INPUT_PWM_MID 1500  // usec
-#define INPUT_PWM_MAX 1996  // 2481 (360 degree rotation)
-#define INPUT_PWM_MIN 1020  //  480 (360 degree rotation)
+#define INPUT_PWM_MAX 2020 // 1996 // 2481 (360 degree rotation)
+#define INPUT_PWM_MIN 1000 // 1020 //  480 (360 degree rotation)
 
 static pwm_input_t input_pwm[pwm_inputs_count];
 

@@ -2,10 +2,13 @@
 
 #include <types.h>
 
-/* Debug */
+/* Debug outputs*/
 // #define OUTPUT_SERVOS_DEBUG
+
+/* Debug inputs*/
 // #define INPUT_ESP_NOW_DEBUG
-#define INPUT_PS3_DEBUG
+// #define INPUT_PS3_RAW_DEBUG
+// #define INPUT_PS3_DEBUG
 
 // #define WIFI_ENABLED
 #define RGB_LED_PIN 27

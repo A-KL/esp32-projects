@@ -5,9 +5,10 @@
 /* Debug */
 
 // #define OUTPUT_SERVOS_DEBUG
+// #define OUTPUT_MOTORS_DEBUG
 
 // #define INPUT_ESP_NOW_DEBUG
-// #define INPUT_PWM_DEBUG
+#define INPUT_PWM_DEBUG
 
 /* Inputs */
 

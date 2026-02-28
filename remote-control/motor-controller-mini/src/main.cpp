@@ -145,22 +145,22 @@ void loop() {
   else if (pwm_receive(inputs))
   {
     // Motors
-    outputs_motors[0] = inputs[0];
-    outputs_motors[1] = inputs[2];
-    // settings_map_inputs(pwm, inputs, motor, outputs_motors, motors_count);
+    // outputs_motors[0] = inputs[0];
+    // outputs_motors[1] = inputs[2];
+    config_map_inputs(pwm, inputs, motor, outputs_motors, motors_count);
     write_motors<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_motors, motors_count);
 
     // Servos
     servos_attach(true, servos_count);
-    outputs_servo[0] = inputs[0];
-    outputs_servo[1] = inputs[2];
-    //controls_map_inputs(pwm, inputs, servo, outputs_servo, servos_count);
+    // outputs_servo[0] = inputs[0];
+    // outputs_servo[1] = inputs[2];
+    controls_map_inputs(pwm, inputs, servo, outputs_servo, servos_count);
     servos_write<-INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_servo, servos_count);
 
     // Lego Servo
-    outputs_lego_servo[0] = inputs[0];
-    outputs_lego_servo[1] = inputs[2];
-    // settings_map_inputs(global_config, pwm, inputs, servo, outputs_servo, servos_count);
+    // outputs_lego_servo[0] = inputs[0];
+    // outputs_lego_servo[1] = inputs[2];
+    config_map_inputs(global_config, pwm, inputs, servo, outputs_servo, servos_count);
     lego_servos_write<INPUT_PWM_MIN, INPUT_PWM_MAX>(outputs_lego_servo, lego_servos_count);
   }
   else if (adc_receive(inputs) > 0)

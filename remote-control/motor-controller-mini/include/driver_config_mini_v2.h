@@ -39,38 +39,38 @@ motor_config_t motors [] = {
     { dc_mode_t::a_b_en, { 10, 11, 12, -1, -1, 3 } }  //b, b, en, pwm_a, pwm_b, pwm_en
 };
 
-void map_inputs_outputs(    
-    const input_type_t input_type,
-    const int16_t* inputs, 
-    const output_type_t output_type, 
-    int16_t* outputs, 
-    const uint8_t inputs_count) 
-{
-    switch (input_type)
-    {
-        case input_type_t::pwm:
+// void config_map_inputs(    
+//     const input_type_t input_type,
+//     const int16_t* inputs, 
+//     const output_type_t output_type, 
+//     int16_t* outputs, 
+//     const uint8_t inputs_count) 
+// {
+//     switch (input_type)
+//     {
+//         case input_type_t::pwm:
 
-            if (output_type == output_type_t::dc) {
-                outputs[0] = inputs[0];
-                outputs[1] = inputs[1];
-            } else if (output_type == output_type_t::servo_lego) {
-                outputs[0] = inputs[2];
-                outputs[1] = inputs[3];
-            }
-            break;
+//             if (output_type == output_type_t::dc) {
+//                 outputs[0] = inputs[0];
+//                 outputs[1] = inputs[1];
+//             } else if (output_type == output_type_t::servo_lego) {
+//                 outputs[0] = inputs[2];
+//                 outputs[1] = inputs[3];
+//             }
+//             break;
 
-        case input_type_t::sbus:
+//         case input_type_t::sbus:
 
-            if (output_type == output_type_t::dc) {
-                outputs[0] = inputs[0];
-                outputs[1] = inputs[1];
-            } else if (output_type == output_type_t::servo_lego) {
-                outputs[0] = inputs[2];
-                outputs[1] = inputs[3];
-            }
-            break;
+//             if (output_type == output_type_t::dc) {
+//                 outputs[0] = inputs[0];
+//                 outputs[1] = inputs[1];
+//             } else if (output_type == output_type_t::servo_lego) {
+//                 outputs[0] = inputs[2];
+//                 outputs[1] = inputs[3];
+//             }
+//             break;
         
-        default:
-            break;
-    }
-}
+//         default:
+//             break;
+//     }
+// }

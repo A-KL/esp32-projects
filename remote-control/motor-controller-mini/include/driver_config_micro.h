@@ -29,6 +29,8 @@ const auto sbus_serial = &Serial1;
 /* PWM */
 const uint8_t servos_pins[] = { 0, 1, 2, 3, 4, 5 };
 
+const bool servos_inverted[] = { false, false, false, false, false, false };
+
 /* Motors */
 const motor_config_t motors [] = { };
 

@@ -33,6 +33,8 @@ const char* ps_controller_mac = "B8:27:EB:DF:B3:FF";
 /* PWM */
 const uint8_t servos_pins[] = { 26, 36, 18, 19, 21, 22, 25 };
 
+const bool servos_inverted[] = { true, true, true, true, false, false, false };
+
 /* Motors */
 const motor_config_t motors [] = { };
 

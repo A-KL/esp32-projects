@@ -27,6 +27,7 @@ const auto sbus_serial = &Serial1;
 
 /* PWM */
 const uint8_t servos_pins[] = { 4, 3 };
+const bool servos_inverted[] = { false, false};
 
 /* LEGO */
 static lego_servo_t lego_servos[] = { };

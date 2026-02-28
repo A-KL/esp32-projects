@@ -8,7 +8,7 @@ static Servo servos[servos_count];
 
 inline void servos_init() {
     for (auto i = 0; i < servos_count; i++) {
-        servos[i].init(servos_pins[i], i);
+        servos[i].init(servos_pins[i], i, servos_inverted[i]);
     }
 }
 

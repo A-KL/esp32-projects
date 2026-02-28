@@ -8,10 +8,11 @@
 class Servo
 {
 public:
-    inline bool init(uint8_t pin, uint8_t channel)
+    inline bool init(uint8_t pin, uint8_t channel, bool reverse = false)
     {
-        _channel = channel;
         _pin = pin;
+        _channel = channel;
+        _reverse = reverse;
         _init = ledcSetup(_channel, servo_frequency, servo_resolution) != 0;
         return _init;
     }
@@ -42,10 +43,21 @@ public:
     template<int16_t TMin, int16_t TMax>
     void write(int16_t value) const
     {
+        write(TMin, TMax,value);
+    }
+
+    void write(int16_t TMin, int16_t TMax, int16_t value) const
+    {
         if (!_attached || !_init) {
             return;
         }
-        ledcWrite(_channel, map(constrain(value, TMin, TMax), TMin, TMax, servo_low, servo_high));
+        ledcWrite(_channel, 
+            map(
+                constrain(value, TMin, TMax), 
+                _reverse ? TMax : TMin,
+                _reverse ? TMin : TMax, 
+                servo_low, 
+                servo_high));
     }
 
 private:
@@ -54,14 +66,15 @@ private:
 
     bool _init = false;
     bool _attached = false;
+    bool _reverse = false;
 
     const uint8_t servo_frequency = OUTPUT_SERVO_FREQ;
     const uint8_t servo_resolution = OUTPUT_SERVO_RES;
     const uint32_t servo_duty_cycle = ((1<<servo_resolution) - 1);
     // 0.5ms pulse width (360 degree) 0.5/20 = 0.025
     // 1.0ms pulse width (180 degree) 1.0/20 = 0.05
-    const uint32_t servo_low = (servo_duty_cycle * 0.052);
+    const uint32_t servo_low = (servo_duty_cycle * 0.049); //52 // left
     // 2.5ms pulse width (360 degree) 2.5/20 = 0.125
-    // 2.0ms pulse width (180 degree) 2.0/20 = 0.1 
-    const uint32_t servo_high = (servo_duty_cycle * 0.1); 
+    // 2.0ms pulse width (180 degree) 2.0/20 = 0.1
+    const uint32_t servo_high = (servo_duty_cycle * 0.1); // 105 //right
 };

@@ -6,7 +6,7 @@
 
 #define INPUT_PS_RANGE      255
 #define INPUT_PS_HALF_RANGE 0
-#define INPUT_PS_MIN        -127
+#define INPUT_PS_MIN        -128
 #define INPUT_PS_MAX        127
 
 #define INPUT_PS_DEAD_ZONE  16

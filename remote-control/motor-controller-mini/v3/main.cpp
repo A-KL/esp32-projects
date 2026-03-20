@@ -71,7 +71,7 @@ void setup() {
   //lcd_init();
 
   pwm_in_init();
- // sbus_init();
+  sbus_init();
   enow_init();
   ps3_init();
   xbox_init();

@@ -46,6 +46,7 @@ static unsigned long last_updated = millis();
 
 void display_progress_bar(int top, const unsigned short value, const unsigned short min = 0, unsigned short max = (ADC_MAX - 1))
 {
+#ifdef DISPLAY_ENABLED
     auto max_w = SCREEN_WIDTH - 1 - 2 * 2;
     auto actual_w = map(value, min, max, 0, max_w);
 
@@ -53,6 +54,7 @@ void display_progress_bar(int top, const unsigned short value, const unsigned sh
 
     display.drawRect(2, top, max_w, 10, WHITE);
     display.fillRect(2, top, actual_w, 10, WHITE);
+#endif
 }
 
 void display_update()

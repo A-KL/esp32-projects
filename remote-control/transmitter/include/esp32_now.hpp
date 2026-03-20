@@ -10,9 +10,9 @@
   #include <storage.hpp>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 
 #define ESP_NOW_CHANNELS_COUNT 20
 
@@ -44,6 +44,7 @@ void init_peer_info(esp_now_peer_info& info, const String& mac, uint8_t channel 
     info.encrypt = encrypted;
 }
 
+// void on_esp_now_data_sent(const esp_now_send_info_t *tx_info, esp_now_send_status_t status)
 void on_esp_now_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) 
 {
   //log_d("Last Packet Send Status:%s", status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
@@ -109,6 +110,6 @@ void now_add_peers_json(const char* filePath = "/default.json") {
 
 #endif
 
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif

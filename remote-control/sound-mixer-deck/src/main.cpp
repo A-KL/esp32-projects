@@ -53,6 +53,7 @@ void loop()
     String property;
     String value;
 
+    // CPU
     command = parse_input(command, id, property, value);
     display.print(id);
     display.print(": ");
@@ -62,6 +63,13 @@ void loop()
     command = parse_input(command, id, property, value);
     display.println(value);
 
+    // RAM
+    command = parse_input(command, id, property, value);
+    display.print(id);
+    display.print(": ");
+    display.println(value);
+
+    // GPU
     command = parse_input(command, id, property, value);
     display.print(id);
     display.print(": ");

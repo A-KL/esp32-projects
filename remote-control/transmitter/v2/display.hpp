@@ -47,7 +47,13 @@ void display_init()
     }
     display.setRotation(0);
     display.clearDisplay();
+
     Log.infoln("Display initialized successfully");
+
+    display.setTextColor(SH110X_WHITE);
+    display.setCursor(20, 0);
+    display.setTextSize(1);
+    display.println("SENT");
 #endif
 }
 
@@ -75,17 +81,19 @@ void display_update()
     }
     last_updated = now;
 
-    display.clearDisplay();
+    //display.clearDisplay();
     //display.drawRect(0, 0, 10, 10, WHITE);
     // display.setTextSize(1);
     // display.setTextColor(WHITE);
     // display.setCursor(0,0);
 
-    display_progress_bar(2, display_rows[0]);
+    display_progress_bar(2 + 30, display_rows[0]);
 
-    display_progress_bar(14, display_rows[1]);
+    display_progress_bar(14 + 30, display_rows[1]);
 
-    display_progress_bar(26, display_rows[2]);
+    display_progress_bar(26 + 30, display_rows[2]);
+
+    display_progress_bar(38 + 30, display_rows[3]);
 
     // auto max_w = SCREEN_WIDTH - 1 - 2 * 2;
     // auto actual_w = map(display_rows[0], 0, (ADC_MAX - 1), 0, max_w);

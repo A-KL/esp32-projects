@@ -1,4 +1,5 @@
 using HidSharp.Reports;
+using Microsoft.Extensions.Options;
 using System.IO.Ports;
 
 namespace StreamDeck.Service;
@@ -14,9 +15,8 @@ public record ResilientSerialTransportSettings(
     string PortName, int BaudRate);
 
 public class ResilientSerialTransportWorker(
-    ResilientSerialTransportSettings settings, 
-    ILogger<ResilientSerialTransportWorker> logger) 
-    : ITransport
+    IOptions<List<ResilientSerialTransportSettings>> settings, 
+    ILogger<ResilientSerialTransportWorker> logger) : ITransport
 {
     private readonly SerialPort _port = new ();
     
@@ -45,41 +45,46 @@ public class ResilientSerialTransportWorker(
     public bool Available()
     {
         var availablePorts = SerialPort.GetPortNames();
-        
-        if (!_port.IsOpen && !availablePorts.Contains(settings.PortName))
+
+        foreach (var setting in settings.Value)
         {
-            logger.LogWarning("Port '{SelectedPort}' is not available", settings.PortName);
-            logger.LogDebug("Available ports:\r\n{AvailablePorts}", string.Join("\r\n", availablePorts));
-            
-            return false;
+            if (!_port.IsOpen && !availablePorts.Contains(setting.PortName))
+            {
+                logger.LogWarning("Port '{SelectedPort}' is not available", setting.PortName);
+                logger.LogDebug("Available ports:\r\n{AvailablePorts}", string.Join("\r\n", availablePorts));
+
+                continue;
+            }
+
+            if (_port.IsOpen)
+            {
+                return true;
+            }
+
+            _port.PortName = setting.PortName;
+            _port.BaudRate = setting.BaudRate;
+            _port.Parity = Parity.None;
+            _port.DataBits = 8;
+            _port.NewLine = "\r";
+
+            try
+            {
+                _port.Open();
+                logger.LogInformation("Port '{SelectedPort}' is ready now.", setting.PortName);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Port '{SelectedPort}' is unable to communicate. Error: {ErrorMessage}",
+                    setting.PortName,
+                    e.Message);
+
+                continue;
+            }
         }
 
-        if (_port.IsOpen)
-        {
-            return true;
-        }
-        
-        _port.PortName = settings.PortName;
-        _port.BaudRate = settings.BaudRate;
-        _port.Parity = Parity.None;
-        _port.DataBits = 8;
-        _port.NewLine = "\r";
-
-        try
-        {
-            _port.Open();
-            logger.LogInformation("Port '{SelectedPort}' is ready now.", settings.PortName);
-            
-            return true;
-        }
-        catch (Exception e)
-        {
-            logger.LogError("Port '{SelectedPort}' is unable to communicate. Error: {ErrorMessage}", 
-                settings.PortName, 
-                e.Message);
-                
-            return false;
-        }
+        return false;
     }
 
     public void Close()

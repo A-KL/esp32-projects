@@ -1,4 +1,4 @@
-namespace StreamDeck.Service;
+namespace OpenStreamDeck.MonitorService;
 
 public record HardwareMetric(
     string Id, string Name, string Value, string Units);

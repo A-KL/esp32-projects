@@ -12,7 +12,7 @@ public class Worker(ITransport transport, IHardwareMonitor hardwareMonitor, IFor
 
             foreach (var metric in metrics)
             {
-               // logger.LogInformation("{HardwareId} [{HardwareName}] {MetricValue}{MetricValueUnits}", metric.Id, metric.Name, metric.Value, metric.Units);
+               logger.LogInformation("{HardwareId} [{HardwareName}] {MetricValue}{MetricValueUnits}", metric.Id, metric.Name, metric.Value, metric.Units);
             }
 
             if (!transport.Available())

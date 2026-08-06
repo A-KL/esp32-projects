@@ -1,4 +1,5 @@
-using StreamDeck.Service;
+using MQTTnet;
+using OpenStreamDeck.MonitorService;
 
 var os = Environment.OSVersion;
 
@@ -6,13 +7,11 @@ Console.WriteLine($"OS: {os.Platform} {os.Version}");
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.Configure<List<ResilientSerialTransportSettings>>(builder.Configuration.GetSection("SerialTransports"));
+builder.Services.Configure<StorageClientSettings>(builder.Configuration.GetSection("StorageClient"));
 
-builder.Services.AddSingleton<IFormatter<HardwareMetric>, HardwareMetricFormatter>();
+builder.Services.AddSingleton<MqttClientFactory>();
 
-builder.Services.AddSingleton<IFormatter<IList<HardwareMetric>>, HardwareMetricsFormatter>();
-
-builder.Services.AddSingleton<ITransport, ResilientSerialTransportWorker>();
+builder.Services.AddSingleton<IStorageClient, StorageClient>();
 
 if (os.Platform is PlatformID.Unix or PlatformID.MacOSX)
 {

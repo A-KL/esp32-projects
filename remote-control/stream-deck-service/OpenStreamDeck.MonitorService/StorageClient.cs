@@ -12,8 +12,13 @@ public interface IStorageClient : IDisposable
     bool IsConnected { get; }
 }
 
-public record StorageClientSettings(
-    string Host, int Port, string ClientId, string RootTopic);
+public record StorageClientSettings
+{
+    public required string Host { get; init; }
+    public required int Port { get; init; }
+    public required string ClientId { get; init; }
+    public required string RootTopic { get; init; }
+}
 
 public class StorageClient(
     MqttClientFactory factory,

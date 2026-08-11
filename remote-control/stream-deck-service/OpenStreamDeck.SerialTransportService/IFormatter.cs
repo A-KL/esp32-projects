@@ -1,4 +1,4 @@
-﻿namespace StreamDeck.Service;
+﻿namespace OpenStreamDeck.SerialTransportService;
 
 public interface IFormatter<T>
 {

@@ -1,4 +1,4 @@
-using StreamDeck.Service;
+using OpenStreamDeck.SerialTransportService;
 
 var os = Environment.OSVersion;
 
@@ -14,14 +14,7 @@ builder.Services.AddSingleton<IFormatter<IList<HardwareMetric>>, HardwareMetrics
 
 builder.Services.AddSingleton<ITransport, ResilientSerialTransportWorker>();
 
-if (os.Platform is PlatformID.Unix or PlatformID.MacOSX)
-{
-    builder.Services.AddSingleton<IHardwareMonitor, AppleHardwareMonitor>();
-}
-else
-{
-    builder.Services.AddSingleton<IHardwareMonitor, WindowsHardwareMonitor>();
-}
+builder.Services.AddSingleton<IStorageClient, StorageClient>();
 
 builder.Services.AddHostedService<Worker>();
 

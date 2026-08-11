@@ -1,8 +1,8 @@
-using HidSharp.Reports;
+
 using Microsoft.Extensions.Options;
 using System.IO.Ports;
 
-namespace StreamDeck.Service;
+namespace OpenStreamDeck.SerialTransportService;
 
 public interface ITransport : IDisposable
 {

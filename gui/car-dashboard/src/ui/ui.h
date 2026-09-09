@@ -2,8 +2,8 @@
 
 #include "lvgl.h"
 
-#include "ui_helpers.h"
-#include "ui_events.h"
+#include "lv_ui_helpers.h"
+#include "lv_ui_events.h"
 
 // SCREEN: ui_screen
 void ui_main_screen_init(void);

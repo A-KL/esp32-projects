@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "ui_helpers.h"
+#include "lv_ui_helpers.h"
 
 // SCREEN: ui_screen
 void ui_main_screen_init(void);

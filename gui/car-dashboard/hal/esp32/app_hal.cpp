@@ -149,7 +149,7 @@ float hal_get_pitch()
   return rand()%10 + 5;;
 }
 
-  static lv_disp_drv_t disp_drv;
+static lv_disp_drv_t disp_drv;
 
 void hal_setup(void)
 {

@@ -11,6 +11,7 @@
 static esp_lcd_panel_io_handle_t io_handle = NULL;
 static esp_lcd_flush_ready_cb_t on_lcd_flush_ready = NULL;
 static esp_lcd_panel_handle_t panel_handle = NULL;
+static esp_lcd_i80_bus_handle_t i80_bus = NULL;
 
 #if defined(LCD_MODULE_CMD_1)
 typedef struct {
@@ -34,11 +35,12 @@ lcd_cmd_t lcd_st7789v[] = {
     {0xD6, {0XA1}, 1},
     {0xE0, {0XF0, 0X05, 0X0A, 0X06, 0X06, 0X03, 0X2B, 0X32, 0X43, 0X36, 0X11, 0X10, 0X2B, 0X32}, 14},
     {0xE1, {0XF0, 0X08, 0X0C, 0X0B, 0X09, 0X24, 0X2B, 0X22, 0X43, 0X38, 0X15, 0X16, 0X2F, 0X37}, 14},
+    {0x29, {0}, 0},
 
 };
 #endif
 
-static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
+static bool lcd_flush_ready_cb(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
     if (on_lcd_flush_ready != NULL) {
         on_lcd_flush_ready(user_ctx);
@@ -89,12 +91,13 @@ void lcd_display(void* user_data,
                  uint16_t y2,
                  uint16_t *data)
 {
-    esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t)user_data;
+    // esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t)user_data;
     esp_lcd_panel_draw_bitmap(panel_handle, x, y, x2 + 1, y2 + 1, data);
 }
 
 void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
 {
+    // Turn on display power
     pinMode(PIN_POWER_ON, OUTPUT);
     digitalWrite(PIN_POWER_ON, HIGH);
 
@@ -102,8 +105,6 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
     digitalWrite(PIN_LCD_RD, HIGH);
 
     on_lcd_flush_ready = cb;
-
-    esp_lcd_i80_bus_handle_t i80_bus = NULL;
 
     esp_lcd_i80_bus_config_t bus_config = {
         .dc_gpio_num = PIN_LCD_DC,
@@ -125,15 +126,14 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
         .psram_trans_align = 0,
         .sram_trans_align = 0
     };
-
-    esp_lcd_new_i80_bus(&bus_config, &i80_bus);
+    ESP_ERROR_CHECK(esp_lcd_new_i80_bus(&bus_config, &i80_bus));
 
     esp_lcd_panel_io_i80_config_t io_config = {
         .cs_gpio_num = PIN_LCD_CS,
         .pclk_hz = EXAMPLE_LCD_PIXEL_CLOCK_HZ,
         .trans_queue_depth = 20,
-        .on_color_trans_done = example_notify_lvgl_flush_ready,
-        .user_ctx = context, // &disp_drv,
+        .on_color_trans_done = lcd_flush_ready_cb,
+        .user_ctx = context,
         .lcd_cmd_bits = 8,
         .lcd_param_bits = 8,
         .dc_levels =
@@ -144,9 +144,7 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
             .dc_data_level = 1,
         },
     };
-
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_i80(i80_bus, &io_config, &io_handle));
-
     
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_LCD_RES,
@@ -155,14 +153,13 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
         .vendor_config = NULL
     };
 
-    esp_lcd_new_panel_st7789(io_handle, &panel_config, &panel_handle);
-    esp_lcd_panel_reset(panel_handle);
-    esp_lcd_panel_init(panel_handle);
+    ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_config, &panel_handle));
 
-    esp_lcd_panel_invert_color(panel_handle, true);
+    ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
     esp_lcd_panel_swap_xy(panel_handle, true);
-
     //The screen faces you, and the USB is on the left
     esp_lcd_panel_mirror(panel_handle, false, true);
 
@@ -180,4 +177,7 @@ void lcd_init(const esp_lcd_flush_ready_cb_t& cb, void* context)
             delay(120);
     }
 #endif
+
+    pinMode(PIN_LCD_BL, OUTPUT);
+    digitalWrite(PIN_LCD_BL, HIGH);
 }

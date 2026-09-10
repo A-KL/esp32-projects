@@ -1,5 +1,9 @@
 #pragma once
 
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_vendor.h"
+
 typedef void (*esp_lcd_flush_ready_cb_t)(void *user_ctx);
 
 void lcd_setBrightness(uint8_t value);

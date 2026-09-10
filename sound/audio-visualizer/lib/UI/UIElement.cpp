@@ -29,7 +29,7 @@ bool UIElement::IsValid() const
 
 void UIElement::Update(Canvas<Color>& canvas)
 {
-    if (IsValid()) {
+    if (IsValid() || !visible) {
         return;
     }
 

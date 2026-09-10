@@ -33,15 +33,25 @@ public:
 		Invalidate();
 	}
 
-	 bool IsValid() const
+bool IsValid() const override
 	 {
-	 	// for (UIElement* element : _children) {
-	 	// 	if(!element->IsValid()) {
-	 	// 		return false;
-	 	// 	}
-	 	// }
+	 	if (_redraw) {
+	 		return false;
+	 	}
 
-	 	return false;
+	 	for (const UIElement* element : _children) {
+	 		if (!element->IsValid()) {
+	 			return false;
+	 		}
+	 	}
+
+	 	return true;
+	 }
+
+	 void Invalidate() override
+	 {
+	 	UIElement::Invalidate();
+	 	_redraw = true;
 	 }
 
 protected:

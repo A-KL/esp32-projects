@@ -44,7 +44,15 @@ void setup()
 
 void loop() 
 {
- // loopAudio();
+  static uint32_t lastUiFrameMs = 0;
+  const uint32_t uiFramePeriodMs = 33; // ~30 FPS max for UI updates
+
+  // loopAudio();
   loopControls();
-  form.Update(canvas);
+
+  const uint32_t now = millis();
+  if ((now - lastUiFrameMs) >= uiFramePeriodMs) {
+    form.Update(canvas);
+    lastUiFrameMs = now;
+  }
 }

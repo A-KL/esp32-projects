@@ -1,5 +1,5 @@
 #pragma once
-
+#include <Arduino.h>
 #include "st7789.h"
 #include <lvgl.h>
 

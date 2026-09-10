@@ -1,4 +1,5 @@
 #include "lvgl.h"
+#include "lv_driver.h"
 #include "app_hal.h"
 
 #include "ui/ui.h"
@@ -20,7 +21,11 @@ void setup()
 { 
   lv_init();
 
+  lv_log_register_print_cb(hal_log_cb);
+
   hal_setup();
+
+  lv_lcd_init();
 
   ui_init();
 
@@ -49,6 +54,8 @@ int main(void)
 	lv_init();
 
 	hal_setup();
+
+  lv_lcd_init();
 
   ui_init();
 

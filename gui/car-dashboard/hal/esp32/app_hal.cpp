@@ -56,14 +56,13 @@ static void hal_timer_tick(void * pvParameters)
     }
 }
 
-void hal_log_cb(const char * buf)
+void hal_log_cb(const char* message)
 {
-  log_i("LOG: %s\r\n", buf);
-  /*Send the logs via serial port*/
-  // if(level == LV_LOG_LEVEL_ERROR) serial_send("ERROR: ");
-  // if(level == LV_LOG_LEVEL_WARN)  serial_send("WARNING: ");
-  // if(level == LV_LOG_LEVEL_INFO)  serial_send("INFO: ");
-  // if(level == LV_LOG_LEVEL_TRACE) serial_send("TRACE: ");
+  log_i("LOG: %s\r\n", message);
+  // if(level == LV_LOG_LEVEL_ERROR) log_e("%s\r\n", message);
+  // if(level == LV_LOG_LEVEL_WARN)  log_w("%s\r\n", message);
+  // if(level == LV_LOG_LEVEL_INFO)  log_i("%s\r\n", message);
+  // if(level == LV_LOG_LEVEL_TRACE) log_d("%s\r\n", message);
 }
 
 float hal_get_altitude()

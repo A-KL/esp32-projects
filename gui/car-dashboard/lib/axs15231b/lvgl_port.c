@@ -12,12 +12,11 @@
 #include "esp_lcd_panel_io.h"
 #include "axs15231b/esp_lcd_axs15231b.h"
 #include "demos/lv_demos.h"
-#include "i2c_bsp.h"
+#include "I2C/i2c_bsp.h"
 
 #define LCD_BIT_PER_PIXEL (16)
 
 static const char *TAG = "lvgl_port";
-// static SemaphoreHandle_t lvgl_mux = NULL;
 
 static uint16_t *lvgl_dma_buf = NULL; 
 static SemaphoreHandle_t lvgl_flush_semap;
@@ -38,11 +37,6 @@ static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, 
   xSemaphoreGiveFromISR(lvgl_flush_semap,&TaskWoken);
   return false;
 }
-
-// static void example_increase_lvgl_tick(void *arg)
-// {
-//   lv_tick_inc(EXAMPLE_LVGL_TICK_PERIOD_MS);
-// }
 
 static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
@@ -117,18 +111,6 @@ static void example_lvgl_touch_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
   {
     data->state = LV_INDEV_STATE_REL;
   }
-}
-
-static bool example_lvgl_lock(int timeout_ms)
-{
-  const TickType_t timeout_ticks = (timeout_ms == -1) ? portMAX_DELAY : pdMS_TO_TICKS(timeout_ms);
-  return xSemaphoreTake(lvgl_mux, timeout_ticks) == pdTRUE;       
-}
-
-static void example_lvgl_unlock(void)
-{
-  assert(lvgl_mux && "bsp_display_start must be called first");
-  xSemaphoreGive(lvgl_mux);
 }
 
 void lvgl_port_init(void)
@@ -220,27 +202,9 @@ void lvgl_port_init(void)
   disp_drv.user_data = panel;
   lv_disp_drv_register(&disp_drv);
 
-  // ESP_LOGI(TAG, "Install LVGL tick timer");
-  // esp_timer_create_args_t lvgl_tick_timer_args = {};
-  //   lvgl_tick_timer_args.callback = &example_increase_lvgl_tick;
-  //   lvgl_tick_timer_args.name = "lvgl_tick";
-  // esp_timer_handle_t lvgl_tick_timer = NULL;
-  // ESP_ERROR_CHECK(esp_timer_create(&lvgl_tick_timer_args, &lvgl_tick_timer));
-  // ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer,EXAMPLE_LVGL_TICK_PERIOD_MS * 1000));
-
-  // static lv_indev_drv_t indev_drv;    // Input device driver (Touch)
-  // lv_indev_drv_init(&indev_drv);
-  // indev_drv.type = LV_INDEV_TYPE_POINTER;
-  // indev_drv.read_cb = example_lvgl_touch_cb;
-  // lv_indev_drv_register(&indev_drv);
-
-  // lvgl_mux = xSemaphoreCreateMutex();
-  // assert(lvgl_mux);
-  // xTaskCreatePinnedToCore(example_lvgl_port_task, "LVGL", 4000, NULL, 4, NULL,0); //运行于内核_0
-  // if (example_lvgl_lock(-1))
-  // {
-  //   lv_demo_widgets();
-  //   //lv_demo_music();
-  //   example_lvgl_unlock();
-  // }
+  static lv_indev_drv_t indev_drv;    // Input device driver (Touch)
+  lv_indev_drv_init(&indev_drv);
+  indev_drv.type = LV_INDEV_TYPE_POINTER;
+  indev_drv.read_cb = example_lvgl_touch_cb;
+  lv_indev_drv_register(&indev_drv);
 }

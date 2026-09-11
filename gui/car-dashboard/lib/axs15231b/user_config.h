@@ -20,31 +20,21 @@
 #define EXAMPLE_PIN_NUM_LCD_DATA2  (GPIO_NUM_13)
 #define EXAMPLE_PIN_NUM_LCD_DATA3  (GPIO_NUM_14)
 #define EXAMPLE_PIN_NUM_LCD_RST    (GPIO_NUM_21)
-#define EXAMPLE_PIN_NUM_BK_LIGHT   (GPIO_NUM_8) 
+#define EXAMPLE_PIN_NUM_BK_LIGHT   (GPIO_NUM_42) 
 
 
-#define I2C_TOUCH_ADDR                    0x3b
-#define EXAMPLE_PIN_NUM_TOUCH_RST         (-1)
-#define EXAMPLE_PIN_NUM_TOUCH_INT         (-1)
-
-
-#define EXAMPLE_LVGL_TICK_PERIOD_MS    5
-#define EXAMPLE_LVGL_TASK_MAX_DELAY_MS 500
-#define EXAMPLE_LVGL_TASK_MIN_DELAY_MS 5
-
-
-/*bl test*/
-#define Backlight_Testing 0
+#define TOUCH_I2C_ADDR        0x3b
+#define TOUCH_RST_NUM         (-1)
+#define TOUCH_INT_NUM         (-1)
 
 /*ADDR*/
 #define EXAMPLE_RTC_ADDR 0x51
-
 #define EXAMPLE_IMU_ADDR 0x6b
 
 
 #define USER_DISP_ROT_90    1
 #define USER_DISP_ROT_NONO  0
-#define Rotated USER_DISP_ROT_90   //软件实现旋转
+#define Rotated USER_DISP_ROT_90
 
 
 #if (Rotated == USER_DISP_ROT_NONO)
@@ -59,9 +49,5 @@
 #define LCD_NOROT_VRES     640
 #define LVGL_DMA_BUFF_LEN (LCD_NOROT_HRES * 64 * 2)
 #define LVGL_SPIRAM_BUFF_LEN (EXAMPLE_LCD_H_RES * EXAMPLE_LCD_V_RES * 2)
-
-
-
-
 
 #endif

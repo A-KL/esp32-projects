@@ -4,9 +4,6 @@
 #include <lvgl.h>
 #include "st7789.h" // TODO: Try to use https://github.com/Xinyuan-LilyGO/LilyGo-display-library/tree/main instead
 
-void lv_lcd_loop()
-{ }
-
 void hal_display_flush_ready_cb(void *user_ctx)
 {
   auto disp_driver = (lv_disp_drv_t *)user_ctx;

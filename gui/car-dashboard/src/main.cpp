@@ -6,8 +6,8 @@
 
 static void timer_task(lv_timer_t *t)
 {
-    // ui_set_altitude(hal_get_altitude());
-    // ui_set_pitch(hal_get_pitch());
+    ui_set_altitude(hal_get_altitude());
+    ui_set_pitch(hal_get_pitch());
 }
 
 #ifdef ARDUINO
@@ -43,7 +43,6 @@ void setup()
 void loop()
 {
   hal_loop();
-  lv_lcd_loop();
   
   button1.tick();
   button2.tick();

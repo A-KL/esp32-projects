@@ -10,6 +10,7 @@
 #include <Adafruit_BMP280.h>
 
 #include "app_hal.h"
+#include "i2c_bsp.h"
 
 #define SEALEVELPRESSURE_HPA (1019)
 #define BMP280_ADDR 0x76
@@ -104,7 +105,7 @@ float hal_get_pitch()
     return read_angle() - 180;
   }
 
-  return rand()%10 + 5;;
+  return rand()%10 + 5;
 }
 
 void hal_setup(void)
@@ -115,10 +116,12 @@ void hal_setup(void)
     delay(2000);
   #endif
 
-  Wire.begin(I2C_SDA, I2C_SCL);
+  // i2c_master_Init();
+  // Wire.begin(I2C_SDA, I2C_SCL);
 
-  // bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
- // mpu_initialized = mpu.begin();
+  // bme_initialized = bme.begin(BMP280_ADDR);
+  log_i("BMP280 found: %s", bme_initialized ? "YES" : "NO");
+  // mpu_initialized = mpu.begin();
 
   // mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
   // mpu.setGyroRange(MPU6050_RANGE_500_DEG);

@@ -10,6 +10,9 @@
 #include "indev/mousewheel.h"
 #include "indev/keyboard.h"
 
+void lv_lcd_loop()
+{ }
+
 void lv_lcd_init()
 {
       /* Add a display

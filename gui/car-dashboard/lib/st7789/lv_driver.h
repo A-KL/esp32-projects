@@ -1,9 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
-
-#include "st7789.h"
 #include <lvgl.h>
+#include "st7789.h" // TODO: Try to use https://github.com/Xinyuan-LilyGO/LilyGo-display-library/tree/main instead
+
+void lv_lcd_loop()
+{ }
 
 void hal_display_flush_ready_cb(void *user_ctx)
 {
@@ -20,9 +22,7 @@ void lv_lcd_init()
 {
   static lv_disp_drv_t disp_drv;
   static lv_disp_draw_buf_t disp_buf;
-  static lv_color_t *lv_disp_buf;
-
-  
+  static lv_color_t *lv_disp_buf;  
 
   lv_disp_buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
   assert(lv_disp_buf);
@@ -39,6 +39,4 @@ void lv_lcd_init()
   // disp_drv.full_refresh = 1;          //full_refresh must be 1
   // disp_drv.user_data = &panel_handle;
   lv_disp_drv_register(&disp_drv);
-
-  lcd_init(hal_display_flush_ready_cb, &disp_drv);
 }

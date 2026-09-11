@@ -2,12 +2,15 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
-#include "rm67162.h"
+#include "rm67162.h" // TODO: Try to use https://github.com/Xinyuan-LilyGO/LilyGo-display-library/tree/main instead
 
 void lv_lcd_display_flush_cb(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
+    // uint32_t w = lv_area_get_width(area);
+    // uint32_t h = lv_area_get_height(area);
+
     lcd_display(area->x1, area->y1, w, h, (uint16_t *)&color_p->full);
     lv_disp_flush_ready(disp_drv);
 }

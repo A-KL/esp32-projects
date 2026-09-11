@@ -111,11 +111,14 @@ float hal_get_pitch()
 void hal_setup(void)
 {
   Serial.begin(115200);
+  
+  #ifdef ARDUINO_USB_CDC_ON_BOOT
+    delay(2000);
+  #endif
+
   Wire.begin(I2C_SDA, I2C_SCL);
 
-  delay(1000);
-
-  bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
+  // bme_initialized = bme.begin(BMP280_ADDR);//BMP280_ADDR
  // mpu_initialized = mpu.begin();
 
   // mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
@@ -128,11 +131,11 @@ void hal_setup(void)
   // mpu.setInterruptPinPolarity(true);
   // mpu.setMotionInterrupt(true);
 
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x6B);
-  Wire.write(0);
-  Wire.endTransmission(true);
-  mpu_initialized = true;
+  // Wire.beginTransmission(MPU_ADDR);
+  // Wire.write(0x6B);
+  // Wire.write(0);
+  // Wire.endTransmission(true);
+  // mpu_initialized = true;
 
   xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lvgl_tick_task);
   //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);

@@ -12,7 +12,7 @@
 #include "esp_lcd_panel_io.h"
 #include "axs15231b/esp_lcd_axs15231b.h"
 #include "demos/lv_demos.h"
-#include "I2C/i2c_bsp.h"
+#include "i2c_bsp/i2c_bsp.h"
 
 #define LCD_BIT_PER_PIXEL (16)
 

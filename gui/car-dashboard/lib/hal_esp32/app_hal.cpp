@@ -2,52 +2,26 @@
 #include <cstdlib> // rnd
 
 #include <lvgl.h>
-#include <Arduino.h>
 
+#include <Arduino.h>
 #include <Wire.h>
+
 #include <Adafruit_Sensor.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_BMP280.h>
 
 #include "app_hal.h"
 #include "i2c_bsp/i2c_bsp.h"
+#include "imu_bsp.h"
 
 #define SEALEVELPRESSURE_HPA (1019)
 #define BMP280_ADDR 0x76
-#define MPU_ADDR 0x68
-
-Adafruit_BMP280 bme;
-Adafruit_MPU6050 mpu;
 
 bool bme_initialized = false;
 bool mpu_initialized = false;
 
+static Adafruit_BMP280 bme;
 static TaskHandle_t lvgl_tick_task = NULL;
-
-int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
- 
-int minVal=265;
-int maxVal=402;
-
-float read_angle()
-{
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x3B);
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDR, 14);
-  AcX=Wire.read()<<8|Wire.read();
-  AcY=Wire.read()<<8|Wire.read();
-  AcZ=Wire.read()<<8|Wire.read();
-  int xAng = map(AcX,minVal,maxVal,-90,90);
-  int yAng = map(AcY,minVal,maxVal,-90,90);
-  int zAng = map(AcZ,minVal,maxVal,-90,90);
-  
-  auto x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI);
-  auto y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
-  auto z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
-
-  return y;
-}
 
 static void hal_timer_tick(void * pvParameters)
 {
@@ -85,6 +59,33 @@ float hal_get_altitude()
   return rand()%1000 + 2000;
 }
 
+float read_angle()
+{
+  const int minVal=265;
+  const int maxVal=402;
+
+  auto data = imu_get();
+
+  // Wire.beginTransmission(MPU_ADDR);
+  // Wire.write(0x3B);
+  // Wire.endTransmission(false);
+  // Wire.requestFrom(MPU_ADDR, 14);
+
+  // AcX=Wire.read()<<8|Wire.read();
+  // AcY=Wire.read()<<8|Wire.read();
+  // AcZ=Wire.read()<<8|Wire.read();
+
+  int xAng = map(data.accx, minVal, maxVal,-90,90);
+  int yAng = map(data.accy, minVal, maxVal,-90,90);
+  int zAng = map(data.accz, minVal, maxVal,-90,90);
+  
+  auto x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI);
+  auto y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
+  auto z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
+
+  return y;
+}
+
 float hal_get_pitch()
 {
   if (mpu_initialized)
@@ -119,25 +120,11 @@ void hal_setup(void)
   // Wire.begin(ESP_SDA_NUM, ESP_SCL_NUM);
   i2c_master_init();
 
-  // bme_initialized = bme.begin(BMP280_ADDR);
-  // log_e("BMP280 found: %s", bme_initialized ? "YES" : "NO");
-  // mpu_initialized = mpu.begin();
+  mpu_initialized = imu_init();
+  log_i("IMU found: %s", mpu_initialized ? "YES" : "NO");
 
-  // mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
-  // mpu.setGyroRange(MPU6050_RANGE_500_DEG);
-  // mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
-  // mpu.setHighPassFilter(MPU6050_HIGHPASS_0_63_HZ);
-  // mpu.setMotionDetectionThreshold(1);
-  // mpu.setMotionDetectionDuration(20);
-  // mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
-  // mpu.setInterruptPinPolarity(true);
-  // mpu.setMotionInterrupt(true);
-
-  // Wire.beginTransmission(MPU_ADDR);
-  // Wire.write(0x6B);
-  // Wire.write(0);
-  // Wire.endTransmission(true);
-  // mpu_initialized = true;
+  bme_initialized = bme.begin(BMP280_ADDR);
+  log_i("BMP280 found: %s", bme_initialized ? "YES" : "NO");
 
   xTaskCreate(hal_timer_tick, "lv_tick_thread", 2048, NULL, tskIDLE_PRIORITY, &lvgl_tick_task);
   //lv_tick_set_cb(hal_lvgl_timer_tick_get_cb);
@@ -148,4 +135,3 @@ void hal_loop(void)
   delay(2);
   lv_timer_handler();
 }
-

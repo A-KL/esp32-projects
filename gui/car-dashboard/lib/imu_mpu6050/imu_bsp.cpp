@@ -61,7 +61,20 @@ bool imu_init(void)
   return true;
 }
 
-imu_data_t imu_get(void)
+bool imu_read_angles(float& x, float&y, float&z)
+{
+  sensors_event_t a, g, temp;
+
+  if (mpu.getEvent(&a, &g, &temp)) {
+    z = a.orientation.heading;
+    y = a.orientation.pitch;
+    x = a.orientation.roll;
+    return true;
+  }
+  return false;
+}
+
+bool read_angles(float& x, float&y, float&z)
 {
   imu_data_t data;
 
@@ -80,6 +93,8 @@ imu_data_t imu_get(void)
     data.gyroz = a.gyro.z;
 
     data.temperature = temp.temperature;
+
+    return true;
   }
 //   Wire.beginTransmission(MPU_ADDR);
 //   Wire.write(0x3B);
@@ -96,5 +111,5 @@ imu_data_t imu_get(void)
 //   auto y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
 //   auto z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
 
-  return data;
+  return false;
 }

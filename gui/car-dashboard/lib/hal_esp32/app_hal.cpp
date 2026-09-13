@@ -59,33 +59,6 @@ float hal_get_altitude()
   return rand()%1000 + 2000;
 }
 
-float read_angle()
-{
-  const int minVal=265;
-  const int maxVal=402;
-
-  auto data = imu_get();
-
-  // Wire.beginTransmission(MPU_ADDR);
-  // Wire.write(0x3B);
-  // Wire.endTransmission(false);
-  // Wire.requestFrom(MPU_ADDR, 14);
-
-  // AcX=Wire.read()<<8|Wire.read();
-  // AcY=Wire.read()<<8|Wire.read();
-  // AcZ=Wire.read()<<8|Wire.read();
-
-  int xAng = map(data.accx, minVal, maxVal,-90,90);
-  int yAng = map(data.accy, minVal, maxVal,-90,90);
-  int zAng = map(data.accz, minVal, maxVal,-90,90);
-  
-  auto x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI);
-  auto y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
-  auto z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
-
-  return y;
-}
-
 float hal_get_pitch()
 {
   if (mpu_initialized)
@@ -103,7 +76,11 @@ float hal_get_pitch()
     
     // printf("MPU: %.2f\t%.2f\t%.2f\r\n", x, y, z);
 
-    return read_angle() - 180;
+    float x, y, z;
+
+    if (imu_read_angles(x, y, z)) {
+      return (y-90);
+    }
   }
 
   return rand()%10 + 5;

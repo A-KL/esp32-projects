@@ -60,11 +60,44 @@ bool imu_init(void)
   return true;
 }
 
-imu_data_t imu_get(void)
+float fmap(float x, float in_min, float in_max, float out_min, float out_max) {
+  const float run = in_max - in_min;
+  if (run == 0) {
+    log_e("map(): Invalid input range, min == max");
+    return -1;  // AVR returns -1, SAM returns 0
+  }
+  const float rise = out_max - out_min;
+  const float delta = x - in_min;
+  return (delta * rise) / run + out_min;
+}
+
+bool imu_read_angles(float& x, float& y, float& z)
 {
   imu_data_t data;
 
-  memset(&data,0,sizeof(imu_data_t));
+  if (!imu_get(data)) {
+    return false;
+  }
+
+  const float min_val = -1;
+  const float max_val = 1;
+
+  printf("MPU: %.2f\t%.2f\t%.2f\r\n", data.accx, data.accy, data.accz);
+
+  int xAng = fmap(data.accx, min_val, max_val, -90, 90);
+  int yAng = fmap(data.accy, min_val, max_val, -90, 90);
+  int zAng = fmap(data.accz, min_val, max_val, -90, 90);
+  
+  x = RAD_TO_DEG * (atan2(-yAng, -zAng)+PI);
+  y = RAD_TO_DEG * (atan2(-xAng, -zAng)+PI);
+  z = RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
+
+  return true;
+}
+
+bool imu_get(imu_data_t& data)
+{
+  memset(&data, 0, sizeof(imu_data_t));
 
   if (qmi.getDataReady())
   {
@@ -74,6 +107,7 @@ imu_data_t imu_get(void)
       data.accy = acc.y;
       data.accz = acc.z;
     }
+
     if (qmi.getGyroscope(gyr.x, gyr.y, gyr.z)) //dps
     {
       data.gyrox = gyr.x;
@@ -81,9 +115,10 @@ imu_data_t imu_get(void)
       data.gyroz = gyr.z;
     }
     data.temperature = qmi.getTemperature_C();
-  }
 
-  return data;
+    return true;
+  }
+  return false;
 }
 
 

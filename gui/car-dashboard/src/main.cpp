@@ -29,7 +29,7 @@ void setup()
 
   ui_init();
 
-  lv_timer_t *timer = lv_timer_create(timer_task, 500, NULL);
+  lv_timer_t *timer = lv_timer_create(timer_task, 200, NULL);
 
   button1.attachClick([]() {
       ui_show(0, true);
@@ -60,7 +60,7 @@ int main(void)
 
   ui_init();
 
-  lv_timer_t *timer = lv_timer_create(timer_task, 500, NULL);
+  lv_timer_t *timer = lv_timer_create(timer_task, 200, NULL);
 
   while(1) {
     hal_loop();

@@ -105,8 +105,8 @@ public:
       auto cfg = _bus_instance.config();    // Get a structure for bus settings.
 
       // SPI bus settings 
-      // VSPI_HOST
-      //cfg.spi_host = VSPI_HOST;          // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
+      // VSPI_HOST        
+      // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
       // * Due to the ESP-IDF version upgrade, VSPI_HOST and HSPI_HOST descriptions are deprecated,
       // so if an error occurs, use SPI2_HOST and SPI3_HOST instead.
       #ifdef USE_HSPI_PORT
@@ -129,15 +129,15 @@ public:
       cfg.freq_read   = 20000000;        // SPI clock when receiving
       #endif
 
-      cfg.spi_3wire   = true;            // Set true if receiving on the MOSI 
+      cfg.spi_3wire   = (TFT_MISO == -1);// Set true if receiving on the MOSI 
       cfg.use_lock    = true;            // Set true to use transaction lock
       cfg.dma_channel = SPI_DMA_CH_AUTO; // Set the DMA channel to use (0=not use DMA / 1=1ch / 2=ch / SPI_DMA_CH_AUTO=auto setting)
       // * With the ESP-IDF version upgrade, SPI_DMA_CH_AUTO (automatic setting) is recommended for the DMA channel.  
       // Specifying 1ch and 2ch is deprecated.
-      cfg.pin_sclk = TFT_SCLK;  // 18;            // SPI SCLK
-      cfg.pin_mosi = TFT_MOSI; // 23;            // SPI MOSI
-      cfg.pin_miso = TFT_MISO; // 19;            // SPI MISO    (-1 = disable)
-      cfg.pin_dc   = TFT_DC;   // 2;             // SPI D/C A0  (-1 = disable)
+      cfg.pin_sclk = TFT_SCLK;            // SPI SCLK
+      cfg.pin_mosi = TFT_MOSI;            // SPI MOSI
+      cfg.pin_miso = TFT_MISO;            // SPI MISO    (-1 = disable)
+      cfg.pin_dc   = TFT_DC;              // SPI D/C A0  (-1 = disable)
       // When using the same SPI bus as the SD card, be sure to set MISO without omitting it.
 //
 // Setting up the I2C bus
@@ -170,9 +170,9 @@ public:
 
       auto cfg = _panel_instance.config(); // Get the structure for display panel settings.
 
-      cfg.pin_cs           = TFT_CS;  // 15;  // CS    (-1 = disable)
-      cfg.pin_rst          = TFT_RST; // -1;  // RST   (-1 = disable)
-      cfg.pin_busy         =      -1; // BUSY  (-1 = disable)
+      cfg.pin_cs           = TFT_CS;          // CS    (-1 = disable)
+      cfg.pin_rst          = TFT_RST;         // RST   (-1 = disable)
+      cfg.pin_busy         =      -1;         // BUSY  (-1 = disable)
 
       // * The following setting values ​​are general initial values ​​for each panel, so please comment out any unknown items and try them.
 
@@ -202,7 +202,7 @@ public:
 
       // auto cfg   = _light_instance.config(); // Get the structure for backlight configuration.
 
-      // cfg.pin_bl = TFT_BLK; //32;   // pin number to which the backlight is connected 
+      // cfg.pin_bl = TFT_BLK;         // pin number to which the backlight is connected 
       // cfg.invert = false;           // true to invert the brightness of the backlight
       // cfg.freq   = 44100;           // Backlight PWM frequency
       // cfg.pwm_channel = 7;          // PWM channel number to use

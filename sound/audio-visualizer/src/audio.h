@@ -2,7 +2,7 @@
 
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
-#include "AudioTools/AudioLibs/AudioRealFFT.h"
+#include "AudioTools/FFT/AudioRealFFT.h"
 #include "RadioStation.h"
 #include "bands.h"
 
@@ -29,7 +29,7 @@ static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(Rad
 
 #ifdef ARDUINO
   #include "RadioStream.h"
-  #define INIT_VOLUME 0.8
+  #define INIT_VOLUME 0.5
 
   I2SStream speakers_out;
   RadioStream radio_in(RadioStations, RadioStationsCount, WIFI_SSID, WIFI_PASSWORD);
@@ -83,7 +83,7 @@ void fftResult(AudioFFTBase &fft) {
     for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
-       // form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
+       form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
       //form.equalizer.bands.setBand(i, bin_value * 3);
     }
 }

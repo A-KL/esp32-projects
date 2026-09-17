@@ -9,13 +9,14 @@ public:
 	LovyanGFXCanvas(TFT_eSPI* display) : _display(display), _sprite(display)
 	{ }
 
-	void Init(const Color& color = Color::Black)
+	bool Init(const Color& color = Color::Black)
 	{
 		if (!_display->init())
 		{
-			//log_e("TFT ERROR");
-			return;
+			log_e("TFT ERROR");
+			return false;
 		}
+
 		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
 		_display->initDMA();
@@ -32,7 +33,9 @@ public:
 
 		_display->fillScreen((unsigned short)color);
 
-		//log_e("TFT OK");
+		log_i("TFT OK");
+
+		return true;
 	}
 
 	void LoadFont(const uint8_t* array, const size_t size)

@@ -36,7 +36,7 @@ void setup()
   form.Update(canvas);
 
 #ifdef ARDUINO
-  log_w("Core %d. Free heap (KB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0));
+  log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
 #endif
 
   startTasks();

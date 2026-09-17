@@ -25,6 +25,11 @@ void setup()
 {
   log_init();
 
+  #if defined(I2C_SDA) and defined(I2C_SCL)
+    #include "Wire.h"
+    Wire.begin(I2C_SDA, I2C_SCL, 100000);
+  #endif
+
   canvas.Init(Color::White);
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);

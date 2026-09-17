@@ -5,6 +5,7 @@
 #include "AudioTools/FFT/AudioRealFFT.h"
 #include "RadioStation.h"
 #include "bands.h"
+#include "codec.h"
 
 #include "VuOutput.h"
 
@@ -104,6 +105,9 @@ void printMetaData(MetaDataType type, const char* str, int len)
 // 1 = i2s
 void setupAudio(const int mode = 0)
 {
+  // Hardware init
+  codec_init();
+
   // Input: File or stream
   radio_in.begin();
 
@@ -124,8 +128,20 @@ void setupAudio(const int mode = 0)
   config.pin_ws      = I2S_WS;
   config.pin_bck     = I2S_BCK;
   config.pin_data    = I2S_SD;
+#if defined(I2S_MASTER)
   config.is_master   = I2S_MASTER;
+#else
+  config.is_master   = true;
+#endif
+#if defined(I2S_MCLK_MULTIPLE)
+  config.mclk_multiple = I2S_MCLK_MULTIPLE;
+#endif
+#if defined(I2S_MCK)
+  config.pin_mck     = I2S_MCK;
+#endif
+#if defined(I2S_IN_SD)
   config.pin_data_rx = I2S_IN_SD;
+#endif
 #else
   auto config = speakers_out.defaultConfig();
   config.copyFrom(info_out);
@@ -157,7 +173,7 @@ void setupAudio(const int mode = 0)
   raw_out.begin();
 
   // Out - Convert
-  convert.begin(16, 32);
+  convert.begin(16, 16);
 
   //all_out.add(speakers_out);
   all_out.add(volume_out);

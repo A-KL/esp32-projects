@@ -20,7 +20,7 @@ public:
 		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
 		_display->initDMA();
-		// _display->startWrite();
+		_display->startWrite();
 	
 		if (_display->isEPD())
 		{

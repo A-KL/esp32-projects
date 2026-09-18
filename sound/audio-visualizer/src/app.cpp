@@ -5,10 +5,16 @@
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
-#include "LovyanGFXCanvas.h"
 
-static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-static LovyanGFXCanvas canvas(&tft);
+#ifdef LGFX_BACKEND
+  #include "LovyanGFXCanvas.h"
+  static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
+  static LovyanGFXCanvas canvas(&tft);
+#else
+  #include "AGFXCanvas.h"
+  static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
+  static TFT_Canvas canvas(&tft);
+#endif
 
 #include "audio.h"
 #include "audio_user.h"
@@ -31,14 +37,14 @@ void setup()
   #endif
 
   canvas.Init(Color::White);
-  // canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
+  canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
   setupControls();
   setupAudio();
 
   canvas.Clear(Color::Black);
-  // form.Update(canvas);
+  form.Update(canvas);
 
 #ifdef ARDUINO
   log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
@@ -51,5 +57,5 @@ void loop()
 {
  // loopAudio();
   loopControls();
-  // form.Update(canvas);
+  form.Update(canvas);
 }

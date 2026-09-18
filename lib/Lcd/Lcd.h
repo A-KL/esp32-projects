@@ -1,13 +1,13 @@
 #pragma once
 
-#ifndef TFT_SDL_SCALE
-#define TFT_SDL_SCALE 3
-#endif
-
 /************************************************************************/
 // Lovyan GFX - Graphics library for embedded devices
 /************************************************************************/
 #ifdef LGFX_BACKEND
+  #ifndef TFT_SDL_SCALE
+    #define TFT_SDL_SCALE 3
+  #endif
+
   #ifdef LGFX_AUTODETECT
     #include <LGFX_AUTODETECT.hpp>
   #endif
@@ -32,21 +32,38 @@
   #else
     static TFT_eSPI tft;
   #endif
+
+  #define TFT_Canvas LovyanGFXCanvas
 #endif
 
 /************************************************************************/
-// Adafruit's ILI9341 driver
+// Adafruit's Graphics library driver
 /************************************************************************/
 #ifdef AGFX_BACKEND
-
+  // #include <Adafruit_GFX.h>
   #if defined(ILI9341_DRIVER) or (ILI9341_IPS_DRIVER)
     #include "Adafruit_ILI9341.h"
-    using TFT_eSPI = Adafruit_ILI9341;
 
-  #elif defined(ST7789_DRIVER) or (ST7789V_DRIVER)
+    using TFT_eSPI = Adafruit_ILI9341;
+  #elif defined(ST7789_DRIVER) or defined(ST7789V_DRIVER)
+    #include <Adafruit_ST7789.h>
+
+    Adafruit_ST7789 tft(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+    #define TFT_Canvas AGFXCanvas<Adafruit_ST7789>
+ #else
+    #error Select on of the suported Adafruit_GFX display drivers
+  #endif
+  #define TFT_BLACK 0xFF
+  namespace lgfx { void delayMicroseconds(uint32_t ms) { delay(ms); } }
+#endif
+/************************************************************************/
+// Arduino Graphics library driver
+/************************************************************************/
+#ifdef Arduino_GFX_BACKEND    
+  #if defined(ST7789_DRIVER) or defined(ST7789V_DRIVER)
     #include <Arduino_GFX_Library.h>
     Arduino_HWSPI bus(TFT_DC, TFT_CS, TFT_SCLK, TFT_MOSI, TFT_MISO, &SPI, false);
-    static Arduino_ST7789 display(&bus, TFT_RES, 0 /* rotation */, false /* IPS */, TFT_WIDTH /* width */, TFT_HEIGHT /* height */, 0 /* col offset 1 */, 0 /* row offset 1 */, 0 /* col offset 2 */, 80 /* row offset 2 */);
+    static Arduino_ST7789 display(&bus, TFT_RST, 0 /* rotation */, false /* IPS */, TFT_WIDTH /* width */, TFT_HEIGHT /* height */, 0 /* col offset 1 */, 0 /* row offset 1 */, 0 /* col offset 2 */, 80 /* row offset 2 */);
   
     #include "Arduino_GFX_TFT_Templates.h"
 
@@ -55,7 +72,7 @@
 
     TFT_eSPI tft(&display);
   #else
-    #error Select on of the suported Adafruit_GFX display drivers
+    #error Select on of the suported Arduino_GFX display drivers
   #endif
 
     #define TFT_BLACK 0xFF

@@ -5,16 +5,10 @@
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
+#include "UICanvas.h"
 
-#ifdef LGFX_BACKEND
-  #include "LovyanGFXCanvas.h"
-  static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-  static LovyanGFXCanvas canvas(&tft);
-#else
-  #include "AGFXCanvas.h"
-  static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-  static TFT_Canvas canvas(&tft);
-#endif
+static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
+static TFT_Canvas canvas(&tft);
 
 #include "audio.h"
 #include "audio_user.h"

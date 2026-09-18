@@ -64,7 +64,7 @@ protected:
 			x += _element_padding_x;
 
 			canvas.SpriteEnd();
-			canvas.SpriteBegin(_element_width, _rect.h, TFT_BLACK);
+			canvas.SpriteBegin(_element_width, _rect.h, Color::Black);
 
 			for (auto i = 0; i < _vertical_elements_count; i++)
 			{

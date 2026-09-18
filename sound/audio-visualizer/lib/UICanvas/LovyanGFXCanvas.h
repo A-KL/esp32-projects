@@ -1,7 +1,11 @@
 #pragma once
 
+#include <esp32-hal-log.h>
+
 #include <Color.h>
 #include <Canvas.h>
+
+//#include "BaseCanvas.h"
 
 class LovyanGFXCanvas : public Canvas<Color>
 {
@@ -148,6 +152,6 @@ private:
 	TFT_eSPI* _display;
 	TFT_eSprite _sprite;
 
-	const Color _background = Color::Black;
+	Color _background = Color::Black;
 };
 

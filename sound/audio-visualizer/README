@@ -1,0 +1,62 @@
+# Experimenting with ESP32 
+
+## Audio-Visualizer/DAC
+
+An attempt to create a simple, hight performance low memory footprint library of custom UI components. The project's UI mimics (more or less) RME ADI-2 UI.
+
+The functionality (atm) includes I2S output, volume control, and a single input - an internet radio. The audio functionality in build entirely using <https://github.com/pschatzmann/arduino-audio-tools>. A truly outstanding project!
+
+### Build
+
+The build configurations support ESP32/ESP32-S3/ESP32-P4 and local development on MACOS (Win/Linux can be easily added, SDL2 is the only dependency). Supported displays are 'ST7735', 'ST7735V', 'ILI9341' (including IPS model without CS pin).
+
+Not all displays work well with all graphic libraries. Hence a possibility to swap library via a singe define:
+
+Render via LovyanGFX:
+```
+lib_deps = 
+  ${env.lib_deps}
+  https://github.com/lovyan03/LovyanGFX.git#develop
+...
+
+build_flags = 
+  ${env.build_flags}
+  -D LGFX_BACKEND=1
+```
+Render via Arduino_GFX:
+```
+lib_deps = 
+  ${env.lib_deps}
+	moononournation/GFX Library for Arduino@^1.6.7
+...
+
+build_flags = 
+  ${env.build_flags}
+  -DArduino_GFX_BACKEND
+```
+Render via TFT_eSPI:
+```
+lib_deps = 
+  ${env.lib_deps}
+  TFT_eSPI
+...
+
+build_flags = 
+  ${env.build_flags}
+  -DTFT_eSPI_BACKEND
+```
+
+Render via Adafruit's GFX:
+```
+lib_deps = 
+  ${env.lib_deps}
+  https://github.com/adafruit/Adafruit-ST7735-Library.git@^1.11.0
+...
+
+build_flags = 
+  ${env.build_flags}
+  -DAGFX_BACKEND
+```
+
+### Build
+* None of displays seem to work with ESP32-P4 using LovyanGFX. Adafruit's and Arduino GFX do work, although super slow. Seems like a problem with HWSPI.

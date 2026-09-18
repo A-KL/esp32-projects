@@ -32,8 +32,6 @@
   #else
     static TFT_eSPI tft;
   #endif
-
-  #define TFT_Canvas LovyanGFXCanvas
 #endif
 
 /************************************************************************/

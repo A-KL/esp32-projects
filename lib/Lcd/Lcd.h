@@ -38,15 +38,32 @@
 // Adafruit's ILI9341 driver
 /************************************************************************/
 #ifdef AGFX_BACKEND
+
   #if defined(ILI9341_DRIVER) or (ILI9341_IPS_DRIVER)
     #include "Adafruit_ILI9341.h"
     using TFT_eSPI = Adafruit_ILI9341;
+
+  #elif defined(ST7789_DRIVER) or (ST7789V_DRIVER)
+    #include <Arduino_GFX_Library.h>
+    Arduino_HWSPI bus(TFT_DC, TFT_CS, TFT_SCLK, TFT_MOSI, TFT_MISO, &SPI, false);
+    static Arduino_ST7789 display(&bus, TFT_RES, 0 /* rotation */, false /* IPS */, TFT_WIDTH /* width */, TFT_HEIGHT /* height */, 0 /* col offset 1 */, 0 /* row offset 1 */, 0 /* col offset 2 */, 80 /* row offset 2 */);
+  
+    #include "Arduino_GFX_TFT_Templates.h"
+
+    using TFT_eSPI = TFT_Arduino_GFX_Display;
+    using TFT_eSprite = TFT_Arduino_Canvas_eSprite;
+
+    TFT_eSPI tft(&display);
   #else
     #error Select on of the suported Adafruit_GFX display drivers
   #endif
 
-  static TFT_eSPI tft(TFT_CS, TFT_DC, TFT_RES);
-#endif
+    #define TFT_BLACK 0xFF
+
+    namespace epd_mode_t { const int epd_fastest = 0; }
+
+    namespace lgfx { void delayMicroseconds(uint32_t ms) { delay(ms); } }
+  #endif
 
 /************************************************************************/
 // Bodmer/TFT_eSPI

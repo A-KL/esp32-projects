@@ -1,18 +1,20 @@
-#ifdef LGFX_AUTODETECT
-  #include <LGFX_AUTODETECT.hpp>
-#endif
+// #ifdef LGFX_AUTODETECT
+//   #include <LGFX_AUTODETECT.hpp>
+// #endif
 
-#ifdef ARDUINO
-  #include "LGFX_ESP32_IPS_ILI9341.hpp"
-#endif
+// #ifdef ARDUINO
+//   #include "LGFX_ESP32_IPS_ILI9341.hpp"
+// #endif
 
-#include <LGFX_TFT_eSPI.h>
+// #include <LGFX_TFT_eSPI.h>
 
-#if defined ( SDL_h_ )
-  static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, 3);
-#else
-  static TFT_eSPI lcd;
-#endif
+#include "Lcd.h"
+
+// #if defined ( SDL_h_ )
+//   static TFT_eSPI lcd (TFT_WIDTH, TFT_HEIGHT, 3);
+// #else
+//   static TFT_eSPI lcd;
+// #endif
 
 #include "NotoSansBold15.h"
 
@@ -22,18 +24,18 @@ void setup()
   Serial.begin(115200);
 #endif
 
-  lcd.init();
+  tft.init();
   //lcd.setRotation(1);
-  lcd.setColorDepth(16);
-  lcd.startWrite();
-  lcd.fillScreen(TFT_BLACK);
+  tft.setColorDepth(16);
+  tft.startWrite();
+  tft.fillScreen(TFT_BLACK);
 
   auto left = 10;
   auto top = 10;
   auto w = 200;
   auto h = 100;
 
-  TFT_eSprite sprite(&lcd);
+  TFT_eSprite sprite(&tft);
   sprite.createSprite(w, 1);
   // sprite.setColorDepth(16);
 	// sprite.setSwapBytes(true);

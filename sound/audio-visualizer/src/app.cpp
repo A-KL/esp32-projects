@@ -31,14 +31,14 @@ void setup()
   #endif
 
   canvas.Init(Color::White);
-  canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
+  // canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   
   setupControls();
   setupAudio();
 
   canvas.Clear(Color::Black);
-  form.Update(canvas);
+  // form.Update(canvas);
 
 #ifdef ARDUINO
   log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
@@ -51,5 +51,5 @@ void loop()
 {
  // loopAudio();
   loopControls();
-  form.Update(canvas);
+  // form.Update(canvas);
 }

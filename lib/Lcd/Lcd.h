@@ -46,7 +46,8 @@
 
   #elif defined(ST7789V_DRIVER) or defined(ST7789_DRIVER)
     #include <Adafruit_ST7789.h>
-    Adafruit_ST7789 tft(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+    // Adafruit_ST7789 tft( TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST); // Software SPI
+    Adafruit_ST7789 tft(&SPI, TFT_CS, TFT_DC, TFT_RST); // Hardware SPI
     using TFT_eSPI = Adafruit_ST7789;
 
   #else

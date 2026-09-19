@@ -27,5 +27,5 @@ static esp_err_t codec_init(int32_t sample_rate = 44100)
   ESP_RETURN_ON_ERROR(es8311_sample_frequency_config(codec, clock.mclk_frequency, clock.sample_frequency), "ES8311", "sample frequency failed");
   ESP_RETURN_ON_ERROR(es8311_microphone_config(codec, false), "ES8311", "disable microphone failed");
   
-  return es8311_voice_volume_set(codec, 90, nullptr);
+  return es8311_voice_volume_set(codec, 60, nullptr);
 }

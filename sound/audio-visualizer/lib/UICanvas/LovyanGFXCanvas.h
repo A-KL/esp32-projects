@@ -1,6 +1,6 @@
 #pragma once
 
-// #include <esp32-hal-log.h>
+#include <esp32-hal-log.h>
 
 #include <Color.h>
 #include <Canvas.h>
@@ -17,7 +17,7 @@ public:
 	{
 		if (!_display->init())
 		{
-			// log_e("TFT ERROR");
+			log_e("TFT ERROR");
 			return false;
 		}
 
@@ -37,7 +37,7 @@ public:
 
 		_display->fillScreen((unsigned short)color);
 
-		// log_i("TFT OK");
+		log_i("TFT OK");
 
 		return true;
 	}
@@ -70,7 +70,6 @@ public:
 		} else {
 			_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
 		}
-		//_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
 	}
 
 	void SpriteEnd()

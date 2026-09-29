@@ -1,5 +1,10 @@
 #pragma once
 
+// #if __has_include (<LovyanGFXCanvas.h>)
+//  #include <LovyanGFXCanvas.h>
+//  using TFT_Canvas = LovyanGFXCanvas;
+// #endif
+
 #if defined(LGFX_BACKEND) or (TFT_eSPI_BACKEND)
   #include "LovyanGFXCanvas.h"
   using TFT_Canvas = LovyanGFXCanvas;

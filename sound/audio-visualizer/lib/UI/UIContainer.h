@@ -35,8 +35,8 @@ public:
 
 	 bool IsValid() const
 	 {
-	 	// for (UIElement* element : _children) {
-	 	// 	if(!element->IsValid()) {
+	 	// for (const UIElement* element : _children) {
+	 	// 	if (!element->IsValid()) {
 	 	// 		return false;
 	 	// 	}
 	 	// }
@@ -53,7 +53,8 @@ protected:
 		}
 
 		for (UIElement* element : _children) {
-			element->Update(canvas);
+			if (!element->IsValid())
+				element->Update(canvas);
 		}
 	}
 

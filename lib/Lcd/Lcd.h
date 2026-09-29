@@ -3,7 +3,8 @@
 /************************************************************************/
 // Lovyan GFX - Graphics library for embedded devices
 /************************************************************************/
-#ifdef LGFX_BACKEND
+
+#if defined(LGFX_BACKEND) or __has_include(<LGFX_TFT_eSPI.h>)
   #ifndef TFT_SDL_SCALE
     #define TFT_SDL_SCALE 3
   #endif

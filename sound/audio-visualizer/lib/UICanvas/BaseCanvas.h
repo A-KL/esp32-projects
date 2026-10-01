@@ -30,8 +30,8 @@ class BaseCanvas : public Canvas<Color>
       _display->drawRect(x0, y0, w, h, (unsigned short)color);
     }
 
-  	void DrawText(int x, int y, int w, int h, const char* text, const Color& color) {
-      _display->setTextColor((unsigned short)color, 0xFF);
+  	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& colorBackground = Color::Black) {
+      _display->setTextColor((unsigned short)color, (unsigned short)colorBackground);
      // _display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	  }
 

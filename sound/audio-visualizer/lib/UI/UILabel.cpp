@@ -3,7 +3,6 @@
 #include <iterator>
 #include <iostream>
 #include <string>
-
 #include <Color.h>
 #include <Canvas.h>
 
@@ -34,8 +33,8 @@ void UILabel::Draw(Canvas<Color>& canvas)
         AbsolutePosition(origin_x, origin_y);
 
         canvas.SetFont(_fontIndex, 1);
-        canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _fcolor);
+        canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _fcolor, UIElement::_backgroundColor);
     }
-    
+
     UIElement::Draw(canvas);
 }

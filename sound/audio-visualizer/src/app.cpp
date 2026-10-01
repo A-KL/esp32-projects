@@ -33,6 +33,7 @@ void setup()
   canvas.Init(Color::White);
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
+  canvas.DrawText(0, 220, 320, 20, "Connecting...", Color::Black, Color::White);
   
   setupControls();
   setupAudio();

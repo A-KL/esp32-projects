@@ -105,9 +105,9 @@ public:
 		_display->setSwapBytes(false);
 	}
 
-	void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
+	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& background = Color::Black)
    	{
-		_display->setTextColor((unsigned short)color, TFT_BLACK);
+		_display->setTextColor((unsigned short)color, (unsigned short)background);
 		//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
 		_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	 }

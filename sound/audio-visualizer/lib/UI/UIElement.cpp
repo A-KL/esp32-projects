@@ -6,12 +6,27 @@
 #include "UIElement.h"
 
 UIElement::UIElement(const UIRect rect, const Color background, const Color border, int borderSize, const UIElement* parent) :
-    visible(true), _rect(rect), _backgroundColor(background), _borderColor(border), _borderSize(borderSize), _valid(false), _parent(parent)
+    _rect(rect), 
+    _backgroundColor(background), 
+    _borderColor(border), 
+    _borderSize(borderSize), 
+    _valid(false), 
+    _visible(true), 
+    _parent(parent)
 {}
 
 bool UIElement::IsValid() const
 {
-    return _valid || !visible;
+    return _valid || !_visible;
+}
+
+void UIElement::SetVisible(bool visible)
+{
+    if (_visible == visible) {
+        return;
+    }
+    _visible = visible;
+    Invalidate();
 }
 
 // bool UIElement::Update(Canvas<Color>& canvas)

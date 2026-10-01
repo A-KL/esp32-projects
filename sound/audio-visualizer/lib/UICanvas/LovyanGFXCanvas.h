@@ -1,11 +1,20 @@
 #pragma once
 
-#include <esp32-hal-log.h>
+#if defined(ARDUINO)
+	#include <esp32-hal-log.h>
+#else
+	#define log_e(format, ...)     printf(format, ##__VA_ARGS__)
+	#define log_w(format, ...)     printf(format, ##__VA_ARGS__)
+	#define log_i(format, ...)     printf(format, ##__VA_ARGS__)
+	#define log_d(format, ...)     printf(format, ##__VA_ARGS__)
+#endif
 
 #include <Color.h>
 #include <Canvas.h>
 
 //#include "BaseCanvas.h"
+// template<typename TDisplay>
+// class LovyanGFXCanvas : public BaseCanvas<TDisplay>
 
 class LovyanGFXCanvas : public Canvas<Color>
 {
@@ -24,7 +33,6 @@ public:
 		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
 		_display->initDMA();
-		// _display->startWrite();
 	
 		if (_display->isEPD())
 		{
@@ -113,9 +121,7 @@ public:
 	 }
 
 	 void SetFont(int index, unsigned char size)
-	 {
-
-	 }
+	 { }
 
 	inline int Height() const
 	{

@@ -5,10 +5,10 @@
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
-#include "LovyanGFXCanvas.h"
+#include "UICanvas.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-static LovyanGFXCanvas canvas(&tft);
+static TFT_Canvas canvas(&tft);
 
 #include "audio.h"
 #include "audio_user.h"
@@ -33,6 +33,7 @@ void setup()
   canvas.Init(Color::White);
   canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
+  canvas.DrawText(0, 220, 320, 20, "Connecting...", Color::Black, Color::White);
   
   setupControls();
   setupAudio();

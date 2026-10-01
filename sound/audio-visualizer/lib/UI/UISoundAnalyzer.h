@@ -64,7 +64,7 @@ protected:
 			x += _element_padding_x;
 
 			canvas.SpriteEnd();
-			canvas.SpriteBegin(_element_width, _rect.h, TFT_BLACK);
+			canvas.SpriteBegin(_element_width, _rect.h, Color::Black);
 
 			for (auto i = 0; i < _vertical_elements_count; i++)
 			{
@@ -91,13 +91,13 @@ protected:
 	}
 
 private:
-	const Color _colorDarkYellow { 35, 35, 15 }; //99, 97, 48 
-	const Color _colorYellow { 243, 232, 53 };
+	const Color _colorDarkYellow { 35, 35, 15, 0 }; //99, 97, 48 
+	const Color _colorYellow { 243, 232, 53, 0 };
 
-	const Color _colorGreen { 100, 199, 73 };
-	const Color _colorDarkGreen { 9, 14, 7 }; //44, 91, 45
+	const Color _colorGreen { 100, 199, 73, 0 };
+	const Color _colorDarkGreen { 9, 14, 7, 0 }; //44, 91, 45
 
-	const Color _colorBlack{ 0, 0, 0 };
+	const Color _colorBlack{ 0, 0, 0, 0 };
 
 	uint8_t _channels[TChannels];
 

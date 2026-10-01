@@ -1,7 +1,11 @@
 #pragma once
 
+#include <esp32-hal-log.h>
+
 #include <Color.h>
 #include <Canvas.h>
+
+//#include "BaseCanvas.h"
 
 class LovyanGFXCanvas : public Canvas<Color>
 {
@@ -20,7 +24,7 @@ public:
 		_display->setSwapBytes(true);
 		_display->setColorDepth(16);
 		_display->initDMA();
-		_display->startWrite();
+		// _display->startWrite();
 	
 		if (_display->isEPD())
 		{
@@ -66,7 +70,6 @@ public:
 		} else {
 			_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
 		}
-		//_sprite.drawLine(x0, y0, x1, y1, (unsigned short)color);
 	}
 
 	void SpriteEnd()
@@ -102,9 +105,9 @@ public:
 		_display->setSwapBytes(false);
 	}
 
-	void DrawText(int x, int y, int w, int h, const char* text, const Color& color)
+	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& background = Color::Black)
    	{
-		_display->setTextColor((unsigned short)color, TFT_BLACK);
+		_display->setTextColor((unsigned short)color, (unsigned short)background);
 		//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
 		_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	 }
@@ -148,6 +151,6 @@ private:
 	TFT_eSPI* _display;
 	TFT_eSprite _sprite;
 
-	const Color _background = Color::Black;
+	Color _background = Color::Black;
 };
 

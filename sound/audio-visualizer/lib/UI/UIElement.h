@@ -48,11 +48,9 @@ public:
 		Invalidate();
 	}
 
-	bool visible;
-
 	virtual bool IsValid() const;
 
-	void Update(Canvas<Color>& canvas);	
+	void Update(Canvas<Color>& canvas);
 
 	virtual void Clear(Canvas<Color>& canvas, bool draw = true);
 
@@ -62,6 +60,8 @@ protected:
 	inline virtual void Invalidate() {
 		_valid = false;
 	}
+
+	inline void SetVisible(bool visible);
 
 	void AbsolutePosition(int& x, int& y) const;
 
@@ -73,5 +73,6 @@ protected:
 
 private:
 	volatile bool _valid;
+	volatile bool _visible;
 	const UIElement* _parent;
 };

@@ -45,12 +45,13 @@ void setup()
   log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
 #endif
 
-  startTasks();
+  // startTasks();
 }
 
 void loop() 
 {
- // loopAudio();
+  loopAudio();
   loopControls();
+  
   form.Update(canvas);
 }

@@ -15,34 +15,30 @@
 //                                    |-> MetaDataOutput
 //
 
-static constexpr RadioStation RadioStations[] { 
+const std::vector<RadioStation> Playlist = {
   {"SWISS Jazz",            "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
-  {"Radio Roks UA Ballads", "http://radio.d4ua.com:8800/roks_ballads"},
   {"Radio Roks UA",         "http://online.radioroks.ua/bak_RadioROKS"},
-  {"Radio Roks UA HD",      "http://online.radioroks.ua/bak_RadioROKSTe_HD"},
+  // {"Radio Roks UA HD",      "http://online.radioroks.ua/bak_RadioROKSTe_HD"},
   {"Classic FM",            "http://media-ice.musicradio.com:80/ClassicFMMP3"},
   {"Lite Favorites",        "http://naxos.cdnstream.com:80/1255_128"},
-  {"MAXXED Out",            "http://149.56.195.94:8015/steam"},
- // {"SomaFM Xmas",           "http://ice2.somafm.com/christmas-128-mp3"},
   {"Veronica ",             "http://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
 };
-static constexpr size_t RadioStationsCount = (sizeof(RadioStations) / sizeof(RadioStations[0]));
+
+#ifndef INIT_VOLUME
+  #define INIT_VOLUME 1.0
+#endif
 
 #ifdef ARDUINO
   #include "RadioStream.h"
-  #define INIT_VOLUME 0.8
 
   I2SStream speakers_out;
-  RadioStream radio_in(RadioStations, RadioStationsCount, WIFI_SSID, WIFI_PASSWORD);
+  RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
   // I2SStream stream_in;
-  // NumberFormatConverterStream nfc(decoded_out);
 #else
   #include <iostream>
 
   #include "AudioTools/AudioLibs/PortAudioStream.h"
   #include "AudioTools/Disk/FileSystem.h"
-
-  #define INIT_VOLUME 1.0
 
   PortAudioStream speakers_out;
   File radio_in("./sound/file_example_MP3_700KB.mp3");
@@ -62,7 +58,7 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
-NumberFormatConverterStream convert(speakers_out); // write the 16bit data to fc
+NumberFormatConverterStream convert(speakers_out);
 
 MP3DecoderHelix helix;
 VolumeStream volume_out(convert);
@@ -79,23 +75,21 @@ void log_init()
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 }
 
-void fftResult(AudioFFTBase &fft) {
+void fftResult(AudioFFTBase &fft) 
+{
     //fft.frequencyToBin()
     for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
         auto bin_index = ftt_bin_map[i]; 
         auto bin_value = fft.magnitude(bin_index);
-       form.equalizer.bands.setBand(i, sqrt(bin_value)*15);
-      //form.equalizer.bands.setBand(i, bin_value * 3);
+       form.equalizer.bands.setBand(i, sqrt(bin_value) * 8.0f);
+      // form.equalizer.bands.setBand(i, bin_value);
     }
 }
 
 void printMetaData(MetaDataType type, const char* str, int len)
 {
-#ifdef ARDUINO
   log_w("%s: %s", toStr(type), str);
-#else
-  printf("==> %s: %s\r\n", toStr(type), str);
-#endif
+
   if (type == Title) {
     form.track.setText(str);
   }
@@ -109,7 +103,7 @@ void setupAudio(const int mode = 0)
   codec_init();
 
   // Input: File or stream
-  radio_in.begin();
+  radio_in.begin(1);
 
 #ifdef ARDUINO
   form.track.setText(radio_in.getTitle());
@@ -154,8 +148,8 @@ void setupAudio(const int mode = 0)
   tcfg.channels = info_in.channels;
   tcfg.sample_rate = info_in.sample_rate;
   tcfg.bits_per_sample = info_in.bits_per_sample;
-  //tcfg.window_function = new BufferedWindow(new Hamming());
-  //tcfg.window_function = new Hamming();
+  // tcfg.window_function = new BufferedWindow(new Hamming());
+  tcfg.window_function = new FlatTop();
   tcfg.callback = &fftResult;
   fft_out.begin(tcfg);
 

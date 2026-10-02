@@ -32,7 +32,7 @@ void setupControls(bool async = false)
 #ifdef ARDUINO
   encoder_left.begin();
 	encoder_left.setup(readEncoderISR);
-  encoder_left.setBoundaries(0, RadioStationsCount-1, true);
+  encoder_left.setBoundaries(0, Playlist.size()-1, true);
   encoder_left.setEncoderValue(0);
   encoder_left.disableAcceleration();
   encoder_left.enable();
@@ -65,14 +65,8 @@ void loopControls()
 	{
     auto value = encoder_left.readEncoder();
     log_e("Channel: %i", value);
-    radio_in.setStation(value);
+    radio_in.select(value);
     form.track.setText(radio_in.getTitle());
-	}
-
-  if (encoder_right.encoderChanged())
-	{
-      auto value = encoder_right.readEncoder();
-      setVolume(value/100.0);
 	}
 
 	if (encoder_left.isEncoderButtonClicked())
@@ -81,13 +75,18 @@ void loopControls()
     //log_e("encoder_left");
 	}
 
+  /* Volume control */
+  if (encoder_right.encoderChanged())
+	{
+      auto value = encoder_right.readEncoder();
+      setVolume(value);
+	}
+  /* Mute control */
   if (encoder_right.isEncoderButtonClicked())
 	{
-      setVolume(0);
-     // log_e("encoder_right");
+      switchMuted();
 	}
 #else
-
 	if (lgfx::v1::gpio_in(MENU_BUTTON) == 0) {
     changeAudioInput();
     lgfx::delayMicroseconds(100000);
@@ -97,6 +96,5 @@ void loopControls()
       setVolume(0);
       lgfx::delayMicroseconds(100000);
 	}
-  
 #endif
 }

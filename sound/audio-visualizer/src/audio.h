@@ -16,12 +16,14 @@
 //
 
 const std::vector<RadioStation> Playlist = {
-  {"SWISS Jazz",            "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
-  {"Radio Roks UA",         "http://online.radioroks.ua/bak_RadioROKS"},
-  // {"Radio Roks UA HD",      "http://online.radioroks.ua/bak_RadioROKSTe_HD"},
-  {"Classic FM",            "http://media-ice.musicradio.com:80/ClassicFMMP3"},
-  {"Lite Favorites",        "http://naxos.cdnstream.com:80/1255_128"},
-  {"Veronica ",             "http://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
+  {"SWISS Jazz",           "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
+  {"Radio Roks UA",        "http://online.radioroks.ua/bak_RadioROKS"},
+  {"KissFM",               "https://tavr.tvstitch.com/KissFM"},
+  {"Classic FM",           "http://media-ice.musicradio.com:80/ClassicFMMP3"},
+  {"Lite Favorites",       "http://naxos.cdnstream.com:80/1255_128"},
+  {"TRANCE 21",            "https://mscp3.live-streams.nl:8022/lowstream"},
+  {"TRANCE IS STAR RADIO", "https://listen2.myradio24.com/tisradio"},
+  {"Veronica ",            "http://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
 };
 
 #ifndef INIT_VOLUME
@@ -103,7 +105,7 @@ void setupAudio(const int mode = 0)
   codec_init();
 
   // Input: File or stream
-  radio_in.begin(1);
+  radio_in.select(1);
 
 #ifdef ARDUINO
   form.track.setText(radio_in.getTitle());

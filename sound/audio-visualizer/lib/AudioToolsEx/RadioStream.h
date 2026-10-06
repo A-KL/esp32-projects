@@ -30,16 +30,25 @@ class RadioStream : public URLStream {
       return  _radios[_selected_radio].Name;
     }
 
+    const char* getTitle(int index) const {
+      auto station = constrain(index, 0, _radios.size()-1);
+      return  _radios[station].Name;
+    }
+
     const char* getUrl() const {
       return  _radios[_selected_radio].Url;
     }
 
-    void select(const int index) {
-      auto channel = constrain(index, 0, _radios.size());
+    const int getSelected() const {
+      return _selected_radio;
+    }
 
-      if (_selected_radio != channel && active) {
-        end();
-        begin(_selected_radio);
+    void select(const int index) {
+      auto channel = constrain(index, 0, _radios.size()-1);
+
+      if (_selected_radio != channel) {
+        if (active) end();
+        begin(channel);
       }
       _selected_radio = channel;
     }

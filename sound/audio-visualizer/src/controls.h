@@ -17,6 +17,10 @@ void IRAM_ATTR readEncoderISR()
 
 #endif
 
+static int desired_radio_station = 1;
+static unsigned long last_radio_station_change = millis();
+static const unsigned long radio_change_delay = 2000; // ms
+
 void loopControls();
 
 void read_inputs_task(void * args)
@@ -24,6 +28,32 @@ void read_inputs_task(void * args)
   while (true) {
     loopControls();
     delay(20);
+  }
+}
+void setRadioStation(int station)
+{
+  radio_in.select(station);
+
+#ifdef ARDUINO
+  form.track.setText(radio_in.getTitle());
+#endif
+
+  form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+}
+
+void loopChangeRadio()
+{
+  if (desired_radio_station != radio_in.getSelected()) {
+    auto now = millis();
+
+    if (now - last_radio_station_change < radio_change_delay) {
+      return;
+    }
+    last_radio_station_change = now;
+
+    radio_in.select(desired_radio_station);
+    // form.track.setText(radio_in.getTitle());
+    form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
   }
 }
 
@@ -61,24 +91,30 @@ void setupControls(bool async = false)
 void loopControls()
 {
 #ifdef ARDUINO
+  /* Indicate to change radio station */
 	if (encoder_left.encoderChanged())
 	{
     auto value = encoder_left.readEncoder();
-    log_e("Channel: %i", value);
-    radio_in.select(value);
-    form.track.setText(radio_in.getTitle());
+    last_radio_station_change = millis();
+    desired_radio_station = value;
+
+    log_i("Desired radio station number: %i", value+1);
+
+    form.track.setText(radio_in.getTitle(desired_radio_station));
+    form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
 	}
 
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    //changeAudioInput();
-    //log_e("encoder_left");
+    // changeAudioInput();
+    // log_e("encoder_left");
 	}
 
   /* Volume control */
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
+      log_i("Volume: %i", value);
       setVolume(value);
 	}
   /* Mute control */
@@ -93,8 +129,10 @@ void loopControls()
 	}
 
   if (lgfx::v1::gpio_in(VOLUME_BUTTON) == 0) {
-      setVolume(0);
-      lgfx::delayMicroseconds(100000);
+    switchMuted();
+    lgfx::delayMicroseconds(100000);
 	}
 #endif
+
+  loopChangeRadio();
 }

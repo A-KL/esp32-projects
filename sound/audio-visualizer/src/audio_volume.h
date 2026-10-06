@@ -44,8 +44,6 @@ void switchMuted()
 // 0-100
 void setVolume(int16_t value) 
 {
-  log_e("Volume: %i", value);
-
   // Update UI
   auto dbs = value - 100;// (int)(value * 100 - 127.5);
   form.volume.setTextF("%ddb", dbs);
@@ -55,8 +53,6 @@ void setVolume(int16_t value)
     setCodecVolume(volume);
   }
 }
-
-
 
 void changeAudioInput()
 {

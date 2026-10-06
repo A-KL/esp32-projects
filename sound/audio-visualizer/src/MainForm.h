@@ -64,7 +64,7 @@ public:
         UIContainer(rect),
 
         volume({ 320 - 50, 0, 50, 20 }, "-20db"),
-        track({ 0, 0, 320 - 40, 20 }, "[Title]"),
+        track({ 0, 0, 320 - 50, 20 }, "[Title]"),
 
         equalizer({ 0, 20, 320, 240 - 23 - 20 }),
 

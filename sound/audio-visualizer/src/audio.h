@@ -73,6 +73,11 @@ void log_init()
 {
 #ifdef ARDUINO
   Serial.begin(115200);
+  #if ARDUINO_USB_CDC_ON_BOOT
+  // A zero timeout keeps optional logging from delaying application startup
+  // when USB CDC is not connected or the host is not draining output.
+  Serial.setTxTimeoutMs(0);
+  #endif
 #endif
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 }

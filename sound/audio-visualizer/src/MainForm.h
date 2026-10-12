@@ -150,7 +150,7 @@ private:
         Color::Orange,
         Color::Green,
 
-        Color::Purpule,
+        Color::Purple,
         Color::LightBlue,
         Color::Orange,
         

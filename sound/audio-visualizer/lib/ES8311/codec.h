@@ -9,7 +9,7 @@ constexpr float PLATFORM_INIT_VOLUME = 70;
 
 static es8311_handle_t codec = nullptr;
 
-static esp_err_t codec_init(int32_t sample_rate = 44100) 
+static esp_err_t codec_init(int16_t volume = PLATFORM_INIT_VOLUME, int32_t sample_rate = 44100)
 {
   pinMode(PLATFORM_AUDIO_PA, OUTPUT);
   digitalWrite(PLATFORM_AUDIO_PA, HIGH);
@@ -30,7 +30,7 @@ static esp_err_t codec_init(int32_t sample_rate = 44100)
   ESP_RETURN_ON_ERROR(es8311_sample_frequency_config(codec, clock.mclk_frequency, clock.sample_frequency), "ES8311", "sample frequency failed");
   ESP_RETURN_ON_ERROR(es8311_microphone_config(codec, false), "ES8311", "disable microphone failed");
   
-  return es8311_voice_volume_set(codec, PLATFORM_INIT_VOLUME, nullptr);
+  return es8311_voice_volume_set(codec, volume, nullptr);
 }
 
 static esp_err_t codec_mute(bool mute)

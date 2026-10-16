@@ -109,11 +109,12 @@ void setupAudio(const int mode = 0)
   // Hardware init
   codec_init();
 
+#ifdef ARDUINO
   // Input: File or stream
   radio_in.select(1);
-
-#ifdef ARDUINO
   form.track.setText(radio_in.getTitle());
+#else
+  radio_in.begin();
 #endif
 
   // Decoder

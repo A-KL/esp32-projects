@@ -32,17 +32,16 @@ void read_inputs_task(void * args)
 }
 void setRadioStation(int station)
 {
-  radio_in.select(station);
-
 #ifdef ARDUINO
+  radio_in.select(station);
   form.track.setText(radio_in.getTitle());
-#endif
-
   form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+#endif
 }
 
 void loopChangeRadio()
 {
+#ifdef ARDUINO
   if (desired_radio_station != radio_in.getSelected()) {
     auto now = millis();
 
@@ -55,6 +54,7 @@ void loopChangeRadio()
     // form.track.setText(radio_in.getTitle());
     form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
   }
+#endif
 }
 
 void setupControls(bool async = false)

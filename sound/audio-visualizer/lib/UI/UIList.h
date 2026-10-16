@@ -4,6 +4,7 @@
 #include <iterator>
 #include <iostream>
 
+#include "UIRect.h"
 #include "UIElement.h"
 
 template <typename TItem>

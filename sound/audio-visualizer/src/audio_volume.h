@@ -30,7 +30,7 @@ void setMuted(bool muted)
 {
   is_muted = muted;
 
-  form.volume.setForecolor( is_muted ? Color::Gray : Color::White);
+  form.volume.setForeColor( is_muted ? Color::Gray : Color::White);
   form.setIcon(5, is_muted);
   
   setCodecMute(is_muted);

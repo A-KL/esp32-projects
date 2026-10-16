@@ -3,9 +3,10 @@
 #include <Color.h>
 #include <Canvas.h>
 
+#include "UIRect.h"
 #include "UIElement.h"
 
-UIElement::UIElement(const UIRect rect, const Color background, const Color border, int borderSize, const UIElement* parent) :
+UIElement::UIElement(const UIRect rect, const Color background, const Color border, int borderSize, UIElement* parent) :
     _rect(rect), 
     _backgroundColor(background), 
     _borderColor(border), 
@@ -15,32 +16,20 @@ UIElement::UIElement(const UIRect rect, const Color background, const Color bord
     _parent(parent)
 {}
 
-bool UIElement::IsValid() const
-{
-    return _valid || !_visible;
-}
-
 void UIElement::SetVisible(bool visible)
 {
     if (_visible == visible) {
         return;
     }
     _visible = visible;
-    Invalidate();
+
+    if (_visible) {
+        Invalidate();
+    } 
+    else if (_parent != nullptr) {
+        _parent->Invalidate();
+    }
 }
-
-// bool UIElement::Update(Canvas<Color>& canvas)
-// {
-//     if (IsValid()) {
-//         return false;
-//     }
-
-//     Draw(canvas);
-
-//     _valid = true;
-
-//     return true;
-// }
 
 void UIElement::Update(Canvas<Color>& canvas)
 {
@@ -49,8 +38,13 @@ void UIElement::Update(Canvas<Color>& canvas)
     }
 
     Draw(canvas);
-
     _valid = true;
+}
+
+bool UIElement::Contains(const UIElement& other) const
+{
+    UIRect result;
+    return _rect.Diff(other._rect, result);
 }
 
 void UIElement::Clear(Canvas<Color>& canvas, bool draw)

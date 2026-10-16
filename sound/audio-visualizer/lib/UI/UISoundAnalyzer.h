@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UIRect.h"
 #include "UIElement.h"
 
 template <size_t TChannels>

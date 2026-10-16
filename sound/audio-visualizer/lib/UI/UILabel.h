@@ -45,7 +45,7 @@ public:
 		Invalidate();
 	}
 
-	inline void setForecolor(const Color& color)
+	inline void setForeColor(const Color& color)
 	{
 		if (color == _fcolor) {
 			return;

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "UIRect.h"
+#include "UIElement.h"
+
 class UVProgress : public UIElement
 {
 	public:

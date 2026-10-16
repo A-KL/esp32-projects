@@ -1,11 +1,5 @@
 #pragma once
 
-struct UIRect
-{
-	int x, y;
-	int w, h;
-};
-
 class UIElement
 {
 public:
@@ -14,11 +8,12 @@ public:
 		const Color background = {0, 0, 0, 0}, 
 		const Color border = {0, 0, 0, 0}, 
 		int borderSize = 0, 
-		const UIElement* parent = nullptr);
+		UIElement* parent = nullptr);
 
-	inline void setParent(const UIElement* parent)
+	inline void setParent(UIElement* parent)
 	{
 		_parent = parent;
+		Invalidate();
 	}
 
 	inline void setBorderColor(const Color color)
@@ -48,31 +43,34 @@ public:
 		Invalidate();
 	}
 
-	virtual bool IsValid() const;
+	inline virtual bool IsValid() const
+	{
+			return _valid || !_visible;
+	}
 
-	void Update(Canvas<Color>& canvas);
-
-	virtual void Clear(Canvas<Color>& canvas, bool draw = true);
-
-protected:
-	const UIRect _rect;
-	
-	inline virtual void Invalidate() {
+	inline virtual void Invalidate() 
+	{
 		_valid = false;
 	}
 
-	inline void SetVisible(bool visible);
+	virtual void Clear(Canvas<Color>& canvas, bool draw = true);
 
-	void AbsolutePosition(int& x, int& y) const;
+	void Update(Canvas<Color>& canvas);
+	bool Contains(const UIElement& other) const;
 
+protected:
 	virtual void Draw(Canvas<Color>& canvas);
 
+	void SetVisible(bool visible);
+	void AbsolutePosition(int& x, int& y) const;
+
+	const UIRect _rect;
 	Color _backgroundColor;
 	Color _borderColor;
 	int _borderSize;
-
+	
 private:
 	volatile bool _valid;
 	volatile bool _visible;
-	const UIElement* _parent;
+	UIElement* _parent;
 };

@@ -52,6 +52,13 @@ protected:
 			_redraw = false;
 		}
 
+		// for (UIElement* a : _children) {
+		// 	if (!a->IsValid()) {
+		// 		for (UIElement* element : _children) {
+		// 	}
+
+		// }
+
 		for (UIElement* element : _children) {
 			if (!element->IsValid())
 				element->Update(canvas);

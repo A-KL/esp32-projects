@@ -6,6 +6,7 @@
 #include <Color.h>
 #include <Canvas.h>
 
+#include "UIRect.h"
 #include "UIElement.h"
 #include "UILabel.h"
 

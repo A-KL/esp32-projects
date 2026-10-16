@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UIRect.h"
 #include "UIElement.h"
 #include "UVProgress.h"
 #include "UIContainer.h"
@@ -13,16 +14,16 @@ public:
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
         bands({ 30, 7, rect.w - 50, rect.h - 75})
     {
-        for (int i=0; i< (sizeof(level_labels) / sizeof(level_labels[0])); i++)
+        for (auto i=0; i< (sizeof(level_labels) / sizeof(level_labels[0])); i++)
         {
             Add(level_labels[i]);
         }
         
-        for (int i=0; i< (sizeof(freq_labels) / sizeof(freq_labels[0])); i++)
+        for (auto i=0; i< (sizeof(freq_labels) / sizeof(freq_labels[0])); i++)
         {
             Add(freq_labels[i]);
         }
-         Add(bands);
+        Add(bands);
     }
 
     UISoundAnalyzer<TChannels> bands;
@@ -60,8 +61,7 @@ private:
 class MainForm : public UIContainer
 {
 public:
-  MainForm(const UIRect& rect) : 
-        UIContainer(rect),
+  MainForm(const UIRect& rect) : UIContainer(rect),
 
         volume({ 320 - 50, 0, 50, 20 }, "-20db"),
         track({ 0, 0, 320 - 50, 20 }, "[Title]"),
@@ -123,7 +123,7 @@ public:
 
         auto color = state ? icons_state_on[index] : icons_state_off[index];
 
-        icons[index].setForecolor(color);
+        icons[index].setForeColor(color);
         icons[index].setBorderColor(color);
     }
 

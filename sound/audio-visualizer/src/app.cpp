@@ -46,8 +46,7 @@ void setup()
 #endif
 
   startTasks();
-
-  form.showMessage("DEMO"); 
+  // form.showMessage("DEMO"); 
 }
 
 void loop() 
@@ -55,5 +54,5 @@ void loop()
   // loopAudio();
   loopControls();
   form.Update(canvas);
-  form.hideMessage();
+  // form.hideMessage();
 }

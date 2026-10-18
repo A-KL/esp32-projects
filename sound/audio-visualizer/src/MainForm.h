@@ -14,14 +14,11 @@ public:
     UISoundEqualizer(const UIRect& rect) : UIContainer(rect),
         bands({ 30, 7, rect.w - 50, rect.h - 75})
     {
-        for (auto i=0; i< (sizeof(level_labels) / sizeof(level_labels[0])); i++)
-        {
-            Add(level_labels[i]);
+        for (auto& level_label : level_labels) {
+            Add(level_label);
         }
-        
-        for (auto i=0; i< (sizeof(freq_labels) / sizeof(freq_labels[0])); i++)
-        {
-            Add(freq_labels[i]);
+        for (auto& freq_label : freq_labels) {
+            Add(freq_label);
         }
         Add(bands);
     }
@@ -111,9 +108,8 @@ public:
         Add(leftTextValue);
         Add(rightTextValue);
 
-        for (auto i=0; i<icons_count; i++)
-        {
-            footer.Add(icons[i]);
+        for (auto& icon : icons) {
+            footer.Add(icon);
         }
         
         Add(footer);

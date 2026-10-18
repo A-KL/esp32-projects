@@ -15,9 +15,10 @@ class RadioStream : public URLStream {
     { }
   
     virtual bool begin(int index = -1, MethodID action = GET, const char* reqMime = "", const char* reqData = "") {
-      if (index != -1) {
-        _selected_radio = index;
+      if (index == -1) {
+        return false;
       }
+      _selected_radio = index;
 
       auto success = URLStream::begin(getUrl(), "audio/mp3", action, reqMime, reqData);
 
@@ -47,7 +48,8 @@ class RadioStream : public URLStream {
       auto channel = constrain(index, 0, _radios.size()-1);
 
       if (_selected_radio != channel) {
-        if (active) end();
+        end();
+        delay(500);
         begin(channel);
       }
       _selected_radio = channel;

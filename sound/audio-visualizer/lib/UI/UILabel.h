@@ -21,7 +21,7 @@ public:
 			return;
 		}
 		_text = text;
-		Invalidate(false);
+		Invalidate(true);
 	}
 
 	inline void SetInt(int value)
@@ -30,7 +30,7 @@ public:
 		ss << value;  
 		ss >> _text;
 
-		Invalidate(false);
+		Invalidate(true);
 	}
 
 	inline void SetTextF(const char* format, ...)
@@ -43,7 +43,7 @@ public:
 		vsnprintf(buffer, size, format, args);
 		va_end(args);
 		_text = buffer;
-		Invalidate(false);
+		Invalidate(true);
 	}
 
 	inline void SetForeColor(const Color& color)

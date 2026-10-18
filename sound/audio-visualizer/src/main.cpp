@@ -26,6 +26,10 @@ int user_func(bool* running)
 
 int main(int, char**)
 {
+  lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_x, MENU_BUTTON);
+  lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_LEFT, MENU_PIN_A);
+  lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_RIGHT, MENU_PIN_B);
+
   lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_m, VOLUME_BUTTON);
   lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_UP, VOLUME_PIN_A);
   lgfx::Panel_sdl::addKeyCodeMapping(SDL_KeyCode::SDLK_DOWN, VOLUME_PIN_B);

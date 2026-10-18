@@ -34,8 +34,8 @@ void setRadioStation(int station)
 {
 #ifdef ARDUINO
   radio_in.select(station);
-  form.track.setText(radio_in.getTitle());
-  form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+  form.track.SetText(radio_in.getTitle());
+  form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
 #endif
 }
 
@@ -51,8 +51,8 @@ void loopChangeRadio()
     last_radio_station_change = now;
 
     radio_in.select(desired_radio_station);
-    // form.track.setText(radio_in.getTitle());
-    form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+    // form.track.SetText(radio_in.getTitle());
+    form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
   }
 #endif
 }
@@ -100,8 +100,8 @@ void loopControls()
 
     log_i("Desired radio station number: %i", value+1);
 
-    form.track.setText(radio_in.getTitle(desired_radio_station));
-    form.track.setForecolor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+    form.track.SetText(radio_in.getTitle(desired_radio_station));
+    form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
 	}
 
 	if (encoder_left.isEncoderButtonClicked())

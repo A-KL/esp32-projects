@@ -30,7 +30,7 @@ void setMuted(bool muted)
 {
   is_muted = muted;
 
-  form.volume.setForeColor( is_muted ? Color::Gray : Color::White);
+  form.volume.SetForeColor( is_muted ? Color::Gray : Color::White);
   form.setIcon(5, is_muted);
   
   setCodecMute(is_muted);
@@ -46,7 +46,7 @@ void setVolume(int16_t value)
 {
   // Update UI
   auto dbs = value - 100;// (int)(value * 100 - 127.5);
-  form.volume.setTextF("%ddb", dbs);
+  form.volume.SetTextF("%ddb", dbs);
 
   volume = value;
   if (!is_muted) {
@@ -56,6 +56,8 @@ void setVolume(int16_t value)
 
 void changeAudioInput()
 {
+  form.showMessage("DEMO");
+  // form.hideMessage();
   // inputs[selected_input]->end();
   // selected_input++;
 

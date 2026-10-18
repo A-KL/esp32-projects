@@ -1,64 +1,51 @@
-
 #include <stdio.h>
+
 #include <Color.h>
 #include <Canvas.h>
 
 #include "UIRect.h"
 #include "UIElement.h"
 
-UIElement::UIElement(const UIRect rect, const Color background, const Color border, int borderSize, UIElement* parent) :
-    _rect(rect), 
-    _backgroundColor(background), 
-    _borderColor(border), 
-    _borderSize(borderSize), 
-    _valid(false), 
-    _visible(true), 
+UIElement::UIElement(const UIRect rect, const Color background, const Color borderColor, int borderSize, UIElement* parent) :
+    _rect(rect),
+    _backgroundColor(background),
+    _borderColor(borderColor),
+    _borderSize(borderSize),
+    _updated(false),
+    _clean(true),
+    _visible(true),
     _parent(parent)
-{}
+{ }
 
 void UIElement::SetVisible(bool visible)
 {
-    if (_visible == visible) {
+    if (visible == _visible) {
         return;
     }
     _visible = visible;
 
     if (_visible) {
-        Invalidate();
+        Invalidate(true);
     } 
     else if (_parent != nullptr) {
-        _parent->Invalidate();
+        _parent->Invalidate(true);
     }
 }
 
 void UIElement::Update(Canvas<Color>& canvas)
 {
     if (IsValid()) {
-        return;
+       return;
     }
-
-    Draw(canvas);
-    _valid = true;
-}
-
-bool UIElement::Contains(const UIElement& other) const
-{
-    UIRect result;
-    return _rect.Diff(other._rect, result);
-}
-
-void UIElement::Clear(Canvas<Color>& canvas, bool draw)
-{
-    auto x = _rect.x;
-    auto y = _rect.y;
-
-    AbsolutePosition(x, y);
-    
-    canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _backgroundColor);
-    
-    if (draw) {
-        UIElement::Draw(canvas);
+    if (_clean) {
+       Clear(canvas);              // Background color fill
     }
+    Draw(canvas);                   // Update dynamic content
+    if (_clean) {
+       UIElement::Draw(canvas);    // Borders
+    }
+    _updated = true;
+    _clean = false;
 }
 
 void UIElement::Draw(Canvas<Color>& canvas)
@@ -73,6 +60,22 @@ void UIElement::Draw(Canvas<Color>& canvas)
             canvas.DrawRect(x+i, y+i, _rect.w - (i*2) - 1, _rect.h - (i*2) - 1, _borderColor);
         }
     }
+}
+
+void UIElement::Clear(Canvas<Color>& canvas) const
+{
+    auto x = _rect.x;
+    auto y = _rect.y;
+
+    AbsolutePosition(x, y);
+    
+    canvas.DrawFilledRect(x, y, _rect.w, _rect.h, _backgroundColor);
+}
+
+bool UIElement::Contains(const UIElement& other) const
+{
+    UIRect result;
+    return _rect.Diff(other._rect, result);
 }
 
 void UIElement::AbsolutePosition(int& x, int& y) const

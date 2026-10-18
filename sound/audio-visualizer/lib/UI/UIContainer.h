@@ -17,55 +17,55 @@ public:
 
 	void Add(UIElement &element)
 	{
-		element.setParent(this);
-
+		element.SetParent(this);
 		_children.push_back(&element);
 
-		Invalidate();
+		Invalidate(true);
 	}
 
 	void Remove(UIElement &element)
 	{
-		element.setParent(NULL);
-
+		element.SetParent(NULL);
 		_children.remove(&element);
 
-		Invalidate();
+		Invalidate(true);
 	}
 
-	 bool IsValid() const
-	 {
-	 	// for (const UIElement* element : _children) {
-	 	// 	if (!element->IsValid()) {
-	 	// 		return false;
-	 	// 	}
-	 	// }
+	virtual void Invalidate(bool clean = false) 
+	{
+		UIElement::Invalidate(clean);
 
-	 	return false;
-	 }
+		for (auto element : _children) {
+			element->Invalidate(clean);
+		}
+	}
+
+	virtual bool IsValid() const
+	{
+		if (!UIElement::IsValid()){
+			return false;
+		}
+
+		if (!IsVisible()) {
+			return true;
+		}
+
+		// for (const auto element : _children) {
+		// 	if (!element->IsValid()) {
+		// 		return false;
+		// 	}
+		// }
+		return false;
+	}
 
 protected:
 	void Draw(Canvas<Color>& canvas)
-	{		
-		if (_redraw) {
-			Clear(canvas);
-			_redraw = false;
-		}
-
-		// for (UIElement* a : _children) {
-		// 	if (!a->IsValid()) {
-		// 		for (UIElement* element : _children) {
-		// 	}
-
-		// }
-
-		for (UIElement* element : _children) {
-			if (!element->IsValid())
-				element->Update(canvas);
+	{
+		for (auto element : _children) {
+			element->Update(canvas);
 		}
 	}
 
 private:
 	std::list<UIElement*> _children;
-	bool _redraw = true;
 };

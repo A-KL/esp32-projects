@@ -86,7 +86,7 @@ protected:
 			}
 	
 			canvas.SpritePush(x, origin_y);
-			lgfx::delayMicroseconds(250);
+			lgfx::delayMicroseconds(250);// TODO??
 			x += _element_width;
 		}
 	}

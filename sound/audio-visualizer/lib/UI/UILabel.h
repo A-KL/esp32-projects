@@ -1,11 +1,12 @@
 #pragma once
 
-#include "UIElement.h"
 #include <sstream>
 #include <stdio.h>
 #include <iostream>
 #include <stdarg.h>
 #include <string.h>
+
+#include "UIElement.h"
 
 class UILabel : public UIElement
 {
@@ -14,25 +15,25 @@ public:
 
 	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize = 0);
 
-	inline void setText(const char* text)
+	inline void SetText(const char* text)
 	{		
 		if (text == _text) {
 			return;
 		}
 		_text = text;
-		Invalidate();
+		Invalidate(false);
 	}
 
-	inline void setInt(int value)
+	inline void SetInt(int value)
 	{		
 		std::stringstream ss;  
 		ss << value;  
 		ss >> _text;
 
-		Invalidate();
+		Invalidate(false);
 	}
 
-	inline void setTextF(const char* format, ...)
+	inline void SetTextF(const char* format, ...)
 	{		
 		va_list args;
 		va_start(args, format);
@@ -42,16 +43,16 @@ public:
 		vsnprintf(buffer, size, format, args);
 		va_end(args);
 		_text = buffer;
-		Invalidate();
+		Invalidate(false);
 	}
 
-	inline void setForeColor(const Color& color)
+	inline void SetForeColor(const Color& color)
 	{
 		if (color == _fcolor) {
 			return;
 		}
 		_fcolor = color;
-		Invalidate();
+		Invalidate(false);
 	}
 
 	friend std::ostream& operator<<(std::ostream& out, const UILabel& obj)

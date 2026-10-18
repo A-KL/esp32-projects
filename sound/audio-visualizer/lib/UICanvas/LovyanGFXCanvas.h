@@ -26,7 +26,7 @@ public:
 	{
 		if (!_display->init())
 		{
-			log_e("TFT ERROR");
+			log_e("TFT ERROR\n");
 			return false;
 		}
 
@@ -45,7 +45,7 @@ public:
 
 		_display->fillScreen((unsigned short)color);
 
-		log_i("TFT OK");
+		log_i("TFT OK\n");
 
 		return true;
 	}

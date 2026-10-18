@@ -98,7 +98,7 @@ void printMetaData(MetaDataType type, const char* str, int len)
   log_w("%s: %s", toStr(type), str);
 
   if (type == Title) {
-    form.track.setText(str);
+    form.track.SetText(str);
   }
 }
 
@@ -112,7 +112,7 @@ void setupAudio(const int mode = 0)
 #ifdef ARDUINO
   // Input: File or stream
   radio_in.select(1);
-  form.track.setText(radio_in.getTitle());
+  form.track.SetText(radio_in.getTitle());
 #else
   radio_in.begin();
 #endif

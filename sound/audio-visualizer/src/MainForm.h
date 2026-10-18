@@ -81,10 +81,22 @@ public:
         rightTextL({ 0, 181 + 15 + 3, 20, 15 }, "R"),
 
         leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
-        rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0")
+        rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
+
+        messageBox({40, 40, 250, 90}, Color::Gray),
+        messageBoxLabel({10, 10, 230, 20}, "!ERROR", Color::Green)
     { 
         header.Add(track);
-        header.Add(volume); 
+        header.Add(volume);
+
+        messageBox.SetBorderColor(Color::Green);
+        messageBox.SetBorderSize(1);
+        messageBox.SetVisible(false);
+        messageBoxLabel.SetBackgroundColor(Color::Gray);
+        messageBoxLabel.SetForeColor(Color::Green);
+
+        messageBox.Add(messageBoxLabel);
+        Add(messageBox);
         
         Add(header);
 
@@ -123,8 +135,21 @@ public:
 
         auto color = state ? icons_state_on[index] : icons_state_off[index];
 
-        icons[index].setForeColor(color);
-        icons[index].setBorderColor(color);
+        icons[index].SetForeColor(color);
+        icons[index].SetBorderColor(color);
+    }
+
+    void showMessage(const char* message) 
+    {
+        equalizer.SetVisible(false);
+        messageBoxLabel.SetText(message);
+        messageBox.SetVisible(true);
+    }
+
+    void hideMessage() 
+    {
+        messageBox.SetVisible(false);
+        equalizer.SetVisible(true);
     }
 
 private:
@@ -136,6 +161,9 @@ private:
 
     UILabel leftTextValue;
     UILabel rightTextValue;
+
+    UIContainer messageBox;
+    UILabel messageBoxLabel;
 
     UILabel icons[6] {
         {{ 00,                                         0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},

@@ -8,7 +8,6 @@ class UVProgress : public UIElement
 	public:
 		UVProgress(const UIRect& rect, unsigned short value = 0) :
 			UIElement(rect, {30, 30, 30, 0}),
-			_first(true),
 			_newValue(value),
 			_currentValue(0),
 			_activeColor(15, 185, 79, 0),
@@ -40,12 +39,6 @@ class UVProgress : public UIElement
 	protected:
 		void Draw(Canvas<Color>& canvas)
 		{
-			if (_first)
-			{
-				_first = false;
-				Clear(canvas);
-			}
-
 			auto origin_x = _rect.x;
 			auto origin_y = _rect.y;
 
@@ -68,8 +61,6 @@ class UVProgress : public UIElement
 		}
 
 	private:
-		bool _first;
-
 		const unsigned short _item_w = 3;
 		const unsigned short _item_fill_w = _item_w - 1;
 

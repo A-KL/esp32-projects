@@ -21,9 +21,9 @@ public:
 		_textColor(255, 255, 255)
 	{}
 
-	inline bool IsValid() const
+	bool IsValid() const
 	{
-		return _selected == _selectedNew && _focused == _focusedNew;
+		return UIContainer::IsValid() && _selected == _selectedNew && _focused == _focusedNew;
 	}
 
 	inline void SetFocused(unsigned short focused)

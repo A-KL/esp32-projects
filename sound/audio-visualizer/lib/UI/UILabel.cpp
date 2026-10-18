@@ -19,13 +19,11 @@ UILabel::UILabel(const UIRect& rect, const char* text, int fontIndex)
 UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize)
     : UIElement(rect, {0, 0, 0, 0}, borderColor, borderSize), _fcolor(foreColor), _fontIndex(0)
 {
-    setText(text);
+    SetText(text);
 }
 
 void UILabel::Draw(Canvas<Color>& canvas)
 {
-    Clear(canvas, false);
-
     if (_text.c_str())
     {
         auto origin_x = _rect.x;
@@ -36,6 +34,4 @@ void UILabel::Draw(Canvas<Color>& canvas)
         canvas.SetFont(_fontIndex, 1);
         canvas.DrawText(origin_x, origin_y, _rect.w, _rect.h, _text.c_str(), _fcolor, UIElement::_backgroundColor);
     }
-
-    UIElement::Draw(canvas);
 }

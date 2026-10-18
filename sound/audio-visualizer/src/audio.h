@@ -5,9 +5,10 @@
 #include "AudioTools/FFT/AudioRealFFT.h"
 #include "RadioStation.h"
 #include "bands.h"
-#include "codec.h"
-
 #include "VuOutput.h"
+#if __has_include(<codec.h>)
+  #include "codec.h"
+#endif
 
 //                                        I2SStream-In                       |-> AudioRealFFT
 //                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> PortAudioStream [I2SStream]
@@ -106,10 +107,11 @@ void printMetaData(MetaDataType type, const char* str, int len)
 // 1 = i2s
 void setupAudio(const int mode = 0)
 {
+#ifdef ARDUINO
+#if __has_include(<codec.h>)
   // Hardware init
   codec_init();
-
-#ifdef ARDUINO
+#endif
   // Input: File or stream
   radio_in.select(1);
   form.track.SetText(radio_in.getTitle());

@@ -5,8 +5,7 @@ static int16_t volume = 50;
 
 void setCodecVolume(float value)
 {
-#if defined(USE_CODEC_VOLUME) && defined(ARDUINO)
-  #include "codec.h"
+#if defined(ARDUINO) && __has_include(<codec.h>)
   codec_volume_percentage(value);
 #else 
   volume_out.setVolume(value/100.0);
@@ -58,6 +57,7 @@ void changeAudioInput()
 {
   form.showMessage("DEMO");
   // form.hideMessage();
+
   // inputs[selected_input]->end();
   // selected_input++;
 

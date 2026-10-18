@@ -80,7 +80,7 @@ public:
         leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
         rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
 
-        messageBox({40, 40, 250, 90}, Color::Gray),
+        messageBox({40, 40, 250, 90}, Color::DarkGray),
         messageBoxLabel({10, 10, 230, 20}, "!ERROR", Color::Green)
     { 
         header.Add(track);

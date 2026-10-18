@@ -55,8 +55,14 @@ void setVolume(int16_t value)
 
 void changeAudioInput()
 {
-  form.showMessage("DEMO");
-  // form.hideMessage();
+  static bool mb_visible = false;
+  
+  if (mb_visible){
+    form.hideMessage(); 
+  } else {
+    form.showMessage("DEMO");
+  }
+  mb_visible = !mb_visible;
 
   // inputs[selected_input]->end();
   // selected_input++;

@@ -19,17 +19,17 @@ class UVProgress : public UIElement
 			_threshold(_maxValue * 0.95)
 		{}
 
-		virtual unsigned short value() const
+		virtual inline unsigned short value() const
 		{
 			return _currentValue;
 		}
 
-		virtual bool IsValid() const
+		virtual inline bool IsValid() const
 		{
 			return _newValue == _currentValue && UIElement::IsValid();
 		}
 
-		virtual void setValue(unsigned short new_value)
+		virtual inline void setValue(unsigned short new_value)
 		{
 			_newValue = new_value > _maxValue ? _maxValue : new_value;
 
@@ -44,9 +44,9 @@ class UVProgress : public UIElement
 
 			AbsolutePosition(origin_x, origin_y);
 
-			if (_currentValue < _newValue)
+			if (_currentValue < _newValue || IsClean())
 			{
-				for (auto index = _currentValue; index < _newValue; index++)
+				for (auto index = IsClean() ? _minValue : _currentValue; index < _newValue; index++)
 				{
 					auto color = index >= _threshold ? _activeThresholdColor : index >= _warning ? _activeWarningColor : _activeColor;
 					canvas.DrawFilledRect(origin_x + index * _item_w, origin_y, _item_fill_w, _rect.h, color);
@@ -54,7 +54,7 @@ class UVProgress : public UIElement
 			}
 			else
 			{
-				canvas.DrawFilledRect(origin_x + _newValue * _item_w, origin_y, (_currentValue - _newValue)*_item_w, _rect.h, _backgroundColor);
+				canvas.DrawFilledRect(origin_x + _newValue * _item_w, origin_y, (_currentValue - _newValue) * _item_w, _rect.h, _backgroundColor);
 			}
 
 			_currentValue = _newValue;

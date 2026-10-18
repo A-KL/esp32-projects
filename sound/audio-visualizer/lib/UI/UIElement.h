@@ -74,6 +74,10 @@ protected:
 	void AbsolutePosition(int& x, int& y) const;
 	bool Contains(const UIElement& other) const;
 
+	inline bool IsClean() const {
+		return _clean;
+	}
+
 	const UIRect _rect;
 	Color _backgroundColor;
 	Color _borderColor;

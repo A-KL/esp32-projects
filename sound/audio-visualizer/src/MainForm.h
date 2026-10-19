@@ -80,19 +80,23 @@ public:
         leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
         rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
 
-        messageBox({40, 40, 250, 90}, Color::DarkGray),
-        messageBoxLabel({10, 10, 230, 20}, "!ERROR", Color::Green)
+        messageBox({40, 40, 250, 90}, Color(39, 46, 26)),
+        messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(39, 46, 26)),
+        messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(39, 46, 26))
     { 
         header.Add(track);
         header.Add(volume);
 
-        messageBox.SetBorderColor(Color::Green);
+        messageBox.SetBorderColor(Color(151, 171, 92));
         messageBox.SetBorderSize(1);
         messageBox.SetVisible(false);
-        messageBoxLabel.SetBackgroundColor(Color::Gray);
-        messageBoxLabel.SetForeColor(Color::Green);
 
-        messageBox.Add(messageBoxLabel);
+        // messageBoxTitle.SetBackgroundColor(Color::Gray);
+        messageBoxTitle.SetForeColor(Color(120, 130, 100)); // Gray
+        messageBoxText.SetForeColor(Color(243, 243, 238)); // White
+
+        messageBox.Add(messageBoxTitle);
+        messageBox.Add(messageBoxText);
         Add(messageBox);
         
         Add(header);
@@ -138,7 +142,7 @@ public:
     void showMessage(const char* message) 
     {
         equalizer.SetVisible(false);
-        messageBoxLabel.SetText(message);
+        // messageBoxText.SetText(message);
         messageBox.SetVisible(true);
     }
 
@@ -159,7 +163,8 @@ private:
     UILabel rightTextValue;
 
     UIContainer messageBox;
-    UILabel messageBoxLabel;
+    UILabel messageBoxTitle;
+    UILabel messageBoxText;
 
     UILabel icons[6] {
         {{ 00,                                         0, 50, 18 }, "COAX", Color::Gray, Color::Gray, 2},

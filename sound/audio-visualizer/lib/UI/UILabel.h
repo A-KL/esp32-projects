@@ -15,6 +15,8 @@ public:
 
 	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize = 0);
 
+	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, const Color& backgroundColor, int borderSize = 0);
+
 	inline void SetText(const char* text)
 	{		
 		if (text == _text) {

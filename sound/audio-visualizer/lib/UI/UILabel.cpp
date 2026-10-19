@@ -22,6 +22,12 @@ UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, c
     SetText(text);
 }
 
+UILabel::UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, const Color& backgroundColor, int borderSize)
+    : UIElement(rect, backgroundColor, borderColor, borderSize), _fcolor(foreColor), _fontIndex(0)
+{
+    SetText(text);
+}
+
 void UILabel::Draw(Canvas<Color>& canvas)
 {
     if (_text.c_str())

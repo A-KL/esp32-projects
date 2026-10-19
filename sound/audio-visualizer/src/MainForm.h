@@ -81,8 +81,8 @@ public:
         rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
 
         messageBox({40, 40, 250, 90}, Color(39, 46, 26)),
-        messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(39, 46, 26)),
-        messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(39, 46, 26))
+        messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(120, 130, 100) /* Gray */, {0,0,0,0}, Color(39, 46, 26)),
+        messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(243, 243, 238) /* White */, {0,0,0,0}, Color(39, 46, 26))
     { 
         header.Add(track);
         header.Add(volume);
@@ -91,16 +91,11 @@ public:
         messageBox.SetBorderSize(1);
         messageBox.SetVisible(false);
 
-        // messageBoxTitle.SetBackgroundColor(Color::Gray);
-        messageBoxTitle.SetForeColor(Color(120, 130, 100)); // Gray
-        messageBoxText.SetForeColor(Color(243, 243, 238)); // White
-
         messageBox.Add(messageBoxTitle);
         messageBox.Add(messageBoxText);
         Add(messageBox);
         
         Add(header);
-
         Add(equalizer);
 
         Add(leftTextL);

@@ -82,7 +82,7 @@ public:
 
         messageBox({40, 40, 250, 90}, Color(39, 46, 26)),
         messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(120, 130, 100) /* Gray */, {0,0,0,0}, Color(39, 46, 26)),
-        messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(243, 243, 238) /* White */, {0,0,0,0}, Color(39, 46, 26))
+        messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(243, 243, 238) /* White */, Color::Black, Color(39, 46, 26), 0, 0, 10)
     { 
         header.Add(track);
         header.Add(volume);

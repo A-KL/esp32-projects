@@ -12,6 +12,15 @@
 #include <Color.h>
 #include <Canvas.h>
 
+#if __has_include(<OpenFontRender.h>)
+	#include "TrueType/NotoSans_Bold.h"
+	#include "OpenFontRender.h"
+	#define OPEN_FONT_RENDERER
+	OpenFontRender ofr;
+#else
+	#include "VLW/NotoSansBold15.h"
+#endif
+
 //#include "BaseCanvas.h"
 // template<typename TDisplay>
 // class LovyanGFXCanvas : public BaseCanvas<TDisplay>
@@ -46,6 +55,18 @@ public:
 		_display->fillScreen((unsigned short)color);
 
 		log_i("TFT OK\n");
+
+	#ifdef OPEN_FONT_RENDERER
+		ofr.setDrawer(*_display);
+
+		if (ofr.loadFont(NotoSans_Bold, sizeof(NotoSans_Bold))) {
+			log_e("Initialise error\n");
+			return false;
+  	}
+		log_i("OpenFontRenderer OK\n");
+	#else
+		_display->loadFont(NotoSansBold15);
+	#endif
 
 		return true;
 	}
@@ -114,14 +135,24 @@ public:
 	}
 
 	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& background = Color::Black)
-   	{
+	{
+	#ifdef OPEN_FONT_RENDERER
+		ofr.setFontSize(_fontSize);
+		ofr.setCursor(x + w/2, y-2);
+		ofr.setFontColor((unsigned short)color, (unsigned short)background);
+		ofr.cprintf(text);
+	#else
 		_display->setTextColor((unsigned short)color, (unsigned short)background);
-		//_display->drawCenterString(text, x + w/2, y + (h - _display->fontHeight())/2, 0 );
 		_display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
-	 }
+	#endif
+	}
 
 	 void SetFont(int index, unsigned char size)
-	 { }
+	 {
+		#ifdef OPEN_FONT_RENDERER
+		_fontSize = size;
+		#endif
+	 }
 
 	inline int Height() const
 	{
@@ -156,7 +187,9 @@ public:
 private:
 	TFT_eSPI* _display;
 	TFT_eSprite _sprite;
-
+#ifdef OPEN_FONT_RENDERER
+	unsigned char _fontSize = 15;
+#endif
 	Color _background = Color::Black;
 };
 

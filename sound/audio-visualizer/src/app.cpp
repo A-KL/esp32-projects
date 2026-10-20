@@ -18,7 +18,7 @@ static TFT_Canvas canvas(&tft);
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
 #else
-   #include "NotoSansBold15.h"
+  //  #include "NotoSansBold15.h"
 #endif
 
 void setup() 
@@ -31,7 +31,8 @@ void setup()
   #endif
 
   canvas.Init(Color::White);
-  canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
+  // canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
+  // canvas.LoadFont(NotoSans_Bold10pt7bBitmaps, sizeof(NotoSans_Bold10pt7bBitmaps));
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   canvas.DrawText(0, 220, 320, 20, "Connecting...", Color::Black, Color::White);
   

@@ -11,11 +11,25 @@
 class UILabel : public UIElement
 {
 public:
-	UILabel(const UIRect& rect, const char* text, int fontIndex = 0);
+	UILabel(
+		const UIRect& rect, 
+		const char* text, 
+		const Color& foreColor, 
+		const Color& borderColor, 
+		const Color& backgroundColor, 
+		int borderSize = 0, int fontIndex = 0, int fontSize = 15);
 
-	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, int borderSize = 0);
+	UILabel(
+		const UIRect& rect, 
+		const char* text, 
+		const Color& foreColor,
+		const Color& borderColor,
+		int borderSize = 0, int fontIndex = 0, int fontSize = 15);
 
-	UILabel(const UIRect& rect, const char* text, const Color& foreColor, const Color& borderColor, const Color& backgroundColor, int borderSize = 0);
+	UILabel(
+		const UIRect& rect, 
+		const char* text, 
+		int fontIndex = 0, int fontSize = 15);
 
 	inline void SetText(const char* text)
 	{		
@@ -69,5 +83,6 @@ protected:
 private:
 	Color _fcolor;
 	std::string _text;
-	int _fontIndex = 0;
+	int _fontSize;
+	int _fontIndex;
 };

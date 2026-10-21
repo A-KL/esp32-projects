@@ -107,8 +107,7 @@ void loopControls()
 
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    // changeAudioInput();
-    // log_e("encoder_left");
+    changeAudioInput();
 	}
 
   /* Volume control */

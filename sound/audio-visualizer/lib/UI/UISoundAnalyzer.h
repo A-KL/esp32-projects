@@ -9,9 +9,7 @@ class UISoundAnalyzer : public UIElement
 public:
 	UISoundAnalyzer(const UIRect& rect) : UIElement(rect)
 	{ 
-		for (int j = 0; j < count(); j++){
-			_channels[j] = 0;
-		}
+		ClearBands();
 	}
 
 	inline int count() const
@@ -26,7 +24,11 @@ public:
 
 	bool setBand(uint8_t channel, uint8_t value)
 	{
-		if (channel >= TChannels)
+		if (!_enabled) 
+		{
+			return true;
+		}
+		if (channel >= TChannels) 
 		{
 			return false;
 		}
@@ -45,7 +47,27 @@ public:
 		return true;
 	}
 
+	inline void SetEnabled(bool enable) 
+	{
+		if (_enabled == enable) 
+		{
+			return;
+		}
+		_enabled = enable;
+
+		if (!_enabled) {
+			ClearBands();
+			Invalidate();
+		}
+	}
+
 protected:
+	void ClearBands()
+	{
+		for (int j = 0; j < count(); j++){
+			_channels[j] = 0;
+		}
+	}
 	void Draw(Canvas<Color>& canvas)
 	{
 		auto origin_x = _rect.x;
@@ -101,6 +123,7 @@ private:
 	const Color _colorBlack{ 0, 0, 0, 0 };
 
 	uint8_t _channels[TChannels];
+	bool _enabled = true;
 
 	const uint8_t _vertical_elements_count = 10 * 6;
 	const uint8_t _element_padding_x = 3;

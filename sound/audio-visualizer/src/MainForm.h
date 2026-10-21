@@ -93,7 +93,6 @@ public:
 
         messageBox.Add(messageBoxTitle);
         messageBox.Add(messageBoxText);
-        Add(messageBox);
         
         Add(header);
         Add(equalizer);
@@ -112,6 +111,8 @@ public:
         }
         
         Add(footer);
+
+        Add(messageBox);
     }
 
     UILabel volume;
@@ -136,15 +137,14 @@ public:
 
     void showMessage(const char* message) 
     {
-        equalizer.SetVisible(false);
-        // messageBoxText.SetText(message);
+        equalizer.bands.SetEnabled(false);
         messageBox.SetVisible(true);
     }
 
     void hideMessage() 
-    {
+    {    
         messageBox.SetVisible(false);
-        equalizer.SetVisible(true);
+        equalizer.bands.SetEnabled(true);
     }
 
 private:

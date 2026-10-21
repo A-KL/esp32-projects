@@ -15,7 +15,7 @@
 #if __has_include(<OpenFontRender.h>)
 	#include "TrueType/NotoSans_Bold.h"
 	#include "OpenFontRender.h"
-	#define OPEN_FONT_RENDERER
+	#define OPEN_FONT_RENDERER NotoSans_Bold
 	OpenFontRender ofr;
 #else
 	#include "VLW/NotoSansBold15.h"
@@ -59,11 +59,11 @@ public:
 	#ifdef OPEN_FONT_RENDERER
 		ofr.setDrawer(*_display);
 
-		if (ofr.loadFont(NotoSans_Bold, sizeof(NotoSans_Bold))) {
-			log_e("Initialise error\n");
+		if (ofr.loadFont(OPEN_FONT_RENDERER, sizeof(OPEN_FONT_RENDERER))) {
+			log_e("Open Font Renderer Error\n");
 			return false;
   	}
-		log_i("OpenFontRenderer OK\n");
+		log_i("Open Font Renderer OK\n");
 	#else
 		_display->loadFont(NotoSansBold15);
 	#endif

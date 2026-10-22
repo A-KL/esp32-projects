@@ -3,6 +3,10 @@
 #include <iostream>
 #include <string>
 
+#include <chrono>
+#include <iostream>
+#include <thread>
+
 #define _min(a,b) ((a)<(b)?(a):(b))  
 #define _max(a,b) ((a)>(b)?(a):(b))
 #define _abs(x) ((x)>0?(x):-(x))  // abs() comes from STL
@@ -12,9 +16,26 @@
 #define degrees(rad) ((rad)*RAD_TO_DEG)
 #define sq(x) ((x)*(x))
 
-void log_e(const char* text)
+// void log_e(const char* text)
+// {
+//   std::cout << text << std::endl;
+// }
+
+// #if defined(ARDUINO_ARCH_ESP32)
+#define log_e(format, ...)     printf(format, ##__VA_ARGS__)
+#define log_w(format, ...)     printf(format, ##__VA_ARGS__)
+#define log_i(format, ...)     printf(format, ##__VA_ARGS__)
+#define log_d(format, ...)     printf(format, ##__VA_ARGS__)
+// #endif
+
+void delay(uint32_t ms)
 {
-  std::cout << text << std::endl;
+  std::this_thread::sleep_for(std::chrono::microseconds(ms));
+}
+
+void delayMicroseconds(uint32_t us)
+{
+  std::this_thread::sleep_for(std::chrono::nanoseconds(us));
 }
 
 class String

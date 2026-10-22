@@ -14,8 +14,6 @@
 #if __has_include(<OpenFontRender.h>)
 	#include "OpenFontRender.h"
 	OpenFontRender ofr;
-#else
-	#include "VLW/NotoSansBold15.h"
 #endif
 
 template<typename TColor>
@@ -23,6 +21,9 @@ class LovyanGFXCanvas : public Canvas<TColor>
 {
 public:
 	LovyanGFXCanvas(TFT_eSPI* display) : _display(display), _sprite(display)
+	{ }
+
+	LovyanGFXCanvas(TFT_eSPI& display) : _display(&display), _sprite(&display)
 	{ }
 
 	bool Init(const TColor& color = TColor::Black)
@@ -42,10 +43,13 @@ public:
 		{
 			_display->setEpdMode(epd_mode_t::epd_fastest);
 		}
+
+	#ifndef TFT_ROTATION
 		if (_display->width() < _display->height())
 		{
 			_display->setRotation(_display->getRotation() ^ 1);
 		}
+	#endif
 
 		_display->fillScreen((unsigned short)color);
 

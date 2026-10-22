@@ -1,14 +1,14 @@
 #include <Lcd.h>
 #include <Color.h>
 #include <Canvas.h>
+#include <LcdCanvas.h>
 
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
-#include "UICanvas.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
-static TFT_Canvas canvas(&tft);
+static LcdCanvas<Color> canvas(tft);
 
 #include "audio.h"
 #include "audio_volume.h"
@@ -16,9 +16,9 @@ static TFT_Canvas canvas(&tft);
 #include "controls.h"
 
 // #if (TFT_HEIGHT > 320)
-//     #include "Orbitron_Bold_12.h"
+//     #include "VLW/Orbitron_Bold_12.h"
 // #else
-//    #include "NotoSansBold15.h"
+//    	#include "VLW/NotoSansBold15.h"
 // #endif
 #include "TrueType/NotoSans_Bold.h"
 

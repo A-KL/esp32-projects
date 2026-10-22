@@ -1,31 +1,13 @@
-// #include <Arduino.h>
-// #include <Ramp.h> 
+#include <Arduino.h>
+
 #include <Lcd.h>
 #include <Color.h>
-#include "LovyanGFXCanvas.h"
+#include <LcdCanvas.h>
+// #include <Ramp.h> 
 
-#ifdef LGFX_AUTODETECT
-	#include <LovyanGFX.h>
-	#include <LGFX_AUTODETECT.hpp>
-#else
-	#include "LGFX_ESP32_LCD.hpp"
-	#include <LGFX_TFT_eSPI.h>
-#endif
-// #else
-// 	#include <TFT_eSPI.h>
-// 	#include <TFT_eSPI_GFX.h>
-// 	using LGFX = TFT_eSPI_GFX;
-// #endif
+#include "ui.hpp"
 
-// #include <motor_output.h>
-
-#if defined ( SDL_h_ )
-static LGFX lcd (TFT_WIDTH*2, TFT_HEIGHT*2, 2 );
-#else
-static LGFX lcd;
-#endif
-
-LovyanGFXCanvas<Color> canvas(lcd);
+LcdCanvas<Color> canvas(tft);
 
 #ifndef MOTOR_INPUT_DEAD_ZONE
 #define MOTOR_INPUT_DEAD_ZONE 10
@@ -106,14 +88,15 @@ static void on_ps3_input(int lx, int ly, int rx, int ry, int l2, int r2, int tri
 
 void setup() 
 {
-  Serial.begin(115200);
+  // Serial.begin(115200);
 
   delay(2000);
 
   canvas.Init();
   canvas.Clear();
 
-  canvas.DrawFilledRect(10, 10, 44, 44, Color::White);
+  ui_draw_background(tft);
+  ui_draw_values(tft);
 
   canvas.Update();
 

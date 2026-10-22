@@ -54,10 +54,6 @@ class AGFXCanvas : public BaseCanvas<TDisplay>
       //BaseCanvas<TDisplay>::_display->setFont(array);
     }
 
-    inline void Update() {
-      //_display->display();
-    }
-
     /* Sprite */
 
     void SpriteBegin(int w, int h, const Color& color)

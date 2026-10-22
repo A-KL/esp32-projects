@@ -9,29 +9,23 @@
 	#define log_d(format, ...)     printf(format, ##__VA_ARGS__)
 #endif
 
-#include <Color.h>
 #include <Canvas.h>
 
 #if __has_include(<OpenFontRender.h>)
-	#include "TrueType/NotoSans_Bold.h"
 	#include "OpenFontRender.h"
-	#define OPEN_FONT_RENDERER NotoSans_Bold
 	OpenFontRender ofr;
 #else
 	#include "VLW/NotoSansBold15.h"
 #endif
 
-//#include "BaseCanvas.h"
-// template<typename TDisplay>
-// class LovyanGFXCanvas : public BaseCanvas<TDisplay>
-
-class LovyanGFXCanvas : public Canvas<Color>
+template<typename TColor>
+class LovyanGFXCanvas : public Canvas<TColor>
 {
 public:
 	LovyanGFXCanvas(TFT_eSPI* display) : _display(display), _sprite(display)
 	{ }
 
-	bool Init(const Color& color = Color::Black)
+	bool Init(const TColor& color = TColor::Black)
 	{
 		if (!_display->init())
 		{
@@ -39,9 +33,10 @@ public:
 			return false;
 		}
 
-		_display->setSwapBytes(true);
-		_display->setColorDepth(16);
+		// _display->setSwapBytes(true);
+		// _display->setColorDepth(16);
 		_display->initDMA();
+		_display->startWrite();
 	
 		if (_display->isEPD())
 		{
@@ -56,27 +51,14 @@ public:
 
 		log_i("TFT OK\n");
 
-	#ifdef OPEN_FONT_RENDERER
-		ofr.setDrawer(*_display);
-
-		if (ofr.loadFont(OPEN_FONT_RENDERER, sizeof(OPEN_FONT_RENDERER))) {
-			log_e("Open Font Renderer Error\n");
-			return false;
-  	}
-		log_i("Open Font Renderer OK\n");
-	#else
-		_display->loadFont(NotoSansBold15);
-	#endif
+		#ifdef OPEN_FONT_RENDERER
+			ofr.setDrawer(*_display);
+		#endif
 
 		return true;
 	}
 
-	void LoadFont(const uint8_t* array, const size_t size)
-	{
-		_display->loadFont(array);
-	}
-
-	void SpriteBegin(int w, int h, const Color& color)
+	void SpriteBegin(int w, int h, const TColor& color)
 	{
 		_sprite.createSprite(w, h);
 		//_sprite.setColorDepth(16);
@@ -90,7 +72,7 @@ public:
 			_sprite.pushSprite(x, y);
 	}
 
-	void SpriteDrawLine(int x0, int y0, int x1, int y1, const Color& color)
+	void SpriteDrawLine(int x0, int y0, int x1, int y1, const TColor& color)
 	{
 		if (y0 == y1) {
 			_sprite.drawFastHLine(x0, y0, x1 - x0, (unsigned short)color);
@@ -106,7 +88,7 @@ public:
 		_sprite.deleteSprite();
 	}
 
-	void DrawLine(int x0, int y0, int x1, int y1, const Color& color)
+	void DrawLine(int x0, int y0, int x1, int y1, const TColor& color)
 	{
 		if (y0 == y1) {
 			_display->drawFastHLine(x0, y0, x1 - x0, (unsigned short)color);
@@ -117,12 +99,12 @@ public:
 		}
 	}
 
-	void DrawFilledRect(int x0, int y0, int w, int h, const Color& color)
+	void DrawFilledRect(int x0, int y0, int w, int h, const TColor& color)
 	{
 		_display->fillRect(x0, y0, w, h, (unsigned short)color);
 	}
 
-	void DrawRect(int x0, int y0, int w, int h, const Color& color)
+	void DrawRect(int x0, int y0, int w, int h, const TColor& color)
 	{
 		_display->drawRect(x0, y0, w, h, (unsigned short)color);
 	}
@@ -134,7 +116,7 @@ public:
 		_display->setSwapBytes(false);
 	}
 
-	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& background = Color::Black)
+	void DrawText(int x, int y, int w, int h, const char* text, const TColor& color, const TColor& background = TColor::Black)
 	{
 	#ifdef OPEN_FONT_RENDERER
 		ofr.setFontSize(_fontSize);
@@ -147,12 +129,26 @@ public:
 	#endif
 	}
 
-	 void SetFont(int index, unsigned char size)
-	 {
+	void LoadFont(const uint8_t* array, const size_t size)
+	{
+		#if defined(OPEN_FONT_RENDERER)
+			if (ofr.loadFont(array, size)) {
+				log_e("Open Font Loaded: Error\n");
+				return;
+			}
+			log_i("Open Font Loaded: OK\n");
+		#else
+			_display->loadFont(array);
+			//_display->loadFont(NotoSansBold15);
+		#endif
+	}
+
+	void SetFont(int index, unsigned char size)
+	{
 		#ifdef OPEN_FONT_RENDERER
 		_fontSize = size;
 		#endif
-	 }
+	}
 
 	inline int Height() const
 	{
@@ -169,7 +165,7 @@ public:
 		return 16;
 	}
 
-	inline void Clear(const Color& color)
+	inline void Clear(const TColor& color)
 	{
 		_display->fillScreen((unsigned short)color);
 	}
@@ -181,7 +177,8 @@ public:
 
 	inline void Update()
 	{
-		//_display->display();
+		_display->endWrite();
+		_display->display();
 	}
 
 private:
@@ -190,6 +187,6 @@ private:
 #ifdef OPEN_FONT_RENDERER
 	unsigned char _fontSize = 15;
 #endif
-	Color _background = Color::Black;
+	TColor _background = TColor::Black;
 };
 

@@ -13,8 +13,8 @@
 const char* ps_controller_mac = "b8:27:eb:df:b3:ff";
 
 /* SBUS */
-const uint8_t sbus_rx_tx_pins[] = { 16, 17 };
-const auto sbus_serial = &Serial1;
+const char sbus_rx_tx_pins[] = { 16, 17 };
+// const auto sbus_serial = &Serial1;
 
 /* Motors */
 // const uint8_t motor_dir [] = { 25, 26 };

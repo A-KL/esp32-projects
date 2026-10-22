@@ -1,7 +1,7 @@
 #include <Lcd.h>
+#include <Color.h>
+#include <Canvas.h>
 
-#include "Color.h"
-#include "Canvas.h"
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
@@ -15,11 +15,12 @@ static TFT_Canvas canvas(&tft);
 #include "concurrent.h"
 #include "controls.h"
 
-#if (TFT_HEIGHT > 320)
-    #include "Orbitron_Bold_12.h"
-#else
-  //  #include "NotoSansBold15.h"
-#endif
+// #if (TFT_HEIGHT > 320)
+//     #include "Orbitron_Bold_12.h"
+// #else
+//    #include "NotoSansBold15.h"
+// #endif
+#include "TrueType/NotoSans_Bold.h"
 
 void setup() 
 {
@@ -32,7 +33,8 @@ void setup()
 
   canvas.Init(Color::White);
   // canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
-  // canvas.LoadFont(NotoSans_Bold10pt7bBitmaps, sizeof(NotoSans_Bold10pt7bBitmaps));
+  canvas.LoadFont(NotoSans_Bold, sizeof(NotoSans_Bold));
+
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
   canvas.DrawText(0, 220, 320, 20, "Connecting...", Color::Black, Color::White);
   

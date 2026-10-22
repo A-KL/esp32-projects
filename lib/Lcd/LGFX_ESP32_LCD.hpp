@@ -56,7 +56,9 @@ class LGFX : public lgfx::LGFX_Device
 //lgfx::Panel_ILI9488     _panel_instance;
 //lgfx::Panel_IT8951      _panel_instance;
 //lgfx::Panel_RA8875      _panel_instance;
-//lgfx::Panel_SH110x      _panel_instance; // SH1106, SH1107
+#if defined (SH1106_DRIVER) or defined (SH1107_DRIVER)
+  lgfx::Panel_SH110x      _panel_instance; // SH1106, SH1107
+#endif
 //lgfx::Panel_SSD1306     _panel_instance;
 //lgfx::Panel_SSD1327     _panel_instance;
 //lgfx::Panel_SSD1331     _panel_instance;
@@ -67,15 +69,17 @@ class LGFX : public lgfx::LGFX_Device
 #ifdef ST7789_DRIVER
   lgfx::Panel_ST7789      _panel_instance;
 #endif
-//lgfx::Panel_ST7796      _panel_instance;
+#ifdef ST7796_DRIVER
+  lgfx::Panel_ST7796      _panel_instance;
+#endif
 
 // Prepare an instance that matches the type of bus that connects the panels.
-#ifndef TFT_PARALLEL_8_BIT
-  lgfx::Bus_SPI       _bus_instance;   // SPI bus instance 
-#endif
-//lgfx::Bus_I2C       _bus_instance;   // I2C bus instance (ESP32 only)
-#ifdef TFT_PARALLEL_8_BIT
+#if defined (TFT_I2C_ADDR)
+  lgfx::Bus_I2C       _bus_instance;   // I2C bus instance (ESP32 only)
+#elif defined(TFT_D0)
   lgfx::Bus_Parallel8 _bus_instance;   // 8-bit parallel bus instance (ESP32 only)
+#else
+  lgfx::Bus_SPI       _bus_instance;   // SPI bus instance 
 #endif
 
 // Prepare an instance if backlight control is possible.  (remove if not needed)
@@ -100,11 +104,12 @@ public:
   // If you change the class name, specify the same name for the constructor.
   LGFX(void)
   {
-    { // Configure bus control settings.
-
+    { 
+      // Configure bus control settings.
       auto cfg = _bus_instance.config();    // Get a structure for bus settings.
 
-      // SPI bus settings 
+    // SPI bus settings 
+    #if defined(SPI_BUS)
       // VSPI_HOST        
       // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
       // * Due to the ESP-IDF version upgrade, VSPI_HOST and HSPI_HOST descriptions are deprecated,
@@ -141,27 +146,30 @@ public:
       // When using the same SPI bus as the SD card, be sure to set MISO without omitting it.
 //
 // Setting up the I2C bus
-      //cfg.i2c_port    = 0;          // Select I2C port to use (0 or 1)
-      //cfg.freq_write  = 400000;     // Clock Speed when sending
-      //cfg.freq_read   = 400000;     // Clock Speed when receiving
-      //cfg.pin_sda     = 21;         // SDA Pin number
-      //cfg.pin_scl     = 22;         // SCL Pin nu,ber
-      //cfg.i2c_addr    = 0x3C;       // I2C device address
+    #elif defined(I2C_BUS)
+      cfg.i2c_port    = 0;            // Select I2C port to use (0 or 1)
+      cfg.freq_write  = 400000;       // Clock Speed when sending
+      cfg.freq_read   = 400000;       // Clock Speed when receiving
+      cfg.pin_sda     = I2C_SDA;      // SDA Pin number
+      cfg.pin_scl     = I2C_SCL;      // SCL Pin nu,ber
+      cfg.i2c_addr    = TFT_I2C_ADDR; // I2C device address
 //
 // Set 8-bit parallel bus
-      //cfg.i2s_port = I2S_NUM_0;     // Select I2S port to use (I2S_NUM_0 or I2S_NUM_1) (Use ESP32 I2S LCD mode)
-      //cfg.freq_write = 20000000;    // transmit clock (maximum 20MHz, rounded to 80MHz divided by an integer)
-      //cfg.pin_wr =  4;              // WR
-      //cfg.pin_rd =  2;              // RD
-      //cfg.pin_rs = 15;              // RS(D/C)
-      //cfg.pin_d0 = 12;              // D0
-      //cfg.pin_d1 = 13;              // D1
-      //cfg.pin_d2 = 26;              // D2
-      //cfg.pin_d3 = 25;              // D3
-      //cfg.pin_d4 = 17;              // D4
-      //cfg.pin_d5 = 16;              // D5
-      //cfg.pin_d6 = 27;              // D6
-      //cfg.pin_d7 = 14;              // D7
+    #elif defined(TFT_PARALLEL_8_BIT) || defined (TFT_D0)
+      cfg.i2s_port = I2S_NUM_0;     // Select I2S port to use (I2S_NUM_0 or I2S_NUM_1) (Use ESP32 I2S LCD mode)
+      cfg.freq_write = 20000000;    // transmit clock (maximum 20MHz, rounded to 80MHz divided by an integer)
+      cfg.pin_wr = TFT_WR;          // WR
+      cfg.pin_rd = TFT_RD;          // RD
+      cfg.pin_rs = TFT_DC;          // RS(D/C)
+      cfg.pin_d0 = TFT_D0;          // D0
+      cfg.pin_d1 = TFT_D1;          // D1
+      cfg.pin_d2 = TFT_D2;          // D2
+      cfg.pin_d3 = TFT_D3;          // D3
+      cfg.pin_d4 = TFT_D4;          // D4
+      cfg.pin_d5 = TFT_D5;          // D5
+      cfg.pin_d6 = TFT_D6;          // D6
+      cfg.pin_d7 = TFT_D7;          // D7
+    #endif
 //
       _bus_instance.config(cfg);               // Reflect the setting value to the bus.
       _panel_instance.setBus(&_bus_instance);  // Sets the bus to the panel.
@@ -170,6 +178,7 @@ public:
 
       auto cfg = _panel_instance.config(); // Get the structure for display panel settings.
 
+    #if defined(SPI_BUS)
       cfg.pin_cs           = TFT_CS;          // CS    (-1 = disable)
       cfg.pin_rst          = TFT_RST;         // RST   (-1 = disable)
       cfg.pin_busy         =      -1;         // BUSY  (-1 = disable)
@@ -193,6 +202,21 @@ public:
       // Please set the following only when the display shifts with a driver with a variable number of pixels such as ST7735 or ILI9163.
       // cfg.memory_width     =   240;  // Maximum width supported by the driver IC
       // cfg.memory_height    =   320;  // Maximum height supported by the driver IC
+
+    #elif defined(I2C_BUS)
+      cfg.pin_cs          = -1;           // CS    (-1 = disable)
+      cfg.pin_rst         = -1;           // RST   (-1 = disable)
+      cfg.pin_busy        = -1;           // BUSY  (-1 = disable)
+      cfg.panel_width     = TFT_WIDTH;    // actual visible width
+      cfg.panel_height    = TFT_HEIGHT;   // actual visible height
+      cfg.offset_x        = 32;           // Panel offset amount in X direction
+      cfg.offset_y        = 0;            // Panel offset amount in Y direction
+      cfg.offset_rotation = TFT_ROTATION;
+      cfg.memory_width    = TFT_WIDTH ;   // Maximum width supported by the driver IC
+      cfg.memory_height   = TFT_HEIGHT;   // Maximum height supported by the driver IC
+      cfg.invert          = false;        // if panel light and dark are inverted set to true
+      cfg.bus_shared      = true;         // If the bus is shared with the SD card, set to true (bus control with drawJpgFile etc.)  
+    #endif
 
       _panel_instance.config(cfg);
     }

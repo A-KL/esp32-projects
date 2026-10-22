@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Color.h>
+
 #if defined(LGFX_BACKEND) or (TFT_eSPI_BACKEND) or __has_include(<LGFX_TFT_eSPI.h>) or __has_include(<TFT_eSPI.h>)
   #include "LovyanGFXCanvas.h"
-  using TFT_Canvas = LovyanGFXCanvas;
+  using TFT_Canvas = LovyanGFXCanvas<Color>;
 
 #elif defined(Arduino_GFX_BACKEND) or __has_include(<Arduino_GFX_Library.h>)
   #include "ArduinoGFXCanvas.h"

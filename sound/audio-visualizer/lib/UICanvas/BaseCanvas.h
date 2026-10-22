@@ -1,18 +1,22 @@
 #pragma once
 
-#include <Color.h>
 #include <Canvas.h>
 
-template<typename TDisplay>
-class BaseCanvas : public Canvas<Color>
+template<typename TDisplay, typename TColor>
+class BaseCanvas : public Canvas<TColor>
 {
   public:
-    BaseCanvas(TDisplay* display) : _display(display), _background(Color::Black)
+    BaseCanvas(TDisplay* display) : _display(display), _background(TColor::Black)
     {}
 
     /* Draw API */
 
-    void DrawLine(int x0, int y0, int x1, int y1, const Color& color) {
+    void DrawPoint(int x, int y, const TColor& color)
+    {
+      _display->drawPixel(x, y, (unsigned short)color);
+    }
+
+    void DrawLine(int x0, int y0, int x1, int y1, const TColor& color) {
       if (y0 == y1) {
         _display->drawFastHLine(x0, y0, x1 - x0, (unsigned short)color);
       } else if (x0 == x1) {
@@ -22,18 +26,25 @@ class BaseCanvas : public Canvas<Color>
       }
     }
 
-    void DrawFilledRect(int x0, int y0, int w, int h, const Color& color) {
+    void DrawFilledRect(int x0, int y0, int w, int h, const TColor& color) {
       _display->fillRect(x0, y0, w, h, (unsigned short)color);
     }
 
-    void DrawRect(int x0, int y0, int w, int h, const Color& color) {
+    void DrawRect(int x0, int y0, int w, int h, const TColor& color) {
       _display->drawRect(x0, y0, w, h, (unsigned short)color);
     }
 
-  	void DrawText(int x, int y, int w, int h, const char* text, const Color& color, const Color& colorBackground = Color::Black) {
+  	void DrawText(int x, int y, int w, int h, const char* text, const TColor& color, const TColor& colorBackground = TColor::Black) {
       _display->setTextColor((unsigned short)color, (unsigned short)colorBackground);
      // _display->drawCentreString(text, x + w/2, y + (h - _display->fontHeight() + 2) / 2);
 	  }
+
+    void DrawImage(int x, int y, int w, int h, const unsigned short* data)
+    {
+      _display->setSwapBytes(true);
+      _display->pushImage(x, y, w, h, data);
+      _display->setSwapBytes(false);
+    }
 
     /* General */
 
@@ -49,7 +60,7 @@ class BaseCanvas : public Canvas<Color>
       return 16;
     }
 
-    inline void Clear(const Color& color) {
+    inline void Clear(const TColor& color) {
       _display->fillScreen((unsigned short)color);
     }
 
@@ -57,7 +68,10 @@ class BaseCanvas : public Canvas<Color>
       Clear(_background);
     }
 
+    inline virtual void Update()
+    {  }
+
   protected:
     TDisplay* _display;
-    Color _background;
+    TColor _background;
 };

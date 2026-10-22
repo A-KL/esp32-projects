@@ -1,4 +1,4 @@
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <Ramp.h> 
 
 #ifndef MOTOR_INPUT_DEAD_ZONE
@@ -55,6 +55,8 @@ static inline void write(const int16_t power, const int16_t steer)
 
   left_value.go(left_speed);
   right_value.go(right_speed);
+
+  log_i("Left: %d\tRight: %d", left_speed, right_speed);
 }
 
 static void on_ps3_lost()

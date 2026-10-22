@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
-
 class motor_driver_t
 {
   public:
@@ -28,8 +26,8 @@ class motor_driver_t
         _pin_en_ch = _channels++;
       }
 
-      ledcSetup(_pin_en_ch, _frequency, _resolution);
-      ledcAttachPin(_pin_en, _pin_en_ch);   
+      // ledcSetup(_pin_en_ch, _frequency, );
+      ledcAttachChannel(_pin_en, _frequency, _resolution, _pin_en_ch);   
 
       pinMode(_pin_direction, OUTPUT);
       // pinMode(_pin_brake, OUTPUT);

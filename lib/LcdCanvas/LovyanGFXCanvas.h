@@ -34,8 +34,8 @@ public:
 			return false;
 		}
 
-		// _display->setSwapBytes(true);
-		// _display->setColorDepth(16);
+		_display->setSwapBytes(true);
+		_display->setColorDepth(16);
 		_display->initDMA();
 		_display->startWrite();
 	
@@ -166,7 +166,7 @@ public:
 
 	inline unsigned int Bpp() const
 	{
-		return 16;
+		return 24;
 	}
 
 	inline void Clear(const TColor& color)

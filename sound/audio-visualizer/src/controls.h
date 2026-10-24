@@ -61,6 +61,9 @@ void loopChangeRadio()
 void setupControls(bool async = false)
 {
 #ifdef ARDUINO
+  // pinMode(MENU_PIN_B, INPUT);
+  // pinMode(MENU_PIN_A, INPUT);
+
   encoder_left.begin();
 	encoder_left.setup(readEncoderISR);
   encoder_left.setBoundaries(0, Playlist.size()-1, true);

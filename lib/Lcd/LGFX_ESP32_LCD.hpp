@@ -109,7 +109,7 @@ public:
       auto cfg = _bus_instance.config();    // Get a structure for bus settings.
 
     // SPI bus settings 
-    #if defined(SPI_BUS)
+    #if not defined(TFT_D0) && not defined(TFT_I2C_ADDR) && not defined (TFT_PARALLEL_8_BIT)
       // VSPI_HOST        
       // Select SPI to use ESP32-S2,C3 : SPI2_HOST or SPI3_HOST / ESP32 : VSPI_HOST or HSPI_HOST
       // * Due to the ESP-IDF version upgrade, VSPI_HOST and HSPI_HOST descriptions are deprecated,
@@ -146,7 +146,7 @@ public:
       // When using the same SPI bus as the SD card, be sure to set MISO without omitting it.
 //
 // Setting up the I2C bus
-    #elif defined(I2C_BUS)
+    #elif defined(TFT_I2C_ADDR)
       cfg.i2c_port    = 0;            // Select I2C port to use (0 or 1)
       cfg.freq_write  = 400000;       // Clock Speed when sending
       cfg.freq_read   = 400000;       // Clock Speed when receiving
@@ -178,7 +178,7 @@ public:
 
       auto cfg = _panel_instance.config(); // Get the structure for display panel settings.
 
-    #if defined(SPI_BUS)
+    #if not defined(TFT_D0) && not defined(TFT_I2C_ADDR) && not defined (TFT_PARALLEL_8_BIT)
       cfg.pin_cs           = TFT_CS;          // CS    (-1 = disable)
       cfg.pin_rst          = TFT_RST;         // RST   (-1 = disable)
       cfg.pin_busy         =      -1;         // BUSY  (-1 = disable)
@@ -203,7 +203,7 @@ public:
       // cfg.memory_width     =   240;  // Maximum width supported by the driver IC
       // cfg.memory_height    =   320;  // Maximum height supported by the driver IC
 
-    #elif defined(I2C_BUS)
+    #elif defined(TFT_I2C_ADDR)
       cfg.pin_cs          = -1;           // CS    (-1 = disable)
       cfg.pin_rst         = -1;           // RST   (-1 = disable)
       cfg.pin_busy        = -1;           // BUSY  (-1 = disable)

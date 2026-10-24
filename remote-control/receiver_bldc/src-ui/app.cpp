@@ -1,10 +1,8 @@
 #include <Arduino.h>
-
+#include <Ramp.h>
 #include <Lcd.h>
 #include <Color.h>
 #include <LcdCanvas.h>
-// #include <Ramp.h> 
-
 #include "ui.hpp"
 
 LcdCanvas<Color> canvas(tft);
@@ -42,8 +40,8 @@ static const int dead_zone = 20;
 // static motor_driver_t motor_left(25, 33, -1, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 // static motor_driver_t motor_right(19, 21, 18, -1, MOTOR_PWM_FQC, MOTOR_PWM_RESOLUTION);
 
-// static rampInt left_value;
-// static rampInt right_value;
+static rampInt left_value;
+static rampInt right_value;
 
 // static driver_strategy_t<int16_t> left_value(Power_Min, Power_Max, 0);
 // static driver_strategy_t<int16_t> right_value(Power_Min, Power_Max, 0);
@@ -58,13 +56,13 @@ static inline int filter_dead_zone(const int value)
 
 static inline void write(const int power, const int steer)
 {
-  // auto left_speed = constrain(power - steer, Power_Min, Power_Max);
-  // auto right_speed = constrain(power + steer, Power_Min, Power_Max);
+  auto left_speed = constrain(power - steer, Power_Min, Power_Max);
+  auto right_speed = constrain(power + steer, Power_Min, Power_Max);
 
-  // left_value.go(left_speed);
-  // right_value.go(right_speed);
+  left_value.go(left_speed);
+  right_value.go(right_speed);
 
-  // log_i("Left: %d\tRight: %d", left_speed, right_speed);
+  log_i("Left: %d\tRight: %d", left_speed, right_speed);
 }
 
 static void on_ps3_lost()
@@ -98,8 +96,6 @@ void setup()
   ui_draw_background(tft);
   ui_draw_values(tft);
 
-  canvas.Update();
-
   // ps_attach(on_ps3_input, on_ps3_lost);
   // ps_init();
 
@@ -112,13 +108,15 @@ void setup()
 
 void loop() 
 {
-  // static auto left = left_value.update();
-  // static auto right = right_value.update();
+  static auto left = left_value.update();
+  static auto right = right_value.update();
 
-  // log_i("Speed:\t%d\t%d", left, right);
+  log_i("Speed:\t%d\t%d", left, right);
 
-  // delay(50);
+  delay(50);
 
   // motor_left.write(left);
   // motor_right.write(right);
+
+  canvas.Update();
 }

@@ -6,6 +6,7 @@
 #include "MainForm.h"
 #include "RadioStation.h"
 #include "espressif_logo.h"
+#include "TrueType/NotoSans_Bold.h"
 
 static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 static LcdCanvas<Color> canvas(tft);
@@ -14,13 +15,6 @@ static LcdCanvas<Color> canvas(tft);
 #include "audio_volume.h"
 #include "concurrent.h"
 #include "controls.h"
-
-// #if (TFT_HEIGHT > 320)
-//     #include "VLW/Orbitron_Bold_12.h"
-// #else
-//    	#include "VLW/NotoSansBold15.h"
-// #endif
-#include "TrueType/NotoSans_Bold.h"
 
 void setup() 
 {

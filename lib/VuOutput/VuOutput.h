@@ -51,7 +51,7 @@ public:
         cfg = info;
     };
 
-    /// Writes the data - formatted as CSV -  to the output stream
+
     virtual size_t write(const uint8_t *data, size_t len) override 
     {
       LOGD("VuMeter::write: %d", (int)len);
@@ -80,6 +80,7 @@ public:
         samples_read,
         _right_envelope_context, 
         _left_envelope_context);
+        
 
         //LOGD("Results. Left: %f Right: %f", 
         // LOGD("Results. Left: %f Right: %f",

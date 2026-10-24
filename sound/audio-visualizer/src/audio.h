@@ -6,6 +6,7 @@
 #include "RadioStation.h"
 #include "bands.h"
 #include "VuOutput.h"
+
 #if __has_include(<codec.h>)
   #include "codec.h"
 #endif
@@ -54,6 +55,7 @@ AudioInfo info_out(44100, 2, 32);
 
 LogarithmicVolumeControl lvc(0.1);
 
+VuMeter<int16_t> vu_out;
 VolumeMeter meter_out;
 AudioRealFFT fft_out;
 MetaDataOutput metadata_out;
@@ -179,10 +181,12 @@ void setupAudio(const int mode = 0)
   // Out - Convert
   convert.begin(16, 16);
 
+  vu_out.begin(info_in); //??
+
   //all_out.add(speakers_out);
   all_out.add(volume_out);
-  //all_out.add(vu_out);
-  all_out.add(meter_out);
+  all_out.add(vu_out); //??
+  // all_out.add(meter_out);
   all_out.add(fft_out);
 
   all_out.begin(info_in);
@@ -199,7 +203,13 @@ void setupAudio(const int mode = 0)
 void loopAudio()
 {
   copier.copy();
+
+  auto left = vu_out.value_left() * 10;
+  auto right = vu_out.value_right() * 10;
   
-  form.levelLeft.setValueOf(meter_out.volume(0) * 2);
-  form.levelRight.setValueOf(meter_out.volume(1) * 2);
+  form.levelLeft.setValueOf(left);
+  form.levelRight.setValueOf(right);
+
+  // form.levelLeft.setValueOf(meter_out.volume(0) * 2);
+  // form.levelRight.setValueOf(meter_out.volume(1) * 2);
 }

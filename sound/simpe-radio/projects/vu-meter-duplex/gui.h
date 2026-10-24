@@ -6,7 +6,7 @@
 #if (TFT_HEIGHT > 320)
     #include "Orbitron_Bold_12.h"
 #else
-    #include "NotoSansBold15.h"
+    #include "VLW/NotoSansBold15.h"
 #endif
 
 #include "NotoSansMonoSCB20.h"

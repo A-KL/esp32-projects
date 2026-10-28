@@ -1,6 +1,7 @@
 #pragma once
 
-#ifdef ARDUINO
+// #ifdef ARDUINO
+#ifndef IS_DESKTOP 
 
 #include <AiEsp32RotaryEncoder.h>
 #include "RadioStation.h"
@@ -60,7 +61,8 @@ void loopChangeRadio()
 
 void setupControls(bool async = false)
 {
-#ifdef ARDUINO
+// #ifdef ARDUINO
+#ifndef IS_DESKTOP 
   // pinMode(MENU_PIN_B, INPUT);
   // pinMode(MENU_PIN_A, INPUT);
 
@@ -94,7 +96,8 @@ void setupControls(bool async = false)
 
 void loopControls()
 {
-#ifdef ARDUINO
+  #ifndef IS_DESKTOP 
+// #ifdef ARDUINO
   /* Indicate to change radio station */
 	if (encoder_left.encoderChanged())
 	{

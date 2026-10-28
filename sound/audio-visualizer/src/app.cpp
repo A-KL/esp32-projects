@@ -38,7 +38,8 @@ void setup()
   canvas.Clear(Color::Black);
   form.Update(canvas);
 
-#ifdef ARDUINO
+// #ifdef ARDUINO
+#ifndef IS_DESKTOP 
   log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
 #endif
 

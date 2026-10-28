@@ -1,11 +1,9 @@
 #pragma once
 
-#ifdef ARDUINO
-  #include <esp_pthread.h>
-#else
-  #include <pthread.h>
+#if defined(ESP32) || defined(ARDUINO_ARCH_ESP32)
+#include <esp_pthread.h>
 #endif
-  #include <pthread.h>
+#include <pthread.h>
 
 static pthread_t system_pthread;
 static bool system_pthread_run = true;
@@ -32,7 +30,8 @@ void* run_system_thread(void * args)
 
 void startTasks(void * args = NULL)
 {
-#ifdef ARDUINO
+  #ifndef IS_DESKTOP 
+// #ifdef ARDUINO
     esp_pthread_cfg_t cfg = esp_pthread_get_default_config();
     cfg.stack_size = (15 * 1024);
     cfg.pin_to_core = 0;

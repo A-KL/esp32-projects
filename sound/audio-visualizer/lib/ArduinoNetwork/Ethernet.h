@@ -1,0 +1,491 @@
+
+/*
+  Ethernet.h 
+  Copyright (c) 2025 Phil Schatzmann. All right reserved.
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+*/
+#pragma once
+
+#include "DesktopSocket.h"
+#include <chrono>
+#include <cstring>
+#include <future>
+#include <memory>  // This is the include you need
+#include <string>
+#include <thread>
+
+#include "ArduinoLogger.h"
+#include "RingBufferExt.h"
+#include "SocketImpl.h"
+#include "SignalHandler.h"
+#include "api/Client.h"
+#include "api/Common.h"
+#include "api/IPAddress.h"
+
+namespace arduino {
+
+#define ETHERNET_DEFAULT_READ_TIMEOUT 200
+
+typedef enum {
+  WL_NO_SHIELD = 255,
+  WL_IDLE_STATUS = 0,
+  WL_NO_SSID_AVAIL,
+  WL_SCAN_COMPLETED,
+  WL_CONNECTED,
+  WL_CONNECT_FAILED,
+  WL_CONNECTION_LOST,
+  WL_DISCONNECTED
+} wl_status_t;
+
+class EthernetImpl {
+public:
+  EthernetImpl() {
+    // Set some defaults
+    _macAddress[0] = 0xDE; _macAddress[1] = 0xAD; _macAddress[2] = 0xBE; _macAddress[3] = 0xEF; _macAddress[4] = 0xFE; _macAddress[5] = 0xED;
+    _localIP = IPAddress(192,168,1,177);
+    _subnetMask = IPAddress(255,255,255,0);
+    _gatewayIP = IPAddress(192,168,1,1);
+    _dnsServerIP = IPAddress(8,8,8,8);
+    _hardwareStatus = 1; // Assume present
+    _linkStatus = 2; // Assume linkON
+    _retransmissionCount = 8;
+    _retransmissionTimeout = 2000;
+  }
+
+  // Begin with MAC only
+  bool begin(uint8_t macAddress[6]) {
+    setMACAddress(macAddress);
+    return true;
+  }
+  // Begin with full config
+  bool begin(uint8_t macAddress[6], IPAddress localIP, IPAddress dnsServerIP, IPAddress gateway, IPAddress subnet) {
+    setMACAddress(macAddress);
+    setLocalIP(localIP);
+    setDnsServerIP(dnsServerIP);
+    setGatewayIP(gateway);
+    setSubnetMask(subnet);
+    return true;
+  }
+
+  // Returns the local IP address
+  IPAddress localIP() { return _localIP; }
+  // Returns the subnet mask
+  IPAddress subnetMask() { return _subnetMask; }
+  // Returns the gateway IP
+  IPAddress gatewayIP() { return _gatewayIP; }
+  // Returns the DNS server IP
+  IPAddress dnsServerIP() { return _dnsServerIP; }
+  // Returns the MAC address
+  void MACAddress(uint8_t* mac) { for (int i=0; i<6; ++i) mac[i] = _macAddress[i]; }
+  // Set the MAC address
+  void setMACAddress(const uint8_t* mac) { for (int i=0; i<6; ++i) _macAddress[i] = mac[i]; }
+  // Set the local IP
+  void setLocalIP(const IPAddress& ip) { _localIP = ip; }
+  // Set the subnet mask
+  void setSubnetMask(const IPAddress& mask) { _subnetMask = mask; }
+  // Set the gateway IP
+  void setGatewayIP(const IPAddress& ip) { _gatewayIP = ip; }
+  // Set the DNS server IP
+  void setDnsServerIP(const IPAddress& ip) { _dnsServerIP = ip; }
+  // Set retransmission count
+  void setRetransmissionCount(uint8_t count) { _retransmissionCount = count; }
+  // Set retransmission timeout
+  void setRetransmissionTimeout(uint16_t timeout) { _retransmissionTimeout = timeout; }
+
+  // Returns hardware status (1 = present, 0 = absent)
+  int hardwareStatus() { return _hardwareStatus; }
+  // Returns link status (2 = linkON, 1 = linkOFF, 0 = unknown)
+  int linkStatus() { return _linkStatus; }
+  // Init (returns true for compatibility)
+  bool init(uint8_t socketCount = 4) { _hardwareStatus = 1; return true; }
+  // Maintain (returns 0 for compatibility)
+  int maintain() { return 0; }
+
+protected:
+  uint8_t _macAddress[6];
+  IPAddress _localIP;
+  IPAddress _subnetMask;
+  IPAddress _gatewayIP;
+  IPAddress _dnsServerIP;
+  int _hardwareStatus = 1; // 1 = present, 0 = absent
+  int _linkStatus = 2;     // 2 = linkON, 1 = linkOFF, 0 = unknown
+  uint8_t _retransmissionCount = 8;
+  uint16_t _retransmissionTimeout = 2000;
+};
+
+inline EthernetImpl Ethernet;
+
+class EthernetClient : public Client {
+ private:
+  static std::vector<EthernetClient*>& active_clients() {
+    static std::vector<EthernetClient*> clients;
+    return clients;
+  }
+  static void cleanupAll(int sig) {
+    for (auto* client : active_clients()) {
+      if (client) {
+        client->stop();
+      }
+    }
+  }
+
+ public:
+  EthernetClient() {
+    setTimeout(ETHERNET_DEFAULT_READ_TIMEOUT);
+    p_sock = std::make_shared<SocketImpl>();
+    readBuffer = RingBufferExt(bufferSize);
+    writeBuffer = RingBufferExt(bufferSize);
+    registerCleanup();
+    active_clients().push_back(this);
+  }
+  EthernetClient(std::shared_ptr<SocketImpl> sock, int bufferSize = 256, long timeout = ETHERNET_DEFAULT_READ_TIMEOUT) {
+    if (sock) {
+      setTimeout(timeout);
+      this->bufferSize = bufferSize;
+      readBuffer = RingBufferExt(bufferSize);
+      writeBuffer = RingBufferExt(bufferSize);
+      p_sock = sock;
+      is_connected = p_sock->connected();
+      registerCleanup();
+      active_clients().push_back(this);
+    }
+  }
+  EthernetClient(int socket) {
+    setTimeout(ETHERNET_DEFAULT_READ_TIMEOUT);
+    readBuffer = RingBufferExt(bufferSize);
+    writeBuffer = RingBufferExt(bufferSize);
+    p_sock = std::make_shared<SocketImpl>(socket);
+    is_connected = p_sock->connected();
+  }
+
+  // checks if we are connected - using a timeout
+  virtual uint8_t connected() override {
+    if (!is_connected || !p_sock) return false;
+
+    // A disconnected socket should be reported immediately. Retrying here
+    // turns normal peer shutdown into a multi-second stall for callers like
+    // TelnetClient::closeOnDisconnect().
+    is_connected = p_sock->connected();
+    return is_connected;
+  }
+
+  // support conversion to bool
+  operator bool() override { return connected(); }
+
+  // opens a conection
+  virtual int connect(IPAddress ipAddress, uint16_t port) override {
+    return connect(ipAddress, port, getConnectionTimeout());
+  }
+
+  int connect(IPAddress ipAddress, uint16_t port, int32_t timeout_ms) {
+    String str = String(ipAddress[0]) + String(".") + String(ipAddress[1]) +
+                 String(".") + String(ipAddress[2]) + String(".") +
+                 String(ipAddress[3]);
+    this->address = ipAddress;
+    this->port = port;
+    return connect(str.c_str(), port, timeout_ms);
+  }
+
+  // opens a connection
+  virtual int connect(const char* address, uint16_t port) override {
+    return connect(address, port, getConnectionTimeout());
+  }
+
+  int connect(const char* address, uint16_t port, int32_t timeout_ms) {
+    Logger.info(WIFICLIENT, "connect");
+    this->port = port;
+    if (connectedFast()) {
+      p_sock->close();
+    }
+    uint32_t start_ms = millis();
+    IPAddress adr = resolveAddress(address, timeout_ms);
+    if (adr == IPAddress(0, 0, 0, 0)) {
+      is_connected = false;
+      return 0;
+    }
+
+    // DNS resolution above already consumed part of the caller's timeout
+    // budget; give the TCP connect only what's left so that the overall
+    // connect(..., timeout_ms) call stays bounded by timeout_ms.
+    int32_t remaining_timeout = timeout_ms;
+    if (timeout_ms >= 0) {
+      uint32_t elapsed_ms = millis() - start_ms;
+      remaining_timeout = elapsed_ms >= static_cast<uint32_t>(timeout_ms)
+                              ? 0
+                              : timeout_ms - static_cast<int32_t>(elapsed_ms);
+    }
+
+    // performs the actual connection
+    String str = adr.toString();
+    Logger.info("Connecting to ", str.c_str());
+    // p_sock->connect()'s result was previously ignored here, so a TLS
+    // handshake failure (SocketImplSecure, see NetworkClientSecure.h)
+    // still left is_connected true - callers went on to write/read over
+    // the now-invalid socket, surfacing as a confusing downstream
+    // failure (e.g. a header read timeout) instead of a clear connect
+    // failure right here.
+    if (p_sock->connect(str.c_str(), port, remaining_timeout) <= 0) {
+      is_connected = false;
+      return 0;
+    }
+    is_connected = true;
+    return 1;
+  }
+
+  virtual size_t write(char c) { return write((uint8_t)c); }
+
+  // writes an individual character into the buffer. We flush the buffer when it
+  // is full
+  virtual size_t write(uint8_t c) override {
+    if (writeBuffer.availableToWrite() == 0) {
+      flush();
+    }
+    return writeBuffer.write(c);
+  }
+
+  virtual size_t write(const char* str, int len) {
+    return write((const uint8_t*)str, len);
+  }
+
+  // direct write - if we have anything in the buffer we write that out first
+  virtual size_t write(const uint8_t* str, size_t len) override {
+    flush();
+    return p_sock->write(str, len);
+  }
+
+  virtual int print(const char* str = "") {
+    int len = strlen(str);
+    return write(str, len);
+  }
+
+  virtual int println(const char* str = "") {
+    int len = strlen(str);
+    int result = write(str, len);
+    char eol[1];
+    eol[0] = '\n';
+    write(eol, 1);
+    return result;
+  }
+
+  // flush write buffer
+  virtual void flush() override {
+    Logger.debug(WIFICLIENT, "flush");
+
+    int flushSize = writeBuffer.available();
+    if (flushSize > 0) {
+      uint8_t rbuffer[flushSize];
+      writeBuffer.read(rbuffer, flushSize);
+      p_sock->write(rbuffer, flushSize);
+    }
+  }
+
+  // provides the available bytes from the read buffer or from the socket
+  virtual int available() override {
+    Logger.debug(WIFICLIENT, "available");
+    if (readBuffer.available() > 0) {
+      return readBuffer.available();
+    }
+    long timeout = millis() + getTimeout();
+    int result = p_sock->available();
+    while (result <= 0 && millis() < timeout) {
+      delay(200);
+      result = p_sock->available();
+    }
+    return result;
+  }
+
+  // read via ring buffer
+  virtual int read() override {
+    int result = -1;
+    uint8_t c;
+    if (readBytes(&c, 1) == 1) {
+      result = c;
+    }
+    return result;
+  }
+
+  virtual size_t readBytes(char* buffer, size_t len) {
+    int result = read((uint8_t*)buffer, len);
+    return result < 0 ? 0 : static_cast<size_t>(result);
+  }
+
+  virtual size_t readBytes(uint8_t* buffer, size_t len) {
+    int result = read(buffer, len);
+    return result < 0 ? 0 : static_cast<size_t>(result);
+  }
+
+  // peeks one character
+  virtual int peek() override {
+    return p_sock->peek();
+    return -1;
+  }
+
+  // close the connection
+  virtual void stop() override { p_sock->close(); }
+
+  virtual void setInsecure() {}
+
+  int fd() { return p_sock->fd(); }
+
+  uint16_t remotePort() { return port; }
+
+  IPAddress remoteIP() { return address; }
+
+  // provides the local IP address of the connection (0.0.0.0 if not connected)
+  IPAddress localIP() {
+    struct sockaddr_in addr;
+    if (!localAddress(addr)) return IPAddress(0, 0, 0, 0);
+    return IPAddress(addr.sin_addr.s_addr);
+  }
+
+  // provides the local port of the connection (0 if not connected)
+  uint16_t localPort() {
+    struct sockaddr_in addr;
+    if (!localAddress(addr)) return 0;
+    return ntohs(addr.sin_port);
+  }
+
+  virtual void setCACert(const char* cert) {
+    Logger.error(WIFICLIENT, "setCACert not supported");
+  }
+
+  void setConnectionTimeout(int32_t timeout) {
+    connectTimeout = timeout;
+  }
+
+  int32_t getConnectionTimeout() {
+    return connectTimeout;
+  }
+
+ protected:
+  const char* WIFICLIENT = "EthernetClient";
+  int32_t connectTimeout = 5000;  // default timeout 5 seconds
+  std::shared_ptr<SocketImpl> p_sock = nullptr;
+  int bufferSize = 256;
+  RingBufferExt readBuffer;
+  RingBufferExt writeBuffer;
+  bool is_connected = false;
+  IPAddress address{0, 0, 0, 0};
+  uint16_t port = 0;
+
+  // Runs on the calling thread (timeout_ms < 0) or on a background thread
+  // (timeout_ms >= 0, see resolveHostname()) - must not touch `this`.
+  static IPAddress resolveHostnameBlocking(const std::string& hostname) {
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    struct addrinfo* result = nullptr;
+    if (getaddrinfo(hostname.c_str(), nullptr, &hints, &result) != 0 ||
+        result == nullptr) {
+      return IPAddress(0, 0, 0, 0);
+    }
+
+    auto* addr = reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
+    IPAddress resolved(addr->sin_addr.s_addr);
+    freeaddrinfo(result);
+    return resolved;
+  }
+
+  // Resolves hostname with a deadline so that connect(..., timeout_ms) stays
+  // bounded even when the resolver itself is slow or unresponsive. getaddrinfo()
+  // has no portable non-blocking form, so the blocking call runs on a helper
+  // thread; on timeout we detach it rather than blocking the caller further -
+  // it will finish (or leak until it does) in the background and its result is
+  // discarded.
+  IPAddress resolveHostname(const char* hostname, int32_t timeout_ms) {
+    if (timeout_ms < 0) {
+      IPAddress resolved = resolveHostnameBlocking(hostname);
+      if (resolved == IPAddress(0, 0, 0, 0)) {
+        Logger.error(WIFICLIENT, "Hostname resolution failed");
+      }
+      return resolved;
+    }
+
+    auto promise = std::make_shared<std::promise<IPAddress>>();
+    std::future<IPAddress> future = promise->get_future();
+    std::string hostname_copy(hostname);
+    std::thread resolver([promise, hostname_copy]() {
+      promise->set_value(resolveHostnameBlocking(hostname_copy));
+    });
+
+    if (future.wait_for(std::chrono::milliseconds(timeout_ms)) ==
+        std::future_status::ready) {
+      resolver.join();
+      IPAddress resolved = future.get();
+      if (resolved == IPAddress(0, 0, 0, 0)) {
+        Logger.error(WIFICLIENT, "Hostname resolution failed");
+      }
+      return resolved;
+    }
+
+    resolver.detach();
+    Logger.error(WIFICLIENT, "Hostname resolution timeout");
+    return IPAddress(0, 0, 0, 0);
+  }
+
+  // resolves the address and returns sockaddr_in
+  IPAddress resolveAddress(const char* address, int32_t timeout_ms) {
+    struct sockaddr_in serv_addr4;
+    memset(&serv_addr4, 0, sizeof(serv_addr4));
+    serv_addr4.sin_family = AF_INET;
+    if (::inet_pton(AF_INET, address, &serv_addr4.sin_addr) <= 0) {
+      return resolveHostname(address, timeout_ms);
+    }
+    return IPAddress(serv_addr4.sin_addr.s_addr);
+  }
+
+  void registerCleanup() {
+    static bool signal_registered = false;
+    if (!signal_registered) {
+      SignalHandler::registerHandler(SIGINT, cleanupAll);
+      SignalHandler::registerHandler(SIGTERM, cleanupAll);
+      signal_registered = true;
+    }
+  }
+
+  int read(uint8_t* buffer, size_t len) override {
+    Logger.debug(WIFICLIENT, "read");
+    int result = 0;
+    long timeout = millis() + getTimeout();
+    result = p_sock->read(buffer, len);
+    while (result == 0 && millis() < timeout) {
+      delay(200);
+      result = p_sock->read(buffer, len);
+    }
+
+    char lenStr[16];
+    sprintf(lenStr, "%d", result);
+    Logger.debug(WIFICLIENT, "read->", lenStr);
+
+    return result;
+  }
+
+  // determines the local socket address
+  bool localAddress(struct sockaddr_in& addr) {
+    memset(&addr, 0, sizeof(addr));
+    if (!p_sock || p_sock->fd() == INVALID_SOCKET_HANDLE) return false;
+    SocketLength len = sizeof(addr);
+    if (::getsockname(p_sock->fd(), (struct sockaddr*)&addr, &len) != 0)
+      return false;
+    return addr.sin_family == AF_INET;
+  }
+
+  bool connectedFast() { return is_connected; }
+};
+
+}  // namespace arduino

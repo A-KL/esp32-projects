@@ -32,7 +32,8 @@ const std::vector<RadioStation> Playlist = {
   #define INIT_VOLUME 1.0
 #endif
 
-#ifdef ARDUINO
+// #ifdef ARDUINO
+#ifndef IS_DESKTOP
   #include "RadioStream.h"
 
   I2SStream speakers_out;
@@ -42,11 +43,13 @@ const std::vector<RadioStation> Playlist = {
   #include <iostream>
 
   #include "AudioTools/AudioLibs/PortAudioStream.h"
-  #include "AudioTools/Disk/FileSystem.h"
+  #include "RadioStream.h"
+  // #include "AudioTools/Disk/FileSystem.h"
 
   PortAudioStream speakers_out;
-  File radio_in("./sound/file_example_MP3_700KB.mp3");
-  File stream_in("./sound/M1F1-int16WE-AFsp.wav");
+  // File radio_in("./sound/file_example_MP3_700KB.mp3");
+  RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
+  // File stream_in("./sound/M1F1-int16WE-AFsp.wav");
 #endif
 
 // AudioInfo info(48000, 2, 32);
@@ -109,7 +112,8 @@ void printMetaData(MetaDataType type, const char* str, int len)
 // 1 = i2s
 void setupAudio(const int mode = 0)
 {
-#ifdef ARDUINO
+// #ifdef ARDUINO
+#ifndef DIS_DESKTOP
 #if __has_include(<codec.h>)
   // Hardware init
   codec_init();
@@ -128,7 +132,8 @@ void setupAudio(const int mode = 0)
   meter_out.begin(info_in);
 
   // Out - Speakers
-#ifdef ARDUINO
+#ifndef IS_DESKTOP 
+// ARDUINO
   auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
   config.copyFrom(info_out);
   config.pin_ws      = I2S_WS;
@@ -204,8 +209,8 @@ void loopAudio()
 {
   copier.copy();
 
-  auto left = vu_out.value_left() * 10;
-  auto right = vu_out.value_right() * 10;
+  auto left = vu_out.value_left() * 5;
+  auto right = vu_out.value_right() * 5;
   
   form.levelLeft.setValueOf(left);
   form.levelRight.setValueOf(right);

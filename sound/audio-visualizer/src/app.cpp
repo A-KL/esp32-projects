@@ -26,7 +26,6 @@ void setup()
   #endif
 
   canvas.Init(Color::White);
-  // canvas.LoadFont(NotoSansBold15, sizeof(NotoSansBold15));
   canvas.LoadFont(NotoSans_Bold, sizeof(NotoSans_Bold));
 
   canvas.DrawImage(0, 30, 320, 180, espressif_logo_featured);
@@ -38,17 +37,16 @@ void setup()
   canvas.Clear(Color::Black);
   form.Update(canvas);
 
-// #ifdef ARDUINO
-#ifndef IS_DESKTOP 
+# ifdef ARDUINO_ARCH_ESP32
   log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
-#endif
+# endif
 
-  startTasks();
+  // startTasks();
 }
 
 void loop() 
 {
-  // loopAudio();
+  loopAudio();
   loopControls();
   form.Update(canvas);
 }

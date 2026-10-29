@@ -14,7 +14,7 @@ void setCodecVolume(float value)
 
 void setCodecMute(bool muted)
 {
-#if defined(USE_CODEC_VOLUME) && defined(ARDUINO)
+#if defined(ARDUINO) && defined(USE_CODEC_VOLUME)
   #include "codec.h"
   codec_mute(muted);
 #else 

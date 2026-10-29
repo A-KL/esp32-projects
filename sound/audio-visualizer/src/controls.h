@@ -1,14 +1,14 @@
 #pragma once
 
-// #ifdef ARDUINO
-#ifndef IS_DESKTOP 
-
-#include <AiEsp32RotaryEncoder.h>
 #include "RadioStation.h"
+#include <AiEsp32RotaryEncoder.h>
 
 static AiEsp32RotaryEncoder encoder_left(MENU_PIN_A, MENU_PIN_B, MENU_BUTTON, -1, 4);
 static AiEsp32RotaryEncoder encoder_right(VOLUME_PIN_A, VOLUME_PIN_B, VOLUME_BUTTON, -1, 4);
+
+#ifdef ARDUINO_ARCH_ESP32
 static TaskHandle_t controls_task_t;
+#endif
 
 void IRAM_ATTR readEncoderISR()
 {
@@ -16,34 +16,21 @@ void IRAM_ATTR readEncoderISR()
   encoder_right.readEncoder_ISR();
 }
 
-#endif
-
 static int desired_radio_station = 1;
 static unsigned long last_radio_station_change = millis();
 static const unsigned long radio_change_delay = 2000; // ms
 
-void loopControls();
-
-void read_inputs_task(void * args)
-{
-  while (true) {
-    loopControls();
-    delay(20);
-  }
-}
+void read_inputs_task(void * args);
 
 void setRadioStation(int station)
 {
-#ifdef ARDUINO
   radio_in.select(station);
   form.track.SetText(radio_in.getTitle());
   form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
-#endif
 }
 
 void loopChangeRadio()
 {
-#ifdef ARDUINO
   if (desired_radio_station != radio_in.getSelected()) {
     auto now = millis();
 
@@ -52,20 +39,12 @@ void loopChangeRadio()
     }
     last_radio_station_change = now;
 
-    radio_in.select(desired_radio_station);
-    // form.track.SetText(radio_in.getTitle());
-    form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
+    setRadioStation(desired_radio_station);
   }
-#endif
 }
 
 void setupControls(bool async = false)
 {
-// #ifdef ARDUINO
-#ifndef IS_DESKTOP 
-  // pinMode(MENU_PIN_B, INPUT);
-  // pinMode(MENU_PIN_A, INPUT);
-
   encoder_left.begin();
 	encoder_left.setup(readEncoderISR);
   encoder_left.setBoundaries(0, Playlist.size()-1, true);
@@ -80,6 +59,7 @@ void setupControls(bool async = false)
   encoder_right.disableAcceleration();
   encoder_right.enable();
 
+# ifdef ARDUINO_ARCH_ESP32
   if (async)
   {
     xTaskCreatePinnedToCore(
@@ -91,13 +71,11 @@ void setupControls(bool async = false)
                     &controls_task_t,      /* Task handle to keep track of created task */
                     0);                    /* pin task to core 0 */        
   }
-#endif
+# endif
 }
 
 void loopControls()
 {
-  #ifndef IS_DESKTOP 
-// #ifdef ARDUINO
   /* Indicate to change radio station */
 	if (encoder_left.encoderChanged())
 	{
@@ -105,7 +83,7 @@ void loopControls()
     last_radio_station_change = millis();
     desired_radio_station = value;
 
-    log_i("Desired radio station number: %i", value+1);
+    log_i("Desired radio station number: %d", value+1);
 
     form.track.SetText(radio_in.getTitle(desired_radio_station));
     form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
@@ -120,7 +98,7 @@ void loopControls()
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
-      log_i("Volume: %i", value);
+      log_i("Volume: %d", value);
       setVolume(value);
 	}
   /* Mute control */
@@ -128,17 +106,14 @@ void loopControls()
 	{
       switchMuted();
 	}
-#else
-	if (lgfx::v1::gpio_in(MENU_BUTTON) == 0) {
-    changeAudioInput();
-    lgfx::delayMicroseconds(100000);
-	}
-
-  if (lgfx::v1::gpio_in(VOLUME_BUTTON) == 0) {
-    switchMuted();
-    lgfx::delayMicroseconds(100000);
-	}
-#endif
 
   loopChangeRadio();
+}
+
+void read_inputs_task(void * args)
+{
+  while (true) {
+    loopControls();
+    delay(20);
+  }
 }

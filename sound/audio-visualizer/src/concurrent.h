@@ -30,8 +30,7 @@ void* run_system_thread(void * args)
 
 void startTasks(void * args = NULL)
 {
-  #ifndef IS_DESKTOP 
-// #ifdef ARDUINO
+#ifdef ARDUINO_ARCH_ESP32
     esp_pthread_cfg_t cfg = esp_pthread_get_default_config();
     cfg.stack_size = (15 * 1024);
     cfg.pin_to_core = 0;

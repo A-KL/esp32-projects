@@ -32,8 +32,7 @@ const std::vector<RadioStation> Playlist = {
   #define INIT_VOLUME 1.0
 #endif
 
-// #ifdef ARDUINO
-#ifndef IS_DESKTOP
+#ifdef ARDUINO_ARCH_ESP32
   #include "RadioStream.h"
 
   I2SStream speakers_out;
@@ -112,18 +111,14 @@ void printMetaData(MetaDataType type, const char* str, int len)
 // 1 = i2s
 void setupAudio(const int mode = 0)
 {
-// #ifdef ARDUINO
-#ifndef DIS_DESKTOP
-#if __has_include(<codec.h>)
+# if defined(ARDUINO_ARCH_ESP32) and __has_include(<codec.h>)
   // Hardware init
   codec_init();
-#endif
+# endif
+
   // Input: File or stream
   radio_in.select(1);
   form.track.SetText(radio_in.getTitle());
-#else
-  radio_in.begin();
-#endif
 
   // Decoder
   decoder.begin();
@@ -132,8 +127,7 @@ void setupAudio(const int mode = 0)
   meter_out.begin(info_in);
 
   // Out - Speakers
-#ifndef IS_DESKTOP 
-// ARDUINO
+#ifdef ARDUINO_ARCH_ESP32
   auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
   config.copyFrom(info_out);
   config.pin_ws      = I2S_WS;
@@ -214,7 +208,4 @@ void loopAudio()
   
   form.levelLeft.setValueOf(left);
   form.levelRight.setValueOf(right);
-
-  // form.levelLeft.setValueOf(meter_out.volume(0) * 2);
-  // form.levelRight.setValueOf(meter_out.volume(1) * 2);
 }

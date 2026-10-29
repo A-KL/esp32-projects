@@ -57,7 +57,7 @@ AudioInfo info_out(44100, 2, 32);
 
 LogarithmicVolumeControl lvc(0.1);
 
-VuMeter<int16_t> vu_out;
+VuMeter vu_out;
 VolumeMeter meter_out;
 AudioRealFFT fft_out;
 MetaDataOutput metadata_out;

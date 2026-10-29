@@ -2,7 +2,6 @@
 
 #include "envelope_detector.h"
 
-template <typename T> 
 class VuMeter : public AudioOutput 
 {
 public:
@@ -18,7 +17,7 @@ public:
         AudioInfo info;
         info.channels = 2;
         info.sample_rate = 44100;
-        info.bits_per_sample = sizeof(T) * 8;
+        info.bits_per_sample = 16;
         return info;
     }
 
@@ -51,7 +50,6 @@ public:
         cfg = info;
     };
 
-
     virtual size_t write(const uint8_t *data, size_t len) override 
     {
       LOGD("VuMeter::write: %d", (int)len);
@@ -70,18 +68,18 @@ public:
         cfg.channels = 2;
       }
 
-      size_t samples_read = len / (sizeof(T) * cfg.channels);
+      size_t samples_read = len / (cfg.bits_per_sample / 8 * cfg.channels);
 
       LOGD("Got %d samples to process", (int)samples_read);
 
-      envelope_calculate_right_left<T>(
+      envelope_calculate_right_left(
         data,
         _gain,
         samples_read,
+        cfg.bits_per_sample,
         _right_envelope_context, 
         _left_envelope_context);
         
-
         //LOGD("Results. Left: %f Right: %f", 
         // LOGD("Results. Left: %f Right: %f",
         //   _left_envelope_context.envelope_out,

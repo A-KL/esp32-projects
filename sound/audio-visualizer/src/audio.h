@@ -4,6 +4,7 @@
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 #include "AudioTools/FFT/AudioRealFFT.h"
 #include "RadioStation.h"
+#include "RadioStream.h"
 #include "bands.h"
 #include "VuOutput.h"
 
@@ -33,27 +34,24 @@ const std::vector<RadioStation> Playlist = {
 #endif
 
 #ifdef ARDUINO_ARCH_ESP32
-  #include "RadioStream.h"
-
   I2SStream speakers_out;
-  RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
+  I2SStream headphones_out;
   // I2SStream stream_in;
 #else
   #include <iostream>
-
   #include "AudioTools/AudioLibs/PortAudioStream.h"
-  #include "RadioStream.h"
   // #include "AudioTools/Disk/FileSystem.h"
-
   PortAudioStream speakers_out;
+  PortAudioStream headphones_out;
   // File radio_in("./sound/file_example_MP3_700KB.mp3");
-  RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
   // File stream_in("./sound/M1F1-int16WE-AFsp.wav");
 #endif
 
 // AudioInfo info(48000, 2, 32);
 AudioInfo info_in(44100, 2, 16);
 AudioInfo info_out(44100, 2, 32);
+
+RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
 
 LogarithmicVolumeControl lvc(0.1);
 

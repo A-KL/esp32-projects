@@ -83,7 +83,7 @@ void loopControls()
     last_radio_station_change = millis();
     desired_radio_station = value;
 
-    log_i("Desired radio station number: %d", value+1);
+    LOGI("Desired radio station number: %d", value+1);
 
     form.track.SetText(radio_in.getTitle(desired_radio_station));
     form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
@@ -98,7 +98,7 @@ void loopControls()
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
-      log_i("Volume: %d", value);
+      LOGI("Volume: %d", value);
       setVolume(value);
 	}
   /* Mute control */

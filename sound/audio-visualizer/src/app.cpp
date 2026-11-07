@@ -1,10 +1,8 @@
 #include <Lcd.h>
 #include <Color.h>
-#include <Canvas.h>
 #include <LcdCanvas.h>
 
 #include "MainForm.h"
-#include "RadioStation.h"
 #include "espressif_logo.h"
 #include "TrueType/NotoSans_Bold.h"
 
@@ -38,7 +36,7 @@ void setup()
   form.Update(canvas);
 
 # ifdef ARDUINO_ARCH_ESP32
-  log_i("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
+  LOGI("Core %d. Free heap (MB): %f ", xPortGetCoreID(), (esp_get_free_heap_size()/1024.0/1024));
 # endif
 
   // startTasks();

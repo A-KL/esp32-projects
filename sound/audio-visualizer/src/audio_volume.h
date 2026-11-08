@@ -52,32 +52,3 @@ void setVolume(int16_t value)
     setCodecVolume(volume);
   }
 }
-
-void changeAudioInput()
-{
-  static bool mb_visible = false;
-  
-  if (mb_visible){
-    form.hideMessage(); 
-  } else {
-    form.showMessage("DEMO");
-  }
-  mb_visible = !mb_visible;
-
-  // inputs[selected_input]->end();
-  // selected_input++;
-
-  // if (inputs_count <= selected_input) {
-  //   selected_input = 0;
-  // }
-  // inputs[selected_input]->begin();
-}
-
-void selectAudio(int dest, int src) 
-{
-  // static auto _selectedAudioSource = 0;
-  // static auto _selectedAudioTarget = 1;
-  // selectAudio(_selectedAudioTarget, _selectedAudioSource);
-  // form.setIcon(_selectedAudioTarget, 1);
-  // form.setIcon(_selectedAudioSource + 2, 1);
-}

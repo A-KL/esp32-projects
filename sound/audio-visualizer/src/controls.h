@@ -91,7 +91,14 @@ void loopControls()
 
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    changeAudioInput();
+    static bool mb_visible = false;
+    
+    if (mb_visible){
+      form.hideMessage(); 
+    } else {
+      form.showMessage("DEMO");
+    }
+    mb_visible = !mb_visible;
 	}
 
   /* Volume control */

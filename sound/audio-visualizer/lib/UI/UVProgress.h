@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UICommon.h"
 #include "UIRect.h"
 #include "UIElement.h"
 
@@ -10,6 +11,8 @@ class UVProgress : public UIElement
 			UIElement(rect, {30, 30, 30, 0}),
 			_newValue(value),
 			_currentValue(0),
+			_decayValue(0),
+			_decayLastUpdate(ui::millis()),
 			_activeColor(15, 185, 79, 0),
 			_activeThresholdColor(255, 0, 0, 0),
 			_activeWarningColor(185, 186, 48, 0),
@@ -22,6 +25,11 @@ class UVProgress : public UIElement
 		virtual inline unsigned short value() const
 		{
 			return _currentValue;
+		}
+
+		virtual inline unsigned short decay() const
+		{
+			return _decayValue;
 		}
 
 		virtual inline bool IsValid() const
@@ -56,6 +64,24 @@ class UVProgress : public UIElement
 			{
 				canvas.DrawFilledRect(origin_x + _newValue * _item_w, origin_y, (_currentValue - _newValue) * _item_w, _rect.h, _backgroundColor);
 			}
+		
+			// Decay effect
+
+			if (_decayValue <= _newValue)
+			{
+				_decayValue = _newValue;
+				_decayLastUpdate = ui::millis();
+			}
+			else if (ui::millis() - _decayLastUpdate > 100)
+			{
+				canvas.DrawFilledRect(origin_x + _decayValue * _item_w, origin_y, _item_fill_w, _rect.h, _backgroundColor);
+
+				_decayValue--;
+				_decayLastUpdate = ui::millis();
+			}
+
+			auto color = _decayValue >= _threshold ? _activeThresholdColor : _decayValue >= _warning ? _activeWarningColor : _activeColor;
+			canvas.DrawFilledRect(origin_x + _decayValue * _item_w, origin_y, _item_fill_w, _rect.h, color);
 
 			_currentValue = _newValue;
 		}
@@ -66,6 +92,8 @@ class UVProgress : public UIElement
 
 		volatile unsigned short _newValue;
 		volatile unsigned short _currentValue;
+		volatile unsigned short _decayValue;
+		volatile unsigned long _decayLastUpdate;
 
 		const Color _activeColor;
 		const Color _activeThresholdColor;
@@ -126,6 +154,11 @@ class UVAnimatedProgressOf : public UVAnimatedProgress
 		inline TValue valueOf() const
 		{
 			return map(value(), _minValue, _maxValue, _minValueT, _maxValueT);
+		}
+
+		inline TValue decayOf() const
+		{
+			return map(decay(), _minValue, _maxValue, _minValueT, _maxValueT);
 		}
 
 		inline void setValueOf(TValue new_value)

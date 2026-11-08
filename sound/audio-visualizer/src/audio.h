@@ -98,7 +98,7 @@ void fftResult(AudioFFTBase &fft)
 
 void printMetaData(MetaDataType type, const char* str, int len)
 {
-  log_w("%s: %s", toStr(type), str);
+  LOGW("%s: %s", toStr(type), str);
 
   if (type == Title) {
     form.track.SetText(str);

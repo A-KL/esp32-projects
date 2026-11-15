@@ -469,7 +469,7 @@ class EthernetClient : public Client {
     }
 
     char lenStr[16];
-    sprintf(lenStr, "%d", result);
+    snprintf(lenStr, sizeof(lenStr), "%d", result);
     Logger.debug(WIFICLIENT, "read->", lenStr);
 
     return result;

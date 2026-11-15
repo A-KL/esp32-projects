@@ -11,7 +11,7 @@ static LcdCanvas<Color> canvas(tft);
 
 #include "audio.h"
 #include "audio_volume.h"
-#include "concurrent.h"
+// #include "concurrent.h"
 #include "controls.h"
 
 void setup() 

@@ -1,6 +1,8 @@
 #pragma once
 
-void ES9018K2M_init();
+bool ES9018K2M_init();
+
+void ES9018K2M_set_mute(bool mute);
 
 void ES9018K2M_set_volume(uint8_t volume);
 

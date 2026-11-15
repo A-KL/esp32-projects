@@ -19,14 +19,14 @@
 //
 
 const std::vector<RadioStation> Playlist = {
-  {"SWISS Jazz",           "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
+  {"SWISS Jazz",           "https://stream.srg-ssr.ch/m/rsj/mp3_128"},
   {"Radio Roks UA",        "http://online.radioroks.ua/bak_RadioROKS"},
-  {"KissFM",               "https://tavr.tvstitch.com/KissFM"},
+  {"KissFM",               "http://tavr.tvstitch.com/KissFM"},
   {"Classic FM",           "http://media-ice.musicradio.com:80/ClassicFMMP3"},
   {"Lite Favorites",       "http://naxos.cdnstream.com:80/1255_128"},
   {"TRANCE 21",            "https://mscp3.live-streams.nl:8022/lowstream"},
-  {"TRANCE IS STAR RADIO", "https://listen2.myradio24.com/tisradio"},
-  {"Veronica ",            "http://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
+  {"TRANCE IS STAR RADIO", "http://listen2.myradio24.com/tisradio"},
+  {"Veronica ",            "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
 };
 
 #ifndef INIT_VOLUME
@@ -56,7 +56,6 @@ RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
 LogarithmicVolumeControl lvc(0.1);
 
 VuMeter vu_out;
-VolumeMeter meter_out;
 AudioRealFFT fft_out;
 MetaDataOutput metadata_out;
 
@@ -82,7 +81,7 @@ void log_init()
   Serial.setTxTimeoutMs(0);
   #endif
 #endif
-  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
 }
 
 void fftResult(AudioFFTBase &fft) 
@@ -105,6 +104,23 @@ void printMetaData(MetaDataType type, const char* str, int len)
   }
 }
 
+void selectAudioOutput(uint8_t index)
+{
+  if (index == 0) {
+    // all_out.remove(headphones_out);
+    // all_out.add(volume_out);
+    convert.setOutput(speakers_out);
+  }
+  if (index == 1) {
+    // all_out.remove(volume_out);
+    // all_out.add(headphones_out);
+    convert.setOutput(headphones_out);
+  }
+
+  form.setIcon(0, index == 1);
+  form.setIcon(1, index == 0);
+}
+
 // 0 = radio
 // 1 = i2s
 void setupAudio(const int mode = 0)
@@ -115,14 +131,14 @@ void setupAudio(const int mode = 0)
 # endif
 
   // Input: File or stream
-  radio_in.select(1);
+  radio_in.select(4);
   form.track.SetText(radio_in.getTitle());
 
   // Decoder
   decoder.begin();
 
   // Out - VU
-  meter_out.begin(info_in);
+  vu_out.begin(info_in);
 
   // Out - Speakers
 #ifdef ARDUINO_ARCH_ESP32
@@ -147,9 +163,12 @@ void setupAudio(const int mode = 0)
 #endif
 #else
   auto config = speakers_out.defaultConfig();
-  config.copyFrom(info_out);
+  // config.copyFrom(info_out);
 #endif
   speakers_out.begin(config);
+  headphones_out.begin(config);
+
+  // form.setIcon(2, true); // RDS
 
   // Out - FFT
   auto tcfg = fft_out.defaultConfig();
@@ -178,21 +197,19 @@ void setupAudio(const int mode = 0)
   // Out - Convert
   convert.begin(16, 16);
 
-  vu_out.begin(info_in); //??
-
-  //all_out.add(speakers_out);
+  // Out - Mixer
   all_out.add(volume_out);
-  all_out.add(vu_out); //??
-  // all_out.add(meter_out);
+  all_out.add(vu_out);
   all_out.add(fft_out);
 
   all_out.begin(info_in);
 
+  // Copier - Start
   copier.setActive(false);
   if (mode == 0) { 
     copier.begin(raw_out, radio_in); // Radio
   } else {
-    copier.begin(all_out, speakers_out); // I2SStream Full Duplex
+    // copier.begin(all_out, speakers_out); // I2SStream Full Duplex
   }
   copier.setActive(true);
 }

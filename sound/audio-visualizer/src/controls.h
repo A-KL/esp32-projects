@@ -16,7 +16,7 @@ void IRAM_ATTR readEncoderISR()
   encoder_right.readEncoder_ISR();
 }
 
-static int desired_radio_station = 1;
+static int desired_radio_station = -1;
 static unsigned long last_radio_station_change = millis();
 static const unsigned long radio_change_delay = 2000; // ms
 
@@ -31,7 +31,10 @@ void setRadioStation(int station)
 
 void loopChangeRadio()
 {
-  if (desired_radio_station != radio_in.getSelected()) {
+  if (desired_radio_station == -1) {
+    return;
+  }
+  if (desired_radio_station != radio_in.getSelected() ) {
     auto now = millis();
 
     if (now - last_radio_station_change < radio_change_delay) {
@@ -83,29 +86,34 @@ void loopControls()
     last_radio_station_change = millis();
     desired_radio_station = value;
 
-    LOGI("Desired radio station number: %d", value+1);
+    LOGI("Desired radio station number: %ld", value+1);
 
     form.track.SetText(radio_in.getTitle(desired_radio_station));
     form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
 	}
 
+  /* Change output: Headphones / Speakers */
 	if (encoder_left.isEncoderButtonClicked())
 	{
-    static bool mb_visible = false;
+    static bool mb_visible = true;
+
+    selectAudioOutput(mb_visible);
     
-    if (mb_visible){
-      form.hideMessage(); 
-    } else {
-      form.showMessage("DEMO");
-    }
+    // if (mb_visible){
+    //   form.hideMessage(); 
+    // } else {
+    //   form.showMessage("DEMO");
+    // }
     mb_visible = !mb_visible;
+
+    delay(20);
 	}
 
   /* Volume control */
   if (encoder_right.encoderChanged())
 	{
       auto value = encoder_right.readEncoder();
-      LOGI("Volume: %d", value);
+      LOGI("Volume: %ld", value);
       setVolume(value);
 	}
   /* Mute control */
@@ -113,6 +121,16 @@ void loopControls()
 	{
       switchMuted();
 	}
+
+  // if (lgfx::v1::gpio_in(14) == 0) 
+  // {
+  //   if (radio_in)
+  //     radio_in.end();
+  //   else
+  //     radio_in.select(1);
+
+  //   lgfx::delay(50);
+  // } 
 
   loopChangeRadio();
 }

@@ -45,12 +45,15 @@ class RadioStream : public URLStream {
     }
 
     void select(const int index) {
-      auto channel = constrain(index, 0, _radios.size()-1);
+      int channel = constrain(index, 0, _radios.size()-1);
+      LOGI("RadioStream::select %d -> %d", _selected_radio, channel);
 
       if (_selected_radio != channel) {
-        end();
-        delay(500);
+        URLStream::end();
+        LOGD("RadioStream::end");
+        delay(100);
         begin(channel);
+        LOGD("RadioStream::begin");
       }
       _selected_radio = channel;
     }

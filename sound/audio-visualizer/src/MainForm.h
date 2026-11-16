@@ -162,8 +162,8 @@ private:
     UILabel messageBoxText;
 
     UILabel icons[6] {
-        {{ 00,                                         0, 50, 18 }, "HDPH", Color::Gray, Color::Gray, 2},
-        {{ 50 + 2,                                     0, 50, 18 }, "SPKR", Color::Gray, Color::Gray, 2},
+        {{ 00,                                         0, 50, 18 }, "SPKR", Color::Gray, Color::Gray, 2},
+        {{ 50 + 2,                                     0, 50, 18 }, "HDPH", Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2,                            0, 42, 18 }, "RDS",  Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2 + 42 + 2,                   0, 50, 18 }, "LINE", Color::Gray, Color::Gray, 2},
         {{ 50 + 2 + 50 + 2 + 42 + 2 + 50 + 2,          0, 50, 18 }, "USB",  Color::Gray, Color::Gray, 2},

@@ -61,7 +61,7 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
-NumberFormatConverterStream convert(speakers_out[I2S_COUNT-1]);
+NumberFormatConverterStream convert(speakers_out[0]);
 
 MP3DecoderHelix helix;
 VolumeStream volume_out(convert);
@@ -97,7 +97,6 @@ void fftResult(AudioFFTBase &fft)
 void printMetaData(MetaDataType type, const char* str, int len)
 {
   LOGW("%s: %s", toStr(type), str);
-
   if (type == Title) {
     form.track.SetText(str);
   }
@@ -106,19 +105,9 @@ void printMetaData(MetaDataType type, const char* str, int len)
 void selectAudioOutput(uint8_t index)
 {
 #if defined(I2S_COUNT) and (I2S_COUNT>1)
-  if (index == 0) {
-    // all_out.remove(headphones_out);
-    // all_out.add(volume_out);
-    convert.setOutput(speakers_out[index]);
-  }
-  if (index == 1) {
-    // all_out.remove(volume_out);
-    // all_out.add(headphones_out);
-    convert.setOutput(speakers_out[index]);
-  }
-
-  form.setIcon(0, index == 1);
-  form.setIcon(1, index == 0);
+  convert.setOutput(speakers_out[index]);
+  form.setIcon(0, index == 0);
+  form.setIcon(1, index == 1);
 #endif
 }
 
@@ -169,6 +158,8 @@ void setupAudio(const int mode = 0)
 // #endif
   output_streams_config(speakers_out, I2S_COUNT);
 
+  selectAudioOutput(0);
+
   // form.setIcon(2, true); // RDS
 
   // Out - FFT
@@ -177,8 +168,8 @@ void setupAudio(const int mode = 0)
   tcfg.channels = info_in.channels;
   tcfg.sample_rate = info_in.sample_rate;
   tcfg.bits_per_sample = info_in.bits_per_sample;
-  // tcfg.window_function = new BufferedWindow(new Hamming());
-  tcfg.window_function = new FlatTop();
+  tcfg.window_function = new BufferedWindow(new Hamming());
+  // tcfg.window_function = new FlatTop();
   tcfg.callback = &fftResult;
   fft_out.begin(tcfg);
 

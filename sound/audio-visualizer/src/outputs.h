@@ -37,12 +37,8 @@
   CONFIG_OUTPUT_MCK(config); \
   CONFIG_OUTPUT_RX(config); \
 
-// // The unnumbered I2S_* flags configure the first output. Additional outputs
-// // use I2S_<index>_* flags, starting at index 1.
-// #define I2S_OUTPUT_NAME(index, field) I2S_OUTPUT_NAME_(index, field)
-// #define I2S_OUTPUT_NAME_(index, field) I2S_ ## index ## _ ## field
-
 #define CONFIG_OUTPUTS(config, index) \
+  (config).port_no = index; \
   (config).pin_ws = I2S_ ## index ## _ ## WS; \
   (config).pin_bck = I2S_ ## index ## _ ## BCK; \
   (config).pin_data = I2S_ ## index ## _ ## SD; \
@@ -52,22 +48,25 @@ template <typename TConfig>
 inline void output_config(TConfig& config, int index = 0)
 {
 #if defined ARDUINO_ARCH_ESP32
+
   if (index == 0) {
-    // Old pin config
     #ifdef I2S_WS
       CONFIG_OUTPUT(config);
     #else
       CONFIG_OUTPUTS(config, 0);
     #endif
   } 
-#if defined(I2S_COUNT) and not defined(I2S_WS)
-  else if (index == 1 && ) {
+#if defined(I2S_1_WS) and (defined(I2S_COUNT) && (I2S_COUNT > 1))
+  else if (index == 1) {
     CONFIG_OUTPUTS(config, 1);
   }
-  else if (index == 2 && I2S_COUNT > 1) {
+#endif
+#if defined(I2S_2_WS) and (defined(I2S_COUNT) && (I2S_COUNT > 2))
+  else if (index == 2) {
     CONFIG_OUTPUTS(config, 2);
   }
-# endif
+#endif
+
 #endif
 }
 
@@ -78,6 +77,7 @@ inline void output_streams_config(TStream* streams, int count)
   {
     auto config = streams[i].defaultConfig();
     output_config(config, i);
+    config.logInfo();
     streams[i].begin(config);
   }
 }

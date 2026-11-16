@@ -61,6 +61,7 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
+// Equalizer3Bands eq(convert);
 NumberFormatConverterStream convert(speakers_out[0]);
 
 MP3DecoderHelix helix;
@@ -131,47 +132,27 @@ void setupAudio(const int mode = 0)
   vu_out.begin(info_in);
 
   // Out - Speakers
-// #ifdef ARDUINO_ARCH_ESP32
-//   auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
-//   config.copyFrom(info_out);
-//   config.pin_ws      = I2S_WS;
-//   config.pin_bck     = I2S_BCK;
-//   config.pin_data    = I2S_SD;
-// #if defined(I2S_MASTER)
-//   config.is_master   = I2S_MASTER;
-// #else
-//   config.is_master   = true;
-// #endif
-// #if defined(I2S_MCLK_MULTIPLE)
-//   config.mclk_multiple = I2S_MCLK_MULTIPLE;
-// #endif
-// #if defined(I2S_MCK)
-//   config.pin_mck     = I2S_MCK;
-// #endif
-// #if defined(I2S_IN_SD)
-//   config.pin_data_rx = I2S_IN_SD;
-// #endif
-// #else
-//   // auto config = speakers_out[I2S_COUNT-1].defaultConfig();
-//   // output_config(config, I2S_COUNT-1);
-//   // config.copyFrom(info_out);
-// #endif
   output_streams_config(speakers_out, I2S_COUNT);
-
   selectAudioOutput(0);
 
-  // form.setIcon(2, true); // RDS
+  // Out - EQ
+  // cfg_eq = eq.defaultConfig();
+  // cfg_eq.setAudioInfo(cfg); // use channels, bits_per_sample and sample_rate from kit
+  // cfg_eq.gain_low = 0.5; 
+  // cfg_eq.gain_medium = 0.5;
+  // cfg_eq.gain_high = 1.0;
+  // eq.begin(cfg_eq);
 
   // Out - FFT
-  auto tcfg = fft_out.defaultConfig();
-  tcfg.length = 4096;
-  tcfg.channels = info_in.channels;
-  tcfg.sample_rate = info_in.sample_rate;
-  tcfg.bits_per_sample = info_in.bits_per_sample;
-  tcfg.window_function = new BufferedWindow(new Hamming());
-  // tcfg.window_function = new FlatTop();
-  tcfg.callback = &fftResult;
-  fft_out.begin(tcfg);
+  auto cfg_fft = fft_out.defaultConfig();
+  cfg_fft.length = 4096;
+  cfg_fft.channels = info_in.channels;
+  cfg_fft.sample_rate = info_in.sample_rate;
+  cfg_fft.bits_per_sample = info_in.bits_per_sample;
+  // cfg_fft.window_function = new BufferedWindow(new Hamming());
+  cfg_fft.window_function = new FlatTop();
+  cfg_fft.callback = &fftResult;
+  fft_out.begin(cfg_fft);
 
   // Out - metadata 
   metadata_out.setCallback(printMetaData);

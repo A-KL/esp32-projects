@@ -1,119 +1,95 @@
 #pragma once
 
-#include "AudioTools.h"
-
-#define CONFIG_OUTPUT \
-  config.pin_ws      = I2S_WS; \
-  config.pin_bck     = I2S_BCK; \
-  config.pin_data    = I2S_SD; \
-  ## if defined(I2S_MASTER) \
-    config.is_master   = I2S_MASTER; \ 
-  ## else \
-    config.is_master   = true; \
-  ## endif \
-  ## if defined(I2S_MCLK_MULTIPLE) \
-    config.mclk_multiple = I2S_MCLK_MULTIPLE; \
-  ## endif \
-  ## if defined(I2S_MCK) \
-    config.pin_mck     = I2S_MCK; \
-  ## endif \
-  ## if defined(I2S_IN_SD) \
-    config.pin_data_rx = I2S_IN_SD; \
-  ## endif \
-
-#define CONFIG_OUTPUTS(i) \
-  config.pin_ws      = I2S_##i##_WS; \
-  config.pin_bck     = I2S_##i##_BCK; \
-  config.pin_data    = I2S_##i##_SD; \
-  ## if defined(I2S_##i##_MASTER) \
-    config.is_master   = I2S_##i##_MASTER; \ 
-  ## else \
-    config.is_master   = true; \
-  ## endif \
-  ## if defined(I2S_##i##_MCLK_MULTIPLE) \
-    config.mclk_multiple = I2S_##i##_MCLK_MULTIPLE; \
-  ## endif \
-  ## if defined(I2S_##i##_MCK) \
-    config.pin_mck     = I2S_##i##_MCK; \
-  ## endif \
-  ## if defined(I2S_##i##_IN_SD) \
-    config.pin_data_rx = I2S_##i##_IN_SD; \
-  ## endif \
-
-void output_config(AudioInfo* configs)
-{
-#ifdef ARDUINO_ARCH_ESP32
-# if not defined(I2S_COUNT)
-  CONFIG_OUTPUT
-#elif (I2S_COUNT==1)
-  CONFIG_OUTPUTS(0)
-#elif (I2S_COUNT==2)
-  CONFIG_OUTPUT
-  CONFIG_OUTPUTS(0)
+#ifndef I2S_COUNT
+#define I2S_COUNT 1
 #endif
 
-//   config.pin_ws      = I2S_WS;
-//   config.pin_bck     = I2S_BCK;
-//   config.pin_data    = I2S_SD;
-// # if defined(I2S_MASTER)
-//   config.is_master   = I2S_MASTER;
-// # else
-//   config.is_master   = true;
-// # endif
-// # if defined(I2S_MCLK_MULTIPLE)
-//   config.mclk_multiple = I2S_MCLK_MULTIPLE;
-// # endif
-// # if defined(I2S_MCK)
-//   config.pin_mck     = I2S_MCK;
-// # endif
-// # if defined(I2S_IN_SD)
-//   config.pin_data_rx = I2S_IN_SD;
-// # endif
+#ifdef I2S_MASTER
+  #define CONFIG_OUTPUT_MASTER(config) ((config).is_master = I2S_MASTER)
+#else
+  #define CONFIG_OUTPUT_MASTER(config) ((config).is_master = true)
 #endif
-}
 
-void output_speakers_config(AudioInfo& config)
+#ifdef I2S_MCLK_MULTIPLE
+  #define CONFIG_OUTPUT_MCLK(config) ((config).mclk_multiple = I2S_MCLK_MULTIPLE)
+#else
+  #define CONFIG_OUTPUT_MCLK(config)
+#endif
+
+#ifdef I2S_MCK
+  #define CONFIG_OUTPUT_MCK(config) ((config).pin_mck = I2S_MCK)
+#else
+  #define CONFIG_OUTPUT_MCK(config)
+#endif
+
+#ifdef I2S_IN_SD
+  #define CONFIG_OUTPUT_RX(config) ((config).pin_data_rx = I2S_IN_SD)
+#else
+  #define CONFIG_OUTPUT_RX(config)
+#endif
+
+#define CONFIG_OUTPUT(config) \
+  (config).pin_ws = I2S_WS; \
+  (config).pin_bck = I2S_BCK; \
+  (config).pin_data = I2S_SD; \
+  CONFIG_OUTPUT_MASTER(config); \
+  CONFIG_OUTPUT_MCLK(config); \
+  CONFIG_OUTPUT_MCK(config); \
+  CONFIG_OUTPUT_RX(config); \
+
+// // The unnumbered I2S_* flags configure the first output. Additional outputs
+// // use I2S_<index>_* flags, starting at index 1.
+// #define I2S_OUTPUT_NAME(index, field) I2S_OUTPUT_NAME_(index, field)
+// #define I2S_OUTPUT_NAME_(index, field) I2S_ ## index ## _ ## field
+
+#define CONFIG_OUTPUTS(config, index) \
+  (config).pin_ws = I2S_ ## index ## _ ## WS; \
+  (config).pin_bck = I2S_ ## index ## _ ## BCK; \
+  (config).pin_data = I2S_ ## index ## _ ## SD; \
+  (config).is_master = I2S_ ## index ## _ ## MASTER; \
+
+template <typename TConfig>
+inline void output_config(TConfig& config, int index = 0)
 {
-#ifdef ARDUINO_ARCH_ESP32
-  config.pin_ws      = I2S_WS;
-  config.pin_bck     = I2S_BCK;
-  config.pin_data    = I2S_SD;
-# if defined(I2S_MASTER)
-  config.is_master   = I2S_MASTER;
-# else
-  config.is_master   = true;
-# endif
-# if defined(I2S_MCLK_MULTIPLE)
-  config.mclk_multiple = I2S_MCLK_MULTIPLE;
-# endif
-# if defined(I2S_MCK)
-  config.pin_mck     = I2S_MCK;
-# endif
-# if defined(I2S_IN_SD)
-  config.pin_data_rx = I2S_IN_SD;
+#if defined ARDUINO_ARCH_ESP32
+  if (index == 0) {
+    // Old pin config
+    #ifdef I2S_WS
+      CONFIG_OUTPUT(config);
+    #else
+      CONFIG_OUTPUTS(config, 0);
+    #endif
+  } 
+#if defined(I2S_COUNT) and not defined(I2S_WS)
+  else if (index == 1 && ) {
+    CONFIG_OUTPUTS(config, 1);
+  }
+  else if (index == 2 && I2S_COUNT > 1) {
+    CONFIG_OUTPUTS(config, 2);
+  }
 # endif
 #endif
 }
 
-void output_headphones_config(AudioInfo& config)
+template <typename TStream>
+inline void output_streams_config(TStream* streams, int count)
 {
-#ifdef ARDUINO_ARCH_ESP32
-  config.pin_ws      = I2S_WS_H;
-  config.pin_bck     = I2S_BCK_H;
-  config.pin_data    = I2S_SD_H;
-# if defined(I2S_MASTER_H)
-  config.is_master   = I2S_MASTER_H;
-# else
-  config.is_master   = true;
-# endif
-# if defined(I2S_MCLK_MULTIPLE_H)
-  config.mclk_multiple = I2S_MCLK_MULTIPLE_H;
-# endif
-# if defined(I2S_MCK_H)
-  config.pin_mck     = I2S_MCK_H;
-# endif
-# if defined(I2S_IN_SD_H)
-  config.pin_data_rx = I2S_IN_SD_H;
-# endif
-#endif
+  for (int i=0; i<count; i++)
+  {
+    auto config = streams[i].defaultConfig();
+    output_config(config, i);
+    streams[i].begin(config);
+  }
+}
+
+template <typename TStream>
+inline void output_streams_config(TStream* streams, const AudioInfo& info, int count)
+{
+  for (int i=0; i<count; i++)
+  {
+    auto config = streams[i].defaultConfig();
+    config.copyFrom(info);
+    output_config(config, i);
+    streams[i].begin(config);
+  }
 }

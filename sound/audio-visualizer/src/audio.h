@@ -7,6 +7,7 @@
 #include "RadioStream.h"
 #include "bands.h"
 #include "VuOutput.h"
+#include "outputs.h"
 
 #if __has_include(<codec.h>)
   #include "codec.h"
@@ -34,15 +35,13 @@ const std::vector<RadioStation> Playlist = {
 #endif
 
 #ifdef ARDUINO_ARCH_ESP32
-  I2SStream speakers_out;
-  I2SStream headphones_out;
+  I2SStream speakers_out[I2S_COUNT];
   // I2SStream stream_in;
 #else
   #include <iostream>
   #include "AudioTools/AudioLibs/PortAudioStream.h"
   // #include "AudioTools/Disk/FileSystem.h"
-  PortAudioStream speakers_out;
-  PortAudioStream headphones_out;
+  PortAudioStream speakers_out[I2S_COUNT];
   // File radio_in("./sound/file_example_MP3_700KB.mp3");
   // File stream_in("./sound/M1F1-int16WE-AFsp.wav");
 #endif
@@ -62,7 +61,7 @@ MetaDataOutput metadata_out;
 MultiOutput all_out;
 MultiOutput raw_out;
 
-NumberFormatConverterStream convert(speakers_out);
+NumberFormatConverterStream convert(speakers_out[I2S_COUNT-1]);
 
 MP3DecoderHelix helix;
 VolumeStream volume_out(convert);
@@ -106,19 +105,21 @@ void printMetaData(MetaDataType type, const char* str, int len)
 
 void selectAudioOutput(uint8_t index)
 {
+#if defined(I2S_COUNT) and (I2S_COUNT>1)
   if (index == 0) {
     // all_out.remove(headphones_out);
     // all_out.add(volume_out);
-    convert.setOutput(speakers_out);
+    convert.setOutput(speakers_out[index]);
   }
   if (index == 1) {
     // all_out.remove(volume_out);
     // all_out.add(headphones_out);
-    convert.setOutput(headphones_out);
+    convert.setOutput(speakers_out[index]);
   }
 
   form.setIcon(0, index == 1);
   form.setIcon(1, index == 0);
+#endif
 }
 
 // 0 = radio
@@ -141,32 +142,32 @@ void setupAudio(const int mode = 0)
   vu_out.begin(info_in);
 
   // Out - Speakers
-#ifdef ARDUINO_ARCH_ESP32
-  auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
-  config.copyFrom(info_out);
-  config.pin_ws      = I2S_WS;
-  config.pin_bck     = I2S_BCK;
-  config.pin_data    = I2S_SD;
-#if defined(I2S_MASTER)
-  config.is_master   = I2S_MASTER;
-#else
-  config.is_master   = true;
-#endif
-#if defined(I2S_MCLK_MULTIPLE)
-  config.mclk_multiple = I2S_MCLK_MULTIPLE;
-#endif
-#if defined(I2S_MCK)
-  config.pin_mck     = I2S_MCK;
-#endif
-#if defined(I2S_IN_SD)
-  config.pin_data_rx = I2S_IN_SD;
-#endif
-#else
-  auto config = speakers_out.defaultConfig();
-  // config.copyFrom(info_out);
-#endif
-  speakers_out.begin(config);
-  headphones_out.begin(config);
+// #ifdef ARDUINO_ARCH_ESP32
+//   auto config = speakers_out.defaultConfig(mode == 0 ? TX_MODE : RXTX_MODE);
+//   config.copyFrom(info_out);
+//   config.pin_ws      = I2S_WS;
+//   config.pin_bck     = I2S_BCK;
+//   config.pin_data    = I2S_SD;
+// #if defined(I2S_MASTER)
+//   config.is_master   = I2S_MASTER;
+// #else
+//   config.is_master   = true;
+// #endif
+// #if defined(I2S_MCLK_MULTIPLE)
+//   config.mclk_multiple = I2S_MCLK_MULTIPLE;
+// #endif
+// #if defined(I2S_MCK)
+//   config.pin_mck     = I2S_MCK;
+// #endif
+// #if defined(I2S_IN_SD)
+//   config.pin_data_rx = I2S_IN_SD;
+// #endif
+// #else
+//   // auto config = speakers_out[I2S_COUNT-1].defaultConfig();
+//   // output_config(config, I2S_COUNT-1);
+//   // config.copyFrom(info_out);
+// #endif
+  output_streams_config(speakers_out, I2S_COUNT);
 
   // form.setIcon(2, true); // RDS
 

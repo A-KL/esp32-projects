@@ -4,6 +4,10 @@
 #define I2S_COUNT 1
 #endif
 
+#ifndef I2S_DEFAULT
+#define I2S_DEFAULT 0
+#endif
+
 #ifdef I2S_MASTER
   #define CONFIG_OUTPUT_MASTER(config) ((config).is_master = I2S_MASTER)
 #else

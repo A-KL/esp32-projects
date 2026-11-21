@@ -118,8 +118,6 @@ bool _FreqCountESP::begin(uint16_t timerMs, uint8_t hwTimerId)
 //   va_list args;
 //   va_start(args, hwTimerId);
 
-
-
 //   va_end(args);
 // }
 

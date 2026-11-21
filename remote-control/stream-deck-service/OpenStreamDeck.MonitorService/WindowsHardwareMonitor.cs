@@ -44,7 +44,7 @@ public class WindowsHardwareMonitor(ILogger<WindowsHardwareMonitor> logger) : IH
             var temp = cpu.Sensors
                 .Where(x => x.SensorType == SensorType.Temperature)
                 .Where(x => x.Name == "Core Average")
-                .Max(x => x.Value);
+                .Max(x => x.Value) ?? 0;
 
             var load = cpu.Sensors
                 .Where(x => x.SensorType == SensorType.Load)

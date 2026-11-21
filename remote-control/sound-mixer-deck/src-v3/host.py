@@ -1,8 +1,11 @@
+# pip3 install pySerialTransfer
+# pip3 install pillow
+
 import time
 import struct
-from pySerialTransfer import pySerialTransfer as txfer
+from PIL import Image, ImageFont, ImageDraw 
 
-# pip3 install pySerialTransfer
+from pySerialTransfer import pySerialTransfer as txfer
 
 logo_w = 115
 logo_h = 32
@@ -136,12 +139,8 @@ def display_draw(connection, display, x, y, w, h, data):
         dataLen = min(data_per_packet, size_body - fileIndex)
         
         batch = data[fileIndex:fileIndex+dataLen]
-        
-        size = connection.tx_obj(fileIndex, val_type_override='h')
-        print(f'Data header size: ({fileIndex}) {size}')
 
-        size = connection.tx_struct_obj(bytes(batch), start_pos=size)
-        # size = link.tx_obj(batch, start_pos=size)
+        size = connection.tx_struct_obj(bytes(batch))
         print(f'Total data batch size: {size}')
         
         connection.send(size, 1)
@@ -149,6 +148,13 @@ def display_draw(connection, display, x, y, w, h, data):
 
 if __name__ == '__main__':
     try:
+        img = Image.new( 'L', (128, 32))
+        font = ImageFont.truetype("~/Library/Fonts/ObliviousFont.ttf", 15)
+        context = ImageDraw.Draw(img)
+        t = time.strftime("%H:%M:%S", time.gmtime())
+        context.text((64, 16), t, font=font, anchor="mm", fill=(255))
+        img.show() 
+    
         link = txfer.SerialTransfer('/dev/cu.usbserial-A5069RR4')
         
         if not link.open():
@@ -163,11 +169,13 @@ if __name__ == '__main__':
         while True:
             # display_draw(link, 0, 0, 0, logo_w, logo_h, logo)
             display_draw(link, 0, 0, 0, 32, 32, logo_v4)
-            time.sleep(1)
+            time.sleep(0.5)
             display_draw(link, 0, 32, 0, 32, 32, logo_v4)
-            time.sleep(1)
+            time.sleep(0.5)
             display_draw(link, 0, 64, 0, 32, 32, logo_v4)
-            time.sleep(1)
+            time.sleep(0.5)
+            display_draw(link, 0, 96, 0, 32, 32, logo_v4)
+            time.sleep(0.5)
             continue
             link.close()
             break

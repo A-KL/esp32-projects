@@ -26,6 +26,7 @@ struct __attribute__((packed)) update_rect_info_t {
 OLED display(SDA, SCL);
 
 SerialTransfer connection;
+uint32_t received_image_bytes = 0;
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -70,28 +71,29 @@ void loop()
   if (connection.currentPacketID() == UPDATE_RECT_INFO_PACKET_ID)
   {
     connection.rxObj(rect_info);
+    received_image_bytes = 0;
     display.clear();
     return;
   }
 
   if (connection.currentPacketID() == UPDATE_RECT_DATA_PACKET_ID
-      && connection.bytesRead >= sizeof(uint16_t)
+      && connection.bytesRead > 0
       && rect_info.w != 0
       && rect_info.h != 0)
   {
-    uint16_t batch_index = 0;
-    connection.rxObj(batch_index);
-
     const uint32_t rect_size = static_cast<uint32_t>(rect_info.w) * rect_info.h;
-    const uint8_t payload_size = connection.bytesRead - sizeof(batch_index);
-    const uint32_t first_pixel_index = static_cast<uint32_t>(batch_index) * 8;
-    if (first_pixel_index >= rect_size)
+    const uint32_t expected_image_bytes = (rect_size + 7) / 8;
+    if (received_image_bytes >= expected_image_bytes)
       return;
+
+    const uint8_t payload_size = min(
+        static_cast<uint32_t>(connection.bytesRead),
+        expected_image_bytes - received_image_bytes);
 
     for (uint8_t i = 0; i < payload_size; i++)
     {
-      const uint8_t pixel_byte = connection.packet.rxBuff[sizeof(batch_index) + i];
-      const uint32_t byte_pixel_index = first_pixel_index + static_cast<uint32_t>(i) * 8;
+      const uint8_t pixel_byte = connection.packet.rxBuff[i];
+      const uint32_t byte_pixel_index = (received_image_bytes + i) * 8;
 
       for (uint8_t bit = 0; bit < 8; bit++)
       {
@@ -111,6 +113,7 @@ void loop()
       }
     }
 
+    received_image_bytes += payload_size;
     display.display();
   }
 }

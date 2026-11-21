@@ -1,6 +1,5 @@
 #include "AudioTools.h"
-#include <Adafruit_NeoPixel.h> 
-#include "NumberFormatConverterStreamV2.h"
+// #include <Adafruit_NeoPixel.h> 
 // // // #include "I2SAutoStream.h"
 // // #include "AutoAudioInfo.h"
 
@@ -86,7 +85,7 @@ NumberFormatConverterStream nfc(i2s);
 EncodedAudioStream dec(&nfc, new MP3DecoderHelix());
 StreamCopy copier(dec, url);
 
-AudioInfo from(44100,2,16);
+AudioInfo from(44100,2, 16);
 AudioInfo to(44100,2, 32);
 
 void setup(){
@@ -99,9 +98,9 @@ void setup(){
   // setup i2s
   auto config = i2s.defaultConfig(TX_MODE);
   config.copyFrom(to); 
-  config.pin_ws = 7; // 4;
-  config.pin_bck = 8; //5;
-  config.pin_data = 9; //6;
+  config.pin_ws = 2; // 7; // 4;
+  config.pin_bck = 3;//8; //5;
+  config.pin_data = 6;//9; //6;
   config.is_master = true;
   i2s.begin(config);
 

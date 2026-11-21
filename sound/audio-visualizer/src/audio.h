@@ -3,6 +3,7 @@
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
 #include "AudioTools/FFT/AudioRealFFT.h"
+
 #include "RadioStation.h"
 #include "RadioStream.h"
 #include "bands.h"
@@ -14,7 +15,7 @@
 #endif
 
 //                                            I2SStream-In -|                |-> AudioRealFFT
-//                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> NumberFormatConverterStream -> PortAudioStream [I2SStream]
+//                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> NumberFormatConverterStreamV2 -> PortAudioStream [I2SStream]
 // RadioStream [File] -> MultiOutput -|                                      |-> VolumeMeter
 //                                    |-> MetaDataOutput
 //

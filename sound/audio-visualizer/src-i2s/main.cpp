@@ -1,6 +1,6 @@
-// // #include "AudioTools.h"
-// // #include <Adafruit_NeoPixel.h> 
-
+#include "AudioTools.h"
+#include <Adafruit_NeoPixel.h> 
+#include "NumberFormatConverterStreamV2.h"
 // // // #include "I2SAutoStream.h"
 // // #include "AutoAudioInfo.h"
 
@@ -75,90 +75,91 @@
 // //   detector.loop();
 // // }
 
-// #include "AudioTools.h"
-// #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
-// #include "AudioTools/Communication/AudioHttp.h"
+/* RADIO */
 
-// URLStream url(WIFI_SSID, WIFI_PASSWORD);
-// I2SStream i2s;
-// NumberFormatConverterStream nfc(i2s);
-// EncodedAudioStream dec(&nfc, new MP3DecoderHelix());
-// StreamCopy copier(dec, url);
+#include "AudioTools/AudioCodecs/CodecMP3Helix.h"
+#include "AudioTools/Communication/AudioHttp.h"
 
-// AudioInfo info(44100, 2, 16);
-// AudioInfo info_out(44100, 2, 32);
-
-// void setup(){
-//   Serial.begin(115200);
-//   AudioLogger::instance().begin(Serial, AudioLogger::Info);
-  
-//   nfc.addNotifyAudioChange(i2s);
-//   // convert 16 bits to 32, you could also change the gain
-//   nfc.begin(16, 32);
-
-//   // setup i2s
-//   auto config = i2s.defaultConfig(TX_MODE);
-//   config.copyFrom(info_out); 
-//   // you could define e.g your pins and change other settings
-//   config.pin_ws = 7; // 4;
-//   config.pin_bck = 8; //5;
-//   config.pin_data = 9; //6;
-//   config.pin_mck = -1;
-//   config.is_master = true;
-
-//   i2s.begin(config);
-
-//   // setup I2S based on sampling rate provided by decoder
-//   dec.begin(info);
-
-// // mp3 radio
-//   url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
-// }
-
-// void loop(){
-//   copier.copy();
-// }
-
-#include "AudioTools.h"
+URLStream url(WIFI_SSID, WIFI_PASSWORD);
+I2SStream i2s;
+NumberFormatConverterStream nfc(i2s);
+EncodedAudioStream dec(&nfc, new MP3DecoderHelix());
+StreamCopy copier(dec, url);
 
 AudioInfo from(44100,2,16);
-AudioInfo to(44100,2,32);
+AudioInfo to(44100,2, 32);
 
-SineWaveGenerator<int16_t> sineWave(32000);          // subclass of SoundGenerator with max amplitude of 32000
-GeneratedSoundStream<int16_t> sound(sineWave);       // Stream generated from sine wave
-I2SStream out;   // or any other e.g. AudioBoardStream, CsvOutput<int16_t> out(Serial); 
-
-FormatConverterStream converter(sound);  // or use converter(out)
-StreamCopy copier(out, converter);       //        copier(converter, sound);     
-
-// Arduino Setup
-void setup(void) {
-  // Open Serial 
+void setup(){
   Serial.begin(115200);
-  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
+  AudioLogger::instance().begin(Serial, AudioLogger::Info);
+  
+  nfc.addNotifyAudioChange(i2s);
+  nfc.begin(from, to);
 
-  // Setup Input
-  sineWave.begin(from, N_B4);
-  sound.begin(from);
-
-  // Define Converter
-  converter.begin(from, to);
-
-  // Start Output
-  Serial.println("starting I2S...");
-  auto config = out.defaultConfig(TX_MODE);
-  config.copyFrom(to);
+  // setup i2s
+  auto config = i2s.defaultConfig(TX_MODE);
+  config.copyFrom(to); 
   config.pin_ws = 7; // 4;
   config.pin_bck = 8; //5;
   config.pin_data = 9; //6;
-  // config.pin_mck = -1;
   config.is_master = true;
-  out.begin(config);
+  i2s.begin(config);
 
-  Serial.println("started...");
+  // setup I2S based on sampling rate provided by decoder
+  dec.begin(from);
+
+// mp3 radio
+  url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");
 }
 
-// Arduino loop - copy sound to out 
-void loop() {
+/* GENERATOR */
+
+// AudioInfo from(44100, 2, 16);
+// AudioInfo to(44100, 2, 32);
+
+// SineWaveGenerator<int16_t> sineWave;  // subclass of SoundGenerator with max amplitude of 32000
+// GeneratedSoundStream<int16_t> generator(sineWave);
+
+// I2SStream out;
+// FormatConverterStream converter(out);
+// // NumberFormatConverterStream converter(out);
+
+// StreamCopy copier(converter, generator);
+// bool i2s_started = false;
+
+// // Arduino Setup
+// void setup(void) {
+//   // Open Serial 
+//   Serial.begin(115200);
+//   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+//   delay(3000);
+
+//   // Setup Input
+//   sineWave.begin(from, N_B4);
+//   generator.begin(from);
+
+//   // Setup Converter
+//   converter.addNotifyAudioChange(out);
+//   // converter.begin(16, 32);
+//   converter.begin(from, to);
+
+//   // Start Output
+//   Serial.println("starting I2S...");
+//   auto config = out.defaultConfig(TX_MODE);
+//   config.copyFrom(to);
+//   config.pin_ws = 7; // 4;
+//   config.pin_bck = 8; //5;
+//   config.pin_data = 9; //6;
+//   // config.pin_mck = 10;
+//   config.bits_per_sample = 32;
+//   config.is_master = true;
+//   Serial.printf("I2S config: %d Hz, %d channels, %d bits; BCK=%d WS=%d DATA=%d\n",
+//                 config.sample_rate, config.channels, config.bits_per_sample,
+//                 config.pin_bck, config.pin_ws, config.pin_data);
+//   i2s_started = out.begin(config);
+//   Serial.println(i2s_started ? "I2S started" : "ERROR: I2S start failed");
+// }
+
+void loop(){
   copier.copy();
 }

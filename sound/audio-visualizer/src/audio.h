@@ -9,6 +9,7 @@
 #include "bands.h"
 #include "VuOutput.h"
 #include "outputs.h"
+#include "NumberFormatConverterStreamV2.h"
 
 #if __has_include(<codec.h>)
   #include "codec.h"
@@ -67,7 +68,7 @@ MultiOutput all_out;
 MultiOutput raw_out;
 
 // Equalizer3Bands eq(convert);
-NumberFormatConverterStream convert(speakers_out[I2S_DEFAULT]);
+NumberFormatConverterStreamV2 convert(speakers_out[I2S_DEFAULT]);
 
 MP3DecoderHelix helix;
 VolumeStream volume_out(convert);

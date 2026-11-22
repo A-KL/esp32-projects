@@ -117,21 +117,12 @@ void loopControls()
       LOGI("Volume: %ld", value);
       setVolume(value);
 	}
+  
   /* Mute control */
   if (encoder_right.isEncoderButtonClicked())
 	{
       switchMuted();
 	}
-
-  // if (lgfx::v1::gpio_in(14) == 0) 
-  // {
-  //   if (radio_in)
-  //     radio_in.end();
-  //   else
-  //     radio_in.select(1);
-
-  //   lgfx::delay(50);
-  // } 
 
   loopChangeRadio();
 }

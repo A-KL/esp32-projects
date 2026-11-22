@@ -88,6 +88,18 @@ StreamCopy copier(dec, url);
 AudioInfo from(44100,2, 16);
 AudioInfo to(44100,2, 32);
 
+// StreamCopy copier(raw_out, url);
+// MultiOutput raw_out;
+// MetaDataOutput metadata_out;
+
+// void printMetadata(MetaDataType type, const char* str, int len)
+// {
+//   LOGW("%s: %s\n", toStr(type), str);
+//   if (type == Title) {
+//     form.track.SetText(str);
+//   }
+// }
+
 void setup(){
   Serial.begin(115200);
   AudioLogger::instance().begin(Serial, AudioLogger::Info);
@@ -104,8 +116,15 @@ void setup(){
   config.is_master = true;
   i2s.begin(config);
 
+  // metadata_out.setCallback(printMetadata);
+  // metadata_out.begin();
+
   // setup I2S based on sampling rate provided by decoder
   dec.begin(from);
+
+  // raw_out.add(dec);
+  // raw_out.add(metadata_out);
+  // raw_out.begin();
 
 // mp3 radio
   url.begin("http://stream.srg-ssr.ch/m/rsj/mp3_128","audio/mp3");

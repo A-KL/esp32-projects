@@ -14,10 +14,11 @@ class RadioStream : public URLStream {
       : URLStream(network, password, readBufferSize), _radios(stations), _selected_radio(0) 
     { }
   
-    virtual bool begin(int index = -1, MethodID action = GET, const char* reqMime = "", const char* reqData = "") {
+    virtual bool begin(int index = 0, MethodID action = GET, const char* reqMime = "", const char* reqData = "") {
       if (index == -1) {
         return false;
       }
+
       _selected_radio = index;
 
       auto success = URLStream::begin(getUrl(), "audio/mp3", action, reqMime, reqData);
@@ -65,7 +66,7 @@ class RadioStream : public URLStream {
 
   private:
     std::vector<RadioStation> _radios;
-    int _selected_radio = 0;
+    int _selected_radio = -1;
 };
 
 }  // namespace audio_tools

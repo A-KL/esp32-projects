@@ -21,7 +21,8 @@
 //
 
 const std::vector<RadioStation> Playlist = {
-  {"SWISS Jazz",           "https://stream.srg-ssr.ch/m/rsj/mp3_128"},
+  {"SWISS Jazz",           "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
+  {"SS", "http://livestreaming-node-1.srg-ssr.ch/srgssr/rsj/mp3/128"},
   {"Radio Roks UA",        "http://online.radioroks.ua/bak_RadioROKS"},
   {"KissFM",               "http://tavr.tvstitch.com/KissFM"},
   {"Classic FM",           "http://media-ice.musicradio.com:80/ClassicFMMP3"},
@@ -49,12 +50,9 @@ const std::vector<RadioStation> Playlist = {
   // File stream_in("./sound/M1F1-int16WE-AFsp.wav");
 #endif
 
-// AudioInfo info(48000, 2, 32);
-AudioInfo info_in(44100, 2, 16);
-AudioInfo info16_out(44100, 2, 16);
-AudioInfo info24_out(44100, 2, 24);
-AudioInfo info32_out(44100, 2, 32);
-
+AudioInfo info_in(48000, 2, 16);
+AudioInfo info24_out(48000, 2, 24);
+AudioInfo info32_out(48000, 2, 32);
 AudioInfo info_out = info32_out;
 
 RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
@@ -75,8 +73,8 @@ MP3DecoderHelix helix;
 VolumeStream volume_out(convert);
 EncodedAudioStream decoder(&all_out, &helix);
 
-// StreamCopy copier(raw_out, radio_in); // Radio
-StreamCopy copier; //(all_out, stream_in); // USB
+StreamCopy copier(raw_out, radio_in); // Radio
+// StreamCopy copier; //(all_out, stream_in); // USB
 
 void log_init()
 {
@@ -91,7 +89,7 @@ void log_init()
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
 }
 
-void fftResult(AudioFFTBase &fft) 
+void onFFTResult(AudioFFTBase &fft) 
 {
     //fft.frequencyToBin()
     for (auto i = 0; i < FTT_BANDS_COUNT; i++) {
@@ -102,9 +100,9 @@ void fftResult(AudioFFTBase &fft)
     }
 }
 
-void printMetaData(MetaDataType type, const char* str, int len)
+void printMetadata(MetaDataType type, const char* str, int len)
 {
-  LOGW("%s: %s", toStr(type), str);
+  LOGW("%s: %s\n", toStr(type), str);
   if (type == Title) {
     form.track.SetText(str);
   }
@@ -113,9 +111,7 @@ void printMetaData(MetaDataType type, const char* str, int len)
 void selectAudioOutput(const uint8_t index)
 {
 #if defined(I2S_COUNT) and (I2S_COUNT>1)
-  // convert.end();
   convert.setOutput(speakers_out[index]);
-  // convert.begin(16, 32);
   form.setIcon(0, index == 0);
   form.setIcon(1, index == 1);
 #endif
@@ -135,8 +131,9 @@ void setupAudio(const int mode = 0)
 # endif
 
   // Input: File or stream
-  radio_in.select(4);
-  form.track.SetText(radio_in.getTitle());
+  radio_in.begin(1);
+  // form.track.SetText(radio_in.getTitle());
+  form.track.SetText(radio_in.getReplyHeader("icy-name"));
 
   // Decoder
   decoder.begin();
@@ -146,7 +143,7 @@ void setupAudio(const int mode = 0)
 
   // Out - Speakers
   output_streams_config(speakers_out, info_out, I2S_COUNT);
-  // selectAudioOutput(I2S_DEFAULT);
+  selectAudioOutput(I2S_DEFAULT);
 
   // Out - EQ
   // cfg_eq = eq.defaultConfig();
@@ -164,12 +161,12 @@ void setupAudio(const int mode = 0)
   cfg_fft.bits_per_sample = info_in.bits_per_sample;
   // cfg_fft.window_function = new BufferedWindow(new Hamming());
   cfg_fft.window_function = new FlatTop();
-  cfg_fft.callback = &fftResult;
+  cfg_fft.callback = &onFFTResult;
   fft_out.begin(cfg_fft);
 
   // Out - metadata 
-  metadata_out.setCallback(printMetaData);
-  metadata_out.begin();
+  // metadata_out.setCallback(printMetadata);
+  // metadata_out.begin(1); //radio_in.httpRequest()
 
   // Out - Volume
   volume_out.setVolumeControl(lvc);
@@ -187,17 +184,16 @@ void setupAudio(const int mode = 0)
   all_out.add(volume_out);
   all_out.add(vu_out);
   all_out.add(fft_out);
-
-  all_out.begin(info_in);
+  all_out.begin();
 
   // Copier - Start
-  copier.setActive(false);
-  if (mode == 0) { 
-    copier.begin(raw_out, radio_in); // Radio
-  } else {
-    // copier.begin(all_out, speakers_out); // I2SStream Full Duplex
-  }
-  copier.setActive(true);
+  // copier.setActive(false);
+  // if (mode == 0) { 
+  //   copier.begin(raw_out, radio_in); // Radio
+  // } else {
+  //   // copier.begin(all_out, speakers_out); // I2SStream Full Duplex
+  // }
+  // copier.setActive(true);
 }
 
 void loopAudio()

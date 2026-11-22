@@ -5,7 +5,7 @@
 #endif
 
 #ifndef I2S_DEFAULT
-#define I2S_DEFAULT 0
+#define I2S_DEFAULT 1
 #endif
 
 #ifdef I2S_MASTER
@@ -94,6 +94,7 @@ inline void output_streams_config(TStream* streams, const AudioInfo& info, int c
     auto config = streams[i].defaultConfig();
     config.copyFrom(info);
     output_config(config, i);
+    config.logInfo();
     streams[i].begin(config);
   }
 }

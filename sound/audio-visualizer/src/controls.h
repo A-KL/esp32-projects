@@ -25,7 +25,8 @@ void read_inputs_task(void * args);
 void setRadioStation(int station)
 {
   radio_in.select(station);
-  form.track.SetText(radio_in.getTitle());
+  // form.track.SetText(radio_in.getTitle());
+  form.track.SetText(radio_in.getReplyHeader("icy-name"));
   form.track.SetForeColor(radio_in.getSelected() == desired_radio_station ? Color::White : Color::Gray);
 }
 

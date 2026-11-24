@@ -1,10 +1,13 @@
 #pragma once
 
+#include <map>
 #include <vector>
 #include "AudioTools/Communication/AudioHttp.h"
 #include "RadioStation.h"
 
 namespace audio_tools {
+
+std::unordered_map<std::string, std::string> media_types { {"audio/aac", "AAC"}, {"audio/mpeg", "MP3"} };
 
 class RadioStream : public URLStream {
   public:

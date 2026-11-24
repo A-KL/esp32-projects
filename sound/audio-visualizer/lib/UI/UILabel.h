@@ -33,6 +33,8 @@ public:
 
 	inline void SetText(const char* text)
 	{		
+		text = text == nullptr ? "" : text;
+		
 		if (text == _text) {
 			return;
 		}

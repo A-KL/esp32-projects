@@ -80,6 +80,9 @@ public:
         leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
         rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
 
+        quality({00, 0, 35, 18}, "000", Color::Yellow, Color::Yellow, Color::Black, 2),
+        encoder({33, 0, 35, 18}, "MP3", Color::Black, Color::Yellow, Color::Yellow, 0),
+
         messageBox({40, 40, 250, 90}, Color(39, 46, 26)),
         messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(120, 130, 100) /* Gray */, {0,0,0,0}, Color(39, 46, 26)),
         messageBoxText({10, 30, 230, 20}, "The radio station is selected", Color(243, 243, 238) /* White */, Color::Black, Color(39, 46, 26), 0, 0, 10)
@@ -106,8 +109,8 @@ public:
         Add(leftTextValue);
         Add(rightTextValue);
 
-        footer.Add(encoderLabel);
-        footer.Add(qualityLabel);
+        footer.Add(encoder);
+        footer.Add(quality);
         // for (auto& icon : icons) {
         //     footer.Add(icon);
         // }
@@ -124,6 +127,9 @@ public:
 
     UVProgressOf<ushort> levelLeft;
     UVProgressOf<ushort> levelRight;
+
+    UILabel quality;
+    UILabel encoder;
 
     void setIcon(int index, bool state)
     {
@@ -162,9 +168,6 @@ private:
     UIContainer messageBox;
     UILabel messageBoxTitle;
     UILabel messageBoxText;
-
-    UILabel qualityLabel {{0, 0, 35, 18}, "128", Color::Yellow, Color::Yellow, Color::Black, 2};
-    UILabel encoderLabel {{33, 0, 35, 18}, "MP3", Color::Black, Color::Yellow, Color::Yellow, 0};
 
     UILabel icons[6] {
         {{ 00,                                         0, 50, 18 }, "SPKR", Color::Gray, Color::Gray, 2},

@@ -10,9 +10,23 @@ static MainForm form({ 0, 0, TFT_WIDTH, TFT_HEIGHT });
 static LcdCanvas<Color> canvas(tft);
 
 #include "audio.h"
-#include "audio_volume.h"
+#include "codec_volume.h"
+
 // #include "concurrent.h"
 #include "controls.h"
+
+void log_init()
+{
+#ifdef ARDUINO
+  Serial.begin(115200);
+  #if ARDUINO_USB_CDC_ON_BOOT
+  // A zero timeout keeps optional logging from delaying application startup
+  // when USB CDC is not connected or the host is not draining output.
+  Serial.setTxTimeoutMs(0);
+  #endif
+#endif
+  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
+}
 
 void setup() 
 {
@@ -30,6 +44,7 @@ void setup()
   canvas.DrawText(0, 220, 320, 20, "Connecting...", Color::Black, Color::White);
   
   setupControls();
+  setupCodec();
   setupAudio();
 
   canvas.Clear(Color::Black);

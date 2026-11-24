@@ -3,7 +3,18 @@
 static bool is_muted = false;
 static int16_t volume = 50;
 
-void setCodecVolume(float value)
+void setVolume(int16_t value);
+
+void setupCodec()
+{
+# if defined(ARDUINO_ARCH_ESP32) and __has_include(<codec.h>)
+  volume_out.setVolume(1.0);
+  codec_init(volume);
+# endif
+  setVolume(volume);
+}
+
+void setCodecVolume(int16_t value)
 {
 #if defined(ARDUINO) && __has_include(<codec.h>)
   codec_volume_percentage(value);

@@ -2,6 +2,7 @@
 
 #include "AudioTools.h"
 #include "AudioTools/AudioCodecs/CodecMP3Helix.h"
+#include "AudioTools/AudioCodecs/CodecAACHelix.h"
 #include "AudioTools/FFT/AudioRealFFT.h"
 
 #include "RadioStation.h"
@@ -22,29 +23,25 @@
 
 const std::vector<RadioStation> Playlist = {
   {"SWISS Jazz",           "http://stream.srg-ssr.ch/m/rsj/mp3_128"},
-  {"SS", "http://livestreaming-node-1.srg-ssr.ch/srgssr/rsj/mp3/128"},
+  {"SS",                   "http://livestreaming-node-1.srg-ssr.ch/srgssr/rsj/mp3/128"},
   {"Radio Roks UA",        "http://online.radioroks.ua/bak_RadioROKS"},
   {"KissFM",               "http://tavr.tvstitch.com/KissFM"},
   {"Classic FM",           "http://media-ice.musicradio.com:80/ClassicFMMP3"},
   {"Lite Favorites",       "http://naxos.cdnstream.com:80/1255_128"},
   {"TRANCE 21",            "https://mscp3.live-streams.nl:8022/lowstream"},
   {"TRANCE IS STAR RADIO", "http://listen2.myradio24.com/tisradio"},
-  {"Veronica ",            "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128"}
+  {"Veronica",             "https://www.mp3streams.nl/zender/veronica/stream/11-mp3-128",},
+  {"Smooth Jazz4",         "http://jazz.streeemer.com/listen/jazz/radio.aac"}
 };
 
-#ifndef INIT_VOLUME
-  #define INIT_VOLUME 1.0
-#endif
-
 #ifdef ARDUINO_ARCH_ESP32
-  #include "esp32-p4-ldo.h"
+  // #include "esp32-p4-ldo.h"
 
   I2SStream speakers_out[I2S_COUNT];
   // I2SStream stream_in;
 #else
   #include <iostream>
   #include "AudioTools/AudioLibs/PortAudioStream.h"
-  // #include "AudioTools/Disk/FileSystem.h"
   PortAudioStream speakers_out[I2S_COUNT];
   // File radio_in("./sound/file_example_MP3_700KB.mp3");
   // File stream_in("./sound/M1F1-int16WE-AFsp.wav");
@@ -55,7 +52,7 @@ AudioInfo info_out(48000, 2, 32);
 
 RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
 
-LogarithmicVolumeControl lvc(0.1);
+
 VuMeter vu_out;
 AudioRealFFT fft_out;
 MetaDataOutput metadata_out;
@@ -66,25 +63,18 @@ MultiOutput raw_out;
 // Equalizer3Bands eq(convert);
 NumberFormatConverterStream convert(speakers_out[I2S_DEFAULT]);
 
-MP3DecoderHelix helix;
+LogarithmicVolumeControl lvc(0.1);
 VolumeStream volume_out(convert);
-EncodedAudioStream decoder(&all_out, &helix);
+
+MP3DecoderHelix mp3;
+AACDecoderHelix aac;
+WAVDecoder wav;
+MultiDecoder multi;
+
+EncodedAudioStream decoder(&all_out, &multi);
 
 StreamCopy copier(raw_out, radio_in); // Radio
 // StreamCopy copier; //(all_out, stream_in); // USB
-
-void log_init()
-{
-#ifdef ARDUINO
-  Serial.begin(115200);
-  #if ARDUINO_USB_CDC_ON_BOOT
-  // A zero timeout keeps optional logging from delaying application startup
-  // when USB CDC is not connected or the host is not draining output.
-  Serial.setTxTimeoutMs(0);
-  #endif
-#endif
-  AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);
-}
 
 void onFFTResult(AudioFFTBase &fft) 
 {
@@ -114,6 +104,20 @@ void selectAudioOutput(const uint8_t index)
 #endif
 }
 
+void showRadioInfo(URLStream& stream)
+{
+  // ice-audio-info
+  // form.track.SetText(radio_in.getTitle());
+  form.track.SetText(stream.getReplyHeader("icy-name"));
+
+  auto content_type = stream.getReplyHeader("content-type");
+  form.encoder.SetText(media_types[std::string(content_type)].c_str());
+
+  auto bitrate1 = stream.getReplyHeader("icy-br");
+  auto bitrate2 = stream.getReplyHeader("icy-bitrate");
+  form.quality.SetText(bitrate1 == nullptr ? bitrate2 : bitrate1);
+}
+
 // 0 = radio
 // 1 = i2s
 void setupAudio(const int mode = 0)
@@ -122,17 +126,14 @@ void setupAudio(const int mode = 0)
   enableP4I2SVo4IfNeeded();
 #endif
 
-# if defined(ARDUINO_ARCH_ESP32) and __has_include(<codec.h>)
-  // Hardware init
-  codec_init();
-# endif
-
   // Input: File or stream
   radio_in.begin(1);
-  // form.track.SetText(radio_in.getTitle());
-  form.track.SetText(radio_in.getReplyHeader("icy-name"));
+  showRadioInfo(radio_in);
 
   // Decoder
+  multi.addDecoder(mp3, "audio/mpeg");
+  multi.addDecoder(aac, "audio/aac");
+  multi.addDecoder(wav, "audio/vnd.wave");
   decoder.begin();
 
   // Out - VU
@@ -162,12 +163,11 @@ void setupAudio(const int mode = 0)
   fft_out.begin(cfg_fft);
 
   // Out - metadata 
-  // metadata_out.setCallback(printMetadata);
-  // metadata_out.begin(1); //radio_in.httpRequest()
+  metadata_out.setCallback(printMetadata);
+  // metadata_out.begin(radio_in.httpRequest());
 
   // Out - Volume
   volume_out.setVolumeControl(lvc);
-  volume_out.setVolume(INIT_VOLUME);
 
   // Out - Mixer
   raw_out.add(decoder);

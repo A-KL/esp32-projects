@@ -9,7 +9,6 @@
 #include "bands.h"
 #include "VuOutput.h"
 #include "outputs.h"
-#include "NumberFormatConverterStreamV2.h"
 
 #if __has_include(<codec.h>)
   #include "codec.h"
@@ -52,14 +51,11 @@ const std::vector<RadioStation> Playlist = {
 #endif
 
 AudioInfo info_in(48000, 2, 16);
-AudioInfo info24_out(48000, 2, 24);
-AudioInfo info32_out(48000, 2, 32);
-AudioInfo info_out = info32_out;
+AudioInfo info_out(48000, 2, 32);
 
 RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
 
 LogarithmicVolumeControl lvc(0.1);
-
 VuMeter vu_out;
 AudioRealFFT fft_out;
 MetaDataOutput metadata_out;
@@ -68,7 +64,7 @@ MultiOutput all_out;
 MultiOutput raw_out;
 
 // Equalizer3Bands eq(convert);
-NumberFormatConverterStreamV2 convert(speakers_out[I2S_DEFAULT]);
+NumberFormatConverterStream convert(speakers_out[I2S_DEFAULT]);
 
 MP3DecoderHelix helix;
 VolumeStream volume_out(convert);
@@ -112,7 +108,7 @@ void printMetadata(MetaDataType type, const char* str, int len)
 void selectAudioOutput(const uint8_t index)
 {
 #if defined(I2S_COUNT) and (I2S_COUNT>1)
-  convert.setOutput(speakers_out[index]);
+  convert.setStream(speakers_out[index]);
   form.setIcon(0, index == 0);
   form.setIcon(1, index == 1);
 #endif

@@ -72,7 +72,7 @@ public:
         levelRight({ 24, 181 + 15 + 3, 246, 15 }, 0, USHRT_MAX, USHRT_MAX * 0.95, 0),
 
         header({ 0, 0, 320, 20 }),
-        footer({ 10, 240-18, 320, 18 }),
+        footer({ 0, 240-18, 320, 18 }),
 
         leftTextL({ 0, 181, 20, 15 }, "L"),
         rightTextL({ 0, 181 + 15 + 3, 20, 15 }, "R"),
@@ -106,9 +106,11 @@ public:
         Add(leftTextValue);
         Add(rightTextValue);
 
-        for (auto& icon : icons) {
-            footer.Add(icon);
-        }
+        footer.Add(encoderLabel);
+        footer.Add(qualityLabel);
+        // for (auto& icon : icons) {
+        //     footer.Add(icon);
+        // }
         
         Add(footer);
 
@@ -160,6 +162,9 @@ private:
     UIContainer messageBox;
     UILabel messageBoxTitle;
     UILabel messageBoxText;
+
+    UILabel qualityLabel {{0, 0, 35, 18}, "128", Color::Yellow, Color::Yellow, Color::Black, 2};
+    UILabel encoderLabel {{33, 0, 35, 18}, "MP3", Color::Black, Color::Yellow, Color::Yellow, 0};
 
     UILabel icons[6] {
         {{ 00,                                         0, 50, 18 }, "SPKR", Color::Gray, Color::Gray, 2},

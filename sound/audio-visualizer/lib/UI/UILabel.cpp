@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <list>
-#include <iterator>
-#include <iostream>
 #include <string>
 #include <Color.h>
 #include <Canvas.h>

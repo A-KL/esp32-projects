@@ -61,7 +61,12 @@ public:
 protected:
 	void Draw(Canvas<Color>& canvas)
 	{
+		// auto offset = 0;
 		for (auto element : _children) {
+			// if ((element->_rect.x == -1) && (_rect.w > element->_rect.w + element->_rect.x)) {
+			// 	element->_rect.x = offset;
+			// 	offset+= element->_rect.w;
+			// }
 			element->Update(canvas);
 		}
 	}

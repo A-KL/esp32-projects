@@ -78,7 +78,7 @@ protected:
 		return _clean;
 	}
 
-	const UIRect _rect;
+	UIRect _rect;
 	Color _backgroundColor;
 	Color _borderColor;
 	int _borderSize;

@@ -57,7 +57,7 @@ void UIElement::Draw(Canvas<Color>& canvas)
     
     if (_borderSize > 0) {
         for (auto i = 0; i < _borderSize; i++) {
-            canvas.DrawRect(x+i, y+i, _rect.w - (i*2) - 1, _rect.h - (i*2) - 1, _borderColor);
+            canvas.DrawRect(x+i, y+i, _rect.w - (i*2), _rect.h - (i*2), _borderColor);
         }
     }
 }

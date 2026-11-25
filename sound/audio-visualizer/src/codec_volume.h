@@ -1,7 +1,16 @@
 #pragma once
 
-static bool is_muted = false;
-static int16_t volume = 50;
+#if __has_include(<codec.h>) //&& not defined(USE_CODECS) // && defined(ARDUINO_ARCH_ESP32)
+  #include "codec.h"
+#endif
+
+struct codec_info_t {
+  bool muted;
+  int volume;
+  int address;
+};
+
+static codec_info_t codec_info { false, 50, 0x00 };
 
 void setVolume(int16_t value);
 
@@ -9,9 +18,11 @@ void setupCodec()
 {
 # if defined(ARDUINO_ARCH_ESP32) and __has_include(<codec.h>)
   volume_out.setVolume(1.0);
-  codec_init(volume);
+
+  codec_init(codec_info.volume);
+
 # endif
-  setVolume(volume);
+  setVolume(codec_info.volume);
 }
 
 void setCodecVolume(int16_t value)
@@ -27,28 +38,28 @@ void setCodecMute(bool muted)
 {
 #if defined(ARDUINO) && defined(USE_CODEC_VOLUME)
   #include "codec.h"
-  codec_mute(muted);
+  codec_mute(codec_info.muted);
 #else 
   if (muted)
     volume_out.setVolume(0);
   else
-    volume_out.setVolume(volume/100.0);
+    volume_out.setVolume(codec_info.volume/100.0);
 #endif
 }
 
 void setMuted(bool muted)
 {
-  is_muted = muted;
+  codec_info.muted = muted;
 
-  form.volume.SetForeColor( is_muted ? Color::Gray : Color::White);
-  form.setIcon(5, is_muted);
+  form.volume.SetForeColor(codec_info.muted ? Color::Gray : Color::White);
+  form.setIcon(5, codec_info.muted);
   
-  setCodecMute(is_muted);
+  setCodecMute(codec_info.muted);
 }
 
 void switchMuted()
 {
-  setMuted(!is_muted);
+  setMuted(!codec_info.muted);
 }
 
 // 0-100
@@ -58,8 +69,8 @@ void setVolume(int16_t value)
   auto dbs = value - 100;// (int)(value * 100 - 127.5);
   form.volume.SetTextF("%ddb", dbs);
 
-  volume = value;
-  if (!is_muted) {
-    setCodecVolume(volume);
+  codec_info.volume = value;
+  if (!codec_info.muted) {
+    setCodecVolume(codec_info.volume);
   }
 }

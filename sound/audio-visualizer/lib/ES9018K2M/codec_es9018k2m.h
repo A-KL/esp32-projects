@@ -1,22 +1,14 @@
 #pragma once
-// #include "esp_check.h"
-// #include "ES9018K2M.h"
+#include "esp_check.h"
+#include "ES9018K2M.h"
 
-// constexpr int16_t PLATFORM_AUDIO_PA = 53;
-// constexpr int16_t PLATFORM_ES8311_ADDRESS = 0x18;
-// constexpr int32_t PLATFORM_I2C_PORT = 0;
-// constexpr float PLATFORM_INIT_VOLUME = 70;
+constexpr float PLATFORM_INIT_VOLUME = 70;
 
-// static es8311_handle_t codec = nullptr;
+static es9018_handle_t codec = nullptr;
 
-// static esp_err_t codec_init(int16_t volume = PLATFORM_INIT_VOLUME, int32_t sample_rate = 44100)
-// {
-//   pinMode(PLATFORM_AUDIO_PA, OUTPUT);
-//   digitalWrite(PLATFORM_AUDIO_PA, HIGH);
-
-//   codec = es8311_create(PLATFORM_I2C_PORT, PLATFORM_ES8311_ADDRESS);
-
-//   ESP_RETURN_ON_FALSE(codec, ESP_FAIL, "ES8311", "create failed");
+static esp_err_t codec_es9018k2m_init(int16_t volume, int32_t sample_rate)
+{
+  ESP_RETURN_ON_FALSE(ES9018K2M_init(codec), ESP_FAIL, "ES9018K2M", "Init failed");
 
 //   const es8311_clock_config_t clock = {
 //     .mclk_inverted = false,
@@ -30,8 +22,8 @@
 //   ESP_RETURN_ON_ERROR(es8311_sample_frequency_config(codec, clock.mclk_frequency, clock.sample_frequency), "ES8311", "sample frequency failed");
 //   ESP_RETURN_ON_ERROR(es8311_microphone_config(codec, false), "ES8311", "disable microphone failed");
   
-//   return es8311_voice_volume_set(codec, volume, nullptr);
-// }
+  return ES9018K2M_set_volume(codec, volume);
+}
 
 // static esp_err_t codec_mute(bool mute)
 // {

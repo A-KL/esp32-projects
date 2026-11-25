@@ -80,8 +80,8 @@ public:
         leftTextValue({ 24 + 246 + 10, 181, 25, 15 }, "1.0"),
         rightTextValue({ 24 + 246 + 10, 181 + 15 + 3, 25, 15 }, "1.0"),
 
-        quality({00, 0, 35, 18}, "000", Color::Yellow, Color::Yellow, Color::Black, 2),
-        encoder({33, 0, 35, 18}, "MP3", Color::Black, Color::Yellow, Color::Yellow, 0),
+        quality({00, 0, 38, 18}, "000", Color::GoldenYellow, Color::GoldenYellow, Color::Black, 1),
+        encoder({37, 0, 38, 18}, "MP3", Color::Black, Color::GoldenYellow, Color::GoldenYellow, 0),
 
         messageBox({40, 40, 250, 90}, Color(39, 46, 26)),
         messageBoxTitle({10, 10, 230, 20}, "WARNING", Color(120, 130, 100) /* Gray */, {0,0,0,0}, Color(39, 46, 26)),

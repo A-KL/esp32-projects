@@ -28,6 +28,7 @@ const Color Color::Orange {255, 165, 0, 0};
 const Color Color::LightBlue {5, 117, 255, 0};
 const Color Color::Purple {178, 0, 255, 0};
 const Color Color::Yellow {255, 255, 0, 0};
+const Color Color::GoldenYellow {255, 215, 0, 0};
 const Color Color::Pink {255, 0, 165, 0};
 const Color Color::Gray {56, 56, 56, 0};
 const Color Color::LightGray {179, 179, 179, 0};

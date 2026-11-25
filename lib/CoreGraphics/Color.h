@@ -33,6 +33,8 @@ struct Color
 	const static Color Purple;
 
 	const static Color Yellow;
+	
+	const static Color GoldenYellow;
 
 	const static Color Pink;
 

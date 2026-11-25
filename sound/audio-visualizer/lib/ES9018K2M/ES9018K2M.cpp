@@ -21,6 +21,18 @@ struct es9018_handle_t {
   uint8_t volume_left = 0x00;
   uint8_t volume_right = 0x00;
   uint8_t input_config = 0x8C;
+
+  uint8_t bps() const {
+    switch (input_config & 0xC0) {
+        case 0x00: return 16;
+        case 0x80: return 32;
+        case 0x40: return 24;
+        default:   return 0;
+      }
+  }
+  // void bps(uint8_t bps) const {
+
+  // }
 };
 
 bool i2c_read(TwoWire& i2c, const uint8_t address, const uint8_t reg, uint8_t& value) 
@@ -63,6 +75,16 @@ bool ES9018K2M_write_general_settings(const es9018_handle_t& handle)
   return i2c_write(I2C_DEV, handle.address, ES9018K2M_GENERAL, handle.general_settings);
 }
 
+bool ES9018K2M_write_input_config(const es9018_handle_t& handle)
+{
+  return i2c_write(I2C_DEV, handle.address, ES9018K2M_INPUT_CONFIG, handle.input_config);
+}
+
+bool ES9018K2M_read_input_config(const es9018_handle_t& handle)
+{
+  return i2c_write(I2C_DEV, handle.address, ES9018K2M_INPUT_CONFIG, handle.input_config);
+}
+
 bool ES9018K2M_set_mute(es9018_handle_t& handle, const bool mute)
 {
   if (mute) {
@@ -91,16 +113,31 @@ uint8_t ES9018K2M_get_volume(es9018_handle_t& handle)
     return res;
 }
 
+bool ES9018K2M_set_bps(es9018_handle_t& handle, uint8_t bps) 
+{
+    if (bps == 16) {
+      handle.input_config &= ~(1 << 6 | 1 << 7); // 0x0C;
+    }
+    if (bps == 24) {
+      handle.input_config |= (1 << 6) & ~(1 << 7); // 0x4C;
+    }
+    if (bps == 32) {
+      handle.input_config |= (1 << 7) & ~(1 << 6); // 0x8C
+    }
+    return ES9018K2M_write_input_config(handle);
+}
+
 bool ES9018K2M_init(es9018_handle_t& handle)
 {
- // Wire.begin(GPIO_NUM_21, GPIO_NUM_22);
-
   uint8_t res = 0;
 
   if (!i2c_read(I2C_DEV, handle.address, ES9018K2M_CHIP_STATUS, res)) {
     return false;
   }
-  log_e("0x40 = %d", res);
+  log_e("%#X = %d", ES9018K2M_CHIP_STATUS, res);
+  // if (res != handle.chip_id) {
+  //   return false;
+  // }
 
   if (!i2c_read(I2C_DEV, handle.address, ES9018K2M_GENERAL, handle.general_settings)) {
     return false;
@@ -135,10 +172,10 @@ bool ES9018K2M_init(es9018_handle_t& handle)
   //   }
   // }
 
-  if (!i2c_read(I2C_DEV, handle.address, ES9018K2M_INPUT_CONFIG, res)){
+  if (!i2c_read(I2C_DEV, handle.address, ES9018K2M_INPUT_CONFIG, handle.input_config)){
     return false;
   }
-  log_e("Reg: %d = %d\n", ES9018K2M_INPUT_CONFIG, res);
+  log_e("Reg: %d = %d\n", ES9018K2M_INPUT_CONFIG, handle.input_config);
   
   // 16bit
   if (!i2c_write(I2C_DEV, handle.address, ES9018K2M_INPUT_CONFIG, 0x0C)) {

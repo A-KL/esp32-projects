@@ -5,13 +5,11 @@
 #include "AudioTools/AudioCodecs/CodecAACHelix.h"
 #include "AudioTools/FFT/AudioRealFFT.h"
 
-#include "RadioStation.h"
-#include "RadioStream.h"
-#include "bands.h"
-#include "VuOutput.h"
-#include "outputs.h"
-
-
+# include "RadioStation.h"
+# include "RadioStream.h"
+# include "bands.h"
+# include "VuOutput.h"
+# include "outputs.h"
 
 //                                            I2SStream-In -|                |-> AudioRealFFT
 //                                    |-> EncodedAudioStream -> MultiOutput -|-> VolumeStream -> NumberFormatConverterStreamV2 -> PortAudioStream [I2SStream]
@@ -33,7 +31,57 @@ const std::vector<RadioStation> Playlist = {
 };
 
 #ifdef ARDUINO_ARCH_ESP32
-  // #include "esp32-p4-ldo.h"
+  #include "AudioTools/AudioLibs/I2SCodecStream.h"
+  #include "StaticDriverPins.h"
+  #include "AudioDriver.h"
+
+  #define Q(x) #x
+  #define QUOTE(x) Q(x)
+  #define MAKE_INCLUDE_NAME(x) QUOTE(x.h)
+
+  #ifdef USE_PORT0_CODEC
+  # if __has_include(MAKE_INCLUDE_NAME(USE_PORT0_CODEC))
+  #  include MAKE_INCLUDE_NAME(USE_PORT0_CODEC)
+  # endif
+  #else
+  # define USE_PORT0_CODEC NoDriver
+  #endif
+
+  #ifdef USE_PORT1_CODEC
+  # if __has_include(MAKE_INCLUDE_NAME(USE_PORT1_CODEC))
+  #  include MAKE_INCLUDE_NAME(USE_PORT1_CODEC)
+  # endif
+  #else
+  # define USE_PORT1_CODEC NoDriver
+  #endif
+
+  #ifdef USE_PORT2_CODEC
+  # if __has_include(MAKE_INCLUDE_NAME(USE_PORT2_CODEC))
+  #  include MAKE_INCLUDE_NAME(USE_PORT2_CODEC)
+  # endif
+  #else
+  # define USE_PORT2_CODEC NoDriver
+  #endif
+
+  StaticDriverPins pins[I2S_COUNT];
+  I2SCodecStream outs[I2S_COUNT];
+  AudioBoard* audio_boards[I2S_COUNT];
+
+  void setupCodecs() 
+  {
+  # if defined(ARDUINO_ARCH_ESP32)
+    AudioDriver* driver = &USE_PORT0_CODEC;
+
+    for (auto i=0; i<I2S_COUNT; i++) {
+        pins[i].configure(i);
+        if (i == 1) driver = &USE_PORT1_CODEC;
+        if (i == 2) driver = &USE_PORT2_CODEC; 
+        if (i > 2) driver = &NoDriver;
+        audio_boards[i] = new AudioBoard(driver, &pins[i]);
+        outs[i].setBoard(audio_boards[i]);
+    }
+  # endif
+  }
 
   I2SStream speakers_out[I2S_COUNT];
   // I2SStream stream_in;
@@ -49,7 +97,6 @@ AudioInfo info_in(48000, 2, 16);
 AudioInfo info_out(48000, 2, 32);
 
 RadioStream radio_in(Playlist, WIFI_SSID, WIFI_PASSWORD);
-
 
 VuMeter vu_out;
 AudioRealFFT fft_out;
@@ -120,10 +167,6 @@ void showRadioInfo(URLStream& stream)
 // 1 = i2s
 void setupAudio(const int mode = 0)
 {
-#if defined(CONFIG_IDF_TARGET_ESP32P4) && __has_include("esp32-hal-ldo.h")
-  // enableP4I2SVo4IfNeeded();
-#endif
-
   // Input: File or stream
   radio_in.begin(1);
   showRadioInfo(radio_in);
@@ -138,6 +181,10 @@ void setupAudio(const int mode = 0)
   vu_out.begin(info_in);
 
   // Out - Speakers
+  // for (auto& out : outs) {
+  //   out.setAudioInfo(info_out);
+  //   out.begin();
+  // }
   output_streams_config(speakers_out, info_out, I2S_COUNT);
   selectAudioOutput(I2S_DEFAULT);
 
@@ -161,7 +208,7 @@ void setupAudio(const int mode = 0)
   fft_out.begin(cfg_fft);
 
   // Out - metadata 
-  metadata_out.setCallback(printMetadata);
+  // metadata_out.setCallback(printMetadata);
   // metadata_out.begin(radio_in.httpRequest());
 
   // Out - Volume
